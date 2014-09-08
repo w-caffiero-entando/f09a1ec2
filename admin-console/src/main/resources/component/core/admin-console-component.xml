@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component>
 	<code>entando-admin-console</code>
-	<description>Entando Admin Console</description>
+	<description>Entando Administration Console</description>
 	<installation>
 		<tableMapping>
 			<datasource name="servDataSource">
