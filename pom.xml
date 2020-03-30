@@ -48,7 +48,10 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
-        <
+        <preDeploymentTestGroups></preDeploymentTestGroups>
+        <postDeploymentTestGroups></postDeploymentTestGroups>
+        <checkstyleConfigLocation></checkstyleConfigLocation>
+        <owaspSuppressionFileLocation></owaspSuppressionFileLocation>
     </properties>
     <issueManagement>
         <system>Github</system>
