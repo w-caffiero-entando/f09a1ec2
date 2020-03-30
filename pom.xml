@@ -11,7 +11,7 @@
 
     <artifactId>entando-core-parent</artifactId>
     <version>6.1.0-SNAPSHOT</version>
-    <packaging>jar<packaging>
+    <packaging>jar</packaging>
 
     <name>Entando Core Maven Parent POM</name>
     <description>Entando Core Maven Parent POM</description>
