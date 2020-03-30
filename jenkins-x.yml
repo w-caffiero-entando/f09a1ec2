@@ -1,0 +1,35 @@
+buildPack: maven-java11
+pipelineConfig:
+  agent:
+    image: entando-jx-maven-java11
+  env:
+    - name: PIPELINE_CODE
+      value: ecp
+  pipelines:
+    pullRequest:
+      build:
+        replace: true
+        steps:
+          - sh: mvn versions:set -DnewVersion=$PREVIEW_VERSION
+            name: set-version
+          - sh: mvn clean verify
+            name: mvn-verify
+      promote:
+        replace: true
+        steps: []
+    release:
+      build:
+        replace: true
+        steps:
+          - sh: >-
+              mvn clean deploy \
+                -Dgpg.homedir=${GPG_HOMEDIR} \
+                -Dgpg.keyname=${GPG_KEYNAME} \
+                -Dgpg.passphrase=${GPG_PASSPHRASE}
+            name: mvn-deploy
+      promote:
+        replace: true
+        steps:
+          - sh: jx step changelog --version v\$(cat ../../VERSION)
+            name: changelog
+
