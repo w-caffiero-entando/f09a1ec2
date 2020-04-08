@@ -23,6 +23,7 @@
         <gav regex="true">org\.apache\.cxf:cxf-.*:3.1.16</gav>
         <cve>CVE-2019-12423</cve>
         <cve>CVE-2019-12406</cve>
+        <cve>CVE-2020-1954</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[

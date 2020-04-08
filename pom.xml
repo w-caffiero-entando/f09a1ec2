@@ -142,13 +142,13 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M4</version>
                     <configuration>
-                        <argLine>${argLine} -XX:MaxRAMPercentage=90</argLine>
+                        <argLine>${argLine}</argLine>
                         <forkCount>1</forkCount>
                         <test>${allTestsSuiteClass}</test>
                         <shutdown>exit</shutdown>
                         <parallel>methods</parallel>
-                        <threadCount>5</threadCount>
-                    </configuration>
+                        <threadCount>8</threadCount>
+                     </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
