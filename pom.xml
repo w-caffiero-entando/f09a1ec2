@@ -10,7 +10,7 @@
     <groupId>org.entando</groupId>
 
     <artifactId>entando-core-parent</artifactId>
-    <version>6.1.0-SNAPSHOT</version>
+    <version>6.2.0</version>
     <packaging>pom</packaging>
 
     <name>Entando Core Maven Parent POM</name>
@@ -71,7 +71,7 @@
         </test.database.serv.url>
         <!--dependency versions-->
         <spring.version>5.1.8.RELEASE</spring.version>
-        <springsecurity.version>5.1.5.RELEASE</springsecurity.version>
+        <springsecurity.version>5.1.6.RELEASE</springsecurity.version>
         <springsecurityoauth2.version>2.3.6.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.17</struts2.version>
         <cxf.version>3.1.16</cxf.version>
@@ -94,7 +94,7 @@
         <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
         <assertj-core.version>3.11.1</assertj-core.version>
         <commons-digester.version>1.8</commons-digester.version>
-        <log4j-core.version>2.10.0</log4j-core.version>
+        <log4j-core.version>2.13.3</log4j-core.version>
         <aspectj.version>1.8.0</aspectj.version>
         <ormlite-jdbc.version>4.40</ormlite-jdbc.version>
         <slf4j.version>1.7.24</slf4j.version>
@@ -370,6 +370,13 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
+                <version>${log4j-core.version}</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
                 <version>${log4j-core.version}</version>
                 <type>jar</type>
                 <scope>compile</scope>
