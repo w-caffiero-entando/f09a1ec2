@@ -175,6 +175,8 @@
                             <url>http://nexus/repository/maven-releases</url>
                             <file>${project.build.directory}/${project.build.finalName}.jar</file>
                             <generatePom>false</generatePom>
+                            <pomFile>pom.xml</pomFile>
+                            <packaging>jar</packaging>
                         </configuration>
                     </execution>
                 </executions>
