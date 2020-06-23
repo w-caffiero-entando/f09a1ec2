@@ -171,6 +171,8 @@
                         </goals>
                         <phase>deploy</phase>
                         <configuration>
+                            <repositoryId>nexus</repositoryId>
+                            <url>${altReleaseDeploymentRepository}</url>
                             <file>${project.build.directory}/${project.build.finalName}.jar</file>
                             <generatePom>false</generatePom>
                             <pomFile>pom.xml</pomFile>
