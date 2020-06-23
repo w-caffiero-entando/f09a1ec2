@@ -27,6 +27,13 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
+        Struts is also  pivotal and can only be upgraded with a lot of testing.
+      ]]></notes>
+        <gav regex="true">org\.apache\.tiles:tiles-ognl:3\.0\.8</gav>
+        <cve>CVE-2016-3093</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
         Spring is pivotal and can only be upgraded with a lot of testing
       ]]></notes>
         <gav regex="true">org\.springframework:spring-.*:5.1.[0-9].RELEASE</gav>

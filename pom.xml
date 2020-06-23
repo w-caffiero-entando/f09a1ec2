@@ -10,7 +10,7 @@
     <groupId>org.entando</groupId>
 
     <artifactId>entando-core-parent</artifactId>
-    <version>6.2.0</version>
+    <version>6.2.2</version>
     <packaging>pom</packaging>
 
     <name>Entando Core Maven Parent POM</name>
