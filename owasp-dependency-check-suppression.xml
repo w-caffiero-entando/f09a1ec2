@@ -43,7 +43,7 @@
         <notes><![CDATA[
         Spring is pivotal and can only be upgraded with a lot of testing
       ]]></notes>
-        <gav regex="true">org.springframework.security:spring-security-.*:5.1.6.RELEASE</gav>
+        <gav regex="true">org.springframework.security:spring-security-.*:5.1.8.RELEASE</gav>
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2020-5408</cve>
     </suppress>
