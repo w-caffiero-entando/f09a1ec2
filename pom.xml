@@ -10,7 +10,7 @@
     <groupId>org.entando</groupId>
 
     <artifactId>entando-core-parent</artifactId>
-    <version>6.2.2</version>
+    <version>6.2.3</version>
     <packaging>pom</packaging>
 
     <name>Entando Core Maven Parent POM</name>
@@ -71,7 +71,7 @@
         </test.database.serv.url>
         <!--dependency versions-->
         <spring.version>5.1.8.RELEASE</spring.version>
-        <springsecurity.version>5.1.6.RELEASE</springsecurity.version>
+        <springsecurity.version>5.1.8.RELEASE</springsecurity.version>
         <springsecurityoauth2.version>2.3.6.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.17</struts2.version>
         <cxf.version>3.1.16</cxf.version>
@@ -82,11 +82,11 @@
         <json-path-assert.version>2.2.0</json-path-assert.version>
         <springfox-swagger2.version>2.8.0</springfox-swagger2.version>
         <byte-buddy.version>1.9.10</byte-buddy.version>
-        <guava.version>27.1-jre</guava.version>
+        <guava.version>28.2-jre</guava.version>
         <spring-data-rest-webmvc.version>3.1.3.RELEASE</spring-data-rest-webmvc.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-chain.version>1.2</commons-chain.version>
-        <commons-codec.version>1.9</commons-codec.version>
+        <commons-codec.version>1.12</commons-codec.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-dbcp2.version>2.5.0</commons-dbcp2.version>
         <freemarker.version>2.3.28</freemarker.version>
@@ -97,10 +97,10 @@
         <log4j-core.version>2.13.3</log4j-core.version>
         <aspectj.version>1.8.0</aspectj.version>
         <ormlite-jdbc.version>4.40</ormlite-jdbc.version>
-        <slf4j.version>1.7.24</slf4j.version>
+        <slf4j.version>1.7.26</slf4j.version>
         <jettison.version>1.3.7</jettison.version>
         <json.version>20180130</json.version>
-        <httpclient.version>4.5.3</httpclient.version>
+        <httpclient.version>4.5.9</httpclient.version>
         <jaxb-impl.version>2.2.11</jaxb-impl.version>
         <jaxb-xjc.version>2.2.6</jaxb-xjc.version>
         <derby.version>10.9.1.0</derby.version>
@@ -115,6 +115,7 @@
         <mockito-core.version>2.28.2</mockito-core.version>
         <junit.version>4.12</junit.version>
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <jdom.version>1.1.3</jdom.version>
         <javassist.version>3.20.0-GA</javassist.version>
         <velocity.version>1.7</velocity.version>
@@ -123,11 +124,14 @@
         <tiles-core.version>3.0.8</tiles-core.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang.version>2.6</commons-lang.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
         <commons-logging.version>1.2</commons-logging.version>
         <commons-logging-api.version>1.1</commons-logging-api.version>
         <commons-pool.version>1.3</commons-pool.version>
         <xml-apis.version>1.4.01</xml-apis.version>
         <oro.version>2.0.8</oro.version>
+        <xom.version>1.2.5</xom.version>
+        <esapi.version>2.1.0.1</esapi.version>
     </properties>
     <issueManagement>
         <system>Github</system>
@@ -323,6 +327,13 @@
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>${commons-lang.version}</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -704,6 +715,11 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation-api.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
@@ -899,6 +915,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
             <!-- json -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -933,6 +954,80 @@
                 <version>${assertj-core.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.owasp.esapi</groupId>
+                <artifactId>esapi</artifactId>
+                <version>${esapi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.beanshell</groupId>
+                        <artifactId>bsh-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xerces</groupId>
+                        <artifactId>xercesImpl</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xml-apis</groupId>
+                        <artifactId>xml-apis</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-fileupload</groupId>
+                        <artifactId>commons-fileupload</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-beanutils</groupId>
+                        <artifactId>commons-beanutils-core</artifactId>
+                    </exclusion>
+                    <!-- excluded for high vulnerability -->
+                    <exclusion>
+                        <groupId>org.apache.xmlgraphics</groupId>
+                        <artifactId>batik-ext</artifactId>
+                    </exclusion>
+                    <!-- excluded for high vulnerability -->
+                    <exclusion>
+                        <groupId>org.apache.xmlgraphics</groupId>
+                        <artifactId>batik-css</artifactId>
+                    </exclusion>
+                    <!-- excluded for high vulnerability -->
+                    <exclusion>
+                        <groupId>xalan</groupId>
+                        <artifactId>xalan</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xom</groupId>
+                        <artifactId>xom</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.owasp.antisamy</groupId>
+                        <artifactId>antisamy</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>log4j</artifactId>
+                        <groupId>log4j</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>xom</groupId>
+                <artifactId>xom</artifactId>
+                <version>${xom.version}</version>
+                <scope>compile</scope>
+                <exclusions>
+                    <!-- excluded for high vulnerability -->
+                    <exclusion>
+                        <groupId>xerces</groupId>
+                        <artifactId>xercesImpl</artifactId>
+                    </exclusion>
+                    <!-- excluded for high vulnerability -->
+                    <exclusion>
+                        <groupId>xalan</groupId>
+                        <artifactId>xalan</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>
