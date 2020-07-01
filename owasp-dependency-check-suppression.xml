@@ -20,7 +20,7 @@
         <notes><![CDATA[
         CXF is pivotal and can only be upgraded with a lot of testing.
       ]]></notes>
-        <gav regex="true">org\.apache\.cxf:cxf-.*:3.1.16</gav>
+        <cpe>cpe:2.3:a:apache:cxf</cpe>
         <cve>CVE-2019-12423</cve>
         <cve>CVE-2019-12406</cve>
         <cve>CVE-2020-1954</cve>
@@ -29,22 +29,38 @@
         <notes><![CDATA[
         Struts is also  pivotal and can only be upgraded with a lot of testing.
       ]]></notes>
-        <gav regex="true">org\.apache\.tiles:tiles-ognl:3\.0\.8</gav>
+<!--        <gav regex="true">org\.apache\.tiles:tiles-ognl:3\.0\.8</gav>-->
+        <cpe>cpe:2.3:a:ognl_project:ognl</cpe>
         <cve>CVE-2016-3093</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
         Spring is pivotal and can only be upgraded with a lot of testing
       ]]></notes>
-        <gav regex="true">org\.springframework:spring-.*:5.1.[0-9].RELEASE</gav>
+        <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
         <cve>CVE-2020-5398</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
         Spring is pivotal and can only be upgraded with a lot of testing
       ]]></notes>
-        <gav regex="true">org.springframework.security:spring-security-.*:5.1.8.RELEASE</gav>
-        <cve>CVE-2018-1258</cve>
+        <cpe>cpe:/a:pivotal_software:spring_security</cpe>
         <cve>CVE-2020-5408</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        False positive - this vulnerability talks about xzgrep. We don't use it. There is no later version of this
+         dependency to upgrade to either.
+   ]]></notes>
+        <cpe>cpe:/a:tukaani:xz</cpe>
+        <cve>CVE-2019-11065</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   False positive. We don't use gradle
+   ]]></notes>
+        <cpe>cpe:/a:gradle:gradle</cpe>
+        <cve>CVE-2019-15052</cve>
+        <cve>CVE-2019-16370</cve>
     </suppress>
 </suppressions>

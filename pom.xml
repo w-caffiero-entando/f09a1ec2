@@ -74,7 +74,7 @@
         <springsecurity.version>5.1.8.RELEASE</springsecurity.version>
         <springsecurityoauth2.version>2.3.6.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.17</struts2.version>
-        <cxf.version>3.1.16</cxf.version>
+        <cxf.version>3.3.6</cxf.version>
         <jackson.version>2.10.0</jackson.version>
         <hibernate-validator-version>6.0.17.Final</hibernate-validator-version>
         <lucene-core.version>7.2.0</lucene-core.version>
@@ -142,6 +142,8 @@
         <maven-resources-plugin.version>2.5</maven-resources-plugin.version>
         <maven-war-plugin.version>2.1.1</maven-war-plugin.version>
         <maven-assembly-plugin.version>2.2.1</maven-assembly-plugin.version>
+        <jna.version>5.5.0</jna.version>
+        <asm.version>8.0.1</asm.version>
     </properties>
     <issueManagement>
         <system>Github</system>
@@ -297,7 +299,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>${jna.version}</version>
+            </dependency>
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
@@ -500,6 +506,16 @@
                 <groupId>com.mchange</groupId>
                 <artifactId>c3p0</artifactId>
                 <version>${c3p0.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jvnet.staxex</groupId>
+                <artifactId>stax-ex</artifactId>
+                <version>1.8.1</version>
             </dependency>
             <dependency>
                 <groupId>org.gagravarr</groupId>
