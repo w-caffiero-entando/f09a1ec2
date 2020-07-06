@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
@@ -46,16 +47,16 @@ public class TestLabelsProperties extends TestCase {
         Properties props2 = new Properties();
         props1.load(resources1[0].getInputStream());
         props2.load(resources2[0].getInputStream());
-        Set<String> stringPropertyNames1 = props1.stringPropertyNames();
-        Set<String> stringPropertyNames2 = props2.stringPropertyNames();
+        Set<String> stringPropertyNames1 = new HashSet<>(props1.stringPropertyNames());
+        Set<String> stringPropertyNames2 = new HashSet<>(props2.stringPropertyNames());
         stringPropertyNames1.removeAll(stringPropertyNames2);
         stringPropertyNames1.forEach((v) -> {
             logger.error("{}{} -> found error for the key {} check this or {} file to fix this error", propertiesFolder, properties1, v, properties2);
         });
         assertEquals(0, stringPropertyNames1.size());
 
-        stringPropertyNames1 = props1.stringPropertyNames();
-        stringPropertyNames2 = props2.stringPropertyNames();
+        stringPropertyNames1 = new HashSet<>(props1.stringPropertyNames());
+        stringPropertyNames2 = new HashSet<>(props2.stringPropertyNames());
         stringPropertyNames2.removeAll(stringPropertyNames1);
         stringPropertyNames2.forEach((v) -> {
             logger.error("{}{} found error for the key {} check this or {} file to fix this error", propertiesFolder, properties2, v, properties1);
