@@ -144,6 +144,8 @@
         <maven-assembly-plugin.version>2.2.1</maven-assembly-plugin.version>
         <jna.version>5.5.0</jna.version>
         <asm.version>8.0.1</asm.version>
+        <sun-mail.version>1.4.5</sun-mail.version>
+        <subethasmtp.version>3.1.6</subethasmtp.version>
     </properties>
     <issueManagement>
         <system>Github</system>
@@ -1165,7 +1167,91 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>com.jgeppert.struts2.jquery</groupId>
+                <artifactId>struts2-jquery-grid-plugin</artifactId>
+                <version>${struts2-jquery-plugin.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.velocity</groupId>
+                        <artifactId>velocity</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.struts</groupId>
+                        <artifactId>struts2-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.jgeppert.struts2.jquery</groupId>
+                <artifactId>struts2-jquery-richtext-plugin</artifactId>
+                <version>${struts2-jquery-plugin.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.velocity</groupId>
+                        <artifactId>velocity</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.struts</groupId>
+                        <artifactId>struts2-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.jgeppert.struts2.jquery</groupId>
+                <artifactId>struts2-jquery-tree-plugin</artifactId>
+                <version>${struts2-jquery-plugin.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.velocity</groupId>
+                        <artifactId>velocity</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.struts</groupId>
+                        <artifactId>struts2-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.jgeppert.struts2.jquery</groupId>
+                <artifactId>struts2-jquery-mobile-plugin</artifactId>
+                <version>${struts2-jquery-plugin.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.velocity</groupId>
+                        <artifactId>velocity</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.struts</groupId>
+                        <artifactId>struts2-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>mailapi</artifactId>
+                <version>${sun-mail.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>smtp</artifactId>
+                <version>${sun-mail.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.subethamail</groupId>
+                <artifactId>subethasmtp</artifactId>
+                <version>${subethasmtp.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
