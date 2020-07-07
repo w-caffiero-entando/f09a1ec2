@@ -2,13 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>entando-plugins-parent</artifactId>
-        <groupId>org.entando.entando.plugins</groupId>
-        <version>6.2.0-SNAPSHOT</version>
+        <groupId>org.entando</groupId>
+        <artifactId>entando-core-parent</artifactId>
+        <version>6.2.11</version>
     </parent>
     <artifactId>entando-plugin-jpcontentscheduler</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
     <packaging>war</packaging>
+    <version>6.2.0-SNAPSHOT</version>
     <name>Entando Plugin: Content Scheduler</name>
     <description>CMS Content Scheduler</description>
     <developers>
@@ -19,51 +20,114 @@
         </developer>
     </developers>
     <url>http://www.entando.com/</url>
+    <repositories>
+        <repository>
+            <id>nexus-jx</id>
+            <url>https://nexus-jx.apps.serv.run/repository/maven-releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <properties>
+        <checkstyle.skip>true</checkstyle.skip>
+<!--        <allTestsSuiteClass>org.entando.entando.plugins.jacms.apsadmin.common.TestActivityStream</allTestsSuiteClass>-->
+        <allTestsSuiteClass>org.entando.entando.plugins.jpcontentscheduler.AllTests</allTestsSuiteClass>
+        <entando-engine.version>6.2.7</entando-engine.version>
+        <entando-admin-console.version>6.2.8</entando-admin-console.version>
+        <entando-portal-ui.version>6.2.3</entando-portal-ui.version>
+        <entando-plugin-jacms.version>6.2.7</entando-plugin-jacms.version>
+        <entando-plugin-jpmail.version>6.2.1</entando-plugin-jpmail.version>
+    </properties>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>src/main/resources/component</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*component.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.xsd</include>
+                    <include>**/*.txt</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/test/java</directory>
+                <includes>
+                    <include>**/*.sql</include>
+                    <include>**/*.json</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/tld</directory>
+                <targetPath>META-INF</targetPath>
+                <includes>
+                    <include>**/*.tld</include>
+                </includes>
+            </resource>
+
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.3</version><!--$NO-MVN-MAN-VER$ -->
+                <artifactId>maven-war-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.0-beta-1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-versions</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>3.0.0</version>
-                                </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>1.8</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
     <dependencies>
-        
+        <dependency>
+            <groupId>org.entando.entando</groupId>
+            <artifactId>entando-portal-ui</artifactId>
+            <version>${entando-portal-ui.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.entando.entando</groupId>
+            <artifactId>entando-portal-ui</artifactId>
+            <version>${entando-portal-ui.version}</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>
-            <version>6.2.0-SNAPSHOT</version><!-- version. Don't remove this comment. -->
+            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>
-            <version>6.2.0-SNAPSHOT</version><!-- version. Don't remove this comment. -->
+            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
             <type>jar</type>
             <classifier>classes</classifier>
             <scope>provided</scope>
@@ -72,7 +136,7 @@
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>
-            <version>6.2.0-SNAPSHOT</version><!-- version. Don't remove this comment. -->
+            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
             <type>jar</type>
             <classifier>tests</classifier>
             <scope>test</scope>
@@ -81,14 +145,14 @@
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jpmail</artifactId>
-            <version>6.2.0-SNAPSHOT</version><!-- version. Don't remove this comment. -->
+            <version>${entando-plugin-jpmail.version}</version><!-- version. Don't remove this comment. -->
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jpmail</artifactId>
-            <version>6.2.0-SNAPSHOT</version><!-- version. Don't remove this comment. -->
+            <version>${entando-plugin-jpmail.version}</version><!-- version. Don't remove this comment. -->
             <type>jar</type>
             <classifier>classes</classifier>
             <scope>provided</scope>
@@ -97,30 +161,78 @@
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jpmail</artifactId>
-            <version>6.2.0-SNAPSHOT</version><!-- version. Don't remove this comment. -->
+            <version>${entando-plugin-jpmail.version}</version><!-- version. Don't remove this comment. -->
             <type>jar</type>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+        </dependency>
         <!-- Transaction dependency is required with Quartz integration -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <!-- Quartz framework -->
+        <!-- Test dependencies -->
         <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>2.2.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.entando.entando</groupId>
+            <artifactId>entando-engine</artifactId>
+            <version>${entando-engine.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.entando.entando</groupId>
+            <artifactId>entando-admin-console</artifactId>
+            <version>${entando-admin-console.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.entando.entando</groupId>
+            <artifactId>entando-portal-ui</artifactId>
+            <version>${entando-portal-ui.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path-assert</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
     </dependencies>
 </project>
