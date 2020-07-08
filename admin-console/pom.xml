@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.entando</groupId>
@@ -11,11 +12,12 @@
     <version>6.2.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Entando Core: Administration Console</name>
-    <description>Entando Administration Console: an agile, modern and user-centric open source Portal platform.</description>
+    <description>Entando Administration Console: an agile, modern and user-centric open source Portal platform.
+    </description>
     <url>http://www.entando.com/</url>
     <licenses>
         <license>
-            <name>GNU LESSER GENERAL PUBLIC LICENSE,  Version 2.1, February 1999</name>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1, February 1999</name>
             <url>https://www.gnu.org/licenses/lgpl-2.1.txt</url>
             <distribution>repo</distribution>
         </license>
@@ -37,11 +39,11 @@
         </repository>
     </repositories>
     <properties>
-        <entando-engine.version>6.2.7</entando-engine.version>
+        <entando-engine.version>6.2.9</entando-engine.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.skip>true</checkstyle.skip>
         <allTestsSuiteClass>com.agiletec.apsadmin.system.services.TestShortcutManager</allTestsSuiteClass>
-<!--        <allTestsSuiteClass>com.agiletec.apsadmin.AllTests</allTestsSuiteClass>-->
+        <!--        <allTestsSuiteClass>com.agiletec.apsadmin.AllTests</allTestsSuiteClass>-->
         <maven-repository-id-release>nexus</maven-repository-id-release>
         <maven-repository-url-release>http://nexus/repository/maven-releases</maven-repository-url-release>
     </properties>
@@ -89,12 +91,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
-                    <pushChanges>false</pushChanges>
-                    <localCheckout>true</localCheckout>
-                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -121,67 +121,7 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-a-jar</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archiveClasses>true</archiveClasses>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.1</version>
-                <executions>
-                    <execution>
-                        <id>install-jar-lib</id>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <phase>install</phase>
-                        <configuration>
-                            <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                            <generatePom>false</generatePom>
-                            <pomFile>pom.xml</pomFile>
-                            <packaging>jar</packaging>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-                <executions>
-                    <execution>
-                        <id>deploy-jar-lib</id>
-                        <goals>
-                            <goal>deploy-file</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                        <configuration>
-                            <repositoryId>${maven-repository-id-release}</repositoryId>
-                            <url>${maven-repository-url-release}</url>
-                            <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                            <generatePom>false</generatePom>
-                            <pomFile>pom.xml</pomFile>
-                            <packaging>jar</packaging>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -226,14 +166,12 @@
                     </execution>
                 </executions>
             </plugin>
-
-        
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M1</version>
-      </plugin>
-    </plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <!--This plugin's configuration is used to store Eclipse m2e settings
@@ -261,7 +199,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -282,7 +220,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
