@@ -253,40 +253,6 @@
     </li>
 
 
-
-    <!-- DATA TYPE -->
-    <c:if test="${isSuperUser}">
-        <li class="list-group-item secondary-nav-item-pf" data-target="#datatype-secondary">
-            <a>
-                <span class="fa fa-file-text-o" data-toggle="tooltip" title="<s:text name="menu.DataType" />"></span>
-                <span class="list-group-item-value"><s:text name="menu.DataType" /></span>
-            </a>
-            <div id="datatype-secondary" class="nav-pf-secondary-nav">
-                <div class="nav-item-pf-header">
-                    <a class="secondary-collapse-toggle-pf" data-toggle="collapse-secondary-nav"></a>
-                    <span><s:text name="menu.DataType" /></span>
-                </div>
-                <!-- DataType Secondary -->
-                <ul class="list-group">
-                    <c:if test="${isSuperUser}">
-                        <li class="list-group-item">
-                            <a href="<s:url action="initViewEntityTypes" namespace="/do/Entity"><s:param name="entityManagerName">DataObjectManager</s:param></s:url>">
-                                <span class="list-group-item-value"><s:text name="menu.DataType.Model" /></span>
-                            </a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="<s:url action="list" namespace="/do/dataobject/model" />">
-                               <span class="list-group-item-value"><s:text name="menu.DataType.UX" /></span>
-                            </a>
-                        </li>
-                    </c:if>
-                </ul>
-                <!--Fine DATA TYPE Secondary-->
-            </div>
-        </li>
-    </c:if>
-
-
 </ul>
 
 <wp:ifauthorized permission="manageCategories" var="isCategories" />
