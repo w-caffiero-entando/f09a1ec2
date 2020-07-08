@@ -21,6 +21,7 @@
  */
 package org.entando.entando.jpversioning;
 
+import com.agiletec.plugins.jpversioning.AllAgiletecTests;
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -30,19 +31,21 @@ import org.entando.entando.jpversioning.web.configuration.VersioningConfiguratio
 import org.entando.entando.jpversioning.web.configuration.VersioningConfigurationControllerTest;
 import org.entando.entando.jpversioning.web.content.ContentVersioningControllerIntegrationTest;
 import org.entando.entando.jpversioning.web.content.ContentVersioningControllerTest;
+import org.entando.entando.jpversioning.web.resource.ResourceVersioningControllerIntegrationTest;
 
 public class AllTests {
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for org.entando.entando.jpversioning");
 		System.out.println("Test for org.entando.entando.jpversioning");
-
+		suite.addTest(AllAgiletecTests.suite());
 		suite.addTestSuite(ContentVersioningServiceTest.class);
 		suite.addTestSuite(VersioningConfigurationServiceTest.class);
 		suite.addTest(new JUnit4TestAdapter(ContentVersioningControllerIntegrationTest.class));
 		suite.addTest(new JUnit4TestAdapter(ContentVersioningControllerTest.class));
 		suite.addTest(new JUnit4TestAdapter(VersioningConfigurationControllerIntegrationTest.class));
 		suite.addTest(new JUnit4TestAdapter(VersioningConfigurationControllerTest.class));
+		suite.addTest(new JUnit4TestAdapter(ResourceVersioningControllerIntegrationTest.class));
 
 		return suite;
 	}
