@@ -1,3 +1,14 @@
+[![Build Status](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatusbadge-jx.apps.serv.run%2Fentando%2Fentando-plugin-jpcontentscheduler)](https://github.com/entando/devops-results/tree/logs/jenkins-x/logs/entando/entando-plugin-jpcontentscheduler/master)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=entando_entando-plugin-jpcontentscheduler&metric=alert_status)](https://sonarcloud.io/dashboard?id=entando_entando-plugin-jpcontentscheduler)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=entando_entando-plugin-jpcontentscheduler&metric=coverage)](https://entando.github.io/devops-results/entando-plugin-jpcontentscheduler/master/jacoco/index.html)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=entando_entando-plugin-jpcontentscheduler&metric=vulnerabilities)](https://entando.github.io/devops-results/entando-plugin-jpcontentscheduler/master/dependency-check-report.html)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=entando_entando-plugin-jpcontentscheduler&metric=code_smells)](https://sonarcloud.io/dashboard?id=entando_entando-plugin-jpcontentscheduler)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=entando_entando-plugin-jpcontentscheduler&metric=security_rating)](https://sonarcloud.io/dashboard?id=entando_entando-plugin-jpcontentscheduler)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=entando_entando-plugin-jpcontentscheduler&metric=sqale_index)](https://sonarcloud.io/dashboard?id=entando_entando-plugin-jpcontentscheduler)
+
+entando-plugin-jpcontentscheduler
+============
+
 ## Content scheduler
 
 **Code**: ```jpcontentscheduler```

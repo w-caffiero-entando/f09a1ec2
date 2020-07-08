@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.2.11</version>
+        <version>6.2.12</version>
     </parent>
     <artifactId>entando-plugin-jpcontentscheduler</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
@@ -36,11 +36,12 @@
         <checkstyle.skip>true</checkstyle.skip>
 <!--        <allTestsSuiteClass>org.entando.entando.plugins.jacms.apsadmin.common.TestActivityStream</allTestsSuiteClass>-->
         <allTestsSuiteClass>org.entando.entando.plugins.jpcontentscheduler.AllTests</allTestsSuiteClass>
-        <entando-engine.version>6.2.7</entando-engine.version>
-        <entando-admin-console.version>6.2.8</entando-admin-console.version>
-        <entando-portal-ui.version>6.2.3</entando-portal-ui.version>
-        <entando-plugin-jacms.version>6.2.7</entando-plugin-jacms.version>
-        <entando-plugin-jpmail.version>6.2.1</entando-plugin-jpmail.version>
+        <checkstyle.skip>true</checkstyle.skip>
+        <entando-plugin-jacms.version>6.2.8</entando-plugin-jacms.version>
+        <entando-engine.version>6.2.9</entando-engine.version>
+        <entando-admin-console.version>6.2.10</entando-admin-console.version>
+        <entando-portal-ui.version>6.2.4</entando-portal-ui.version>
+        <entando-plugin-jpmail.version>6.2.2</entando-plugin-jpmail.version>
     </properties>
     <build>
         <resources>
@@ -113,22 +114,6 @@
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-portal-ui</artifactId>
             <version>${entando-portal-ui.version}</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.entando.entando.plugins</groupId>
-            <artifactId>entando-plugin-jacms</artifactId>
-            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
-            <type>war</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.entando.entando.plugins</groupId>
-            <artifactId>entando-plugin-jacms</artifactId>
-            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
-            <type>jar</type>
             <classifier>classes</classifier>
             <scope>provided</scope>
         </dependency>
@@ -136,35 +121,31 @@
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>
-            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
-            <type>jar</type>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.entando.entando.plugins</groupId>
-            <artifactId>entando-plugin-jpmail</artifactId>
-            <version>${entando-plugin-jpmail.version}</version><!-- version. Don't remove this comment. -->
+            <version>${entando-plugin-jacms.version}</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
-            <artifactId>entando-plugin-jpmail</artifactId>
-            <version>${entando-plugin-jpmail.version}</version><!-- version. Don't remove this comment. -->
+            <artifactId>entando-plugin-jacms</artifactId>
+            <version>${entando-plugin-jacms.version}</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jpmail</artifactId>
-            <version>${entando-plugin-jpmail.version}</version><!-- version. Don't remove this comment. -->
+            <version>${entando-plugin-jpmail.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.entando.entando.plugins</groupId>
+            <artifactId>entando-plugin-jpmail</artifactId>
+            <version>${entando-plugin-jpmail.version}</version>
             <type>jar</type>
-            <classifier>tests</classifier>
-            <scope>test</scope>
+            <classifier>classes</classifier>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -174,13 +155,29 @@
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
         </dependency>
+
         <!-- Transaction dependency is required with Quartz integration -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.entando.entando.plugins</groupId>
+            <artifactId>entando-plugin-jacms</artifactId>
+            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.entando.entando.plugins</groupId>
+            <artifactId>entando-plugin-jpmail</artifactId>
+            <version>${entando-plugin-jpmail.version}</version><!-- version. Don't remove this comment. -->
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-engine</artifactId>
