@@ -31,7 +31,7 @@ import com.agiletec.plugins.jpversioning.apsadmin.resource.TestTrashedResourceAc
 import com.agiletec.plugins.jpversioning.apsadmin.versioning.TestVersionAction;
 import com.agiletec.plugins.jpversioning.apsadmin.versioning.TestVersionFinderAction;
 
-public class AllTests {
+public class AllAgiletecTests {
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for jpversioning");
