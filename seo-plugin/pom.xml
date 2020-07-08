@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.2.10</version>
-	</parent>
-	<artifactId>entando-plugin-jpseo</artifactId>
-	<groupId>org.entando.entando.plugins</groupId>
-        <version>6.2.0-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<name>Entando Plugin: SEO</name>
-	<description>Search Engine Optimization</description>
-	<url>http://www.entando.com/</url>
+        <version>6.2.12</version>
+    </parent>
+    <artifactId>entando-plugin-jpseo</artifactId>
+    <groupId>org.entando.entando.plugins</groupId>
+    <version>6.2.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>Entando Plugin: SEO</name>
+    <description>Search Engine Optimization</description>
+    <url>http://www.entando.com/</url>
     <repositories>
         <repository>
             <id>nexus-jx</id>
@@ -28,14 +28,13 @@
     </repositories>
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
-<!--        <allTestsSuiteClass>org.entando.entando.plugins.jacms.apsadmin.common.TestActivityStream</allTestsSuiteClass>-->
-        <allTestsSuiteClass>org.entando.entando.plugins.jpseo.AllTests</allTestsSuiteClass>
-        <entando-engine.version>${entando-plugin-jacms.version}</entando-engine.version>
-        <entando-admin-console.version>6.2.8</entando-admin-console.version>
-        <entando-portal-ui.version>6.2.3</entando-portal-ui.version>
-        <entando-plugin-jacms.version>6.2.7</entando-plugin-jacms.version>
+        <checkstyle.skip>true</checkstyle.skip>
+        <entando-plugin-jacms.version>6.2.8</entando-plugin-jacms.version>
+        <entando-engine.version>6.2.9</entando-engine.version>
+        <entando-admin-console.version>6.2.10</entando-admin-console.version>
+        <entando-portal-ui.version>6.2.4</entando-portal-ui.version>
     </properties>
-	<build>
+    <build>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -75,9 +74,9 @@
             </resource>
 
         </resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
             </plugin>
             <plugin>
@@ -87,15 +86,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+            </plugin>
+        </plugins>
+    </build>
 
-	<dependencies>
+    <dependencies>
 
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
@@ -108,28 +107,17 @@
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>
             <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
-            <type>jar</type>
             <classifier>classes</classifier>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.entando.entando.plugins</groupId>
-            <artifactId>entando-plugin-jacms</artifactId>
-            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
-            <type>jar</type>
-            <classifier>tests</classifier>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-portal-ui</artifactId>
             <version>${entando-portal-ui.version}</version><!-- version. Don't remove this comment. -->
-            <type>jar</type>
+            <classifier>classes</classifier>
             <scope>provided</scope>
         </dependency>
-		<!-- AOP dependency -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -137,6 +125,16 @@
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
+        </dependency>
+
+        <!--Test dependencies -->
+
+        <dependency>
+            <groupId>org.entando.entando.plugins</groupId>
+            <artifactId>entando-plugin-jacms</artifactId>
+            <version>${entando-plugin-jacms.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
@@ -192,7 +190,7 @@
             <artifactId>derby</artifactId>
         </dependency>
 
-	</dependencies>
+    </dependencies>
 
 </project>
 
