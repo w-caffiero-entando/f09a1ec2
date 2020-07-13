@@ -32,7 +32,15 @@
 
         <!--barra di menu laterale-->
         <div class="nav-pf-vertical nav-pf-vertical-with-sub-menus nav-pf-vertical-collapsible-menus ">
+
+		<s:set var="appBuilderIntegrationEnabled" ><wp:info key="systemParam" paramName="appBuilderIntegrationEnabled" /></s:set>
+		<s:if test="#appBuilderIntegrationEnabled == 'true'">
+        	<tiles:insertAttribute name="menuAppBuilder"/>
+        </s:if>
+        <s:else>
             <tiles:insertAttribute name="menu"/>
+        </s:else>
+
         </div>
 
         <div class="container-fluid container-cards-pf container-pf-nav-pf-vertical">
