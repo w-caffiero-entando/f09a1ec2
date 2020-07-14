@@ -41,11 +41,16 @@
                 <s:text name="note.goToPortal" />
             </a>
         </li>
-        <li id="notification-ico" class="drawer-pf-trigger2 notifications dropdown">
-            <a class="nav-item-iconic drawer-pf-trigger-icon">
-                <span class="fa fa-bell" title="Notifications"></span>
-            </a>
-        </li>
+        <s:if test="#appBuilderIntegrationEnabled == 'true'">
+            <li></li>
+        </s:if>
+        <s:else>
+            <li id="notification-ico" class="drawer-pf-trigger2 notifications dropdown">
+                <a class="nav-item-iconic drawer-pf-trigger-icon">
+                    <span class="fa fa-bell" title="Notifications"></span>
+                </a>
+            </li>
+        </s:else>
         <li class="dropdown">
             <a class="dropdown-toggle nav-item-iconic" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 <span title="Info" class="fa pficon-info"></span>
