@@ -1,6 +1,7 @@
 <%@ taglib prefix="wp" uri="/aps-core" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix = "fn" uri = "http://java.sun.com/jsp/jstl/functions" %>
 
 <script>
     var Entando = Entando || {};
@@ -21,6 +22,8 @@
 
 <s:set var="appBuilderIntegrationEnabled" ><wp:info key="systemParam" paramName="appBuilderIntegrationEnabled" /></s:set>
 <s:set var="appBuilderBaseURL" ><wp:info key="systemParam" paramName="appBuilderBaseURL" /></s:set>
+<s:set var="version" ><wp:info key="systemParam" paramName="version" /></s:set>
+<c:set var = "appBuilderVersion"><c:out value="${version.replaceAll('.([^.]+)$', '')}"/></c:set>
 
 <div class="navbar-header">
     <button type="button" class="navbar-toggle">
@@ -30,8 +33,14 @@
         <span class="icon-bar"></span>
     </button>
     <a href="<s:url action="main" namespace="/do" />" class="navbar-brand">
-        <img class="navbar-brand-icon logo-entando" src="<wp:resourceURL />administration/img/entando-logo-white.svg" alt="Entando <wp:info key="systemParam" paramName="version" />" />
-        <span class="entando-development"><s:text name="note.administration.console" />&#32;<wp:info key="systemParam" paramName="version" /></span></a>
+        <s:if test="#appBuilderIntegrationEnabled == 'true'">
+            <img class="navbar-brand-icon logo-entando" src="<wp:resourceURL />administration/img/entando-logo-white.svg" alt="Entando <c:out value="${appBuilderVersion}" />" />
+            <span class="entando-development"><s:text name="note.administration.appBuilder" />&#32;<c:out value="${appBuilderVersion}" /></span></a>
+        </s:if>
+        <s:else>
+            <img class="navbar-brand-icon logo-entando" src="<wp:resourceURL />administration/img/entando-logo-white.svg" alt="Entando <wp:info key="systemParam" paramName="version" />" />
+            <span class="entando-development"><s:text name="note.administration.console" />&#32;<wp:info key="systemParam" paramName="version" /></span></a>
+        </s:else>
 </div>
 <nav class="collapse navbar-collapse">
     <ul class="nav navbar-nav navbar-right navbar-iconic">
