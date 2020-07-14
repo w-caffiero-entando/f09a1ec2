@@ -19,6 +19,8 @@
     })
 </script>
 
+<s:set var="appBuilderIntegrationEnabled" ><wp:info key="systemParam" paramName="appBuilderIntegrationEnabled" /></s:set>
+<s:set var="appBuilderBaseURL" ><wp:info key="systemParam" paramName="appBuilderBaseURL" /></s:set>
 
 <div class="navbar-header">
     <button type="button" class="navbar-toggle">
@@ -49,10 +51,18 @@
                 <span title="Info" class="fa pficon-info"></span>
                 <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a href="#">About</a></li>
-                <li><a href="#">Licence</a></li>
-            </ul>
+            <s:if test="#appBuilderIntegrationEnabled == 'true'">
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href='<c:out value="${appBuilderBaseURL}"/>about'>About</a></li>
+                    <li><a href='<c:out value="${appBuilderBaseURL}"/>license'>License</a></li>
+                </ul>
+            </s:if>
+            <s:else>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href='#'>About</a></li>
+                    <li><a href='#'>Licence</a></li>
+                </ul>
+            </s:else>
         </li>
         <li id="userDropdown" class="dropdown">
             <a class="dropdown-toggle nav-item-iconic" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
