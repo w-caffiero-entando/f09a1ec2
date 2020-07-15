@@ -74,7 +74,7 @@
             <s:else>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                     <li><a href='#'>About</a></li>
-                    <li><a href='#'>Licence</a></li>
+                    <li><a href='#'>License</a></li>
                 </ul>
             </s:else>
         </li>
