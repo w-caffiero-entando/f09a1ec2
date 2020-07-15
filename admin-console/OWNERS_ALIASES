@@ -1,4 +1,6 @@
 aliases:
+  - entando-jx
+
   developers:
   - alepintus
   - ampie
@@ -8,3 +10,11 @@ aliases:
   - gidesan
   - Kerruba  
   - MEM2677
+
+best-approvers:
+- developers
+- entando-jx	  
+
+best-reviewers:
+- developers
+- entando-jx
