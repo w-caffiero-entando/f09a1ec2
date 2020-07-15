@@ -1,6 +1,20 @@
 aliases:
-- entando-jx
+  - entando-jx
+
+  developers:
+  - alepintus
+  - ampie
+  - BrenoQVDS
+  - DMinnai
+  - eugeniosant
+  - gidesan
+  - Kerruba  
+  - MEM2677
+
 best-approvers:
-- entando-jx
+- developers
+- entando-jx	  
+
 best-reviewers:
+- developers
 - entando-jx
