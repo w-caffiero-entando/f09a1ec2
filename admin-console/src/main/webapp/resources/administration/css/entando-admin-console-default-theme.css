@@ -1212,7 +1212,7 @@ td{
     text-align: center;
     cursor: pointer;
 }
-#userDropdown>a, #preview-portal>a {
+#userDropdown>a, #preview-portal>a, #languageDropdown>a {
     color:#c1c1c1;
 }
 #userDropdown>a:hover, #preview-portal>ahover{

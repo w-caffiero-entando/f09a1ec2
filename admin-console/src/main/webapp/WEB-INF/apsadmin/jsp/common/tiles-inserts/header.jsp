@@ -44,6 +44,15 @@
 </div>
 <nav class="collapse navbar-collapse">
     <ul class="nav navbar-nav navbar-right navbar-iconic">
+        <li id="languageDropdown" class="dropdown">
+            <a class="dropdown-toggle nav-item-iconic" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <c:out value="${fn:toUpperCase(sessionScope.currentLang.code)}" />
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+                <li><a href="<s:url namespace="/" includeParams="all"><s:param name="request_locale">en</s:param></s:url>">EN</a></li>
+                <li><a href="<s:url namespace="/" includeParams="all"><s:param name="request_locale">it</s:param></s:url>">IT</a></li>
+            </ul>
+        </li>
         <li id="preview-portal" class="drawer-pf-trigger2 notifications dropdown">
             <a class="nav-item-iconic" target="#" href="<s:url value="/" />" title="<s:text name="note.goToPortal" /> ( <s:text name="note.sameWindow" /> )">
                 <span class="icon fa fa-globe fa-fw"></span>&#32;
