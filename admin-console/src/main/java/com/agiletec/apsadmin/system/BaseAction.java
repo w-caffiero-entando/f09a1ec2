@@ -146,12 +146,12 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 		Locale locale = this.getLocale();
 		String langCode = locale.getLanguage();
 		Lang currentLang = this.getLangManager().getLang(langCode);
-		if (null == currentLang) {
+		if (null != currentLang) {
+			return currentLang;
+		} else {
 			_logger.info("Required Lang '{}' invalid", langCode);
-			currentLang = this.getLangManager().getDefaultLang();
+			return this.getLangManager().getDefaultLang();
 		}
-		this.getRequest().getSession().setAttribute(SystemConstants.EXTRAPAR_CURRENT_LANG, currentLang);
-		return currentLang;
 	}
 	
 	/**

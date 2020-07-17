@@ -46,7 +46,8 @@
     <ul class="nav navbar-nav navbar-right navbar-iconic">
         <li id="languageDropdown" class="dropdown">
             <a class="dropdown-toggle nav-item-iconic" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                <c:out value="${fn:toUpperCase(sessionScope.currentLang.code)}" />
+                <c:set var="current_languague" value="${not empty WW_TRANS_I18N_LOCALE ? WW_TRANS_I18N_LOCALE : pageContext.response.locale}" />
+                <c:out value="${fn:toUpperCase(current_languague.language)}" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
                 <li><a href="<s:url namespace="/" includeParams="all"><s:param name="request_locale">en</s:param></s:url>">EN</a></li>
