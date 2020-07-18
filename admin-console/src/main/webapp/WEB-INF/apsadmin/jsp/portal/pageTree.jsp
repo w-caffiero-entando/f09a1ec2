@@ -37,9 +37,6 @@
     </s:if>
     <div role="search">
         <s:include value="/WEB-INF/apsadmin/jsp/portal/include/pageSearchForm.jsp" />
-        <a href="<s:url namespace="/do/Page" action="new" />" class="btn btn-primary pull-right" title="<s:text name="label.new" />" style="margin-bottom: 5px">
-            <s:text name="label.add" />
-        </a>
         <s:form cssClass="form-horizontal">
 
             <s:set var="pageTreeStyleVar" ><wp:info key="systemParam" paramName="treeStyle_page" /></s:set>
@@ -96,6 +93,9 @@
             </div>
             <p class="sr-only"><wpsf:hidden name="copyingPageCode" /></p>
         </s:form>
+        <a href="<s:url namespace="/do/Page" action="new" />" class="btn btn-primary pull-right" title="<s:text name="label.new" />" style="margin-bottom: 5px">
+            <s:text name="label.add" />
+        </a>
     </div>
 </div>
 

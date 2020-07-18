@@ -95,13 +95,6 @@
                             <div class="col-xs-12">
                                 <div class="card-pf card-pf-utilization">
                                     <div class="card-pf-heading">
-                                        <p class="card-pf-heading-details">
-                                            <wp:ifauthorized permission="managePages">
-                                                <s:url namespace="/do/Page" action="new" var="addPageURL" />
-                                                <a href="${addPageURL}" class="btn btn-primary" title="<s:text name="dashboard.addPage" />">
-                                                    <s:text name="label.add" />
-                                                </a>
-                                            </wp:ifauthorized>
                                         <h2 class="card-pf-title">
                                             <s:text name="dashboard.pageList" />
                                         </h2>
@@ -122,6 +115,14 @@
                                             </table>
                                         </div>
                                     </div>
+                                    <p class="card-pf-heading-details">
+                                        <wp:ifauthorized permission="managePages">
+                                            <s:url namespace="/do/Page" action="new" var="addPageURL" />
+                                            <a href="${addPageURL}" class="btn btn-primary" title="<s:text name="dashboard.addPage" />">
+                                                <s:text name="label.add" />
+                                            </a>
+                                        </wp:ifauthorized>
+                                    </p>
                                     <wp:ifauthorized permission="managePages">
                                         <s:url namespace="/do/Page" action="viewTree"
                                                var="pageListURL" />

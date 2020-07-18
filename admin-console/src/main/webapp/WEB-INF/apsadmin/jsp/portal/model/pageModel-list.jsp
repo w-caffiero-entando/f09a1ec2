@@ -39,11 +39,6 @@
 
     <s:form action="list" role="search" namespace="/do/PageModel">
 
-        <p>
-            <a class="btn btn-primary pull-right mb-5" href="<s:url namespace="/do/PageModel" action="new" />">
-                <s:text name="label.add" />
-            </a>
-        </p>
         <s:set var="pageModels_list" value="pageModels" />
         <s:if test="%{#pageModels_list.size > 0}">
             <wpsa:subset source="#pageModels_list" count="10" objectName="pageModelGroups" advanced="true" offset="5">
@@ -121,5 +116,10 @@
                 <s:text name="noPageModels.found" />
             </p>
         </s:else>
+        <p>
+            <a class="btn btn-primary pull-right mb-5" href="<s:url namespace="/do/PageModel" action="new" />" style="margin-top: 10px">
+                <s:text name="label.add" />
+            </a>
+        </p>
     </s:form>
 </div>

@@ -331,6 +331,9 @@ a {
     width: 100%;
     float: left;
 }
+.widgetlist-add-btn {
+    padding: 0 20px;
+}
 .list-view-pf-main-info{
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1772,7 +1775,8 @@ div.dataTables_wrapper table.DTFC_Cloned tr.odd td:last-child {
     font-size: 16px;
 }
 .dashboard .bottom-link {
-    padding: 5px
+    padding: 5px;
+    clear: right;
 }
 .dashboard .bottom-actions {
     position: absolute;
@@ -2481,4 +2485,19 @@ label .fa-folder, .fa-folder {
 }
 .layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical {
     margin-left: 215px;
+}
+
+.btn {
+    padding: 2px 12px;
+    border: 0 !important;
+    background-image: none;
+}
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
+    background-color: #002F87 !important;
+}
+.btn-primary:hover:active {
+    background-color: #032a73 !important;
 }
