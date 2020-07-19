@@ -1212,11 +1212,24 @@ td{
     text-align: center;
     cursor: pointer;
 }
+.navbar-nav .caret {
+    width: 12px !important;
+    margin-left: 3px;
+}
+#userDropdown a, #preview-portal a, #infoHeader a {
+    padding: 15px;
+    margin-top: 5px;
+    line-height: 20px;
+}
 #userDropdown>a, #preview-portal>a, #languageDropdown>a {
     color:#c1c1c1;
 }
 #userDropdown>a:hover, #preview-portal>ahover{
     color:#fff;
+}
+/* setting nav bar icons font-size */
+#languageDropdown .fa, #preview-portal .fa, #infoHeader .fa, #userDropdown .fa {
+    font-size: inherit;
 }
 .entando-development{
     line-height: 36px;
