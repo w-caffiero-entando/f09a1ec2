@@ -70,7 +70,7 @@
                 </a>
             </li>
         </s:else>
-        <li class="dropdown">
+        <li id="infoHeader" class="dropdown">
             <a class="dropdown-toggle nav-item-iconic" id="infoDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 <span title="Info" class="fa pficon-info"></span>
                 <span class="caret"></span>
@@ -90,7 +90,7 @@
         </li>
         <li id="userDropdown" class="dropdown">
             <a class="dropdown-toggle nav-item-iconic" id="userDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                <span title="Username" class="fa pficon-user"></span>
+                <span title="Username" class="fa fa-user"></span>
                 <c:set var="current_username" value="${sessionScope.currentUser}" />
                 <c:if test="${null != sessionScope.currentUser.profile}">
                     <c:set var="current_username" value="${sessionScope.currentUser.profile.displayName}" />
