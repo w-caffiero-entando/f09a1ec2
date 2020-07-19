@@ -1212,7 +1212,7 @@ td{
     text-align: center;
     cursor: pointer;
 }
-#userDropdown>a, #preview-portal>a {
+#userDropdown>a, #preview-portal>a, #languageDropdown>a {
     color:#c1c1c1;
 }
 #userDropdown>a:hover, #preview-portal>ahover{
@@ -2469,4 +2469,16 @@ label .fa-folder, .fa-folder {
     float: left;
     margin: 5px 0;
     width: calc(75% - 40px);
+}
+
+/* patternfly overrides */
+.nav-pf-vertical,
+.nav-pf-vertical .list-group-item > a {
+    width: 215px;
+}
+.nav-pf-vertical .secondary-nav-item-pf:hover > a {
+    width: 216px;
+}
+.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical {
+    margin-left: 215px;
 }
