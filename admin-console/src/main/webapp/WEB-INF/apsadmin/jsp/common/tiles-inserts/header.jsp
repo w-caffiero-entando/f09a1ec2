@@ -44,6 +44,16 @@
 </div>
 <nav class="collapse navbar-collapse">
     <ul class="nav navbar-nav navbar-right navbar-iconic">
+        <li id="languageDropdown" class="dropdown">
+            <a class="dropdown-toggle nav-item-iconic" id="languageDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <c:set var="current_languague" value="${not empty WW_TRANS_I18N_LOCALE ? WW_TRANS_I18N_LOCALE : pageContext.response.locale}" />
+                <c:out value="${fn:toUpperCase(current_languague.language)}" />
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="languageDropdownMenu">
+                <li><a href="<s:url namespace="/" includeParams="all"><s:param name="request_locale">en</s:param></s:url>">EN</a></li>
+                <li><a href="<s:url namespace="/" includeParams="all"><s:param name="request_locale">it</s:param></s:url>">IT</a></li>
+            </ul>
+        </li>
         <li id="preview-portal" class="drawer-pf-trigger2 notifications dropdown">
             <a class="nav-item-iconic" target="#" href="<s:url value="/" />" title="<s:text name="note.goToPortal" /> ( <s:text name="note.sameWindow" /> )">
                 <span class="icon fa fa-globe fa-fw"></span>&#32;
@@ -60,27 +70,27 @@
                 </a>
             </li>
         </s:else>
-        <li class="dropdown">
-            <a class="dropdown-toggle nav-item-iconic" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        <li id="infoHeader" class="dropdown">
+            <a class="dropdown-toggle nav-item-iconic" id="infoDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 <span title="Info" class="fa pficon-info"></span>
                 <span class="caret"></span>
             </a>
             <s:if test="#appBuilderIntegrationEnabled == 'true'">
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <ul class="dropdown-menu" aria-labelledby="infoDropdownMenu">
                     <li><a href='<c:out value="${appBuilderBaseURL}"/>about'>About</a></li>
                     <li><a href='<c:out value="${appBuilderBaseURL}"/>license'>License</a></li>
                 </ul>
             </s:if>
             <s:else>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <ul class="dropdown-menu" aria-labelledby="infoDropdownMenu">
                     <li><a href='#'>About</a></li>
                     <li><a href='#'>License</a></li>
                 </ul>
             </s:else>
         </li>
         <li id="userDropdown" class="dropdown">
-            <a class="dropdown-toggle nav-item-iconic" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                <span title="Username" class="fa pficon-user"></span>
+            <a class="dropdown-toggle nav-item-iconic" id="userDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <span title="Username" class="fa fa-user"></span>
                 <c:set var="current_username" value="${sessionScope.currentUser}" />
                 <c:if test="${null != sessionScope.currentUser.profile}">
                     <c:set var="current_username" value="${sessionScope.currentUser.profile.displayName}" />
@@ -88,7 +98,7 @@
                 <c:out value="${current_username}" />
                 <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <ul class="dropdown-menu" aria-labelledby="userDropdownMenu">
                 <c:if test="${sessionScope.currentUser.japsUser}">
                     <li>
                         <a href="<s:url action="editProfile" namespace="/do/CurrentUser" />">

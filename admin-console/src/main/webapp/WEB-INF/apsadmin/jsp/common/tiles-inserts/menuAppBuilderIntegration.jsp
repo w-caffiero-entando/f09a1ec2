@@ -44,13 +44,13 @@
                         </a>
                     </li>
                     <li class="list-group-item">
-                        <a id="" href='<s:url action="viewTreeMenu" namespace="/do/Page/Console" />'>
+                        <a id="" href='<c:out value="${appBuilderBaseURL}"/>page/configuration/homepage'>
                             <span class="list-group-item-value"><s:text name="menu.pageDesigner.pageConfiguration" /></span>
                         </a>
                     </li>
                     <c:if test="${isSuperUser}">
                         <li class="list-group-item">
-                            <a href='<s:url action="systemParams" namespace="/do/Page" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>page/settings'>
                                 <span class="list-group-item-value"><s:text name="menu.pageDesigner.pageSettings" /></span>
                             </a>
                         </li>
@@ -78,20 +78,19 @@
                 <!-- UX Patterns Secondary -->
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <a href='<s:url action="viewWidgets" namespace="/do/Portal/WidgetType" />'>
+                        <a href='<c:out value="${appBuilderBaseURL}"/>widget'>
                             <span class="list-group-item-value"><s:text name="menu.UXPattern.widget" /></span>
                         </a>
                     </li>
                     <c:if test="${isSuperUser}">
                         <li class="list-group-item">
-                            <a href='<s:url action="list" namespace="/do/Portal/GuiFragment" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>fragment'>
                                 <span class="list-group-item-value"><s:text name="menu.UXPattern.fragments" /></span>
-
                             </a>
                         </li>
 
                         <li class="list-group-item">
-                            <a href='<s:url action="list" namespace="/do/PageModel" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>page-template'>
                                 <span class="list-group-item-value"><s:text name="menu.UXPattern.pageModels" /></span>
                             </a>
                         </li>
@@ -195,27 +194,27 @@
 
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <a href='<s:url action="list" namespace="/do/User" />'>
+                        <a href='<c:out value="${appBuilderBaseURL}"/>user'>
                             <span class="list-group-item-value"><s:text name="menu.usersSettings.users" /></span>
                         </a>
                     </li>
 
                     <c:if test="${isSuperUser}">
                         <li class="list-group-item">
-                            <a href='<s:url action="initViewEntityTypes" namespace="/do/Entity" ><s:param name="entityManagerName">UserProfileManager</s:param></s:url>'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>profiletype'>
                                 <span class="list-group-item-value"><s:text name="menu.usersSettings.profileTypes" /></span>
                             </a>
                         </li>
 
                         <c:if test="${isSuperUser}">
                             <li class="list-group-item">
-                                <a href='<s:url action="systemParams" namespace="/do/User" />'>
+                                <a href='<c:out value="${appBuilderBaseURL}"/>user/restrictions'>
                                     <span class="list-group-item-value"><s:text name="menu.usersSettings.usersRestriction" /></span>
                                 </a>
                             </li>
                         </c:if>
                         <li class="list-group-item">
-                            <a href='<s:url action="list" namespace="/do/Role" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>role'>
                                 <span class="list-group-item-value"><s:text name="menu.usersSettings.roles" /></span>
                             </a>
                         </li>
@@ -252,41 +251,6 @@
             </ul>
         </div>
     </li>
-
-
-
-    <!-- DATA TYPE -->
-    <c:if test="${isSuperUser}">
-        <li class="list-group-item secondary-nav-item-pf" data-target="#datatype-secondary">
-            <a>
-                <span class="fa fa-file-text-o" data-toggle="tooltip" title="<s:text name="menu.DataType" />"></span>
-                <span class="list-group-item-value"><s:text name="menu.DataType" /></span>
-            </a>
-            <div id="datatype-secondary" class="nav-pf-secondary-nav">
-                <div class="nav-item-pf-header">
-                    <a class="secondary-collapse-toggle-pf" data-toggle="collapse-secondary-nav"></a>
-                    <span><s:text name="menu.DataType" /></span>
-                </div>
-                <!-- DataType Secondary -->
-                <ul class="list-group">
-                    <c:if test="${isSuperUser}">
-                        <li class="list-group-item">
-                            <a href="<s:url action="initViewEntityTypes" namespace="/do/Entity"><s:param name="entityManagerName">DataObjectManager</s:param></s:url>">
-                                <span class="list-group-item-value"><s:text name="menu.DataType.Model" /></span>
-                            </a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="<s:url action="list" namespace="/do/dataobject/model" />">
-                               <span class="list-group-item-value"><s:text name="menu.DataType.UX" /></span>
-                            </a>
-                        </li>
-                    </c:if>
-                </ul>
-                <!--Fine DATA TYPE Secondary-->
-            </div>
-        </li>
-    </c:if>
-
 
 </ul>
 
