@@ -114,9 +114,6 @@
                 </div>
             </div>
         </s:form>
-        <a href="<s:url action="new" />" class="btn btn-primary pull-right" title="<s:text name="guiFragment.label.new" />" style="margin-bottom: 5px">
-            <s:text name="guiFragment.label.new" />
-        </a>
         <s:form action="search">
             <p class="sr-only">
 			<wpsf:hidden name="code" />
@@ -209,6 +206,9 @@
                 </div>
             </s:else>
         </s:form>
+        <a href="<s:url action="new" />" class="btn btn-primary pull-right" title="<s:text name="guiFragment.label.new" />" style="margin-bottom: 8px; margin-top: 8px">
+            <s:text name="guiFragment.label.new" />
+        </a>
     </div>
     <div class="tab-pane" id="frag-settings">
     </div>

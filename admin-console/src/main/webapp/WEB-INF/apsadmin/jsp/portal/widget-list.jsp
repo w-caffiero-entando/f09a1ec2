@@ -39,13 +39,6 @@
             </ul>
         </div>
     </s:if>
-    <div class="row">
-        <div class="form-group col-md-12">
-            <a class="btn btn-primary pull-right" href="<s:url namespace="/do/Portal/WidgetType" action="newWidget" />">
-                <s:text name="label.add" />
-            </a>
-        </div>
-    </div>
     <s:set var="pluginTitleCheck" value="'false'" />
     <s:set var="showletFlavours" value="showletFlavours" />
     <s:set var="showletTypeApiMappingsVar" value="showletTypeApiMappings" />
@@ -187,4 +180,11 @@
         </div>
         <s:set var="showletUtilizers"></s:set>
     </s:iterator>
+    <div class="row widgetlist-add-btn">
+        <div class="form-group col-md-12">
+            <a class="btn btn-primary pull-right" href="<s:url namespace="/do/Portal/WidgetType" action="newWidget" />">
+                <s:text name="label.add" />
+            </a>
+        </div>
+    </div>
 </div>
