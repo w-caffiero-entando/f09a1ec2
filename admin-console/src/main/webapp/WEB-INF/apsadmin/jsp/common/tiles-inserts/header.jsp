@@ -17,8 +17,18 @@
 <script>
     jQuery(function () {
         $('#activity-stream [data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+
+        // trigger updateLocale if language is changed
+        $('#languageDropdownComponent a').click(function(e) {
+            e.preventDefault();
+            if (updateLocalStorageWithLocale) {
+                updateLocalStorageWithLocale($(this).data('locale'));
+            }
+            window.location.href = $(this).attr('href');
+        });
     })
 </script>
+
 
 <s:set var="appBuilderIntegrationEnabled" ><wp:info key="systemParam" paramName="appBuilderIntegrationEnabled" /></s:set>
 <s:set var="appBuilderBaseURL" ><wp:info key="systemParam" paramName="appBuilderBaseURL" /></s:set>
@@ -49,9 +59,9 @@
                 <c:set var="current_languague" value="${not empty WW_TRANS_I18N_LOCALE ? WW_TRANS_I18N_LOCALE : pageContext.response.locale}" />
                 <c:out value="${fn:toUpperCase(current_languague.language)}" />
             </a>
-            <ul class="dropdown-menu" aria-labelledby="languageDropdownMenu">
-                <li><a href="<s:url namespace="/" includeParams="all"><s:param name="request_locale">en</s:param></s:url>">EN</a></li>
-                <li><a href="<s:url namespace="/" includeParams="all"><s:param name="request_locale">it</s:param></s:url>">IT</a></li>
+            <ul id="languageDropdownComponent" class="dropdown-menu" aria-labelledby="languageDropdownMenu">
+                <li><a data-locale="en" href="<s:url namespace="/" includeParams="all"><s:param name="request_locale">en</s:param></s:url>">EN</a></li>
+                <li><a data-locale="it" href="<s:url namespace="/" includeParams="all"><s:param name="request_locale">it</s:param></s:url>">IT</a></li>
             </ul>
         </li>
         <li id="preview-portal" class="drawer-pf-trigger2 notifications dropdown">
