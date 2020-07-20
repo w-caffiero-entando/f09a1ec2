@@ -10,7 +10,7 @@
     <groupId>org.entando</groupId>
 
     <artifactId>entando-core-parent</artifactId>
-    <version>6.2.0-SNAPSHOT</version>
+    <version>6.2.14</version>
     <packaging>pom</packaging>
 
     <name>Entando Core Maven Parent POM</name>
@@ -180,6 +180,7 @@
                     <configuration>
                         <archiveClasses>true</archiveClasses>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
+                        <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
                     </configuration>
                 </plugin>
 
@@ -332,118 +333,118 @@
                 <artifactId>commons-beanutils</artifactId>
                 <version>${commons-beanutils.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-chain</groupId>
                 <artifactId>commons-chain</artifactId>
                 <version>${commons-chain.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
                 <version>${commons-collections.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
                 <version>${commons-dbcp2.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-digester</groupId>
                 <artifactId>commons-digester</artifactId>
                 <version>${commons-digester.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>${commons-lang.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
                 <version>${commons-logging.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging-api</artifactId>
                 <version>${commons-logging-api.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>${commons-pool.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>commons-validator</groupId>
                 <artifactId>commons-validator</artifactId>
                 <version>${commons-validator.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.apache.taglibs</groupId>
                 <artifactId>taglibs-standard-impl</artifactId>
                 <version>${taglibs-standard-impl.version}</version>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j-core.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
                 <version>${log4j-core.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
 
             <dependency>
@@ -451,14 +452,14 @@
                 <artifactId>spring-expression</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aop</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.apache.tika</groupId>
@@ -557,42 +558,42 @@
                 <artifactId>spring-beans</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
 
             <dependency>
@@ -716,7 +717,7 @@
                 <artifactId>oro</artifactId>
                 <version>${oro.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
 
             <dependency>
@@ -724,14 +725,14 @@
                 <artifactId>struts2-core</artifactId>
                 <version>${struts2.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.apache.struts</groupId>
                 <artifactId>struts2-spring-plugin</artifactId>
                 <version>${struts2.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
                 <exclusions>
                     <exclusion>
                         <groupId>org.springframework</groupId>
@@ -756,7 +757,7 @@
                 <artifactId>struts2-tiles-plugin</artifactId>
                 <version>${struts2.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.tiles</groupId>
@@ -788,7 +789,7 @@
                 <artifactId>tiles-core</artifactId>
                 <version>${tiles-core.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
                 <exclusions>
                     <exclusion>
                         <groupId>commons-digester</groupId>
@@ -812,7 +813,7 @@
                 <artifactId>struts2-json-plugin</artifactId>
                 <version>${struts2.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>com.jgeppert.struts2.jquery</groupId>
@@ -831,14 +832,14 @@
                 <artifactId>velocity</artifactId>
                 <version>${velocity.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
                 <version>${javassist.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.jdom</groupId>
@@ -851,7 +852,7 @@
                 <artifactId>tiles-api</artifactId>
                 <version>${tiles-core.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -902,7 +903,7 @@
                 <groupId>org.im4java</groupId>
                 <artifactId>im4java</artifactId>
                 <version>${im4java.version}</version>
-                <scope>compile</scope>
+                
             </dependency>
 
             <dependency>
@@ -1040,14 +1041,14 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-jdk14</artifactId>
                 <version>${slf4j.version}</version>
                 <type>jar</type>
-                <scope>compile</scope>
+                
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -1158,7 +1159,7 @@
                 <groupId>xom</groupId>
                 <artifactId>xom</artifactId>
                 <version>${xom.version}</version>
-                <scope>compile</scope>
+                
                 <exclusions>
                     <!-- excluded for high vulnerability -->
                     <exclusion>
