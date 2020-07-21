@@ -33,15 +33,17 @@
     // refresh page with the new locale if necessary
     if (reduxLocale !== activeLocale) {
         var newUrl = window.location.href;
+        var newParam = 'request_locale=' + reduxLocale;
         var paramIndex = newUrl.indexOf('request_locale=');
         if (paramIndex >= 0) {
             // if the param already exist, replace it with new value
             var toRemove = newUrl.slice(paramIndex, paramIndex+17);
-            newUrl = newUrl.replace(toRemove, 'request_locale=' + reduxLocale);
+            newUrl = newUrl.replace(toRemove, newParam);
             window.location.href = newUrl;
         } else {
             // else only update the url with new param
-            window.location.search += '&request_locale=' + reduxLocale;
+            var params = window.location.search;
+            window.location.search += params.length ? '&' + newParam : newParam;
         }
     } 
 
