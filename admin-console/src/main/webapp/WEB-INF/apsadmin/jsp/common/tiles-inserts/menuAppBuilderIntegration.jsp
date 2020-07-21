@@ -41,7 +41,7 @@
             window.location.href = newUrl;
         } else {
             // else only update the url with new param
-            window.location.search = '&request_locale=' + reduxLocale;
+            window.location.search += '&request_locale=' + reduxLocale;
         }
     } 
 
