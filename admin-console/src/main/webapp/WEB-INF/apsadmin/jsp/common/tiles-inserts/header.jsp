@@ -31,16 +31,19 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
-    </button>
-    <a href="<s:url action="main" namespace="/do" />" class="navbar-brand">
-        <s:if test="#appBuilderIntegrationEnabled == 'true'">
+    </button>    
+    <s:if test="#appBuilderIntegrationEnabled == 'true'">
+        <a href='<c:out value="${appBuilderBaseURL}"/>dashboard' class="navbar-brand">
             <img class="navbar-brand-icon logo-entando" src="<wp:resourceURL />administration/img/entando-logo-white.svg" alt="Entando <c:out value="${appBuilderVersion}" />" />
-            <span class="entando-development"><s:text name="note.administration.appBuilder" />&#32;<c:out value="${appBuilderVersion}" /></span></a>
-        </s:if>
-        <s:else>
+            <span class="entando-development"><s:text name="note.administration.appBuilder" />&#32;<c:out value="${appBuilderVersion}" /></span>
+        </a>
+    </s:if>
+    <s:else>
+        <a href="<s:url action="main" namespace="/do" />" class="navbar-brand">
             <img class="navbar-brand-icon logo-entando" src="<wp:resourceURL />administration/img/entando-logo-white.svg" alt="Entando <wp:info key="systemParam" paramName="version" />" />
-            <span class="entando-development"><s:text name="note.administration.console" />&#32;<wp:info key="systemParam" paramName="version" /></span></a>
-        </s:else>
+            <span class="entando-development"><s:text name="note.administration.console" />&#32;<wp:info key="systemParam" paramName="version" /></span>
+        </a>
+    </s:else>
 </div>
 <nav class="collapse navbar-collapse">
     <ul class="nav navbar-nav navbar-right navbar-iconic">

@@ -1,6 +1,4 @@
 aliases:
-  - entando-jx
-
   developers:
   - alepintus
   - ampie
@@ -12,9 +10,21 @@ aliases:
   - MEM2677
 
 best-approvers:
-- developers
-- entando-jx	  
+  - alepintus
+  - ampie
+  - BrenoQVDS
+  - DMinnai
+  - eugeniosant
+  - gidesan
+  - Kerruba  
+  - MEM2677
 
 best-reviewers:
-- developers
-- entando-jx
+  - alepintus
+  - ampie
+  - BrenoQVDS
+  - DMinnai
+  - eugeniosant
+  - gidesan
+  - Kerruba  
+  - MEM2677
