@@ -30,19 +30,27 @@ import org.entando.entando.plugins.jpseo.aps.system.services.metatag.Metatag;
  * @author E.Santoboni
  */
 public class PageMetatag implements Serializable {
-    
+
     private String keyAttribute = Metatag.ATTRIBUTE_NAME_NAME;
     private String key;
     private String value;
     private String langCode;
     private boolean useDefaultLangValue;
-    
+
     public PageMetatag(String langCode, String key, String value) {
         this.setLangCode(langCode);
         this.setKey(key);
         this.setValue(value);
     }
-    
+
+    public PageMetatag(String langCode, String key, String value, String keyAttribute, boolean useDefaultLangValue) {
+        this.setLangCode(langCode);
+        this.setKey(key);
+        this.setValue(value);
+        this.setUseDefaultLangValue(useDefaultLangValue);
+        this.setKeyAttribute(keyAttribute);
+    }
+
     @Override
     public PageMetatag clone() {
         PageMetatag meta = new PageMetatag(this.getLangCode(), this.getKey(), this.getValue());
@@ -79,7 +87,7 @@ public class PageMetatag implements Serializable {
         }
         return true;
     }
-    
+
     public String getKeyAttribute() {
         return keyAttribute;
     }
@@ -93,7 +101,7 @@ public class PageMetatag implements Serializable {
         }
         this.keyAttribute = keyAttribute;
     }
-    
+
     public String getKey() {
         return key;
     }
@@ -125,5 +133,5 @@ public class PageMetatag implements Serializable {
     public void setUseDefaultLangValue(boolean useDefaultLangValue) {
         this.useDefaultLangValue = useDefaultLangValue;
     }
-    
+
 }
