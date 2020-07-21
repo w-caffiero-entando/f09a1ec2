@@ -21,7 +21,6 @@
 <div class="text-right">
     <div class="form-group-separator"></div>
 </div>
-<br>
 <s:if test="hasActionErrors()">
     <div class="alert alert-danger alert-dismissable">
         <button type="button" class="close" data-dismiss="alert"
@@ -37,14 +36,6 @@
         </ul>
     </div>
 </s:if>
-<div class="row form-group">
-    <div class="col-sm-12">
-        <a class="btn btn-primary pull-right"
-           href="<s:url namespace="/do/Group" action="new" />" style="margin-bottom: -15px"> <s:text
-                name="title.groupManagement.groupNew" />
-        </a>
-    </div>
-</div>
 <s:set var="userGroup_list" value="groups" />
 <s:if test="#userGroup_list.size > 0">
 <s:form action="list" role="list" namespace="/do/Group">
@@ -114,3 +105,12 @@
         <s:text name="noGroups.found" />
     </p>
 </s:else>
+<br>
+<div class="row form-group">
+    <div class="col-sm-12">
+        <a class="btn btn-primary pull-right"
+           href="<s:url namespace="/do/Group" action="new" />" style="margin-bottom: -15px"> <s:text
+                name="title.groupManagement.groupNew" />
+        </a>
+    </div>
+</div>
