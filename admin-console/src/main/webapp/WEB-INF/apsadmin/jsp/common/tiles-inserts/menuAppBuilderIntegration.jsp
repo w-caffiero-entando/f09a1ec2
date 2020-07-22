@@ -17,6 +17,44 @@
     });
 </script>
 
+<c:set var="current_languague" value="${not empty WW_TRANS_I18N_LOCALE ? WW_TRANS_I18N_LOCALE : pageContext.response.locale}" />
+
+<script>
+    // manage app-builder redux store to get the current language
+    var reduxStore = JSON.parse(localStorage.getItem('redux'));
+    var activeLocale = '<c:out value="${current_languague.language}" />'
+    var reduxLocale = reduxStore && reduxStore.locale ? reduxStore.locale : activeLocale;
+
+    // update redux store with activeLocale if `redux` doesn't exists in the localStorage
+    if (!reduxStore) {
+        updateLocalStorageWithLocale(activeLocale);
+    }
+
+    // refresh page with the new locale if necessary
+    if (reduxLocale !== activeLocale) {
+        var newUrl = window.location.href;
+        var newParam = 'request_locale=' + reduxLocale;
+        var paramIndex = newUrl.indexOf('request_locale=');
+        if (paramIndex >= 0) {
+            // if the param already exist, replace it with new value
+            var toRemove = newUrl.slice(paramIndex, paramIndex+17);
+            newUrl = newUrl.replace(toRemove, newParam);
+            window.location.href = newUrl;
+        } else {
+            // else only update the url with new param
+            var params = window.location.search;
+            window.location.search += params.length ? '&' + newParam : newParam;
+        }
+    } 
+
+    function updateLocalStorageWithLocale(locale) {
+        // get most updated redux store
+        var store = JSON.parse(localStorage.getItem('redux')) || {};
+        store.locale = locale;
+        localStorage.setItem('redux', JSON.stringify(store));
+    }
+</script>
+
 <wp:ifauthorized permission="superuser" var="isSuperUser" />
 <s:set var="appBuilderBaseURL" ><wp:info key="systemParam" paramName="appBuilderBaseURL" /></s:set>
 <ul class="list-group">
