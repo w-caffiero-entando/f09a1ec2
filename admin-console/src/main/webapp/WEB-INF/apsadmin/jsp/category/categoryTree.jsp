@@ -41,11 +41,6 @@
 <div id="main" role="main">
     <div role="search">
 
-        <a href="<s:url namespace="/do/Category" action="new" />"
-           class="btn btn-primary pull-right"
-           title="<s:text name="label.new" />" style="margin-bottom: 5px">
-            <s:text name="label.add" />
-        </a>
         <s:form cssClass="action-form">
             <s:if test="hasActionErrors()">
                 <div class="alert alert-danger alert-dismissable">
@@ -142,5 +137,10 @@
             </div>
 
         </s:form>
+        <a href="<s:url namespace="/do/Category" action="new" />"
+           class="btn btn-primary pull-right"
+           title="<s:text name="label.new" />" style="margin-bottom: 5px">
+            <s:text name="label.add" />
+        </a>
     </div>
 </div>
