@@ -281,13 +281,16 @@
                         <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
                     </s:iterator>
                 </wpsa:hookPoint>
-                <li class="list-group-item disabled">
-                    <a>
-                        <span class="ml-5"><s:text name="menu.APPS.IoT" /></span>
-                    </a>
-                </li>
             </ul>
         </div>
+    </li>
+
+    <!-- ECR -->
+    <li class="list-group-item secondary-nav-item-pf">
+        <a href='<c:out value="${appBuilderBaseURL}"/>component-repository'>
+            <span class="fa fa-cart-plus" data-toggle="tooltip" title="<s:text name="menu.ECR" />"></span>
+            <span class="list-group-item-value"><s:text name="menu.ECR" /></span>
+        </a>
     </li>
 
 </ul>
