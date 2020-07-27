@@ -7,6 +7,12 @@ public class SeoPageRequest extends PageRequest {
 
     private SeoData seoData;
 
+    public SeoPageRequest() {
+    }
+
+    public SeoPageRequest(SeoData seoData) {
+        this.seoData = seoData;
+    }
 
     public SeoData getSeoData() {
         return seoData;

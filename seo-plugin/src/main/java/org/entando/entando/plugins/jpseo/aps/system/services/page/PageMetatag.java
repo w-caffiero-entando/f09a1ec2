@@ -43,6 +43,13 @@ public class PageMetatag implements Serializable {
         this.setValue(value);
     }
 
+    public PageMetatag(String langCode, String key, String value,  boolean useDefaultLangValue) {
+        this.setLangCode(langCode);
+        this.setKey(key);
+        this.setValue(value);
+        this.setUseDefaultLangValue(useDefaultLangValue);
+    }
+
     public PageMetatag(String langCode, String key, String value, String keyAttribute, boolean useDefaultLangValue) {
         this.setLangCode(langCode);
         this.setKey(key);

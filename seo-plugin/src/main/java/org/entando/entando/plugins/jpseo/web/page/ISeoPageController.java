@@ -13,20 +13,30 @@
  */
 package org.entando.entando.plugins.jpseo.web.page;
 
+import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.Map;
+import javax.validation.Valid;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
+import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageDto;
+import org.entando.entando.plugins.jpseo.web.page.model.SeoPageRequest;
+import org.entando.entando.web.common.annotation.ActivityStreamAuditable;
 import org.entando.entando.web.common.annotation.RestAccessControl;
 import org.entando.entando.web.common.model.RestResponse;
+import org.entando.entando.web.common.model.SimpleRestResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Api(tags = {"seo-page-controller"})
@@ -47,4 +57,16 @@ public interface ISeoPageController {
             @PathVariable String pageCode,
             @RequestParam(value = "status", required = false, defaultValue = IPageService.STATUS_DRAFT) String status);
 
+    @ActivityStreamAuditable
+    @RestAccessControl(permission = Permission.MANAGE_PAGES)
+    @PostMapping()
+    ResponseEntity<SimpleRestResponse<SeoPageDto>> addPage(@ModelAttribute("user") UserDetails user,
+            @Valid @RequestBody SeoPageRequest pageRequest, BindingResult bindingResult) throws ApsSystemException;
+
+    @ActivityStreamAuditable
+    @RestAccessControl(permission = Permission.MANAGE_PAGES)
+    @PutMapping("{pageCode}")
+    ResponseEntity<RestResponse<SeoPageDto, Map<String, String>>> updatePage(
+            @ModelAttribute("user") UserDetails user, @PathVariable String pageCode,
+            @Valid @RequestBody SeoPageRequest pageRequest, BindingResult bindingResult);
 }

@@ -11,6 +11,9 @@ public class SeoDataByLang {
     private boolean inheritDescriptionFromDefaultLang;
     private boolean inheritKeywordsFromDefaultLang;
 
+    public SeoDataByLang() {
+    }
+
     public SeoDataByLang(String description,
             String keywords,
             List<SeoMetaTag> metaTags,

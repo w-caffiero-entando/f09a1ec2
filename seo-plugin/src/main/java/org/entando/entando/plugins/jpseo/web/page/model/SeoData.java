@@ -7,10 +7,14 @@ public class SeoData {
 
     private Map<String, SeoDataByLang> SeoDataByLang;
     private String friendlyCode;
-    private Boolean useExtraDescriptorSearch;
+    private Boolean useExtraDescriptions;
+    private Boolean useExtraTitles;
 
     public Map<String, SeoDataByLang> getSeoDataByLang() {
         return SeoDataByLang;
+    }
+
+    public SeoData() {
     }
 
     public void setSeoDataByLang(
@@ -26,12 +30,20 @@ public class SeoData {
         this.friendlyCode = friendlyCode;
     }
 
-    public Boolean getUseExtraDescriptorSearch() {
-        return useExtraDescriptorSearch;
+    public Boolean getUseExtraDescriptions() {
+        return useExtraDescriptions;
     }
 
-    public void setUseExtraDescriptorSearch(Boolean useExtraDescriptorSearch) {
-        this.useExtraDescriptorSearch = useExtraDescriptorSearch;
+    public void setUseExtraDescriptions(Boolean useExtraDescriptions) {
+        this.useExtraDescriptions = useExtraDescriptions;
+    }
+
+    public Boolean getUseExtraTitles() {
+        return useExtraTitles;
+    }
+
+    public void setUseExtraTitles(Boolean useExtraTitles) {
+        this.useExtraTitles = useExtraTitles;
     }
 
     @Override
@@ -45,12 +57,12 @@ public class SeoData {
         SeoData that = (SeoData) o;
         return Objects.equals(SeoDataByLang, that.SeoDataByLang) &&
                 Objects.equals(friendlyCode, that.friendlyCode) &&
-                Objects.equals(useExtraDescriptorSearch, that.useExtraDescriptorSearch);
+                Objects.equals(useExtraDescriptions, that.useExtraDescriptions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(SeoDataByLang, friendlyCode, useExtraDescriptorSearch);
+        return Objects.hash(SeoDataByLang, friendlyCode, useExtraDescriptions);
     }
 
     @Override
@@ -58,7 +70,8 @@ public class SeoData {
         return "SeoData{" +
                 "SeoDataByLang=" + SeoDataByLang +
                 ", friendlyCode='" + friendlyCode + '\'' +
-                ", useExtraDescriptorSearch=" + useExtraDescriptorSearch +
+                ", useExtraDescription=" + useExtraDescriptions +
+                ", useExtraTitles=" + useExtraTitles +
                 '}';
     }
 }

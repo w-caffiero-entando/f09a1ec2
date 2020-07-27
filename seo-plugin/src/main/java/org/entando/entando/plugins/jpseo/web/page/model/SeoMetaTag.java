@@ -7,6 +7,9 @@ public class SeoMetaTag {
     private String value;
     private Boolean useDefaultLang;
 
+    public SeoMetaTag() {
+    }
+
     public SeoMetaTag(String key, String type, String value, Boolean useDefaultLang) {
         this.key = key;
         this.type = type;
