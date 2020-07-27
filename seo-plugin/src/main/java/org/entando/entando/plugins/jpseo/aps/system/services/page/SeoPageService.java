@@ -114,15 +114,15 @@ public class SeoPageService extends PageService {
                         String seoMetadataKeyword = null;
                         ApsProperties descriptions = seoMetadata.getDescriptions();
                         if (null != descriptions) {
-                            PageMetatag metatag = (PageMetatag) descriptions.get(lang);
-                            seoMetadataDescription = metatag.getValue();
-                            inheritDescriptionFromDefaultLang = metatag.isUseDefaultLangValue();
+                            PageMetatag descriptionMetaTag = (PageMetatag) descriptions.get(lang);
+                            seoMetadataDescription = descriptionMetaTag.getValue();
+                            inheritDescriptionFromDefaultLang = descriptionMetaTag.isUseDefaultLangValue();
                         }
                         ApsProperties keywords = seoMetadata.getKeywords();
                         if (null != keywords) {
-                            PageMetatag metatag = (PageMetatag) keywords.get(lang);
-                            seoMetadataKeyword = metatag.getValue();
-                            inheritDescriptionFromDefaultLang = metatag.isUseDefaultLangValue();
+                            PageMetatag keywordsMetaTag = (PageMetatag) keywords.get(lang);
+                            seoMetadataKeyword = keywordsMetaTag.getValue();
+                            inheritKeywordsFromDefaultLang = keywordsMetaTag.isUseDefaultLangValue();
                         }
                         SeoDataByLang seoDataByLang = new SeoDataByLang(
                                 seoMetadataDescription,
