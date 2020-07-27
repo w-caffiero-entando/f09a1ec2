@@ -51,5 +51,7 @@
         <property name="entityManagerNameDest"><value>jacmsContentManager</value></property>
         <property name="defsFilePath"><value>/WEB-INF/plugins/jpseo/seoAttributeRoles.xml</value></property>
     </bean>
-    
+
+    <context:component-scan base-package="org.entando.entando.plugins.jpseo"  />
+
 </beans>
