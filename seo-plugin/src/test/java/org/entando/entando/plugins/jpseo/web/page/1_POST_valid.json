@@ -1,0 +1,74 @@
+{
+    "charset": "utf-8",
+    "code": "seoTest1",
+    "contentType": "text/html",
+    "displayedInMenu": true,
+    "ownerGroup": "free",
+    "pageModel": "service",
+    "parentCode": "service",
+    "seo": true,
+    "seoData": {
+        "friendlyCode": "test_page_1",
+        "seoDataByLang": {
+            "en": {
+                "description": "test",
+                "keywords": "keyword1, keyword 2",
+                "metaTags": [
+                    {
+                        "key": "copyright",
+                        "type": "name",
+                        "value": "2020",
+                        "useDefaultLang": false
+                    },
+                    {
+                        "key": "author",
+                        "type": "name",
+                        "value": "entando",
+                        "useDefaultLang": false
+                    },
+                    {
+                        "key": "description",
+                        "type": "name",
+                        "value": "test page",
+                        "useDefaultLang": false
+                    }
+                ],
+                "inheritDescriptionFromDefaultLang": false,
+                "inheritKeywordsFromDefaultLang": false
+            },
+            "it": {
+                "description": "",
+                "keywords": "",
+                "metaTags": [
+                    {
+                        "key": "copyright",
+                        "type": "name",
+                        "value": "entando",
+                        "useDefaultLang": false
+                    },
+                    {
+                        "key": "author",
+                        "type": "name",
+                        "value": "entando",
+                        "useDefaultLang": false
+                    },
+                    {
+                        "key": "description",
+                        "type": "name",
+                        "value": "this is a a test",
+                        "useDefaultLang": false
+                    }
+                ],
+                "inheritDescriptionFromDefaultLang": false,
+                "inheritKeywordsFromDefaultLang": false
+            }
+        },
+        "useExtraDescriptions": true,
+        "useExtraTitles": true
+    },
+    "status": "draft",
+    "titles": {
+        "en": "Test Page",
+        "it": "Pagina di test"
+    }
+}
