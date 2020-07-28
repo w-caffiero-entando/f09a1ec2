@@ -35,6 +35,7 @@ public class SeoPageController implements ISeoPageController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
+    @Qualifier("SeoPageService")
     private IPageService pageService;
 
     @Autowired
