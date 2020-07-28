@@ -216,10 +216,17 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     private String createAccessToken() throws Exception {
-        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
-                .build();
-        return mockOAuthInterceptor(user);
+        return mockOAuthInterceptor(createUser(true));
+    }
+
+    private UserDetails createUser(boolean adminAuth) throws Exception {
+        UserDetails user = (adminAuth) ? (new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
+                .withAuthorization(Group.ADMINS_GROUP_NAME, "roletest", Permission.SUPERUSER)
+                .build())
+                : (new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
+                        .withAuthorization(Group.FREE_GROUP_NAME, "roletest", Permission.MANAGE_PAGES)
+                        .build());
+        return user;
     }
 
 }

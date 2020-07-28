@@ -6,6 +6,7 @@
     "ownerGroup": "free",
     "pageModel": "service",
     "parentCode": "service",
+    "joinGroups":[ ],
     "seo": true,
     "seoData": {
         "friendlyCode": "test_page_2",

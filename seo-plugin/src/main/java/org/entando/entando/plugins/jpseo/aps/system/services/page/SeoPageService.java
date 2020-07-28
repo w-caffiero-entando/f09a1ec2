@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
@@ -225,6 +226,9 @@ public class SeoPageService extends PageService {
         seoPageMetadata.setCharset(pageRequest.getCharset());
         seoPageMetadata.setMimeType(pageRequest.getContentType());
         seoPageMetadata.setShowable(pageRequest.isDisplayedInMenu());
+        Set<String> extraGroups = pageRequest.getJoinGroups().stream().collect(Collectors.toSet());
+
+        seoPageMetadata.setExtraGroups(extraGroups);
         ApsProperties keywordsAps = new ApsProperties();
         ApsProperties descriptionsAps = new ApsProperties();
         ApsProperties titlesAps = new ApsProperties();
