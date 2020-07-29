@@ -89,11 +89,11 @@ public class SeoPageController implements ISeoPageController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-
-        getSeoPageValidator().checkFriendlyCode(pageRequest.getSeoData().getFriendlyCode());
-
         //business validations
         getSeoPageValidator().validate(pageRequest, bindingResult);
+        if ((null!=pageRequest.getSeoData()) && (null!=pageRequest.getSeoData().getFriendlyCode())) {
+            getSeoPageValidator().checkFriendlyCode(pageRequest.getSeoData().getFriendlyCode());
+        }
         if (bindingResult.hasErrors()) {
             throw new ValidationConflictException(bindingResult);
         }
