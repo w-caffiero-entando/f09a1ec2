@@ -71,3 +71,7 @@
 .no-decorations {
     text-decoration: none;
 }
+
+.no-chevron::after {
+    display: none !important;
+}

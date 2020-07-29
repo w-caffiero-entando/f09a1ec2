@@ -122,7 +122,7 @@
                 <!-- UX Patterns Secondary -->
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <a href='<c:out value="${appBuilderBaseURL}"/>widget'>
+                        <a href='<s:url action="viewWidgets" namespace="/do/Portal/WidgetType" />'>
                             <span class="list-group-item-value"><s:text name="menu.UXPattern.widget" /></span>
                         </a>
                     </li>
@@ -157,6 +157,13 @@
                         <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
                     </s:iterator>
                 </wpsa:hookPoint>
+                <c:if test="${isCategories}">
+                    <li class="list-group-item">
+                        <a href='<s:url action="viewTree" namespace="/do/Category" />'>
+                            <span class="list-group-item-value"><s:text name="menu.settings.categories" /></span>
+                        </a>
+                    </li>
+                </c:if>
             </ul>
         </div>
     </li>
@@ -195,7 +202,7 @@
                         </li>
 
                         <li class="list-group-item">
-                            <a href='<s:url action="list" namespace="/do/Group" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>group'>
                                 <span class="list-group-item-value"><s:text name="menu.settings.groups" /></span>
                             </a>
                         </li>
@@ -222,7 +229,7 @@
 
     <!-- ECR -->
     <li class="list-group-item secondary-nav-item-pf">
-        <a href='<c:out value="${appBuilderBaseURL}"/>component-repository'>
+        <a href='<c:out value="${appBuilderBaseURL}"/>component-repository' class="no-chevron">
             <span class="fa fa-cart-plus" data-toggle="tooltip" title="<s:text name="menu.ECR" />"></span>
             <span class="list-group-item-value"><s:text name="menu.ECR" /></span>
         </a>
@@ -281,19 +288,19 @@
                         </li>
 
                         <li class="list-group-item">
-                            <a href='<s:url action="entry" namespace="/do/Admin/Database" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>database'>
                                 <span class="list-group-item-value"><s:text name="menu.settings.database" /></span>
                             </a>
                         </li>
 
                         <li class="list-group-item">
-                            <a href='<s:url action="list" namespace="/do/FileBrowser" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>file-browser'>
                                 <span class="list-group-item-value"><s:text name="menu.settings.fileBrowser" /></span>
                             </a>
                         </li>
 
                         <li class="list-group-item">
-                            <a href='<s:url action="list" namespace="/do/Lang" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>labels-languages'>
                                 <span class="list-group-item-value"><s:text name="menu.settings.labelsLanguages" /></span>
                             </a>
                         </li>
@@ -305,16 +312,8 @@
                         </li>
 
                         <li class="list-group-item">
-                            <a href='<s:url action="reloadChoose" namespace="/do/BaseAdmin" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>reloadConfiguration'>
                                 <span class="list-group-item-value"><s:text name="menu.settings.reloadConfigurations" /></span>
-                            </a>
-                        </li>
-                    </c:if>
-
-                    <c:if test="${isCategories}">
-                        <li class="list-group-item">
-                            <a href='<s:url action="viewTree" namespace="/do/Category" />'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.categories" /></span>
                             </a>
                         </li>
                     </c:if>
