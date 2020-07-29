@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
@@ -64,7 +65,16 @@ public class SeoPageService extends PageService {
         PageDto pageDto = this.getDtoBuilder().convert(page);
         pageDto.setToken(token);
         pageDto.setReferences(super.getReferencesInfo(page));
-        SeoPageMetadata seoMetadata = (SeoPageMetadata) page.getMetadata();
+
+        pageDto.setDisplayedInMenu(page.isShowable());
+
+        SeoPageMetadata seoMetadata;
+        if (page.getMetadata() instanceof SeoPageMetadata) {
+            seoMetadata = (SeoPageMetadata) page.getMetadata();
+        }
+        else {
+            seoMetadata = new SeoPageMetadata();
+        }
         SeoPageDto seoPageDto = mapPageDtoToSeoPageDto(pageDto, seoMetadata);
         return seoPageDto;
     }
@@ -92,6 +102,8 @@ public class SeoPageService extends PageService {
         SeoData seoData = new SeoData();
         seoData.setFriendlyCode(seoMetadata.getFriendlyCode());
         seoData.setUseExtraDescriptions(seoMetadata.isUseExtraDescriptions());
+        seoData.setUseExtraTitles(seoMetadata.isUseExtraTitles());
+
         Map<String, SeoDataByLang> seoDataByLangMap = new HashMap<>();
         if (seoMetadata.getComplexParameters() != null) {
             seoMetadata.getComplexParameters().entrySet().stream()
@@ -201,11 +213,21 @@ public class SeoPageService extends PageService {
         seoPageMetadata.setModel(getPageModelManager().getPageModel(pageRequest.getPageModel()));
         seoPageMetadata.setGroup(pageRequest.getOwnerGroup());
         final Map<String, String> titles = pageRequest.getTitles();
-        seoPageMetadata.setFriendlyCode(seoData.getFriendlyCode());
-        seoPageMetadata.setUseExtraDescriptions(seoData.getUseExtraDescriptions());
-        seoPageMetadata.setUseExtraTitles(seoData.getUseExtraTitles());
+        if (null!=seoData.getFriendlyCode()) {
+            seoPageMetadata.setFriendlyCode(seoData.getFriendlyCode());
+        }
+        if (null!=seoData.getUseExtraDescriptions()) {
+            seoPageMetadata.setUseExtraDescriptions(seoData.getUseExtraDescriptions());
+        }
+        if  (null!=seoData.getUseExtraTitles()) {
+            seoPageMetadata.setUseExtraTitles(seoData.getUseExtraTitles());
+        }
         seoPageMetadata.setCharset(pageRequest.getCharset());
         seoPageMetadata.setMimeType(pageRequest.getContentType());
+        seoPageMetadata.setShowable(pageRequest.isDisplayedInMenu());
+        Set<String> extraGroups = pageRequest.getJoinGroups().stream().collect(Collectors.toSet());
+
+        seoPageMetadata.setExtraGroups(extraGroups);
         ApsProperties keywordsAps = new ApsProperties();
         ApsProperties descriptionsAps = new ApsProperties();
         ApsProperties titlesAps = new ApsProperties();

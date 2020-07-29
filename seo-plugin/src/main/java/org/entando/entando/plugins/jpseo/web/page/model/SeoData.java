@@ -7,8 +7,8 @@ public class SeoData {
 
     private Map<String, SeoDataByLang> SeoDataByLang;
     private String friendlyCode;
-    private Boolean useExtraDescriptions;
-    private Boolean useExtraTitles;
+    private Boolean useExtraDescriptions = false;
+    private Boolean useExtraTitles = false;;
 
     public Map<String, SeoDataByLang> getSeoDataByLang() {
         return SeoDataByLang;
@@ -57,12 +57,13 @@ public class SeoData {
         SeoData that = (SeoData) o;
         return Objects.equals(SeoDataByLang, that.SeoDataByLang) &&
                 Objects.equals(friendlyCode, that.friendlyCode) &&
-                Objects.equals(useExtraDescriptions, that.useExtraDescriptions);
+                Objects.equals(useExtraDescriptions, that.useExtraDescriptions) &&
+                Objects.equals(useExtraTitles, that.useExtraTitles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(SeoDataByLang, friendlyCode, useExtraDescriptions);
+        return Objects.hash(SeoDataByLang, friendlyCode, useExtraDescriptions, useExtraTitles);
     }
 
     @Override
