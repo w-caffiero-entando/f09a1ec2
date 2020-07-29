@@ -4,7 +4,7 @@
     "contentType": "text/html",
     "displayedInMenu": true,
     "ownerGroup": "free",
-    "pageModel": "homepage",
+    "pageModel": "home",
     "parentCode": "homepage",
     "seo": true,
     "joinGroups": [

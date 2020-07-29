@@ -156,23 +156,22 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             resultPut.andExpect(jsonPath("$.payload.status", is("unpublished")));
             resultPut.andExpect(jsonPath("$.payload.onlineInstance",is(false)));
             resultPut.andExpect(jsonPath("$.payload.displayedInMenu",is(true)));
-            resultPut.andExpect(jsonPath("$.payload.pageModel",is("homepage")));
+            resultPut.andExpect(jsonPath("$.payload.pageModel",is("home")));
             resultPut.andExpect(jsonPath("$.payload.charset",is("utf-8")));
             resultPut.andExpect(jsonPath("$.payload.contentType",is("text/html")));
-            resultPut.andExpect(jsonPath("$.payload.parentCode",is("service")));
+            resultPut.andExpect(jsonPath("$.payload.parentCode",is("homepage")));
             resultPut.andExpect(jsonPath("$.payload.seo",is(true)));
             resultPut.andExpect(jsonPath("$.payload.titles.size()",is(2)));
             resultPut.andExpect(jsonPath("$.payload.fullTitles.size()",is(2)));
             resultPut.andExpect(jsonPath("$.payload.seoData.friendlyCode",is("test_page_2_friendly_url")));
             resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()",is(2)));
 
-            resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.description",is("test")));
+            resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.description",is("test page")));
             resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.keywords",is("keyword number 1, keyword number 2")));
-            resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags.size()",is(3)));
+            resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags.size()",is(2)));
             resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].key",is("author")));
             resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].type",is("name")));
             resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].value",is("entando")));
-
 
         } finally {
             PageDto page = this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT);
