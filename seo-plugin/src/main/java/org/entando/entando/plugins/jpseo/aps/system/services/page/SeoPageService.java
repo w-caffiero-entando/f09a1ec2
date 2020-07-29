@@ -32,8 +32,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 
-@Service
-@Primary
+@Service("SeoPageService")
 public class SeoPageService extends PageService {
 
     private static final Logger logger = LoggerFactory.getLogger(SeoPageService.class);
