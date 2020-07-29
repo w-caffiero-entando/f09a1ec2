@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.role.Permission;
+import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.FileTextReader;
 import java.io.InputStream;
@@ -79,7 +80,6 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             }
         }
     }
-
 
     @Test
     public void testPostSeoPageNoSeoFields() throws Exception {
@@ -215,16 +215,10 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     private String createAccessToken() throws Exception {
-        return mockOAuthInterceptor(createUser(true));
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
+                .withAuthorization(Group.FREE_GROUP_NAME, Permission.MANAGE_PAGES, Permission.MANAGE_PAGES)
+                .build();
+        return mockOAuthInterceptor(user);
     }
 
-    private UserDetails createUser(boolean adminAuth) throws Exception {
-        UserDetails user = (adminAuth) ? (new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                .withAuthorization(Group.ADMINS_GROUP_NAME, "roletest", Permission.SUPERUSER)
-                .build())
-                : (new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                        .withAuthorization(Group.FREE_GROUP_NAME, "roletest", Permission.MANAGE_PAGES)
-                        .build());
-        return user;
-    }
 }
