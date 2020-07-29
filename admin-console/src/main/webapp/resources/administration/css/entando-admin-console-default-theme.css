@@ -1219,7 +1219,7 @@ td{
     width: 12px !important;
     margin-left: 3px;
 }
-#userDropdown a, #preview-portal a, #infoHeader a {
+#userDropdown a, #preview-portal a, #infoHeader a, #languageDropdown a {
     padding: 15px;
     margin-top: 5px;
     line-height: 20px;
