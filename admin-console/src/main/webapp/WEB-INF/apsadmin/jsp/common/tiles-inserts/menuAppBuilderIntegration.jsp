@@ -88,6 +88,12 @@
                     </li>
                     <c:if test="${isSuperUser}">
                         <li class="list-group-item">
+                            <a href='<c:out value="${appBuilderBaseURL}"/>page-template'>
+                                <span class="list-group-item-value"><s:text name="menu.UXPattern.pageModels" /></span>
+                            </a>
+                        </li>
+
+                        <li class="list-group-item">
                             <a href='<c:out value="${appBuilderBaseURL}"/>page/settings'>
                                 <span class="list-group-item-value"><s:text name="menu.pageDesigner.pageSettings" /></span>
                             </a>
@@ -126,12 +132,6 @@
                                 <span class="list-group-item-value"><s:text name="menu.UXPattern.fragments" /></span>
                             </a>
                         </li>
-
-                        <li class="list-group-item">
-                            <a href='<c:out value="${appBuilderBaseURL}"/>page-template'>
-                                <span class="list-group-item-value"><s:text name="menu.UXPattern.pageModels" /></span>
-                            </a>
-                        </li>
                     </c:if>
                 </ul>
                 <!--Fine UX Patterns Secondary-->
@@ -139,74 +139,24 @@
         </li>
     </c:if>
 
-    <!-- Integrations -->
-
-    <li class="list-group-item secondary-nav-item-pf" data-target="#integration-secondary">
+    <!-- APPS -->
+    <li class="list-group-item secondary-nav-item-pf" data-target="#apps-secondary">
         <a>
-            <span class="fa fa-cubes" data-toggle="tooltip" title="<s:text name="menu.integrations" />"></span>
-            <span class="list-group-item-value"><s:text name="menu.integrations" /></span>
+            <span class="fa fa-rocket" data-toggle="tooltip" title="<s:text name="menu.APPS" />"></span>
+            <span class="list-group-item-value"><s:text name="menu.APPS" /></span>
         </a>
-
         <!--Integrations secondary-->
-
-        <div id="integration-secondary" class="nav-pf-secondary-nav">
+        <div id="apps-secondary" class="nav-pf-secondary-nav">
             <div class="nav-item-pf-header">
                 <a class="secondary-collapse-toggle-pf" data-toggle="collapse-secondary-nav"></a>
-                <span><s:text name="menu.integrations" /></span>
+                <span><s:text name="menu.APPS" /></span>
             </div>
-
             <ul class="list-group">
-                <li class="list-group-item tertiary-nav-item-pf" data-target="integrations-ux-components-tertiary">
-                    <a>
-                        <span class="list-group-item-value"><s:text name="menu.integrations.components" /></span>
-                    </a>
-                <wpsa:pluginsSubMenu objectName="pluginsSubMenusVar" />
-                <s:if test="#pluginsSubMenusVar.size > 0">
-                    <div id="integrations-ux-components-tertiary" class="nav-pf-tertiary-nav">
-                        <div class="nav-item-pf-header">
-                            <a class="tertiary-collapse-toggle-pf" data-toggle="collapse-tertiary-nav"></a>
-                            <span><s:text name="menu.integrations.components" /></span>
-                        </div>
-                        <ul class="list-group">
-
-                            <s:iterator value="#pluginsSubMenusVar" var="pluginSubMenuVar">
-                                <s:include value="%{#pluginSubMenuVar.subMenuFilePath}" />
-                            </s:iterator>
-                        </ul>
-                    </div>
-                </s:if>
-                </li>
-                <c:if test="${isSuperUser}">
-                    <li class="list-group-item tertiary-nav-item-pf" data-target="integrations-api-tertiary">
-                        <a>
-                            <span class="list-group-item-value"><s:text name="menu.integrations.APIManagement" /></span>
-                        </a>
-
-                        <div id="integrations-api-tertiary" class="nav-pf-tertiary-nav">
-                            <div class="nav-item-pf-header">
-                                <a class="tertiary-collapse-toggle-pf" data-toggle="collapse-tertiary-nav"></a>
-                                <span><s:text name="menu.integrations.APIManagement" /></span>
-                            </div>
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <a href='<s:url action="list" namespace="/do/Api/Resource" />'>
-                                        <span class="list-group-item-value"><s:text name="menu.integrations.API.resources" /></span>
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href='<s:url action="list" namespace="/do/Api/Service" />'>
-                                        <span  class="list-group-item-value"><s:text name="menu.integrations.API.services" /></span>
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href='<s:url action="list" namespace="/do/Api/Consumer" />'>
-                                        <span class="list-group-item-value"><s:text name="menu.integrations.API.consumers" /></span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                </c:if>
+                <wpsa:hookPoint key="core.menu.apps" objectName="hookPointElements_core_menu_apps">
+                    <s:iterator value="#hookPointElements_core_menu_apps" var="hookPointElement">
+                        <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
+                    </s:iterator>
+                </wpsa:hookPoint>
             </ul>
         </div>
     </li>
@@ -239,6 +189,18 @@
 
                     <c:if test="${isSuperUser}">
                         <li class="list-group-item">
+                            <a href='<c:out value="${appBuilderBaseURL}"/>role'>
+                                <span class="list-group-item-value"><s:text name="menu.usersSettings.roles" /></span>
+                            </a>
+                        </li>
+
+                        <li class="list-group-item">
+                            <a href='<s:url action="list" namespace="/do/Group" />'>
+                                <span class="list-group-item-value"><s:text name="menu.settings.groups" /></span>
+                            </a>
+                        </li>
+
+                        <li class="list-group-item">
                             <a href='<c:out value="${appBuilderBaseURL}"/>profiletype'>
                                 <span class="list-group-item-value"><s:text name="menu.usersSettings.profileTypes" /></span>
                             </a>
@@ -251,39 +213,12 @@
                                 </a>
                             </li>
                         </c:if>
-                        <li class="list-group-item">
-                            <a href='<c:out value="${appBuilderBaseURL}"/>role'>
-                                <span class="list-group-item-value"><s:text name="menu.usersSettings.roles" /></span>
-                            </a>
-                        </li>
                     </c:if>
                 </ul>
                 <!--Fine Users Settings Secondary-->
             </div>
         </li>
     </c:if>
-
-    <!-- APPS -->
-    <li class="list-group-item secondary-nav-item-pf" data-target="#apps-secondary">
-        <a>
-            <span class="fa fa-rocket" data-toggle="tooltip" title="<s:text name="menu.APPS" />"></span>
-            <span class="list-group-item-value"><s:text name="menu.APPS" /></span>
-        </a>
-        <!--Integrations secondary-->
-        <div id="apps-secondary" class="nav-pf-secondary-nav">
-            <div class="nav-item-pf-header">
-                <a class="secondary-collapse-toggle-pf" data-toggle="collapse-secondary-nav"></a>
-                <span><s:text name="menu.APPS" /></span>
-            </div>
-            <ul class="list-group">
-                <wpsa:hookPoint key="core.menu.apps" objectName="hookPointElements_core_menu_apps">
-                    <s:iterator value="#hookPointElements_core_menu_apps" var="hookPointElement">
-                        <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
-                    </s:iterator>
-                </wpsa:hookPoint>
-            </ul>
-        </div>
-    </li>
 
     <!-- ECR -->
     <li class="list-group-item secondary-nav-item-pf">
@@ -314,25 +249,35 @@
                 <!-- Settings Secondary -->
 
                 <ul class="list-group">
-                    <c:if test="${isCategories}">
-                        <li class="list-group-item">
-                            <a href='<s:url action="viewTree" namespace="/do/Category" />'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.categories" /></span>
-                            </a>
-                        </li>
-                    </c:if>
-
                     <c:if test="${isSuperUser}">
-                        <li class="list-group-item">
-                            <a href='<s:url action="list" namespace="/do/Lang" />'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.labelsLanguages" /></span>
+                        <li class="list-group-item tertiary-nav-item-pf" data-target="integrations-api-tertiary">
+                            <a>
+                                <span class="list-group-item-value"><s:text name="menu.integrations.APIManagement" /></span>
                             </a>
-                        </li>
 
-                        <li class="list-group-item">
-                            <a href='<s:url action="reloadChoose" namespace="/do/BaseAdmin" />'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.reloadConfigurations" /></span>
-                            </a>
+                            <div id="integrations-api-tertiary" class="nav-pf-tertiary-nav">
+                                <div class="nav-item-pf-header">
+                                    <a class="tertiary-collapse-toggle-pf" data-toggle="collapse-tertiary-nav"></a>
+                                    <span><s:text name="menu.integrations.APIManagement" /></span>
+                                </div>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href='<s:url action="list" namespace="/do/Api/Resource" />'>
+                                            <span class="list-group-item-value"><s:text name="menu.integrations.API.resources" /></span>
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href='<s:url action="list" namespace="/do/Api/Service" />'>
+                                            <span  class="list-group-item-value"><s:text name="menu.integrations.API.services" /></span>
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href='<s:url action="list" namespace="/do/Api/Consumer" />'>
+                                            <span class="list-group-item-value"><s:text name="menu.integrations.API.consumers" /></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
 
                         <li class="list-group-item">
@@ -348,8 +293,28 @@
                         </li>
 
                         <li class="list-group-item">
-                            <a href='<s:url action="list" namespace="/do/Group" />'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.groups" /></span>
+                            <a href='<s:url action="list" namespace="/do/Lang" />'>
+                                <span class="list-group-item-value"><s:text name="menu.settings.labelsLanguages" /></span>
+                            </a>
+                        </li>
+                        
+                        <li class="list-group-item">
+                            <a href='<s:url action="editSmtp" namespace="/do/jpmail/MailConfig" />'>
+                                <span class="list-group-item-value"><s:text name="menu.settings.email" /></span>
+                            </a>
+                        </li>
+
+                        <li class="list-group-item">
+                            <a href='<s:url action="reloadChoose" namespace="/do/BaseAdmin" />'>
+                                <span class="list-group-item-value"><s:text name="menu.settings.reloadConfigurations" /></span>
+                            </a>
+                        </li>
+                    </c:if>
+
+                    <c:if test="${isCategories}">
+                        <li class="list-group-item">
+                            <a href='<s:url action="viewTree" namespace="/do/Category" />'>
+                                <span class="list-group-item-value"><s:text name="menu.settings.categories" /></span>
                             </a>
                         </li>
                     </c:if>
