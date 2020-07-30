@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.2.12</version>
+        <version>6.2.14</version>
     </parent>
     <groupId>org.entando.entando</groupId>
     <artifactId>entando-admin-console</artifactId>
@@ -39,7 +39,7 @@
         </repository>
     </repositories>
     <properties>
-        <entando-engine.version>6.2.9</entando-engine.version>
+        <entando-engine.version>6.2.23</entando-engine.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.skip>true</checkstyle.skip>
         <allTestsSuiteClass>com.agiletec.apsadmin.system.services.TestShortcutManager</allTestsSuiteClass>
