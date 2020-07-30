@@ -20,21 +20,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.agiletec.aps.system.services.group.Group;
-import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.role.Permission;
-import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.FileTextReader;
 import java.io.InputStream;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
-import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -142,8 +137,8 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             result.andExpect(jsonPath("$.payload.seo",is(false)));
             result.andExpect(jsonPath("$.payload.titles.size()",is(2)));
             result.andExpect(jsonPath("$.payload.fullTitles.size()",is(2)));
-            result.andExpect(jsonPath("$.payload.seoData.friendlyCode",is("")));
-            result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()",is(0)));
+            result.andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")));
+            result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
 
         } finally {
             PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
@@ -174,8 +169,8 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             result.andExpect(jsonPath("$.payload.seo",is(false)));
             result.andExpect(jsonPath("$.payload.titles.size()",is(2)));
             result.andExpect(jsonPath("$.payload.fullTitles.size()",is(2)));
-            result.andExpect(jsonPath("$.payload.seoData.friendlyCode",is("")));
-            result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()",is(0)));
+            result.andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")));
+            result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
 
         } finally {
             PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
@@ -368,6 +363,14 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             //    resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(true)));
             //    resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(true)));
 
+
+            final ResultActions resultNoMetatag = this
+                    .executePutSeoPage("2_PUT_valid_no_metatag.json", accessToken, status().isOk());
+
+            Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
+
+
+
         } finally {
             PageDto page = this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT);
             if (null != page) {
@@ -388,6 +391,9 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(expected);
+
+
+        System.out.println("result: \n" + result.andReturn().getResponse().getContentAsString());
         return result;
     }
 
@@ -403,6 +409,9 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result1.andExpect(expected);
+
+        System.out.println("result1: \n" + result1.andReturn().getResponse().getContentAsString());
+
         return result1;
     }
 
