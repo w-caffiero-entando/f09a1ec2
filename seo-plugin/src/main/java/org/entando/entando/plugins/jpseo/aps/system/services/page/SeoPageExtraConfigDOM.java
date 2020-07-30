@@ -188,7 +188,8 @@ public class SeoPageExtraConfigDOM extends PageExtraConfigDOM {
                     for (Element langElement : langElements) {
                         String langCode = langElement.getAttributeValue("key");
                         Map<String, PageMetatag> langMap = this.extractLangMap(langCode, complexParameters);
-                        PageMetatag metatag = new PageMetatag(langCode, key, langElement.getText());
+                        String useDefaultLang = langElement.getAttributeValue(USE_DEFAULT_LANG_ELEMENT_NAME);
+                        PageMetatag metatag = new PageMetatag(langCode, key, langElement.getText(),Boolean.parseBoolean(useDefaultLang));
                         langMap.put(key, metatag);
                     }
                 } else {
@@ -240,6 +241,7 @@ public class SeoPageExtraConfigDOM extends PageExtraConfigDOM {
         this.fillMultilangProperty(descriptions, doc.getRootElement(), DESCRIPTIONS_ELEMENT_NAME);
         ApsProperties keywords = seoPageMetadata.getKeywords();
         this.fillMultilangProperty(keywords, doc.getRootElement(), KEYWORDS_ELEMENT_NAME);
+
         if (null != seoPageMetadata.getFriendlyCode() && seoPageMetadata.getFriendlyCode().trim().length() > 0) {
             Element friendlyCodeElement = new Element(FRIENDLY_CODE_ELEMENT_NAME);
             friendlyCodeElement.setText(seoPageMetadata.getFriendlyCode().trim());
@@ -253,18 +255,28 @@ public class SeoPageExtraConfigDOM extends PageExtraConfigDOM {
     }
 
     private void fillMultilangProperty(ApsProperties property, Element elementToFill, String elementName) {
+        _logger.info("--------------------------------------------------------");
+        _logger.info("fillMultilangProperty");
         if (null != property && property.size() > 0) {
             Element mlElement = new Element(elementName);
             elementToFill.addContent(mlElement);
             Iterator<Object> iterator = property.keySet().iterator();
             while (iterator.hasNext()) {
+                _logger.info("--------------------------------------------------------");
+
                 String langCode = (String) iterator.next();
+                _logger.info("langCode {}",langCode);
+
                 Element langElement = new Element(PROPERTY_ELEMENT_NAME);
                 langElement.setAttribute(KEY_ATTRIBUTE_NAME, langCode);
                 PageMetatag metatag = (PageMetatag) property.get(langCode);
+
+                _logger.info("isUseDefaultLangValue() {}",metatag.isUseDefaultLangValue());
                 langElement.setAttribute(USE_DEFAULT_LANG_ELEMENT_NAME, String.valueOf(metatag.isUseDefaultLangValue()));
                 langElement.setText(metatag.getValue());
                 mlElement.addContent(langElement);
+                _logger.info("--------------------------------------------------------");
+
             }
         }
     }
