@@ -243,15 +243,21 @@ public class SeoPageService extends PageService {
                     inheritKeywords = seoDataByLang.isInheritKeywordsFromDefaultLang();
                     inheritDescription = seoDataByLang.isInheritDescriptionFromDefaultLang();
                 }
-                PageMetatag keywordsPageMetaTag = new PageMetatag(lang, "keywords", seoDataByLang.getKeywords().trim(),
-                        inheritKeywords);
+                if (null != seoDataByLang.getKeywords()) {
+                    PageMetatag keywordsPageMetaTag = new PageMetatag(lang, "keywords", seoDataByLang.getKeywords().trim(),
+                            inheritKeywords);
+                    keywordsAps.put(lang, keywordsPageMetaTag);
+                }
+                if (null != seoDataByLang.getKeywords()) {
+                    PageMetatag descriptionPageMetaTag = new PageMetatag(lang, "description",
+                            seoDataByLang.getDescription().trim(), inheritDescription);
 
-                PageMetatag descriptionPageMetaTag = new PageMetatag(lang, "description",
-                        seoDataByLang.getDescription().trim(), inheritDescription);
+                    descriptionsAps.put(lang, descriptionPageMetaTag);
+                }
+                if (null != seoDataByLang.getMetaTags()) {
+                    langMetaTags.put(lang, mapLangMetaTags(seoDataByLang.getMetaTags()));
+                }
 
-                keywordsAps.put(lang, keywordsPageMetaTag);
-                descriptionsAps.put(lang, descriptionPageMetaTag);
-                langMetaTags.put(lang, mapLangMetaTags(seoDataByLang.getMetaTags()));
             } else {
                 logger.warn("Lang not valid :{}. SeoDataByLang not added", lang);
             }

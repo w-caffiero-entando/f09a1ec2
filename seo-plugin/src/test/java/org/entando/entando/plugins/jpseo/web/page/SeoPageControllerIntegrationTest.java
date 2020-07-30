@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
@@ -40,10 +41,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
-    private static final Logger logger = LoggerFactory.getLogger(SeoPageControllerIntegrationTest.class);
-
     @Autowired
     private IPageService pageService;
+
     private static String SEO_TEST_1 = "seoTest1";
     private static String SEO_TEST_2 = "seoTest2";
 
@@ -111,8 +111,8 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value",is("metatag di prova")));
             result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].useDefaultLang",is(false)));
 
-            // result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(true)));
-            // result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(true)));
+            // result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(false)));
+            // result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(false)));
         } finally {
             PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
             if (null != page) {
@@ -127,7 +127,39 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             String accessToken = this.createAccessToken();
 
             final ResultActions result = this
-                    .executePostSeoPage("1_POST_valid_empty_fields.json", accessToken, status().isOk());
+                    .executePostSeoPage("1_POST_valid_empty_fields_1.json", accessToken, status().isOk());
+
+            Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
+            result.andExpect(jsonPath("$.errors.size()", is(0)));
+            result.andExpect(jsonPath("$.payload.code", is(SEO_TEST_1)));
+            result.andExpect(jsonPath("$.payload.status", is("unpublished")));
+            result.andExpect(jsonPath("$.payload.onlineInstance",is(false)));
+            result.andExpect(jsonPath("$.payload.displayedInMenu",is(true)));
+            result.andExpect(jsonPath("$.payload.pageModel",is("service")));
+            result.andExpect(jsonPath("$.payload.charset",is("utf-8")));
+            result.andExpect(jsonPath("$.payload.contentType",is("text/html")));
+            result.andExpect(jsonPath("$.payload.parentCode",is("service")));
+            result.andExpect(jsonPath("$.payload.seo",is(false)));
+            result.andExpect(jsonPath("$.payload.titles.size()",is(2)));
+            result.andExpect(jsonPath("$.payload.fullTitles.size()",is(2)));
+            result.andExpect(jsonPath("$.payload.seoData.friendlyCode",is("")));
+            result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()",is(0)));
+
+        } finally {
+            PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
+            if (null != page) {
+                this.pageService.removePage(SEO_TEST_1);
+            }
+        }
+    }
+
+    @Test
+    public void testPostSeoPageNullSeoFields() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+
+            final ResultActions result = this
+                    .executePostSeoPage("1_POST_valid_empty_fields_2.json", accessToken, status().isOk());
 
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
             result.andExpect(jsonPath("$.errors.size()", is(0)));
@@ -333,10 +365,8 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value",is("test in italiano")));
             resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang",is(true)));
 
-        //    resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(true)));
-        //    resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(true)));
-
-
+            //    resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(true)));
+            //    resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(true)));
 
         } finally {
             PageDto page = this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT);
@@ -348,12 +378,9 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
 
     private ResultActions executePostSeoPage(String fileName, String accessToken, ResultMatcher expected)
             throws Exception {
-        logger.info("********************* executePostSeoPage {} ************************* ",fileName);
         InputStream isJsonPostValid2 = this.getClass().getResourceAsStream(fileName);
         String jsonPostValid2 = FileTextReader.getText(isJsonPostValid2);
         String path = "/plugins/seo/pages/";
-        logger.info("jsonPostValid");
-        logger.info(jsonPostValid2);
 
         ResultActions result = mockMvc
                 .perform(post(path)
@@ -361,10 +388,6 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(expected);
-        logger.info("result");
-        logger.info(result.andReturn().getResponse().getContentAsString());
-
-
         return result;
     }
 
@@ -380,8 +403,6 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result1.andExpect(expected);
-        logger.info("result1");
-        logger.info(result1.andReturn().getResponse().getContentAsString());
         return result1;
     }
 

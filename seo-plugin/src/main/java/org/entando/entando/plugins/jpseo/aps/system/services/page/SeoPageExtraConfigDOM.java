@@ -255,28 +255,19 @@ public class SeoPageExtraConfigDOM extends PageExtraConfigDOM {
     }
 
     private void fillMultilangProperty(ApsProperties property, Element elementToFill, String elementName) {
-        _logger.info("--------------------------------------------------------");
-        _logger.info("fillMultilangProperty");
         if (null != property && property.size() > 0) {
             Element mlElement = new Element(elementName);
             elementToFill.addContent(mlElement);
             Iterator<Object> iterator = property.keySet().iterator();
             while (iterator.hasNext()) {
-                _logger.info("--------------------------------------------------------");
-
                 String langCode = (String) iterator.next();
-                _logger.info("langCode {}",langCode);
-
                 Element langElement = new Element(PROPERTY_ELEMENT_NAME);
                 langElement.setAttribute(KEY_ATTRIBUTE_NAME, langCode);
                 PageMetatag metatag = (PageMetatag) property.get(langCode);
 
-                _logger.info("isUseDefaultLangValue() {}",metatag.isUseDefaultLangValue());
                 langElement.setAttribute(USE_DEFAULT_LANG_ELEMENT_NAME, String.valueOf(metatag.isUseDefaultLangValue()));
                 langElement.setText(metatag.getValue());
                 mlElement.addContent(langElement);
-                _logger.info("--------------------------------------------------------");
-
             }
         }
     }
