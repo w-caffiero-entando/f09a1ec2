@@ -121,13 +121,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.entando.entando</groupId>
-            <artifactId>entando-portal-ui</artifactId>
-            <version>${entando-portal-ui.version}</version>
-            <classifier>classes</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.jgeppert.struts2.jquery</groupId>
             <artifactId>struts2-jquery-grid-plugin</artifactId>
         </dependency>
