@@ -30,6 +30,8 @@ import org.entando.entando.plugins.jpseo.apsadmin.content.ContentActionIntegrati
 import org.entando.entando.plugins.jpseo.apsadmin.portal.PageActionIntegrationTest;
 import org.entando.entando.plugins.jpseo.apsadmin.portal.PageSettingsActionAspectTest;
 import org.entando.entando.plugins.jpseo.apsadmin.portal.PageSettingsActionIntegrationTest;
+import org.entando.entando.plugins.jpseo.web.page.SeoPageControllerIntegrationTest;
+import org.entando.entando.plugins.jpseo.web.page.SeoPageControllerTest;
 
 public class AllTests {
 
@@ -42,6 +44,9 @@ public class AllTests {
         suite.addTestSuite(ContentActionIntegrationTest.class);
         suite.addTestSuite(PageActionIntegrationTest.class);
         suite.addTestSuite(PageSettingsActionIntegrationTest.class);
+        suite.addTest(new JUnit4TestAdapter(SeoPageControllerTest.class));
+        suite.addTest(new JUnit4TestAdapter(SeoPageControllerIntegrationTest.class));
+
         suite.addTest(new JUnit4TestAdapter(PageSettingsActionAspectTest.class));
 
         return suite;
