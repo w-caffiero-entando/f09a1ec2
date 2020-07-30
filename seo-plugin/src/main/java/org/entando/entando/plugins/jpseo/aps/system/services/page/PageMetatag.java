@@ -60,7 +60,7 @@ public class PageMetatag implements Serializable {
 
     @Override
     public PageMetatag clone() {
-        PageMetatag meta = new PageMetatag(this.getLangCode(), this.getKey(), this.getValue());
+        PageMetatag meta = new PageMetatag(this.getLangCode(), this.getKey(), this.getValue(), this.isUseDefaultLangValue());
         meta.setKeyAttribute(this.getKeyAttribute());
         return meta;
     }
@@ -141,4 +141,14 @@ public class PageMetatag implements Serializable {
         this.useDefaultLangValue = useDefaultLangValue;
     }
 
+    @Override
+    public String toString() {
+        return "PageMetatag{" +
+                "keyAttribute='" + keyAttribute + '\'' +
+                ", key='" + key + '\'' +
+                ", value='" + value + '\'' +
+                ", langCode='" + langCode + '\'' +
+                ", useDefaultLangValue=" + useDefaultLangValue +
+                '}';
+    }
 }

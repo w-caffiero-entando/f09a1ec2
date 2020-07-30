@@ -32,27 +32,27 @@ public class SeoPageValidator extends PageValidator {
     @Autowired
     private ISeoMappingManager seoMappingManager;
 
-    public void checkFriendlyCode(String friendlyCode) {
+    public boolean checkFriendlyCode(String friendlyCode) {
         if (null != friendlyCode && friendlyCode.trim().length() > 100) {
             logger.error("Invalid friendly Code {}", friendlyCode);
-            throw new RestServerError(String.format("Invalid friendly Code %s", friendlyCode), null);
+            return false;
         }
         if (null != friendlyCode && friendlyCode.trim().length() > 0) {
             Pattern pattern = Pattern.compile("([a-z0-9_])+");
             Matcher matcher = pattern.matcher(friendlyCode);
             if (!matcher.matches()) {
                 logger.error("Invalid friendly Code {}", friendlyCode);
-                throw new RestServerError(String.format("Invalid friendly Code %s", friendlyCode), null);
+                return false;
             }
         }
         if (null != friendlyCode && friendlyCode.trim().length() > 0) {
             FriendlyCodeVO vo = seoMappingManager.getReference(friendlyCode);
             if (null != vo && (vo.getPageCode() == null || !vo.getPageCode().equals(friendlyCode))) {
                 logger.error("Invalid friendly Code {}", friendlyCode);
-                throw new RestServerError(String.format("Invalid friendly Code %s", friendlyCode), null);
-
+                return false;
             }
         }
+        return true;
     }
 
 

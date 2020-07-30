@@ -56,12 +56,12 @@
                     {
                         "key": "description",
                         "type": "name",
-                        "value": "this is a a test",
+                        "value": "metatag di prova",
                         "useDefaultLang": false
                     }
                 ],
-                "inheritDescriptionFromDefaultLang": false,
-                "inheritKeywordsFromDefaultLang": false
+                "inheritDescriptionFromDefaultLang": true,
+                "inheritKeywordsFromDefaultLang": true
             }
         },
         "useExtraDescriptions": true,
