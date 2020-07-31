@@ -105,13 +105,13 @@
                 <groupId>org.entando.entando</groupId>
                 <artifactId>entando-engine</artifactId>
                 <version>${entando-engine.version}</version>
-                <type>test-jar</type>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.entando.entando</groupId>
                 <artifactId>entando-engine</artifactId>
                 <version>${entando-engine.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
             </dependency>
             <!-- admin-console -->
             <dependency>
@@ -162,11 +162,6 @@
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>
-            <classifier>classes</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.entando.entando</groupId>
-            <artifactId>entando-admin-console</artifactId>
             <classifier>classes</classifier>
         </dependency>
         <dependency>
