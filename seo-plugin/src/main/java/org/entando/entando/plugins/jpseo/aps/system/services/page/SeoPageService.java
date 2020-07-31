@@ -107,31 +107,9 @@ public class SeoPageService extends PageService {
         ApsProperties descriptions = seoMetadata.getDescriptions();
         ApsProperties keywords = seoMetadata.getKeywords();
 
-        //if (seoMetadata.getComplexParameters() != null) {
-/*
-        List<SeoMetaTag> pageMetaTagList =
-            seoMetadata.getComplexParameters().entrySet().stream().filter(f-> f.getKey() == lang).map(e -> {
-                        String lang = e.getKey();
-
-                        final Map<String, PageMetatag> metatagMap = e.getValue();
-                        metatagMap.entrySet().stream().map(meta ->
-                                {
-                                    final PageMetatag metatag = meta.getValue();
-                                    return new SeoMetaTag(metatag.getKey(),
-                                            metatag.getKeyAttribute(),
-                                            metatag.getValue(),
-                                            metatag.isUseDefaultLangValue());
-                                }
-                        ).collect(Collectors.toList());
-
-            });
-
-*/
         langManager.getLangs()
                 .forEach(e -> {
                     String lang = e.getCode();
-
-                    logger.info("********** LANG MANAGER LANG: {}", lang);
                     boolean inheritDescriptionFromDefaultLang = false;
                     boolean inheritKeywordsFromDefaultLang = false;
                     String seoMetadataDescription = "";
@@ -160,51 +138,20 @@ public class SeoPageService extends PageService {
                     seoDataByLangMap.put(lang, seoDataByLang);
                 });
         seoData.setSeoDataByLang(seoDataByLangMap);
-
-        //}
         seoPageDto.setSeoData(seoData);
         return seoPageDto;
     }
 
-    /*
-<complexParameters>
-    <lang code="en">
-      <meta key="author" attributeName="name" useDefaultLang="false">entando</meta>
-      <meta key="description" attributeName="name" useDefaultLang="false">test page</meta>
-    </lang>
-    <lang code="it">
-      <meta key="author" attributeName="name" useDefaultLang="true">entando</meta>
-      <meta key="description" attributeName="name" useDefaultLang="true">test in italiano</meta>
-    </lang>
-  </complexParameters>
-
-     */
     private List<SeoMetaTag> pageMetaTagList(String lang, Map<String, Map<String, PageMetatag>> complexParameters) {
-
-        logger.info("GET METATAG LIST FOR LANG {}", lang);
-
         List<SeoMetaTag> result = new ArrayList<>();
-
         complexParameters.forEach((cpLang, v) -> {
-            //lang list
-
-            logger.info("cpLang:" + cpLang);
             if (cpLang.equals(lang)) {
-                //meta list
-                logger.info("META: {}" + v);
                 v.entrySet().forEach(metatag -> {
-                    logger.info("META: {}");
-                    logger.info("META KEY : {}", metatag.getValue().getKey());
-                    logger.info("META KEY_ATTRIBUTE : {}", metatag.getValue().getKeyAttribute());
-                    logger.info("META VALUE : {}", metatag.getValue().getValue());
-                    logger.info("META USE DEFAULT LANG : {}", metatag.getValue().isUseDefaultLangValue());
-
                     result.add(new SeoMetaTag(metatag.getValue().getKey(),
                             metatag.getValue().getKeyAttribute(),
                             metatag.getValue().getValue(),
                             metatag.getValue().isUseDefaultLangValue())
                     );
-
                 });
             }
         });
@@ -276,6 +223,8 @@ public class SeoPageService extends PageService {
         final Map<String, String> titles = pageRequest.getTitles();
         if (null != seoData.getFriendlyCode()) {
             seoPageMetadata.setFriendlyCode(seoData.getFriendlyCode());
+        } else {
+            seoPageMetadata.setFriendlyCode("");
         }
         if (null != seoData.getUseExtraDescriptions()) {
             seoPageMetadata.setUseExtraDescriptions(seoData.getUseExtraDescriptions());
@@ -298,34 +247,34 @@ public class SeoPageService extends PageService {
         List<Lang> systemLangs = langManager.getLangs();
         List<String> systemLangsString = systemLangs.stream().map(f -> f.getCode()).collect(Collectors.toList());
 
-        seoData.getSeoDataByLang().forEach((lang, seoDataByLang) -> {
-            Boolean inheritKeywords = false;
-            Boolean inheritDescription = false;
-            if (systemLangsString.contains(lang)) {
-                if (!lang.equals(defaultLang)) {
-                    inheritKeywords = seoDataByLang.isInheritKeywordsFromDefaultLang();
-                    inheritDescription = seoDataByLang.isInheritDescriptionFromDefaultLang();
+        if (null != seoData.getSeoDataByLang()) {
+            seoData.getSeoDataByLang().forEach((lang, seoDataByLang) -> {
+                Boolean inheritKeywords = false;
+                Boolean inheritDescription = false;
+                if (systemLangsString.contains(lang)) {
+                    if (!lang.equals(defaultLang)) {
+                        inheritKeywords = seoDataByLang.isInheritKeywordsFromDefaultLang();
+                        inheritDescription = seoDataByLang.isInheritDescriptionFromDefaultLang();
+                    }
+                    if (null != seoDataByLang.getKeywords()) {
+                        PageMetatag keywordsPageMetaTag = new PageMetatag(lang, "keywords",
+                                seoDataByLang.getKeywords().trim(),
+                                inheritKeywords);
+                        keywordsAps.put(lang, keywordsPageMetaTag);
+                    }
+                    if (null != seoDataByLang.getDescription()) {
+                        PageMetatag descriptionPageMetaTag = new PageMetatag(lang, "description",
+                                seoDataByLang.getDescription().trim(), inheritDescription);
+                        descriptionsAps.put(lang, descriptionPageMetaTag);
+                    }
+                    if (null != seoDataByLang.getMetaTags()) {
+                        langMetaTags.put(lang, mapLangMetaTags(seoDataByLang.getMetaTags()));
+                    }
+                } else {
+                    logger.warn("Lang not valid :{}. SeoDataByLang not added", lang);
                 }
-                if (null != seoDataByLang.getKeywords()) {
-                    PageMetatag keywordsPageMetaTag = new PageMetatag(lang, "keywords",
-                            seoDataByLang.getKeywords().trim(),
-                            inheritKeywords);
-                    keywordsAps.put(lang, keywordsPageMetaTag);
-                }
-                if (null != seoDataByLang.getDescription()) {
-                    PageMetatag descriptionPageMetaTag = new PageMetatag(lang, "description",
-                            seoDataByLang.getDescription().trim(), inheritDescription);
-
-                    descriptionsAps.put(lang, descriptionPageMetaTag);
-                }
-                if (null != seoDataByLang.getMetaTags()) {
-                    langMetaTags.put(lang, mapLangMetaTags(seoDataByLang.getMetaTags()));
-                }
-
-            } else {
-                logger.warn("Lang not valid :{}. SeoDataByLang not added", lang);
-            }
-        });
+            });
+        }
 
         seoPageMetadata.setKeywords(keywordsAps);
         seoPageMetadata.setDescriptions(descriptionsAps);
@@ -359,6 +308,4 @@ public class SeoPageService extends PageService {
         Map<String, PageMetatag> map = list.stream().collect(Collectors.toMap(PageMetatag::getKey, meta -> meta));
         return map;
     }
-
-
 }
