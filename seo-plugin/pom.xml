@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.2.12</version>
+        <version>6.2.14</version>
     </parent>
     <artifactId>entando-plugin-jpseo</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
@@ -28,10 +28,10 @@
     </repositories>
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
-        <entando-plugin-jacms.version>6.2.11</entando-plugin-jacms.version>
         <entando-engine.version>6.2.23</entando-engine.version>
-        <entando-admin-console.version>6.2.26</entando-admin-console.version>
-        <entando-portal-ui.version>6.2.5</entando-portal-ui.version>
+        <entando-admin-console.version>6.2.36</entando-admin-console.version>
+        <entando-portal-ui.version>6.2.6</entando-portal-ui.version>
+        <entando-plugin-jacms.version>6.2.17</entando-plugin-jacms.version>
     </properties>
     <build>
         <resources>
@@ -95,38 +95,76 @@
 
     <dependencyManagement>
         <dependencies>
-        <dependency>
-            <groupId>org.entando.entando</groupId>
-            <artifactId>entando-engine</artifactId>
-            <version>${entando-engine.version}</version>
-        </dependency>
+            <!-- engine -->
+            <dependency>
+                <groupId>org.entando.entando</groupId>
+                <artifactId>entando-engine</artifactId>
+                <version>${entando-engine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.entando.entando</groupId>
+                <artifactId>entando-engine</artifactId>
+                <version>${entando-engine.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <!-- admin-console -->
+            <dependency>
+                <groupId>org.entando.entando</groupId>
+                <artifactId>entando-admin-console</artifactId>
+                <version>${entando-admin-console.version}</version>
+                <classifier>classes</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.entando.entando</groupId>
+                <artifactId>entando-admin-console</artifactId>
+                <version>${entando-admin-console.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <!-- portal-ui -->
+            <dependency>
+                <groupId>org.entando.entando</groupId>
+                <artifactId>entando-portal-ui</artifactId>
+                <version>${entando-portal-ui.version}</version>
+                <classifier>classes</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.entando.entando</groupId>
+                <artifactId>entando-portal-ui</artifactId>
+                <version>${entando-portal-ui.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <!-- jacms -->
+            <dependency>
+                <groupId>org.entando.entando.plugins</groupId>
+                <artifactId>entando-plugin-jacms</artifactId>
+                <version>${entando-plugin-jacms.version}</version>
+                <classifier>classes</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.entando.entando.plugins</groupId>
+                <artifactId>entando-plugin-jacms</artifactId>
+                <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>
-            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
-            <type>war</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.entando.entando.plugins</groupId>
-            <artifactId>entando-plugin-jacms</artifactId>
-            <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
             <classifier>classes</classifier>
-            <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-portal-ui</artifactId>
-            <version>${entando-portal-ui.version}</version><!-- version. Don't remove this comment. -->
             <classifier>classes</classifier>
-            <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -141,30 +179,22 @@
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>
-            <version>${entando-plugin-jacms.version}</version>
             <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-portal-ui</artifactId>
-            <version>${entando-portal-ui.version}</version>
             <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-engine</artifactId>
-            <version>${entando-engine.version}</version>
             <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-admin-console</artifactId>
-            <version>${entando-admin-console.version}</version>
             <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
