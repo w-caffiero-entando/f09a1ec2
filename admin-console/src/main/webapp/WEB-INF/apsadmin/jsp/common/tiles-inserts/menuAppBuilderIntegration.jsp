@@ -151,20 +151,11 @@
                 <a class="secondary-collapse-toggle-pf" data-toggle="collapse-secondary-nav"></a>
                 <span><s:text name="menu.APPS" /></span>
             </div>
-            <ul class="list-group">
-                <wpsa:hookPoint key="core.menu.apps" objectName="hookPointElements_core_menu_apps">
-                    <s:iterator value="#hookPointElements_core_menu_apps" var="hookPointElement">
-                        <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
-                    </s:iterator>
-                </wpsa:hookPoint>
-                <c:if test="${isCategories}">
-                    <li class="list-group-item">
-                        <a href='<s:url action="viewTree" namespace="/do/Category" />'>
-                            <span class="list-group-item-value"><s:text name="menu.settings.categories" /></span>
-                        </a>
-                    </li>
-                </c:if>
-            </ul>
+            <wpsa:hookPoint key="core.menu.apps" objectName="hookPointElements_core_menu_apps">
+                <s:iterator value="#hookPointElements_core_menu_apps" var="hookPointElement">
+                    <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
+                </s:iterator>
+            </wpsa:hookPoint>
         </div>
     </li>
 
