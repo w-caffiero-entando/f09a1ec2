@@ -6,6 +6,7 @@ import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.PageManager;
 import com.agiletec.aps.util.ApsProperties;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -105,48 +106,57 @@ public class SeoPageService extends PageService {
         Map<String, SeoDataByLang> seoDataByLangMap = new HashMap<>();
         ApsProperties descriptions = seoMetadata.getDescriptions();
         ApsProperties keywords = seoMetadata.getKeywords();
-        if (seoMetadata.getComplexParameters() != null) {
-            seoMetadata.getComplexParameters().entrySet().stream()
-                    .forEach(e -> {
-                        String lang = e.getKey();
-                        final Map<String, PageMetatag> metatagMap = e.getValue();
-                        final List<SeoMetaTag> pageMetaTagList = metatagMap.entrySet().stream().map(meta ->
-                                {
-                                    final PageMetatag metatag = meta.getValue();
-                                    return new SeoMetaTag(metatag.getKey(),
-                                            metatag.getKeyAttribute(),
-                                            metatag.getValue(),
-                                            metatag.isUseDefaultLangValue());
-                                }
-                        ).collect(Collectors.toList());
-                        boolean inheritDescriptionFromDefaultLang = false;
-                        boolean inheritKeywordsFromDefaultLang = false;
-                        String seoMetadataDescription = null;
-                        String seoMetadataKeyword = null;
-                        if (null != descriptions) {
-                            PageMetatag descriptionMetaTag = (PageMetatag) descriptions.get(lang);
+
+        langManager.getLangs()
+                .forEach(e -> {
+                    String lang = e.getCode();
+                    boolean inheritDescriptionFromDefaultLang = false;
+                    boolean inheritKeywordsFromDefaultLang = false;
+                    String seoMetadataDescription = "";
+                    String seoMetadataKeyword = "";
+                    if (null != descriptions) {
+                        PageMetatag descriptionMetaTag = (PageMetatag) descriptions.get(lang);
+                        if (null != descriptionMetaTag) {
                             seoMetadataDescription = descriptionMetaTag.getValue();
                             inheritDescriptionFromDefaultLang = descriptionMetaTag.isUseDefaultLangValue();
                         }
-                        if (null != keywords) {
-                            PageMetatag keywordsMetaTag = (PageMetatag) keywords.get(lang);
+                    }
+                    if (null != keywords) {
+                        PageMetatag keywordsMetaTag = (PageMetatag) keywords.get(lang);
+                        if (null != keywordsMetaTag) {
                             seoMetadataKeyword = keywordsMetaTag.getValue();
                             inheritKeywordsFromDefaultLang = keywordsMetaTag.isUseDefaultLangValue();
                         }
-                        SeoDataByLang seoDataByLang = new SeoDataByLang(
-                                seoMetadataDescription,
-                                seoMetadataKeyword,
-                                pageMetaTagList,
-                                inheritDescriptionFromDefaultLang,
-                                inheritKeywordsFromDefaultLang);
-                        seoDataByLangMap.put(lang, seoDataByLang);
-                    });
-            seoData.setSeoDataByLang(seoDataByLangMap);
-        }
+                    }
+
+                    SeoDataByLang seoDataByLang = new SeoDataByLang(
+                            seoMetadataDescription,
+                            seoMetadataKeyword,
+                            pageMetaTagList(lang, seoMetadata.getComplexParameters()),
+                            inheritDescriptionFromDefaultLang,
+                            inheritKeywordsFromDefaultLang);
+                    seoDataByLangMap.put(lang, seoDataByLang);
+                });
+        seoData.setSeoDataByLang(seoDataByLangMap);
         seoPageDto.setSeoData(seoData);
         return seoPageDto;
     }
 
+    private List<SeoMetaTag> pageMetaTagList(String lang, Map<String, Map<String, PageMetatag>> complexParameters) {
+        List<SeoMetaTag> result = new ArrayList<>();
+        complexParameters.forEach((cpLang, v) -> {
+            if (cpLang.equals(lang)) {
+                v.entrySet().forEach(metatag -> {
+                    result.add(new SeoMetaTag(metatag.getValue().getKey(),
+                            metatag.getValue().getKeyAttribute(),
+                            metatag.getValue().getValue(),
+                            metatag.getValue().isUseDefaultLangValue())
+                    );
+                });
+            }
+        });
+        return result;
+    }
 
     @Override
     public SeoPageDto addPage(PageRequest pageRequest) {
@@ -213,6 +223,8 @@ public class SeoPageService extends PageService {
         final Map<String, String> titles = pageRequest.getTitles();
         if (null != seoData.getFriendlyCode()) {
             seoPageMetadata.setFriendlyCode(seoData.getFriendlyCode());
+        } else {
+            seoPageMetadata.setFriendlyCode("");
         }
         if (null != seoData.getUseExtraDescriptions()) {
             seoPageMetadata.setUseExtraDescriptions(seoData.getUseExtraDescriptions());
@@ -235,33 +247,34 @@ public class SeoPageService extends PageService {
         List<Lang> systemLangs = langManager.getLangs();
         List<String> systemLangsString = systemLangs.stream().map(f -> f.getCode()).collect(Collectors.toList());
 
-        seoData.getSeoDataByLang().forEach((lang, seoDataByLang) -> {
-            Boolean inheritKeywords = false;
-            Boolean inheritDescription = false;
-            if (systemLangsString.contains(lang)) {
-                if (!lang.equals(defaultLang)) {
-                    inheritKeywords = seoDataByLang.isInheritKeywordsFromDefaultLang();
-                    inheritDescription = seoDataByLang.isInheritDescriptionFromDefaultLang();
+        if (null != seoData.getSeoDataByLang()) {
+            seoData.getSeoDataByLang().forEach((lang, seoDataByLang) -> {
+                Boolean inheritKeywords = false;
+                Boolean inheritDescription = false;
+                if (systemLangsString.contains(lang)) {
+                    if (!lang.equals(defaultLang)) {
+                        inheritKeywords = seoDataByLang.isInheritKeywordsFromDefaultLang();
+                        inheritDescription = seoDataByLang.isInheritDescriptionFromDefaultLang();
+                    }
+                    if (null != seoDataByLang.getKeywords()) {
+                        PageMetatag keywordsPageMetaTag = new PageMetatag(lang, "keywords",
+                                seoDataByLang.getKeywords().trim(),
+                                inheritKeywords);
+                        keywordsAps.put(lang, keywordsPageMetaTag);
+                    }
+                    if (null != seoDataByLang.getDescription()) {
+                        PageMetatag descriptionPageMetaTag = new PageMetatag(lang, "description",
+                                seoDataByLang.getDescription().trim(), inheritDescription);
+                        descriptionsAps.put(lang, descriptionPageMetaTag);
+                    }
+                    if (null != seoDataByLang.getMetaTags()) {
+                        langMetaTags.put(lang, mapLangMetaTags(seoDataByLang.getMetaTags()));
+                    }
+                } else {
+                    logger.warn("Lang not valid :{}. SeoDataByLang not added", lang);
                 }
-                if (null != seoDataByLang.getKeywords()) {
-                    PageMetatag keywordsPageMetaTag = new PageMetatag(lang, "keywords", seoDataByLang.getKeywords().trim(),
-                            inheritKeywords);
-                    keywordsAps.put(lang, keywordsPageMetaTag);
-                }
-                if (null != seoDataByLang.getKeywords()) {
-                    PageMetatag descriptionPageMetaTag = new PageMetatag(lang, "description",
-                            seoDataByLang.getDescription().trim(), inheritDescription);
-
-                    descriptionsAps.put(lang, descriptionPageMetaTag);
-                }
-                if (null != seoDataByLang.getMetaTags()) {
-                    langMetaTags.put(lang, mapLangMetaTags(seoDataByLang.getMetaTags()));
-                }
-
-            } else {
-                logger.warn("Lang not valid :{}. SeoDataByLang not added", lang);
-            }
-        });
+            });
+        }
 
         seoPageMetadata.setKeywords(keywordsAps);
         seoPageMetadata.setDescriptions(descriptionsAps);
@@ -295,6 +308,4 @@ public class SeoPageService extends PageService {
         Map<String, PageMetatag> map = list.stream().collect(Collectors.toMap(PageMetatag::getKey, meta -> meta));
         return map;
     }
-
-
 }
