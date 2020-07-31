@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -73,7 +74,6 @@ public class SeoPageController implements ISeoPageController {
     public ResponseEntity<RestResponse<PageDto, Map<String, String>>> getSeoPage(UserDetails user, String pageCode,
             String status) {
         logger.debug("get seo page {}", pageCode);
-
         Map<String, String> metadata = new HashMap<>();
         if (!this.getAuthorizationService().isAuth(user, pageCode)) {
             return new ResponseEntity<>(new RestResponse<>(new PageDto(), metadata), HttpStatus.UNAUTHORIZED);
@@ -87,14 +87,18 @@ public class SeoPageController implements ISeoPageController {
     public ResponseEntity<SimpleRestResponse<SeoPageDto>> addPage(UserDetails user,
             SeoPageRequest pageRequest, BindingResult bindingResult) throws ApsSystemException {
         logger.debug("creating page with request {}", pageRequest);
-        //field validations
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        //business validations
         getSeoPageValidator().validate(pageRequest, bindingResult);
         if ((null!=pageRequest.getSeoData()) && (null!=pageRequest.getSeoData().getFriendlyCode())) {
-            getSeoPageValidator().checkFriendlyCode(pageRequest.getSeoData().getFriendlyCode());
+            String friendlyCode = pageRequest.getSeoData().getFriendlyCode();
+            if (!getSeoPageValidator().checkFriendlyCode(friendlyCode)) {
+                DataBinder binder = new DataBinder(friendlyCode);
+                bindingResult = binder.getBindingResult();
+                bindingResult.reject("10",  "Invalid friendly code");
+                throw new ValidationConflictException(bindingResult);
+            }
         }
         if (bindingResult.hasErrors()) {
             throw new ValidationConflictException(bindingResult);
@@ -112,7 +116,6 @@ public class SeoPageController implements ISeoPageController {
         if (!this.getAuthorizationService().isAuth(user, pageCode)) {
             throw new ResourcePermissionsException(bindingResult, user.getUsername(), pageCode);
         }
-        //field validations
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
@@ -120,17 +123,13 @@ public class SeoPageController implements ISeoPageController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-
         getSeoPageValidator().checkFriendlyCode(pageRequest.getSeoData().getFriendlyCode());
-
         PagePositionRequest pagePositionRequest = new PagePositionRequest();
         pagePositionRequest.setParentCode(pageRequest.getParentCode());
         pagePositionRequest.setCode(pageCode);
         int position = pageService.getPages(pageCode).size() + 1;
         pagePositionRequest.setPosition(position);
-
         this.getSeoPageValidator().validateMovePage(pageCode, bindingResult, pagePositionRequest);
-
         SeoPageDto page = (SeoPageDto) pageService.updatePage(pageCode, pageRequest);
         Map<String, String> metadata = new HashMap<>();
         return new ResponseEntity<>(new RestResponse<>(page, metadata), HttpStatus.OK);

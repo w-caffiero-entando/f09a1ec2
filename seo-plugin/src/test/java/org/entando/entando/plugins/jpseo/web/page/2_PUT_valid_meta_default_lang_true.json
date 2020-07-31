@@ -41,13 +41,13 @@
                         "key": "author",
                         "type": "name",
                         "value": "entando",
-                        "useDefaultLang": false
+                        "useDefaultLang": true
                     },
                     {
                         "key": "description",
                         "type": "name",
-                        "value": "descrizione meta test",
-                        "useDefaultLang": false
+                        "value": "test in italiano",
+                        "useDefaultLang": true
                     }
                 ],
                 "inheritDescriptionFromDefaultLang": true,
