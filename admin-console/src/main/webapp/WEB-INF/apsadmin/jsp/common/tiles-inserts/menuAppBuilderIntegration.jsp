@@ -151,13 +151,11 @@
                 <a class="secondary-collapse-toggle-pf" data-toggle="collapse-secondary-nav"></a>
                 <span><s:text name="menu.APPS" /></span>
             </div>
-            <ul class="list-group">
-                <wpsa:hookPoint key="core.menu.apps" objectName="hookPointElements_core_menu_apps">
-                    <s:iterator value="#hookPointElements_core_menu_apps" var="hookPointElement">
-                        <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
-                    </s:iterator>
-                </wpsa:hookPoint>
-            </ul>
+            <wpsa:hookPoint key="core.menu.apps" objectName="hookPointElements_core_menu_apps">
+                <s:iterator value="#hookPointElements_core_menu_apps" var="hookPointElement">
+                    <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
+                </s:iterator>
+            </wpsa:hookPoint>
         </div>
     </li>
 
