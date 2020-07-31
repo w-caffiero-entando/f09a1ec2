@@ -142,7 +142,7 @@
     <!-- APPS -->
     <li class="list-group-item secondary-nav-item-pf" data-target="#apps-secondary">
         <a>
-            <span class="fa fa-rocket" data-toggle="tooltip" title="<s:text name="menu.APPS" />"></span>
+            <span class="fa fa-file-text-o" data-toggle="tooltip" title="<s:text name="menu.APPS" />"></span>
             <span class="list-group-item-value"><s:text name="menu.APPS" /></span>
         </a>
         <!--Integrations secondary-->
