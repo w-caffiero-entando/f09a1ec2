@@ -157,13 +157,6 @@
                         <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
                     </s:iterator>
                 </wpsa:hookPoint>
-                <c:if test="${isCategories}">
-                    <li class="list-group-item">
-                        <a href='<s:url action="viewTree" namespace="/do/Category" />'>
-                            <span class="list-group-item-value"><s:text name="menu.settings.categories" /></span>
-                        </a>
-                    </li>
-                </c:if>
             </ul>
         </div>
     </li>
