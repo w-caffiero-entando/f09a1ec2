@@ -100,13 +100,13 @@
                 <groupId>org.entando.entando</groupId>
                 <artifactId>entando-engine</artifactId>
                 <version>${entando-engine.version}</version>
-                <type>test-jar</type>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.entando.entando</groupId>
                 <artifactId>entando-engine</artifactId>
                 <version>${entando-engine.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
             </dependency>
             <!-- admin-console -->
             <dependency>
