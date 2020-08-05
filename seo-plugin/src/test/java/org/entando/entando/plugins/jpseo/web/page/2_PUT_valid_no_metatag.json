@@ -1,0 +1,39 @@
+{
+  "charset": "utf-8",
+  "code": "seoTest2",
+  "contentType": "text/html",
+  "displayedInMenu": true,
+  "ownerGroup": "free",
+  "pageModel": "home",
+  "parentCode": "homepage",
+  "seo": true,
+  "joinGroups": [
+    "administrators"
+  ],
+  "seoData": {
+    "friendlyCode": "test_page_2_friendly_url",
+    "seoDataByLang": {
+      "en": {
+        "description": "test page",
+        "keywords": "keyword number 1, keyword number 2",
+        "metaTags": [],
+        "inheritDescriptionFromDefaultLang": false,
+        "inheritKeywordsFromDefaultLang": false
+      },
+      "it": {
+        "description": "",
+        "keywords": "",
+        "metaTags": [],
+        "inheritDescriptionFromDefaultLang": true,
+        "inheritKeywordsFromDefaultLang": true
+      }
+    },
+    "useExtraDescriptions": true,
+    "useExtraTitles": true
+  },
+  "status": "draft",
+  "titles": {
+    "en": "Test Page",
+    "it": "Pagina di test"
+  }
+}
