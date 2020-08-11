@@ -14,6 +14,7 @@
 package org.entando.entando.plugins.jpseo.web.page;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,6 +32,7 @@ import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -38,10 +40,20 @@ import org.springframework.test.web.servlet.ResultMatcher;
 public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     @Autowired
+    @Qualifier("SeoPageService")
     private IPageService pageService;
 
     private static String SEO_TEST_1 = "seoTest1";
     private static String SEO_TEST_2 = "seoTest2";
+
+
+    @Test
+    public void testGetBuiltInSeoPage() throws Exception {
+        String accessToken = this.createAccessToken();
+
+        final ResultActions result = this.executeGetSeoPage("service", accessToken);
+        result.andExpect(status().isOk());
+    }
 
     @Test
     public void testPostSeoPage() throws Exception {
@@ -149,6 +161,38 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
 
             final ResultActions result = this
                     .executePostSeoPage("1_POST_valid_empty_fields_2.json", accessToken, status().isOk());
+
+            Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
+            result.andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_1)))
+                    .andExpect(jsonPath("$.payload.status", is("unpublished")))
+                    .andExpect(jsonPath("$.payload.onlineInstance", is(false)))
+                    .andExpect(jsonPath("$.payload.displayedInMenu", is(true)))
+                    .andExpect(jsonPath("$.payload.pageModel", is("service")))
+                    .andExpect(jsonPath("$.payload.charset", is("utf-8")))
+                    .andExpect(jsonPath("$.payload.contentType", is("text/html")))
+                    .andExpect(jsonPath("$.payload.parentCode", is("service")))
+                    .andExpect(jsonPath("$.payload.seo", is(false)))
+                    .andExpect(jsonPath("$.payload.titles.size()", is(2)))
+                    .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
+                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
+
+        } finally {
+            PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
+            if (null != page) {
+                this.pageService.removePage(SEO_TEST_1);
+            }
+        }
+    }
+
+    @Test
+    public void testPostSeoPageNullSeoData() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+
+            final ResultActions result = this
+                    .executePostSeoPage("1_POST_valid_no_seoData.json", accessToken, status().isOk());
 
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
             result.andExpect(jsonPath("$.errors.size()", is(0)))
@@ -412,6 +456,18 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
         System.out.println("result1: \n" + result1.andReturn().getResponse().getContentAsString());
 
         return result1;
+    }
+
+    private ResultActions executeGetSeoPage(String pageCode, String accessToken)
+            throws Exception {
+        String path = "/plugins/seo/pages/{pageCode}";
+
+        ResultActions result = mockMvc
+                .perform(get(path, pageCode)
+                        .header("Authorization", "Bearer " + accessToken));
+
+        System.out.println("result: \n" + result.andReturn().getResponse().getContentAsString());
+        return result;
     }
 
     private String createAccessToken() throws Exception {

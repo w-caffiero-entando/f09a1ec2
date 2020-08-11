@@ -144,17 +144,19 @@ public class SeoPageService extends PageService {
 
     private List<SeoMetaTag> pageMetaTagList(String lang, Map<String, Map<String, PageMetatag>> complexParameters) {
         List<SeoMetaTag> result = new ArrayList<>();
-        complexParameters.forEach((cpLang, v) -> {
-            if (cpLang.equals(lang)) {
-                v.entrySet().forEach(metatag -> {
-                    result.add(new SeoMetaTag(metatag.getValue().getKey(),
-                            metatag.getValue().getKeyAttribute(),
-                            metatag.getValue().getValue(),
-                            metatag.getValue().isUseDefaultLangValue())
-                    );
-                });
-            }
-        });
+        if (complexParameters != null) {
+            complexParameters.forEach((cpLang, v) -> {
+                if (cpLang.equals(lang)) {
+                    v.entrySet().forEach(metatag -> {
+                        result.add(new SeoMetaTag(metatag.getValue().getKey(),
+                                metatag.getValue().getKeyAttribute(),
+                                metatag.getValue().getValue(),
+                                metatag.getValue().isUseDefaultLangValue())
+                        );
+                    });
+                }
+            });
+        }
         return result;
     }
 
@@ -163,6 +165,7 @@ public class SeoPageService extends PageService {
         super.validateRequest(pageRequest);
         final SeoPageRequest seoPageRequest = (SeoPageRequest) pageRequest;
         SeoData seoData = seoPageRequest.getSeoData();
+        if (seoData == null) seoData = new SeoData();
         final SeoPageMetadata seoPageMetadata = mapSeoDataToSeoPageMetadata(seoData, pageRequest);
         IPage page = super.createPage(pageRequest);
         page.setMetadata(seoPageMetadata);
@@ -200,6 +203,7 @@ public class SeoPageService extends PageService {
                     }
                     final SeoPageRequest seoPageRequest = (SeoPageRequest) pageRequest;
                     SeoData seoData = seoPageRequest.getSeoData();
+                    if (seoData == null) seoData = new SeoData();
                     final SeoPageMetadata seoPageMetadata = mapSeoDataToSeoPageMetadata(seoData, pageRequest);
                     IPage newPage = super.updatePage(oldPage, pageRequest);
                     newPage.setMetadata(seoPageMetadata);
