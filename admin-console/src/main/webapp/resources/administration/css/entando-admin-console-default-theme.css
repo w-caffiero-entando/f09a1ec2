@@ -2117,6 +2117,10 @@ label .fa-folder, .fa-folder {
     text-align: center;
 }
 
+.e6-home-container::before {
+    display: none;
+}
+
 .center1 {
     margin: auto;
     width: 60%;
