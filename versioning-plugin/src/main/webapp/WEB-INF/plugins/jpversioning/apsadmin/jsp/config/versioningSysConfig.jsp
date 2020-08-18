@@ -1,5 +1,11 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="/aps-core" prefix="wp" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib uri="/apsadmin-form" prefix="wpsf" %>
+
+<wp:ifauthorized permission="superuser" var="isSuperUser" />
+<wp:ifauthorized permission="editContents" var="isEditContents" />
+<wp:ifauthorized permission="manageResources" var="isManageResources" />
 
 <ol class="breadcrumb page-tabs-header breadcrumb-position">
     <li><s:text name="breadcrumb.integrations"/></li>
@@ -23,18 +29,24 @@
         </div>
         <div class="col-sm-6">
             <ul class="nav nav-tabs nav-justified nav-tabs-pattern">
-                <li>
-                    <a href="<s:url action="list" namespace="/do/jpversioning/Content/Versioning" />"><s:text name="jpversioning.menu.contentList"/></a>
-                </li>
-                <li>
-                    <a href="<s:url action="list" namespace="/do/jpversioning/Resource/Trash"><s:param name="resourceTypeCode" >Image</s:param></s:url>" ><s:text name="jpversioning.menu.images" /></a>
-                </li>
-                <li>
-                    <a href="<s:url action="list" namespace="/do/jpversioning/Resource/Trash"><s:param name="resourceTypeCode" >Attach</s:param></s:url>" ><s:text name="jpversioning.menu.attaches" /></a>
-                </li>
-                <li class="active">
-                    <a href="<s:url namespace="/do/jpversioning/Config" action="systemParams"></s:url>"><s:text name="jpversioning.menu.config" /></a>
-                </li>
+                <c:if test="${isEditContents}">
+                    <li>
+                        <a href="<s:url action="list" namespace="/do/jpversioning/Content/Versioning" />"><s:text name="jpversioning.menu.contentList"/></a>
+                    </li>
+                </c:if>
+                <c:if test="${isManageResources}">
+                    <li>
+                        <a href="<s:url action="list" namespace="/do/jpversioning/Resource/Trash"><s:param name="resourceTypeCode" >Image</s:param></s:url>" ><s:text name="jpversioning.menu.images" /></a>
+                    </li>
+                    <li>
+                        <a href="<s:url action="list" namespace="/do/jpversioning/Resource/Trash"><s:param name="resourceTypeCode" >Attach</s:param></s:url>" ><s:text name="jpversioning.menu.attaches" /></a>
+                    </li>
+                </c:if>
+                <c:if test="${isSuperUser}">
+                    <li class="active">
+                        <a href="<s:url namespace="/do/jpversioning/Config" action="systemParams"></s:url>"><s:text name="jpversioning.menu.config" /></a>
+                    </li>
+                </c:if>
             </ul>
         </div>
     </div>
