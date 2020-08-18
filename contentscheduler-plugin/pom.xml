@@ -104,75 +104,10 @@
     </build>
     <dependencyManagement>
         <dependencies>
-            <!-- engine -->
             <dependency>
-                <groupId>org.entando.entando</groupId>
-                <artifactId>entando-engine</artifactId>
-                <version>${entando-engine.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.entando.entando</groupId>
-                <artifactId>entando-engine</artifactId>
-                <version>${entando-engine.version}</version>
-                <type>test-jar</type>
-                <scope>test</scope>
-            </dependency>
-            <!-- admin-console -->
-            <dependency>
-                <groupId>org.entando.entando</groupId>
-                <artifactId>entando-admin-console</artifactId>
-                <version>${entando-admin-console.version}</version>
-                <classifier>classes</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.entando.entando</groupId>
-                <artifactId>entando-admin-console</artifactId>
-                <version>${entando-admin-console.version}</version>
-                <type>test-jar</type>
-                <scope>test</scope>
-            </dependency>
-            <!-- portal-ui -->
-            <dependency>
-                <groupId>org.entando.entando</groupId>
-                <artifactId>entando-portal-ui</artifactId>
-                <version>${entando-portal-ui.version}</version>
-                <classifier>classes</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.entando.entando</groupId>
-                <artifactId>entando-portal-ui</artifactId>
-                <version>${entando-portal-ui.version}</version>
-                <type>test-jar</type>
-                <scope>test</scope>
-            </dependency>
-            <!-- jacms -->
-            <dependency>
-                <groupId>org.entando.entando.plugins</groupId>
-                <artifactId>entando-plugin-jacms</artifactId>
-                <version>${entando-plugin-jacms.version}</version>
-                <classifier>classes</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.entando.entando.plugins</groupId>
-                <artifactId>entando-plugin-jacms</artifactId>
-                <version>${entando-plugin-jacms.version}</version><!-- version. Don't remove this comment. -->
-                <type>test-jar</type>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- jpmail -->
-            <dependency>
-                <groupId>org.entando.entando.plugins</groupId>
-                <artifactId>entando-plugin-jpmail</artifactId>
-                <version>${entando-plugin-jpmail.version}</version>
-                <classifier>classes</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.entando.entando.plugins</groupId>
-                <artifactId>entando-plugin-jpmail</artifactId>
-                <version>${entando-plugin-jpmail.version}</version><!-- version. Don't remove this comment. -->
-                <type>test-jar</type>
-                <scope>test</scope>
+                <groupId>org.entando</groupId>
+                <artifactId>entando-core-bom</artifactId>
+                <version>6.2.8</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
