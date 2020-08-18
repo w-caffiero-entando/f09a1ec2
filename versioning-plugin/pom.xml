@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.2.14</version>
+        <version>6.2.15</version>
     </parent>
     <artifactId>entando-plugin-jpversioning</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
@@ -35,10 +35,6 @@
     </repositories>
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
-        <entando-engine.version>6.2.23</entando-engine.version>
-        <entando-admin-console.version>6.2.36</entando-admin-console.version>
-        <entando-portal-ui.version>6.2.6</entando-portal-ui.version>
-        <entando-plugin-jacms.version>6.2.17</entando-plugin-jacms.version>
     </properties>
     <build>
         <resources>
@@ -103,7 +99,7 @@
             <dependency>
                 <groupId>org.entando</groupId>
                 <artifactId>entando-core-bom</artifactId>
-                <version>6.2.1</version>
+                <version>6.2.8</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
