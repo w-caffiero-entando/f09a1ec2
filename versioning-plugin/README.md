@@ -57,3 +57,7 @@ The _recycle bin_ can be access from the left menu _Plugins_ â†’ _Versioning_ â†
 You can restore and delete permanently the resources using the arrow and the remove icons.
 
 
+# Developing against local versions of upstream projects (e.g. admin-console,  entando-engine).
+
+Full instructions on how to develop against local versions of upstream projects are available in the
+[entando-parent-bom](https://github.com/entando/entando-core-bom) project. 
