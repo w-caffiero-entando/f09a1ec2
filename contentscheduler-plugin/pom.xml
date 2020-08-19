@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.2.14</version>
+        <version>6.2.15</version>
     </parent>
     <artifactId>entando-plugin-jpcontentscheduler</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
@@ -37,11 +37,6 @@
         <checkstyle.skip>true</checkstyle.skip>
         <!--        <allTestsSuiteClass>org.entando.entando.plugins.jacms.apsadmin.common.TestActivityStream</allTestsSuiteClass>-->
         <allTestsSuiteClass>org.entando.entando.plugins.jpcontentscheduler.AllTests</allTestsSuiteClass>
-        <entando-engine.version>6.2.23</entando-engine.version>
-        <entando-admin-console.version>6.2.36</entando-admin-console.version>
-        <entando-portal-ui.version>6.2.6</entando-portal-ui.version>
-        <entando-plugin-jacms.version>6.2.17</entando-plugin-jacms.version>
-        <entando-plugin-jpmail.version>6.2.5</entando-plugin-jpmail.version>
     </properties>
     <build>
         <resources>
@@ -107,7 +102,9 @@
             <dependency>
                 <groupId>org.entando</groupId>
                 <artifactId>entando-core-bom</artifactId>
-                <version>6.2.8</version>
+                <version>6.2.11</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
