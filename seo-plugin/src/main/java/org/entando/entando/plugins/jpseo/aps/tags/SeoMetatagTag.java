@@ -36,6 +36,7 @@ import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.PageMetadata;
+import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.tags.ExtendedTagSupport;
@@ -58,25 +59,33 @@ public class SeoMetatagTag extends ExtendedTagSupport {
                 this.release();
                 return EVAL_PAGE;
             }
-            Map<String, Map<String, PageMetatag>> complexParameters = ((SeoPageMetadata) pageMetadata).getComplexParameters();
-            if (null != complexParameters) {
-                Map<String, PageMetatag> mapvalue = complexParameters.get(currentLang.getCode());
-                Map<String, PageMetatag> defaultMapvalue = complexParameters.get("default");
-                if (null == defaultMapvalue) {
-                    ILangManager langManager = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);
-                    Lang defaultLang = langManager.getDefaultLang();
-                    defaultMapvalue = complexParameters.get(defaultLang.getCode());
-                }
-                if (null != mapvalue) {
-                    PageMetatag pageMetatag = mapvalue.get(this.getKey());
-                    if (null != pageMetatag && !pageMetatag.isUseDefaultLangValue() && !StringUtils.isBlank(pageMetatag.getValue())) {
-                        this.setValue(pageMetatag.getValue());
+            if (CurrentPageTag.DESCRIPTION_INFO.equals(this.getKey())) {
+                ApsProperties descriptions = ((SeoPageMetadata) pageMetadata).getDescriptions();
+                this.setSeoValue(descriptions, currentLang);
+            } else if (CurrentPageTag.KEYWORDS_INFO.equals(this.getKey())) {
+                ApsProperties keywords = ((SeoPageMetadata) pageMetadata).getKeywords();
+                this.setSeoValue(keywords, currentLang);
+            } else {
+                Map<String, Map<String, PageMetatag>> complexParameters = ((SeoPageMetadata) pageMetadata).getComplexParameters();
+                if (null != complexParameters) {
+                    Map<String, PageMetatag> mapvalue = complexParameters.get(currentLang.getCode());
+                    Map<String, PageMetatag> defaultMapvalue = complexParameters.get("default");
+                    if (null == defaultMapvalue) {
+                        ILangManager langManager = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);
+                        Lang defaultLang = langManager.getDefaultLang();
+                        defaultMapvalue = complexParameters.get(defaultLang.getCode());
                     }
-                }
-                if (null == this.getValue()) {
-                    PageMetatag pageMetatag = defaultMapvalue.get(this.getKey());
-                    if (null != pageMetatag && !StringUtils.isBlank(pageMetatag.getValue())) {
-                        this.setValue(pageMetatag.getValue());
+                    if (null != mapvalue) {
+                        PageMetatag pageMetatag = mapvalue.get(this.getKey());
+                        if (null != pageMetatag && !pageMetatag.isUseDefaultLangValue() && !StringUtils.isBlank(pageMetatag.getValue())) {
+                            this.setValue(pageMetatag.getValue());
+                        }
+                    }
+                    if (null == this.getValue() && null != defaultMapvalue) {
+                        PageMetatag pageMetatag = defaultMapvalue.get(this.getKey());
+                        if (null != pageMetatag && !StringUtils.isBlank(pageMetatag.getValue())) {
+                            this.setValue(pageMetatag.getValue());
+                        }
                     }
                 }
             }
@@ -89,6 +98,19 @@ public class SeoMetatagTag extends ExtendedTagSupport {
         }
         this.release();
         return EVAL_PAGE;
+    }
+
+    protected void setSeoValue(ApsProperties properties, Lang currentLang) {
+        PageMetatag metatag = null;
+        if (currentLang != null) {
+            metatag = (PageMetatag) properties.get(currentLang.getCode());
+        } else {
+            ILangManager langManager = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);
+            metatag = (PageMetatag) properties.get(langManager.getDefaultLang().getCode());
+        }
+        if (null != metatag) {
+            this.setValue(metatag.getValue());
+        }
     }
 
     protected void evalValue() throws JspException {

@@ -49,7 +49,9 @@ public class CurrentPageTag extends com.agiletec.aps.tags.CurrentPageTag {
 
     private static final Logger _logger = LoggerFactory.getLogger(CurrentPageTag.class);
 
-    public static final String DESCRIPTION_INFO = "description";
+    protected static final String DESCRIPTION_INFO = "description";
+
+    protected static final String KEYWORDS_INFO = "keywords";
 
     @Override
     public int doEndTag() throws JspException {
@@ -63,6 +65,8 @@ public class CurrentPageTag extends com.agiletec.aps.tags.CurrentPageTag {
                 this.extractPageTitle(page, currentLang, reqCtx);
             } else if (this.getParam().equals(DESCRIPTION_INFO)) {
                 this.extractPageDescription(page, currentLang, reqCtx);
+            } else if (this.getParam().equals(KEYWORDS_INFO)) {
+                this.extractPageKeywords(page, currentLang);
             } else if (this.getParam().equals(CODE_INFO)) {
                 this.setValue(page.getCode());
             } else if (this.getParam().equals(OWNER_INFO)) {
@@ -130,23 +134,36 @@ public class CurrentPageTag extends com.agiletec.aps.tags.CurrentPageTag {
             return;
         }
         ApsProperties descriptions = ((SeoPageMetadata) pageMetadata).getDescriptions();
+        this.setSeoValue(descriptions, currentLang);
+    }
+    
+    protected void extractPageKeywords(IPage page, Lang currentLang) {
+        PageMetadata pageMetadata = page.getMetadata();
+        if (!(pageMetadata instanceof SeoPageMetadata) || null == ((SeoPageMetadata) pageMetadata).getKeywords()) {
+            return;
+        }
+        ApsProperties keywords = ((SeoPageMetadata) pageMetadata).getKeywords();
+        this.setSeoValue(keywords, currentLang);
+    }
+    
+    protected void setSeoValue(ApsProperties properties, Lang currentLang) {
         PageMetatag metatag = null;
         if ((this.getLangCode() == null) || (this.getLangCode().equals(""))
                 || (currentLang.getCode().equalsIgnoreCase(this.getLangCode()))) {
-            metatag = (PageMetatag) descriptions.get(currentLang.getCode());
+            metatag = (PageMetatag) properties.get(currentLang.getCode());
         } else {
-            metatag = (PageMetatag) descriptions.get(this.getLangCode());
+            metatag = (PageMetatag) properties.get(this.getLangCode());
         }
         if (metatag == null || null == metatag.getValue()) {
             ILangManager langManager
                     = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);
-            metatag = (PageMetatag) descriptions.get(langManager.getDefaultLang().getCode());
+            metatag = (PageMetatag) properties.get(langManager.getDefaultLang().getCode());
         }
         if (null != metatag) {
             this.setValue(metatag.getValue());
         }
     }
-
+    
     private void extractPageDescriptionFromMap(Lang currentLang, Map extraDescriptionsMap) {
         Object value = null;
         if ((this.getLangCode() == null) || (this.getLangCode().equals(""))
