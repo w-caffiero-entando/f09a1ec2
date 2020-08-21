@@ -55,7 +55,9 @@ public class SeoPageSettingsAction extends PageSettingsAction {
         } finally {
             File file = new File(alternativePath);
             if (file.exists()) {
-                file.delete();
+                // SONAR-FALSE-POSITIVE:
+                // alternativePath is actually checked by PageSettingsUtils.isRightPath
+                file.delete();  //NOSONAR
             }
         }
         return SUCCESS;
