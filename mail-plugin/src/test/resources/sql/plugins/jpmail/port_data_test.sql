@@ -11,5 +11,6 @@ INSERT INTO sysconfig (version, item, descr, config) VALUES ('test', 'jpmail_con
 		<user></user>
 		<password></password>
 		<security>std</security>
+		<checkServerIdentity>false</checkServerIdentity>
 	</smtp>
 </mailConfig>');
