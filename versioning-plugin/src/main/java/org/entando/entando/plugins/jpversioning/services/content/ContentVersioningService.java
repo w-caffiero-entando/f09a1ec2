@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -274,7 +275,10 @@ public class ContentVersioningService {
 
     private Document loadContentDocumentDOM(String contentXml)
             throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance("com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", null);
+        // *1: Restricts fetching of external XML resources to avoid SSRFs.
+        fact.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");        // *1
+        fact.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");     // *1
         DocumentBuilder builder = fact.newDocumentBuilder();
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(contentXml.getBytes("UTF-8"));
         Document doc = builder.parse(byteArrayInputStream);

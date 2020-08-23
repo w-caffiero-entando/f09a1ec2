@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -39,6 +38,7 @@ import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntSafeXmlUtils;
 import org.xml.sax.InputSource;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.services.category.ICategoryManager;
@@ -317,8 +317,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
      */
     protected void fillEmptyResourceFromXml(ResourceInterface resource, String xml) throws EntException {
     	try {
-			SAXParserFactory parseFactory = SAXParserFactory.newInstance();
-    		SAXParser parser = parseFactory.newSAXParser();
+			SAXParser parser = EntSafeXmlUtils.newSafeSAXParser();
     		InputSource is = new InputSource(new StringReader(xml));
     		ResourceHandler handler = new ResourceHandler(resource, this.getCategoryManager());
     		parser.parse(is, handler);

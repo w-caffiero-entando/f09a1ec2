@@ -25,13 +25,13 @@ import java.io.StringReader;
 import java.util.List;
 
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntSafeXmlUtils;
 import org.xml.sax.InputSource;
 
 import com.agiletec.aps.system.common.AbstractService;
@@ -227,8 +227,7 @@ public class VersioningManager extends AbstractService implements IVersioningMan
     protected Content createContentFromXml(String entityTypeCode, String xml) throws EntException {
         try {
             Content entityPrototype = (Content) this.getContentManager().getEntityPrototype(entityTypeCode);
-            SAXParserFactory parseFactory = SAXParserFactory.newInstance();
-            SAXParser parser = parseFactory.newSAXParser();
+            SAXParser parser = EntSafeXmlUtils.newSafeSAXParser();
             InputSource is = new InputSource(new StringReader(xml));
             EntityHandler handler = this.getEntityHandler();
             handler.initHandler(entityPrototype, this.getXmlAttributeRootElementName(), this.getCategoryManager());
