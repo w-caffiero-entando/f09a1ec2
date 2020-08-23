@@ -35,6 +35,7 @@ import org.entando.entando.apsadmin.system.services.shortcut.model.AbstractBaseB
 import org.entando.entando.apsadmin.system.services.shortcut.model.MenuSection;
 import org.entando.entando.apsadmin.system.services.shortcut.model.Shortcut;
 import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntSafeXmlUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -56,8 +57,7 @@ public class ShortcutDefDOM {
 	}
 	
 	private void validate(String xmlText, String definitionPath) throws EntException {
-		SchemaFactory factory = 
-            SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		SchemaFactory factory =  EntSafeXmlUtils.newSafeSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		InputStream schemaIs = null;
 		InputStream xmlIs = null;
 		try {
@@ -80,7 +80,7 @@ public class ShortcutDefDOM {
 			} catch (IOException e) {
 				_logger.error("error closing input stream", e);
 			}
-        }
+		}
 	}
 	
 	public Map<String, Shortcut> getShortcuts() {
