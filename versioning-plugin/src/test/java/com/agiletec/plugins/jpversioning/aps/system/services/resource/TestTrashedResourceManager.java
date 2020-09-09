@@ -162,7 +162,59 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
 			throw t;
 		}
 	}
-	
+
+    public void testRestoreFromTrashProtectedResource() throws Throwable {
+        String mainGroup = Group.ADMINS_GROUP_NAME;
+        String resDescrToAdd = "Test protected resource";
+        String resourceType = "Image";
+        String categoryCodeToAdd = "resCat1";
+        ResourceDataBean bean = this.getMockResource(resourceType, mainGroup, resDescrToAdd, categoryCodeToAdd);
+        List<String> groups = new ArrayList<String>();
+        groups.add(Group.ADMINS_GROUP_NAME);
+        try {
+            // add the resource
+            this._resourceManager.addResource(bean);
+            List<String> resources = this._resourceManager
+                    .searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+            assertEquals(1, resources.size());
+
+            String resourceId = resources.get(0);
+            ResourceInterface resource = this._resourceManager.loadResource(resourceId);
+            assertNotNull(resource);
+
+            // move into the trash
+            this._resourceManager.deleteResource(resource);
+            resources = _resourceManager.searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+            assertEquals(0, resources.size());
+
+            // restore from Trash
+            this._trashedResourceManager.restoreResource(resourceId);
+            resources = this._resourceManager.searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+            assertEquals(1, resources.size());
+            resource = this._resourceManager.loadResource(resources.get(0));
+
+            assertNotNull(resource.getResourceStream());
+            assertEquals(Group.ADMINS_GROUP_NAME, resource.getMainGroup());
+            // delete from archive and from trash
+            _resourceManager.deleteResource(resource);
+            resources = _resourceManager.searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+            assertEquals(0, resources.size());
+            this._trashedResourceManager.removeFromTrash(resource.getId());
+        } catch (Throwable t) {
+            List<String> resources = this._resourceManager
+                    .searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+            if (null != resources && resources.size() > 0) {
+                for (int i = 0; i < resources.size(); i++) {
+                    String id = resources.get(i);
+                    this._trashedResourceManager.removeFromTrash(id);
+                    ResourceInterface resource = this._resourceManager.loadResource(id);
+                    this._resourceManager.deleteResource(resource);
+                }
+            }
+            throw t;
+        }
+    }
+
 	private ResourceDataBean getMockResource(String resourceType, String mainGroup, String resDescrToAdd, String categoryCodeToAdd) {
 		File file = new File("target/test/entando_logo.jpg");
 		BaseResourceDataBean bean = new BaseResourceDataBean(file);
