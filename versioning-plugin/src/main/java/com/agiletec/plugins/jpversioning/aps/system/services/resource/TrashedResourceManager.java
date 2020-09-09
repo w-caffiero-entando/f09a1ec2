@@ -24,6 +24,7 @@ package com.agiletec.plugins.jpversioning.aps.system.services.resource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +39,6 @@ import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
-
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.category.ICategoryManager;
@@ -60,13 +60,13 @@ import com.agiletec.plugins.jpversioning.aps.system.JpversioningSystemConstants;
 @Aspect
 public class TrashedResourceManager extends AbstractService implements ITrashedResourceManager {
 
-	private static final Logger logger = LoggerFactory.getLogger(TrashedResourceManager.class);
+	private static final Logger _logger = LoggerFactory.getLogger(TrashedResourceManager.class);
 
 	@Override
 	public void init() throws Exception {
 		this.checkTrashedResourceDiskFolder(this.getResourceTrashRootDiskSubFolder());
-		logger.debug("{} ready", this.getClass().getName());
-		logger.debug("Folder trashed resources: {}", this.getResourceTrashRootDiskSubFolder());
+		_logger.debug("{} ready", this.getClass().getName());
+		_logger.debug("Folder trashed resources: {}", this.getResourceTrashRootDiskSubFolder());
 	}
 
 	@Before("execution(* com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager.deleteResource(..)) && args(resource)")
@@ -80,7 +80,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
     	try {
     		resources = this.getTrashedResourceDAO().searchTrashedResourceIds(resourceTypeCode, text, allowedGroups);
     	} catch (Throwable t) {
-			logger.error("Error while extracting trashed resources", t);
+			_logger.error("Error while extracting trashed resources", t);
 			throw new ApsSystemException("Error while extracting trashed resources", t);
     	}
     	return resources;
@@ -93,10 +93,10 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 			ResourceRecordVO resourceVo = this.getTrashedResourceDAO().getTrashedResource(id);
 			if (null != resourceVo) {
 				resource = this.createResource(resourceVo);
-				logger.info("loaded trashed resource {}", id);
+				_logger.info("loaded trashed resource {}", id);
 			}
 		} catch (Throwable t) {
-			logger.error("Error while loading trashed resource", t);
+			_logger.error("Error while loading trashed resource", t);
 			throw new ApsSystemException("Error while loading trashed resource", t);
 		}
 		return resource;
@@ -122,9 +122,8 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 						if (is != null) {
 							String pathDest = folderDest + resourceInstance.getFileName();
 							if (isProtected) {
-								pathDest = folderDest + resource.getMainGroup() + "/" + resourceInstance.getFileName();
+								pathDest = getProtectedFilePathString(folderDest,resource.getMainGroup(), resourceInstance.getFileName());
 							}
-
 							this.getStorageManager().saveFile(pathDest, isProtected, is);
 						}
 					}
@@ -136,7 +135,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 					if (null != is) {
 						String pathDest = folderDest + resourceInstance.getFileName();
 						if (isProtected) {
-							pathDest = folderDest + resource.getMainGroup() + "/" + resourceInstance.getFileName();
+							pathDest = getProtectedFilePathString(folderDest,resource.getMainGroup(), resourceInstance.getFileName());
 						}
 						this.getStorageManager().saveFile(pathDest, isProtected, is);
 					}
@@ -144,8 +143,9 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 	    		this.getResourceDAO().addResource(resource);
 				this.removeFromTrash(resource);
 			} catch (Throwable t) {
-				logger.error("Error on restoring trashed resource", t);
-				throw new ApsSystemException("Error on restoring trashed resource", t);
+				String error= "Error on restoring trashed resource";
+				_logger.error(error, t);
+				throw new ApsSystemException(error, t);
 			}
 		}
 	}
@@ -159,7 +159,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 				this.removeFromTrash(resource);
 			}
 		} catch (Throwable t) {
-    		logger.error("Error removing Trashed Resource", t);
+    		_logger.error("Error removing Trashed Resource", t);
     		throw new ApsSystemException("Error removing Trashed Resource", t);
 		}
 	}
@@ -188,7 +188,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 			//}
 			this.getTrashedResourceDAO().delTrashedResource(resource.getId());
 		} catch (Throwable t) {
-    		logger.error("Error removing Trashed Resource", t);
+    		_logger.error("Error removing Trashed Resource", t);
     		throw new ApsSystemException("Error removing Trashed Resource", t);
 		}
 	}
@@ -227,7 +227,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 				String path = paths.get(i);
 				this.getStorageManager().deleteFile(path, true);
 			}
-    		logger.error("Error adding Trashed Resource", t);
+    		_logger.error("Error adding Trashed Resource", t);
     		throw new ApsSystemException("Error adding Trashed Resource", t);
     	}
 	}
@@ -242,7 +242,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 				this.getStorageManager().createDirectory(dirPath, true);
 			}
 		} catch (Throwable t) {
-			logger.error("Error on check Trashed disk folder", t);
+			_logger.error("Error on check Trashed disk folder", t);
     		throw new RuntimeException("Error on check Trashed disk folder", t);
 		}
 	}
@@ -280,7 +280,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 			String path = this.getSubfolder(resource) + instance.getFileName();
 			return this.getStorageManager().getStream(path, true);
 		} catch (Throwable t) {
-			logger.error("Error on extracting stream", t);
+			_logger.error("Error on extracting stream", t);
     		throw new ApsSystemException("Error on extracting stream", t);
 		}
 	}
@@ -324,7 +324,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
     		ResourceHandler handler = new ResourceHandler(resource, this.getCategoryManager());
     		parser.parse(is, handler);
     	} catch (Throwable t) {
-    		logger.error("Error on loading resource", t);
+    		_logger.error("Error on loading resource", t);
     		throw new ApsSystemException("Error on loading resource", t);
     	}
     }
@@ -366,6 +366,10 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 	}
 	public void setResourceDAO(IResourceDAO resourceDAO) {
 		this._resourceDAO = resourceDAO;
+	}
+
+	private String getProtectedFilePathString(String folder , String mainGroup, String filename) {
+		return Paths.get(folder,mainGroup, filename).toString();
 	}
 
     private IResourceManager _resourceManager;
