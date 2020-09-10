@@ -163,7 +163,7 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
 		}
 	}
 
-    public void testRestoreFromTrashProtectedResource() throws Throwable {
+    public void testRestoreImageFromTrashProtectedResource() throws Throwable {
         String mainGroup = Group.ADMINS_GROUP_NAME;
         String resDescrToAdd = "Test protected resource";
         String resourceType = "Image";
@@ -215,6 +215,58 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
         }
     }
 
+	public void testRestoreAttachmentFromTrashProtectedResource() throws Throwable {
+		String mainGroup = Group.ADMINS_GROUP_NAME;
+		String resDescrToAdd = "Test protected resource Attachment";
+		String resourceType = "Attach";
+		String categoryCodeToAdd = "resCat1";
+		ResourceDataBean bean = this.getMockResourceAttachment(mainGroup, resDescrToAdd, categoryCodeToAdd);
+		List<String> groups = new ArrayList<>();
+		groups.add(Group.ADMINS_GROUP_NAME);
+		try {
+			// add the resource
+			this._resourceManager.addResource(bean);
+			List<String> resources = this._resourceManager
+					.searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+			assertEquals(1, resources.size());
+
+			String resourceId = resources.get(0);
+			ResourceInterface resource = this._resourceManager.loadResource(resourceId);
+			assertNotNull(resource);
+
+			// move into the trash
+			this._resourceManager.deleteResource(resource);
+			resources = _resourceManager.searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+			assertEquals(0, resources.size());
+
+			// restore from Trash
+			this._trashedResourceManager.restoreResource(resourceId);
+			resources = this._resourceManager.searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+			assertEquals(1, resources.size());
+			resource = this._resourceManager.loadResource(resources.get(0));
+
+			assertNotNull(resource.getResourceStream());
+			assertEquals(Group.ADMINS_GROUP_NAME, resource.getMainGroup());
+			// delete from archive and from trash
+			_resourceManager.deleteResource(resource);
+			resources = _resourceManager.searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+			assertEquals(0, resources.size());
+			this._trashedResourceManager.removeFromTrash(resource.getId());
+		} catch (Throwable t) {
+			List<String> resources = this._resourceManager
+					.searchResourcesId(resourceType, resDescrToAdd, categoryCodeToAdd, groups);
+			if (null != resources && resources.size() > 0) {
+				for (int i = 0; i < resources.size(); i++) {
+					String id = resources.get(i);
+					this._trashedResourceManager.removeFromTrash(id);
+					ResourceInterface resource = this._resourceManager.loadResource(id);
+					this._resourceManager.deleteResource(resource);
+				}
+			}
+			throw t;
+		}
+	}
+
 	private ResourceDataBean getMockResource(String resourceType, String mainGroup, String resDescrToAdd, String categoryCodeToAdd) {
 		File file = new File("target/test/entando_logo.jpg");
 		BaseResourceDataBean bean = new BaseResourceDataBean(file);
@@ -230,7 +282,24 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
 		bean.setCategories(categories);
 		return bean;
     }
-	
+
+	private ResourceDataBean getMockResourceAttachment(String mainGroup, String resDescrToAdd, String categoryCodeToAdd) {
+		File file = new File("target/test/test_attachment.txt");
+
+		BaseResourceDataBean bean = new BaseResourceDataBean(file);
+		bean.setDescr(resDescrToAdd);
+		bean.setMainGroup(mainGroup);
+		bean.setResourceType("Attach");
+		bean.setMimeType("text/plain");
+		List<Category> categories = new ArrayList<Category>();
+		ICategoryManager catManager =
+				(ICategoryManager) this.getService(SystemConstants.CATEGORY_MANAGER);
+		Category cat = catManager.getCategory(categoryCodeToAdd);
+		categories.add(cat);
+		bean.setCategories(categories);
+		return bean;
+	}
+
 	private void init() throws Exception {
     	try {
     		this._resourceManager = (IResourceManager) this.getService(JacmsSystemConstants.RESOURCE_MANAGER);

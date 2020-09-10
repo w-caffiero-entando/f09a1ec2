@@ -143,9 +143,8 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 	    		this.getResourceDAO().addResource(resource);
 				this.removeFromTrash(resource);
 			} catch (Throwable t) {
-				String error= "Error on restoring trashed resource";
-				_logger.error(error, t);
-				throw new ApsSystemException(error, t);
+				_logger.error("Error on restoring trashed resource", t);
+				throw new ApsSystemException("Error on restoring trashed resource", t);
 			}
 		}
 	}
