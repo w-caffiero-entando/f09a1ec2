@@ -24,6 +24,7 @@ package com.agiletec.plugins.jpversioning.aps.system.services.resource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +39,6 @@ import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
-
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.category.ICategoryManager;
@@ -61,19 +61,19 @@ import com.agiletec.plugins.jpversioning.aps.system.JpversioningSystemConstants;
 public class TrashedResourceManager extends AbstractService implements ITrashedResourceManager {
 
 	private static final Logger _logger = LoggerFactory.getLogger(TrashedResourceManager.class);
-	
+
 	@Override
 	public void init() throws Exception {
 		this.checkTrashedResourceDiskFolder(this.getResourceTrashRootDiskSubFolder());
 		_logger.debug("{} ready", this.getClass().getName());
 		_logger.debug("Folder trashed resources: {}", this.getResourceTrashRootDiskSubFolder());
 	}
-	
+
 	@Before("execution(* com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager.deleteResource(..)) && args(resource)")
 	public void onDeleteResource(ResourceInterface resource) throws ApsSystemException {
 		this.addTrashedResource(resource);
 	}
-	
+
 	@Override
 	public List<String> searchTrashedResourceIds(String resourceTypeCode, String text, List<String> allowedGroups) throws ApsSystemException {
 		List<String> resources = null;
@@ -85,7 +85,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
     	}
     	return resources;
 	}
-	
+
 	@Override
 	public ResourceInterface loadTrashedResource(String id) throws ApsSystemException{
 		ResourceInterface resource = null;
@@ -101,7 +101,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 		}
 		return resource;
 	}
-	
+
 	@Override
 	public void restoreResource(String resourceId) throws ApsSystemException {
 		ResourceInterface resource = this.loadTrashedResource(resourceId);
@@ -121,7 +121,9 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 						InputStream is = this.getStorageManager().getStream(path, true);
 						if (is != null) {
 							String pathDest = folderDest + resourceInstance.getFileName();
-							//System.out.println("destination " + pathDest);
+							if (isProtected) {
+								pathDest = getProtectedFilePathString(folderDest,resource.getMainGroup(), resourceInstance.getFileName());
+							}
 							this.getStorageManager().saveFile(pathDest, isProtected, is);
 						}
 					}
@@ -129,11 +131,12 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 					AbstractMonoInstanceResource monoResource = (AbstractMonoInstanceResource) resource;
 					ResourceInstance resourceInstance = monoResource.getInstance();
 					String path = folder + resourceInstance.getFileName();
-					//System.out.println("source " + path);
 					InputStream is = this.getStorageManager().getStream(path, true);
 					if (null != is) {
 						String pathDest = folderDest + resourceInstance.getFileName();
-						//System.out.println("destination " + pathDest);
+						if (isProtected) {
+							pathDest = getProtectedFilePathString(folderDest,resource.getMainGroup(), resourceInstance.getFileName());
+						}
 						this.getStorageManager().saveFile(pathDest, isProtected, is);
 					}
 				}
@@ -145,7 +148,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 			}
 		}
 	}
-	
+
 	@Override
 	public void removeFromTrash(String resourceId) throws ApsSystemException {
 		try {
@@ -159,7 +162,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
     		throw new ApsSystemException("Error removing Trashed Resource", t);
 		}
 	}
-	
+
 	protected void removeFromTrash(ResourceInterface resource) throws ApsSystemException {
 		try {
 			//ResourceRecordVO resourceVo = this.getTrashedResourceDAO().getTrashedResource(resourceId);
@@ -188,7 +191,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
     		throw new ApsSystemException("Error removing Trashed Resource", t);
 		}
 	}
-	
+
 	@Override
 	public void addTrashedResource(ResourceInterface resource) throws ApsSystemException {
 		String folder = this.getSubfolder(resource);
@@ -227,7 +230,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
     		throw new ApsSystemException("Error adding Trashed Resource", t);
     	}
 	}
-	
+
 	/**
 	 * Verifica l'esistenza della directory di destinazione dei file
 	 */
@@ -288,9 +291,9 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 				.append(File.separator).append(resource.getId()).append(File.separator);
 		return subfolder.toString();
 	}
-	
+
 	/*
-     * Metodo di servizio. Restituisce una risorsa 
+     * Metodo di servizio. Restituisce una risorsa
      * in base ai dati del corrispondente record del db.
      * @param resourceVo Il vo relativo al record del db.
      * @return La risorsa valorizzata.
@@ -304,17 +307,17 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 		resource.setMainGroup(resourceVo.getMainGroup());
 		return resource;
 	}
-    
+
     /**
-     * Valorizza una risorsa prototipo con gli elementi 
-     * dell'xml che rappresenta una risorsa specifica. 
+     * Valorizza una risorsa prototipo con gli elementi
+     * dell'xml che rappresenta una risorsa specifica.
      * @param resource Il prototipo di risorsa da specializzare con gli attributi dell'xml.
-     * @param xml L'xml della risorsa specifica. 
+     * @param xml L'xml della risorsa specifica.
      * @throws ApsSystemException
      */
     protected void fillEmptyResourceFromXml(ResourceInterface resource, String xml) throws ApsSystemException {
     	try {
-			SAXParserFactory parseFactory = SAXParserFactory.newInstance();			
+			SAXParserFactory parseFactory = SAXParserFactory.newInstance();
     		SAXParser parser = parseFactory.newSAXParser();
     		InputSource is = new InputSource(new StringReader(xml));
     		ResourceHandler handler = new ResourceHandler(resource, this.getCategoryManager());
@@ -324,52 +327,56 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
     		throw new ApsSystemException("Error on loading resource", t);
     	}
     }
-	
+
 	protected String getResourceTrashRootDiskSubFolder() {
 		return JpversioningSystemConstants.DEFAULT_RESOURCE_TRASH_FOLDER_NAME;//folderName;
 	}
-	
+
 	protected IResourceManager getResourceManager() {
 		return _resourceManager;
 	}
 	public void setResourceManager(IResourceManager resourceManager) {
 		this._resourceManager = resourceManager;
 	}
-    
+
 	protected ICategoryManager getCategoryManager() {
 		return _categoryManager;
 	}
 	public void setCategoryManager(ICategoryManager categoryManager) {
 		this._categoryManager = categoryManager;
 	}
-    
+
 	protected IStorageManager getStorageManager() {
 		return _storageManager;
 	}
 	public void setStorageManager(IStorageManager storageManager) {
 		this._storageManager = storageManager;
 	}
-	
+
     protected ITrashedResourceDAO getTrashedResourceDAO() {
 		return _trashedResourceDAO;
 	}
 	public void setTrashedResourceDAO(ITrashedResourceDAO trashedResourceDAO) {
 		this._trashedResourceDAO = trashedResourceDAO;
 	}
-	
+
 	protected IResourceDAO getResourceDAO() {
 		return _resourceDAO;
 	}
 	public void setResourceDAO(IResourceDAO resourceDAO) {
 		this._resourceDAO = resourceDAO;
 	}
-	
+
+	private String getProtectedFilePathString(String folder , String mainGroup, String filename) {
+		return Paths.get(folder,mainGroup, filename).toString();
+	}
+
     private IResourceManager _resourceManager;
     private ICategoryManager _categoryManager;
-    
+
 	private IStorageManager _storageManager;
-	
+
     private ITrashedResourceDAO _trashedResourceDAO;
     private IResourceDAO _resourceDAO;
-	
+
 }
