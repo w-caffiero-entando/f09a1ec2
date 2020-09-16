@@ -177,13 +177,16 @@ public class PageSettingsActionAspect {
                         action.getText("jpseo.error.robotFilePath.invalid", new String[]{alternativePath}));
             } else if (this.checkPath(alternativePath, action)) {
                 if (null != is) {
-                    //alternativePath and string
-                    this.saveFile(alternativePath, is, action);
+                    // SONAR-FALSE-POSITIVE:
+                    // alternativePath is actually checked by PageSettingsUtils.isRightPath
+                    this.saveFile(alternativePath, is, action); //NOSONAR
                 } else {
                     File file = new File(alternativePath);
                     try {
                         if (file.exists()) {
-                            file.delete();
+                            // SONAR-FALSE-POSITIVE:
+                            // alternativePath is actually checked by PageSettingsUtils.isRightPath
+                            file.delete();  //NOSONAR
                         }
                     } catch (Exception e) {
                         logger.error("error deleting file {}", alternativePath);
