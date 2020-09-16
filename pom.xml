@@ -73,7 +73,7 @@
         <spring.version>5.1.8.RELEASE</spring.version>
         <springsecurity.version>5.1.8.RELEASE</springsecurity.version>
         <springsecurityoauth2.version>2.3.6.RELEASE</springsecurityoauth2.version>
-        <struts2.version>2.5.17</struts2.version>
+        <struts2.version>2.5.22</struts2.version>
         <cxf.version>3.3.6</cxf.version>
         <jackson.version>2.10.0</jackson.version>
         <hibernate-validator-version>6.0.17.Final</hibernate-validator-version>
@@ -120,7 +120,7 @@
         <javassist.version>3.20.0-GA</javassist.version>
         <velocity.version>1.7</velocity.version>
         <struts2-jquery-plugin.version>4.0.3</struts2-jquery-plugin.version>
-        <ognl.version>3.0.21</ognl.version>
+        <ognl.version>3.1.26</ognl.version>
         <tiles-core.version>3.0.8</tiles-core.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang.version>2.6</commons-lang.version>
