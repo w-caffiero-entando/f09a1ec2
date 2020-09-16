@@ -125,6 +125,17 @@
         </div>
 
         <div class="form-group">
+            <label class="col-sm-2 control-label" for="checkServerIdentity">
+                <s:text name="label.checkServerIdentity" />
+            </label>
+            <div class="col-sm-10">
+                <div class="checkbox">
+                    <wpsf:checkbox name="checkServerIdentity" id="checkServerIdentity" cssClass="bootstrap-switch" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label class="col-sm-2 control-label" for="smtpTimeout">
                 <s:text name="label.smtpTimeout" />
             </label>

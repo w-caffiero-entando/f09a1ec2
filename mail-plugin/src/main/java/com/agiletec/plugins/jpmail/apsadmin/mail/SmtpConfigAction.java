@@ -122,6 +122,7 @@ public class SmtpConfigAction extends BaseAction {
 			this.setSmtpUserName(config.getSmtpUserName());
 			this.setSmtpPassword(config.getSmtpPassword());
 			this.setSmtpProtocol(config.getSmtpProtocol());
+			this.setCheckServerIdentity(config.isCheckServerIdentity());
 		} else {
 			config = new MailConfig();
 		}
@@ -140,6 +141,7 @@ public class SmtpConfigAction extends BaseAction {
 		config.setSmtpPort(this.getSmtpPort());
 		config.setSmtpTimeout(this.getSmtpTimeout());
 		config.setSmtpProtocol(this.getSmtpProtocol());
+		config.setCheckServerIdentity(this.isCheckServerIdentity());
 		if (StringUtils.isBlank(this.getSmtpUserName()) && StringUtils.isBlank(this.getSmtpPassword())) {
 			config.setSmtpUserName(this.getSmtpUserName());
 			config.setSmtpPassword(this.getSmtpPassword());
@@ -291,7 +293,23 @@ public class SmtpConfigAction extends BaseAction {
 	public void setSmtpProtocol(Integer smtpProtocol) {
 		this._smtpProtocol = smtpProtocol;
 	}
-	
+
+	/**
+	 * Returns the flag that control if the host of the server validation is required in case of TLS connection
+	 */
+	public boolean isCheckServerIdentity() {
+		return this._checkServerIdentity;
+	}
+
+	/**
+	 * Sets the flag to control if the host of the server validation is required in case of TLS connection
+	 *
+	 * @param checkServerIdentity the smtp protocol
+	 */
+	public void setCheckServerIdentity(boolean checkServerIdentity) {
+		this._checkServerIdentity = checkServerIdentity;
+	}
+
 	/**
 	 * Get the transport security layer protocol
 	 * @return the smtp protocol
@@ -314,6 +332,7 @@ public class SmtpConfigAction extends BaseAction {
 	private String _smtpUserName;
 	private String _smtpPassword;
 	private Integer _smtpProtocol;
+	private boolean _checkServerIdentity;
 	private boolean _debug;
 	private IMailManager _mailManager;
 	private InputStream _inputStream;

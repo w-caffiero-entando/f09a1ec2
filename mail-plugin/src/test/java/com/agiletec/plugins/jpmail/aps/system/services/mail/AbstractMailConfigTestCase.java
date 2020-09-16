@@ -64,6 +64,7 @@ public abstract class AbstractMailConfigTestCase extends ApsPluginBaseTestCase {
 		config.setSmtpUserName("ciccio");
 		config.setSmtpPassword("cicci");
 		config.setSmtpProtocol(new Integer(2));
+		config.setCheckServerIdentity(true);
 		return config;
 	}
 	
@@ -81,6 +82,7 @@ public abstract class AbstractMailConfigTestCase extends ApsPluginBaseTestCase {
 		assertEquals(conf1.getSmtpUserName(), conf2.getSmtpUserName());
 		assertEquals(conf1.getSmtpPassword(), conf2.getSmtpPassword());
 		assertEquals(conf1.getSmtpProtocol(), conf2.getSmtpProtocol());
+		assertEquals(conf1.isCheckServerIdentity(), conf2.isCheckServerIdentity());
 	}
 	
 	protected void checkOriginaryConfig(MailConfig mailConfig) {
@@ -93,6 +95,7 @@ public abstract class AbstractMailConfigTestCase extends ApsPluginBaseTestCase {
 		assertNull(mailConfig.getSmtpTimeout());
 		assertNotNull(mailConfig.getSmtpUserName());
 		assertNotNull(mailConfig.getSmtpPassword());
+		assertFalse(mailConfig.isCheckServerIdentity());
 	}
 	
 	protected void init() throws Exception {

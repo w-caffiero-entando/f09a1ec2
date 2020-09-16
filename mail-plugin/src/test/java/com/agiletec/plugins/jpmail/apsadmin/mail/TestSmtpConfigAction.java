@@ -150,10 +150,13 @@ public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
 	public void testSaveSuccessful() throws Throwable {
 		try {
 			Map<String, String> params = new HashMap<String, String>();
+
+			// First Save
 			params.put("smtpHost", "host");
 			params.put("smtpProtocol", "0");
 			params.put("smtpUserName", "username");
 			params.put("smtpPassword", "password");
+			params.put("checkServerIdentity", "true");
 			String result = this.executeSave("admin", params);
 			assertEquals(Action.SUCCESS, result);
 			
@@ -163,9 +166,12 @@ public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
 			assertNull(config.getSmtpTimeout());
 			assertEquals("username", config.getSmtpUserName());
 			assertEquals("password", config.getSmtpPassword());
-			
+			assertTrue(config.isCheckServerIdentity());
+
+			// Second Save
 			params.put("smtpPort", "2525");
 			params.put("smtpTimeout", "2000");
+			params.put("checkServerIdentity", "false");
 			result = this.executeSave("admin", params);
 			assertEquals(Action.SUCCESS, result);
 			config = this._mailManager.getMailConfig();
@@ -174,6 +180,8 @@ public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
 			assertEquals(new Integer(2000), config.getSmtpTimeout());
 			assertEquals("username", config.getSmtpUserName());
 			assertEquals("password", config.getSmtpPassword());
+			assertFalse(config.isCheckServerIdentity());
+			assertFalse(config.isCheckServerIdentity());
 		} catch (Throwable t) {
 			throw t;
 		} finally {

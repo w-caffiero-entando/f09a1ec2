@@ -21,21 +21,18 @@
  */
 package com.agiletec.plugins.jpmail.aps.services.mail.parse;
 
-import java.io.StringReader;
-import java.util.List;
-import java.util.Map.Entry;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
-
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
+import java.io.StringReader;
 import java.util.Iterator;
+import java.util.List;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /*
 <mailConfig>
@@ -145,6 +142,9 @@ public class MailConfigDOM {
 					// any unknown protocol will disable encryption
 					config.setSmtpProtocol(JpmailSystemConstants.PROTO_STD);
 				}
+
+				String checkServerIdentity = smtpElem.getChildText(CHECK_SERVER_IDENTITY);
+				config.setCheckServerIdentity(!"false".equalsIgnoreCase(checkServerIdentity));
 			}
 		}
 	}
@@ -230,6 +230,10 @@ public class MailConfigDOM {
 				protocolElem.addContent(PROTO_STD);
 			}
 			smtpElem.addContent(protocolElem);
+
+			Element checkServerIdentityElem = new Element(CHECK_SERVER_IDENTITY);
+			checkServerIdentityElem.addContent(String.valueOf(config.isCheckServerIdentity()));
+			smtpElem.addContent(checkServerIdentityElem);
 		}
 		
 		return smtpElem;
@@ -276,6 +280,6 @@ public class MailConfigDOM {
 	private final String PROTO_SSL = "ssl";
 	private final String PROTO_TLS = "tls";
 	private final String PROTO_STD = "std";
-	
-	
+
+	private static final String CHECK_SERVER_IDENTITY = "checkServerIdentity";
 }

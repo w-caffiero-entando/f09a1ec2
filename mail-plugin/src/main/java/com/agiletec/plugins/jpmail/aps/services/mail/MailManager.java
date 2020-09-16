@@ -259,13 +259,15 @@ public class MailManager extends AbstractService implements IMailManager {
 				case JpmailSystemConstants.PROTO_SSL:
 					props.put("mail.smtp.socketFactory.port", port);
 					props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+					props.put("mail.smtp.ssl.checkserveridentity", String.valueOf(config.isCheckServerIdentity()));
 					props.put("mail.transport.protocol", "smtps");
 					break;
 				case JpmailSystemConstants.PROTO_TLS:
+					props.put("mail.smtp.ssl.checkserveridentity", String.valueOf(config.isCheckServerIdentity()));
 					props.put("mail.smtp.starttls.enable", "true");
 					break;
 				case JpmailSystemConstants.PROTO_STD:
-				// do nothing just use previous properties WITH the authenticator
+					// do nothing just use previous properties WITH the authenticator
 			}
 			Authenticator auth = new SMTPAuthenticator(config);
 			session = Session.getInstance(props, auth);

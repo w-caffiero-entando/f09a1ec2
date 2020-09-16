@@ -44,6 +44,7 @@ public class MailConfig implements Cloneable {
 		config.setSmtpUserName(this.getSmtpUserName());
 		config.setSmtpPassword(this.getSmtpPassword());
 		config.setSmtpProtocol(this.getSmtpProtocol());
+		config.setCheckServerIdentity(this.isCheckServerIdentity());
 		config.setSenders(new TreeMap<String, String>(this.getSenders()));
 		return config;
 	}
@@ -77,7 +78,7 @@ public class MailConfig implements Cloneable {
 				this._smtpProtocol == JpmailSystemConstants.PROTO_STD) return false;
 		return true;
 	}
-	
+
 	/**
 	 * Returns the smtp host name.
 	 * @return The smtp host name.
@@ -205,7 +206,22 @@ public class MailConfig implements Cloneable {
 	public Integer getSmtpProtocol() {
 		return _smtpProtocol;
 	}
-	
+
+	/**
+	 * Returns true if the host of the server validation is required in case of TLS connection
+	 */
+	public boolean isCheckServerIdentity() {
+		return this._checkServerIdentity;
+	}
+
+	/**
+	 * Set to true if the host of the server validation is required in case of TLS connection
+	 */
+	public void setCheckServerIdentity(boolean checkServerIdentity) {
+		_checkServerIdentity = checkServerIdentity;
+	}
+
+
 	private boolean _active;
 	private Map<String, String> _senders = new TreeMap<String, String>();
 	private String _smtpHost;
@@ -215,5 +231,5 @@ public class MailConfig implements Cloneable {
 	private String _smtpPassword;
 	private Integer _smtpProtocol;
 	private boolean _debug;
-	
+	private boolean _checkServerIdentity = true;
 }
