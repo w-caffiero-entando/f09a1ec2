@@ -142,70 +142,54 @@
                     </s:else>
                     <div class="col-sm-10">
                         <s:if test="#attribute.type == 'Boolean'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/booleanAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/booleanAttribute.jsp" />
                         </s:if>
                         <s:elseif test="#attribute.type == 'CheckBox'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/checkBoxAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/checkBoxAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'Composite'">
-                            <s:include
-                                value="/WEB-INF/plugins/jacms/apsadmin/jsp/content/modules/compositeAttribute.jsp" />
+                            <s:include value="/WEB-INF/plugins/jacms/apsadmin/jsp/content/modules/compositeAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'Date'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/dateAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/dateAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'Enumerator'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/enumeratorAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/enumeratorAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'EnumeratorMap'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/enumeratorMapAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/enumeratorMapAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'Hypertext'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/hypertextAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/hypertextAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'List'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/listAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/listAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'Longtext'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/longtextAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/longtextAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'Monolist'">
-                            <s:include
-                                value="/WEB-INF/plugins/jacms/apsadmin/jsp/content/modules/monolistAttribute.jsp" />
+                            <s:include value="/WEB-INF/plugins/jacms/apsadmin/jsp/content/modules/monolistAttribute.jsp" />
                         </s:elseif>
-                        <s:elseif test="#attribute.type == 'Monotext'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/monotextAttribute.jsp" />
+                        <s:elseif test="%{#attribute.type == 'Monotext' || #attribute.type == 'Email'}">
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/monotextAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'Number'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/numberAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/numberAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'Text'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/textAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/textAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'ThreeState'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/threeStateAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/threeStateAttribute.jsp" />
                         </s:elseif>
                         <s:elseif test="#attribute.type == 'Timestamp'">
-                            <s:include
-                                value="/WEB-INF/apsadmin/jsp/entity/modules/timestampAttribute.jsp" />
+                            <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/timestampAttribute.jsp" />
                         </s:elseif>
                         <s:else>
                             <%-- all other attributes uses monotext --%>
                             <div class="col-sm-10">
-                                <s:include
-                                    value="/WEB-INF/apsadmin/jsp/entity/modules/monotextAttribute.jsp" />
+                                <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/monotextAttribute.jsp" />
                             </div>
                         </s:else>
                     </div>
