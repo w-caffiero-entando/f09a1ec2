@@ -1,4 +1,4 @@
-INSERT INTO widgetcatalog ( code, titles, parameters, plugincode, locked ) VALUES ( 'jpseo_content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO widgetcatalog ( code, titles, parameters, plugincode, locked, overridable ) VALUES ( 'jpseo_content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Contents - Publish a Content with extra meta-description</property>
 <property key="it">Contenuti - Pubblica un Contenuto con extra meta-description</property>
@@ -6,7 +6,7 @@ INSERT INTO widgetcatalog ( code, titles, parameters, plugincode, locked ) VALUE
 	<parameter name="contentId">Content ID</parameter>
 	<parameter name="modelId">Content Model ID</parameter>
 	<action name="viewerConfig"/>
-</config>', 'jpseo', 1 );
+</config>', 'jpseo', 1 , 1);
 
 
 
