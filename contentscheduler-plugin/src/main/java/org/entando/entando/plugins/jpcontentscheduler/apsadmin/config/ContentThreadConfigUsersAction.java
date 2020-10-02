@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.IContentSchedulerManager;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.model.ContentThreadConfig;
 import org.slf4j.Logger;
@@ -197,7 +198,7 @@ public class ContentThreadConfigUsersAction extends BaseAction {
 		return Action.SUCCESS;
 	}
 
-	private boolean validateAdd() throws ApsSystemException {
+	private boolean validateAdd() throws EntException {
 		if (StringUtils.isBlank(this.getUsername())) {
 			this.addFieldError("username", this.getText("requiredstringByArg", this.getText("username")));
 			return false;
