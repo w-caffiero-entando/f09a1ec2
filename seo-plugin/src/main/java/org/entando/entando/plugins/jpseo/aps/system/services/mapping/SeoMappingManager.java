@@ -21,10 +21,12 @@
  */
 package org.entando.entando.plugins.jpseo.aps.system.services.mapping;
 
+import com.agiletec.aps.system.common.AbstractCacheWrapper;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
 import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
+import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
@@ -65,7 +67,13 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 		this.getCacheWrapper().initCache(this.getSeoMappingDAO());
 		logger.debug("{} ready. initialized",this.getClass().getName());
 	}
-	
+
+    @Override
+    protected void release() {
+        ((AbstractCacheWrapper) this.getCacheWrapper()).release();
+        super.release();
+    }
+
 	@Override
 	public void updateFromPageChanged(PageChangedEvent event) {
 		IPage page = event.getPage();
