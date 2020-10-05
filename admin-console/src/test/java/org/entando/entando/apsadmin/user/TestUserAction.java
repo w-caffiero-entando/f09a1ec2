@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
@@ -27,6 +27,8 @@ import com.agiletec.aps.util.DateConverter;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
+import org.entando.entando.ent.exception.EntException;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -390,7 +392,7 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
-    private void addUser(String username, String password) throws ApsSystemException {
+    private void addUser(String username, String password) throws EntException {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);

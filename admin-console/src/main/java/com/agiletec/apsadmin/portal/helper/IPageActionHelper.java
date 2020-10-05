@@ -21,10 +21,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.agiletec.apsadmin.system.ITreeNodeBaseActionHelper;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * Interface for the helper classes handling the portal pages.
@@ -35,7 +36,7 @@ public interface IPageActionHelper extends ITreeNodeBaseActionHelper {
 
     public boolean checkPageGroup(IPage page, BaseAction currentAction);
 
-    public Map getReferencingObjects(IPage page, HttpServletRequest request) throws ApsSystemException;
+    public Map getReferencingObjects(IPage page, HttpServletRequest request) throws EntException;
 
     /**
      * Return the root node of the page tree respecting the given permissions.
@@ -43,9 +44,9 @@ public interface IPageActionHelper extends ITreeNodeBaseActionHelper {
      * @param groupCodes The groups list used when building the page tree.
      * @param alsoFreeViewPages Indicate if include also only free view pages
      * @return The root of the page tree
-     * @throws ApsSystemException In case of error
+     * @throws EntException In case of error
      */
-    public ITreeNode getAllowedTreeRoot(Collection<String> groupCodes, boolean alsoFreeViewPages) throws ApsSystemException;
+    public ITreeNode getAllowedTreeRoot(Collection<String> groupCodes, boolean alsoFreeViewPages) throws EntException;
 
     public ActivityStreamInfo createActivityStreamInfo(IPage page, int strutsAction, boolean addLink, String entryAction);
 

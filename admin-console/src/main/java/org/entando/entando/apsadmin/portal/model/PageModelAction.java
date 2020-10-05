@@ -30,13 +30,14 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.json.JSONUtil;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.apsadmin.portal.model.helper.IPageModelActionHelper;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.http.HttpStatus;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.pagemodel.Frame;
 import com.agiletec.aps.system.services.pagemodel.FrameSketch;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
@@ -319,7 +320,7 @@ public class PageModelAction extends AbstractPageModelAction implements ServletR
 		return model;
 	}
 	
-	protected String checkModelForDelete() throws ApsSystemException {
+	protected String checkModelForDelete() {
 		PageModel model = super.getPageModel(this.getCode());
 		if (null == model) {
 			this.addActionError(this.getText("error.pageModel.notExist"));

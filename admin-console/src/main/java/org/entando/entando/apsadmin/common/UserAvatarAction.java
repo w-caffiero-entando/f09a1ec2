@@ -14,7 +14,7 @@
 package org.entando.entando.apsadmin.common;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.apsadmin.system.BaseAction;
 
@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -102,7 +103,7 @@ public class UserAvatarAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	protected IUserProfile getUserProfile() throws ApsSystemException {
+	protected IUserProfile getUserProfile() throws EntException {
 		if (null == this.getUsername()) {
 			return null;
 		}

@@ -24,12 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.common.entity.model.attribute.AbstractAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.apsadmin.system.BaseAction;
@@ -228,7 +229,7 @@ public class DataObjectModelAction extends BaseAction {
         try {
             AttributeInterface attribute = (AttributeInterface) prototype.getAttribute(attributeName);
             if (null == attribute) {
-                throw new ApsSystemException("Null Attribute '" + attributeName + "' for Data Type '"
+                throw new EntException("Null Attribute '" + attributeName + "' for Data Type '"
                         + prototype.getTypeCode() + "' - '" + prototype.getTypeDescr());
             }
             String methodsString = this.getAllowedPublicAttributeMethods().getProperty(attribute.getType());

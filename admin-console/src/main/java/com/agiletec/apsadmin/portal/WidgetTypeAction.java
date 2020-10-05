@@ -21,11 +21,11 @@ import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.aps.system.services.widgettype.WidgetTypeParameter;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
@@ -258,7 +258,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
         return SUCCESS;
     }
 
-    protected String extractUniqueGuiFragmentCode(String widgetTypeCode) throws ApsSystemException {
+    protected String extractUniqueGuiFragmentCode(String widgetTypeCode) throws EntException {
         String uniqueCode = widgetTypeCode;
         if (null != this.getGuiFragmentManager().getGuiFragment(uniqueCode)) {
             int index = 0;

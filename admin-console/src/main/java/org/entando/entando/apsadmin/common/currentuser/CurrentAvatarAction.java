@@ -16,8 +16,9 @@ package org.entando.entando.apsadmin.common.currentuser;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.apsadmin.common.UserAvatarAction;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.user.UserDetails;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * @author E.Santoboni
@@ -25,7 +26,7 @@ import com.agiletec.aps.system.services.user.UserDetails;
 public class CurrentAvatarAction extends UserAvatarAction {
 	
 	@Override
-	protected IUserProfile getUserProfile() throws ApsSystemException {
+	protected IUserProfile getUserProfile() throws EntException {
 		UserDetails currentUser = super.getCurrentUser();
 		IUserProfile profile = (null != currentUser && null != currentUser.getProfile()) 
 				? (IUserProfile) currentUser.getProfile() 

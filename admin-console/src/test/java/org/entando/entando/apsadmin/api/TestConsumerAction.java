@@ -14,7 +14,7 @@
 package org.entando.entando.apsadmin.api;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.oauth2.IOAuthConsumerManager;
 import org.entando.entando.aps.system.services.oauth2.model.ConsumerRecordVO;
+import org.entando.entando.ent.exception.EntException;
 
 public class TestConsumerAction extends ApsAdminBaseTestCase {
 
@@ -280,7 +281,7 @@ public class TestConsumerAction extends ApsAdminBaseTestCase {
     }
 
     private void addConsumer(String consumerKey, String secret, String name, String description,
-            String callbackUrl, String scope, List<String> grantTypes, Date expirationDate) throws ApsSystemException {
+            String callbackUrl, String scope, List<String> grantTypes, Date expirationDate) throws EntException {
         ConsumerRecordVO consumer = new ConsumerRecordVO();
         String grantTypesCsv = (null != grantTypes) ? StringUtils.join(grantTypes, ",") : null;
         consumer.setAuthorizedGrantTypes(grantTypesCsv);

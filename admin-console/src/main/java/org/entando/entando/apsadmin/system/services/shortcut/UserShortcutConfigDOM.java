@@ -13,7 +13,8 @@
  */
 package org.entando.entando.apsadmin.system.services.shortcut;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
+import org.entando.entando.ent.exception.EntException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -32,7 +33,7 @@ public class UserShortcutConfigDOM {
 
 	private static final Logger _logger = LoggerFactory.getLogger(UserShortcutConfigDOM.class);
 	
-	protected static String createUserConfigXml(String[] config) throws ApsSystemException {
+	protected static String createUserConfigXml(String[] config) throws EntException {
 		XMLOutputter out = new XMLOutputter();
 		Document document = new Document();
 		try {
@@ -50,7 +51,7 @@ public class UserShortcutConfigDOM {
 		} catch (Throwable t) {
 			_logger.error("Error parsing user config", t);
 			//ApsSystemUtils.logThrowable(t, UserShortcutConfigDOM.class, "extractUserShortcutConfig");
-			throw new ApsSystemException("Error parsing user config", t);
+			throw new EntException("Error parsing user config", t);
 		}
 		Format format = Format.getPrettyFormat();
 		format.setIndent("\t");
@@ -58,7 +59,7 @@ public class UserShortcutConfigDOM {
 		return out.outputString(document);
 	}
 	
-	protected static String[] extractUserConfig(String xml, Integer definiteSize) throws ApsSystemException {
+	protected static String[] extractUserConfig(String xml, Integer definiteSize) throws EntException {
 		String[] config = new String[definiteSize];
 		try {
 			if (null == xml || xml.trim().length() == 0) return config;
@@ -81,12 +82,12 @@ public class UserShortcutConfigDOM {
 		} catch (Throwable t) {
 			_logger.error("Error parsing user config", t);
 			//ApsSystemUtils.logThrowable(t, UserShortcutConfigDOM.class, "extractUserShortcutConfig");
-			throw new ApsSystemException("Error parsing user config", t);
+			throw new EntException("Error parsing user config", t);
 		}
 		return config;
 	}
 	
-	private static Document decodeDOM(String xmlText) throws ApsSystemException {
+	private static Document decodeDOM(String xmlText) throws EntException {
 		Document doc = null;
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
@@ -95,7 +96,7 @@ public class UserShortcutConfigDOM {
 			doc = builder.build(reader);
 		} catch (Throwable t) {
 			_logger.error("Error while parsing xml: {}", xmlText, t);
-			throw new ApsSystemException("Error detected while parsing the XML", t);
+			throw new EntException("Error detected while parsing the XML", t);
 		}
 		return doc;
 	}

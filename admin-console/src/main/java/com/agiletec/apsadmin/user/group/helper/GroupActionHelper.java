@@ -19,10 +19,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.GroupUtilizer;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
@@ -38,7 +39,7 @@ public class GroupActionHelper extends BaseActionHelper implements IGroupActionH
     private static final Logger _logger = LoggerFactory.getLogger(GroupActionHelper.class);
     
     @Override
-    public Map<String, List<Object>> getReferencingObjects(Group group, HttpServletRequest request) throws ApsSystemException {
+    public Map<String, List<Object>> getReferencingObjects(Group group, HttpServletRequest request) throws EntException {
         Map<String, List<Object>> references = new HashMap<String, List<Object>>();
         try {
             String[] defNames = ApsWebApplicationUtils.getWebApplicationContext(request).getBeanNamesForType(GroupUtilizer.class);
@@ -61,7 +62,7 @@ public class GroupActionHelper extends BaseActionHelper implements IGroupActionH
                 }
             }
         } catch (Throwable t) {
-            throw new ApsSystemException("Errore in getReferencingObjects", t);
+            throw new EntException("Errore in getReferencingObjects", t);
         }
         return references;
     }

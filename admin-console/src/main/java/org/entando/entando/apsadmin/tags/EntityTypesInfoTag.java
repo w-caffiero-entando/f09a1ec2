@@ -19,12 +19,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanComparator;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.apsadmin.tags.AbstractObjectInfoTag;
 
@@ -58,7 +59,7 @@ public class EntityTypesInfoTag extends AbstractObjectInfoTag {
 			
 			_logger.error("Error extracting entity types : entity manager '{}'", managerNameValue, t);
 			//ApsSystemUtils.logThrowable(t, this, "getMasterObject", message);
-			throw new ApsSystemException(message, t);
+			throw new EntException(message, t);
 		}
 		return null;
 	}

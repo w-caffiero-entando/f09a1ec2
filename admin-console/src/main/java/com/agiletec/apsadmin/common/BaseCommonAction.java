@@ -13,10 +13,11 @@
  */
 package com.agiletec.apsadmin.common;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.system.BaseAction;
@@ -42,7 +43,7 @@ public class BaseCommonAction extends BaseAction {
 			} else if (null == this.getUserManager().getUser(currentUser.getUsername(), this.getOldPassword())) {
 				this.addFieldError("oldPassword", this.getText("error.user.changePassword.wrongOldPassword"));
 			}
-		} catch (ApsSystemException e) {
+		} catch (EntException e) {
 			throw new RuntimeException("Error extracting user", e);
 		}
 	}

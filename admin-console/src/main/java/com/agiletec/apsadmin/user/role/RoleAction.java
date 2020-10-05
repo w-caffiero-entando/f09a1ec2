@@ -13,10 +13,11 @@
  */
 package com.agiletec.apsadmin.user.role;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.role.*;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.apsadmin.user.AbstractAuthorityAction;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.*;
 
 import java.util.*;
@@ -160,9 +161,9 @@ public class RoleAction extends AbstractAuthorityAction {
 	/**
 	 * Verifica l'utilizzo del ruolo.
 	 * @return true in caso positivo, false nel caso il ruolo non sia utilizzato.
-	 * @throws ApsSystemException In caso di errore.
+	 * @throws EntException In caso di errore.
 	 */
-	protected boolean isRoleInUse() throws ApsSystemException {
+	protected boolean isRoleInUse() throws EntException {
 		Role role = roleManager.getRole(this.getName());
 		List<String> usernames = super.getAuthorizationManager().getUsersByRole(role, false);
 		this.setReferences(usernames);
@@ -174,9 +175,9 @@ public class RoleAction extends AbstractAuthorityAction {
 	 * Imposta gli opportuni messaggi di errore come actionMessages.
 	 * Restituisce l'esito del controllo.
 	 * @return il codice del risultato.
-	 * @throws ApsSystemException In caso di errore.
+	 * @throws EntException In caso di errore.
 	 */
-	protected String checkRoleForDelete() throws ApsSystemException {
+	protected String checkRoleForDelete() throws EntException {
 		if (!this.existsRole()) {
 			addActionError(getText(ERROR_ROLE_NOT_EXIST));
 			return ROLE_LIST;

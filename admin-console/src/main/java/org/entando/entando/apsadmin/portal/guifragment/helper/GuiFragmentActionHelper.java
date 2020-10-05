@@ -21,10 +21,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.GuiFragmentUtilizer;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.apsadmin.system.BaseActionHelper;
 import com.agiletec.apsadmin.user.group.helper.GroupActionHelper;
@@ -35,7 +36,7 @@ public class GuiFragmentActionHelper extends BaseActionHelper implements IGuiFra
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, List<Object>> getReferencingObjects(GuiFragment fragment, HttpServletRequest request) throws ApsSystemException {
+	public Map<String, List<Object>> getReferencingObjects(GuiFragment fragment, HttpServletRequest request) throws EntException {
 		Map<String, List<Object>> references = new HashMap<String, List<Object>>();
     	try {
     		String[] defNames = ApsWebApplicationUtils.getWebApplicationContext(request).getBeanNamesForType(GuiFragmentUtilizer.class);
@@ -57,7 +58,7 @@ public class GuiFragmentActionHelper extends BaseActionHelper implements IGuiFra
 				}
 			}
     	} catch (Throwable t) {
-    		throw new ApsSystemException("Error in getReferencingObjects", t);
+    		throw new EntException("Error in getReferencingObjects", t);
     	}
     	return references;
 	}

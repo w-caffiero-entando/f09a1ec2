@@ -18,12 +18,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.common.tree.ITreeNodeManager;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 
 /**
  * Classe base per gli helper che gestiscono le operazioni su oggetti alberi.
@@ -46,10 +47,10 @@ public abstract class TreeNodeBaseActionHelper extends BaseActionHelper implemen
 	 * @param baseDefaultCode Un codice nodo di default.
 	 * @param maxLength La lunghezza massima del codice.
 	 * @return Il codice univoco univoco ricavato.
-	 * @throws ApsSystemException In caso di errore.
+	 * @throws EntException In caso di errore.
 	 */
 	@Override
-	public String buildCode(String title, String baseDefaultCode, int maxLength) throws ApsSystemException {
+	public String buildCode(String title, String baseDefaultCode, int maxLength) throws EntException {
 		String uniqueCode = null;
 		try {
 			// punto 1
@@ -75,13 +76,13 @@ public abstract class TreeNodeBaseActionHelper extends BaseActionHelper implemen
 				uniqueCode = currentCode;
 			}
 		} catch (Throwable t) {
-			throw new ApsSystemException("Errore in creazione nuovo codice", t);
+			throw new EntException("Errore in creazione nuovo codice", t);
 		}
 		return uniqueCode;
 	}
 
 	@Override
-	public Set<String> checkTargetNodes(String nodeToOpen, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws ApsSystemException {
+	public Set<String> checkTargetNodes(String nodeToOpen, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws EntException {
 		Set<String> checkedTargetNodes = new HashSet<>();
 		try {
 			if (null != nodeToOpen && this.checkNode(nodeToOpen, groupCodes)) {
@@ -98,13 +99,13 @@ public abstract class TreeNodeBaseActionHelper extends BaseActionHelper implemen
 			}
 		} catch (Throwable t) {
 			_logger.error("Error check target nodes", t);
-			throw new ApsSystemException("Error check target nodes", t);
+			throw new EntException("Error check target nodes", t);
 		}
 		return checkedTargetNodes;
 	}
 
 	@Override
-	public Set<String> checkTargetNodesOnClosing(String nodeToCloseCode, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws ApsSystemException {
+	public Set<String> checkTargetNodesOnClosing(String nodeToCloseCode, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws EntException {
 		ITreeNode nodeToClose = this.getTreeNode(nodeToCloseCode);
 		if (null == nodeToCloseCode || null == nodeToClose) {
 			return this.checkTargetNodes(null, lastOpenedNodes, groupCodes);
@@ -130,7 +131,7 @@ public abstract class TreeNodeBaseActionHelper extends BaseActionHelper implemen
 			}
 		} catch (Throwable t) {
 			_logger.error("Error check target nodes on closing tree", t);
-			throw new ApsSystemException("Error check target nodes on closing tree", t);
+			throw new EntException("Error check target nodes on closing tree", t);
 		}
 		return checkedTargetNodes;
 	}
@@ -149,7 +150,7 @@ public abstract class TreeNodeBaseActionHelper extends BaseActionHelper implemen
 	}
 
 	@Override
-	public TreeNodeWrapper getShowableTree(Set<String> treeNodesToOpen, ITreeNode fullTree, Collection<String> groupCodes) throws ApsSystemException {
+	public TreeNodeWrapper getShowableTree(Set<String> treeNodesToOpen, ITreeNode fullTree, Collection<String> groupCodes) throws EntException {
 		if (null == treeNodesToOpen || treeNodesToOpen.isEmpty()) {
 			_logger.warn("No selected nodes");
 			return this.buildWrapper(fullTree);
@@ -163,7 +164,7 @@ public abstract class TreeNodeBaseActionHelper extends BaseActionHelper implemen
 			this.builShowableTree(root, fullTree, nodesToShow);
 		} catch (Throwable t) {
 			_logger.error("Error creating showable tree", t);
-			throw new ApsSystemException("Error creating showable tree", t);
+			throw new EntException("Error creating showable tree", t);
 		}
 		return root;
 	}
@@ -215,10 +216,10 @@ public abstract class TreeNodeBaseActionHelper extends BaseActionHelper implemen
 	 *
 	 * @param groupCodes the groups codes
 	 * @return the root node
-	 * @throws ApsSystemException in caso of error
+	 * @throws EntException in caso of error
 	 */
 	@Override
-	public ITreeNode getAllowedTreeRoot(Collection<String> groupCodes) throws ApsSystemException {
+	public ITreeNode getAllowedTreeRoot(Collection<String> groupCodes) throws EntException {
 		ITreeNode currentRoot = this.getRoot();
 		TreeNodeWrapper root = this.buildWrapper(currentRoot);
 		this.addTreeWrapper(root, currentRoot);

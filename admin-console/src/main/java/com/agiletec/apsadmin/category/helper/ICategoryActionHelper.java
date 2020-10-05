@@ -17,10 +17,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.category.Category;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.apsadmin.system.ITreeNodeBaseActionHelper;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * Interface for helper classes providing support for categories management.
@@ -35,9 +36,9 @@ public interface ICategoryActionHelper extends ITreeNodeBaseActionHelper {
 	 * @param category The category by which you want to find any referenced element.
 	 * @param request The request.
 	 * @return The map of the objects referenced in the given category. 
-	 * @throws ApsSystemException if error is detected
+	 * @throws EntException if error is detected
 	 */
-	public Map getReferencingObjects(Category category, HttpServletRequest request) throws ApsSystemException;
+	public Map getReferencingObjects(Category category, HttpServletRequest request) throws EntException;
 	
 	/** 
 	 * Return the map of the objects referenced by the given category that will be involved when moving a category under a new node.
@@ -48,9 +49,9 @@ public interface ICategoryActionHelper extends ITreeNodeBaseActionHelper {
 	 * @param category The category by which you want to find any referenced element.
 	 * @param request The request.
 	 * @return The map of the objects referenced in the given category. 
-	 * @throws ApsSystemException if error is detected
+	 * @throws EntException if error is detected
 	 */
-	public Map getReferencingObjectsForMove(Category category, HttpServletRequest request) throws ApsSystemException;
+	public Map getReferencingObjectsForMove(Category category, HttpServletRequest request) throws EntException;
 	
 	/**
 	 * Create a new category based on the parameters passed.
@@ -58,8 +59,8 @@ public interface ICategoryActionHelper extends ITreeNodeBaseActionHelper {
 	 * @param parentCode The code of the category becoming the parent of the new one. 
 	 * @param titles The titles of the new category.
 	 * @return The new category.
-	 * @throws ApsSystemException if error is detected.
+	 * @throws EntException if error is detected.
 	 */
-	public Category buildNewCategory(String code, String parentCode, ApsProperties titles) throws ApsSystemException;
+	public Category buildNewCategory(String code, String parentCode, ApsProperties titles) throws EntException;
 	
 }

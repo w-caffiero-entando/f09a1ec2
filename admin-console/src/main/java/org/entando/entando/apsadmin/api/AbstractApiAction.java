@@ -13,7 +13,7 @@
  */
 package org.entando.entando.apsadmin.api;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.role.IRoleManager;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.util.SelectItem;
@@ -33,6 +33,7 @@ import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.ApiService;
 import org.entando.entando.apsadmin.api.helper.SchemaGeneratorActionHelper;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public abstract class AbstractApiAction extends BaseAction {
                 return INPUT;
             }
             if (null == method.getExpectedType()) {
-                throw new ApsSystemException("Null expectedType for Method " + method.getHttpMethod() + " for resource " + method.getResourceName());
+                throw new EntException("Null expectedType for Method " + method.getHttpMethod() + " for resource " + method.getResourceName());
             }
             String result = this.generateAndCheckSchema(method.getExpectedType());
             if (INPUT.equals(result)) {
@@ -131,7 +132,7 @@ public abstract class AbstractApiAction extends BaseAction {
         }
     }
     
-	public ApiService getApiService(String key) throws ApsSystemException {
+	public ApiService getApiService(String key) throws EntException {
 		try {
             return this.getApiCatalogManager().getApiService(key);
         } catch (Throwable t) {

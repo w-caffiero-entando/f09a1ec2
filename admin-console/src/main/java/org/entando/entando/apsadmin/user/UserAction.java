@@ -17,12 +17,13 @@ import java.util.Date;
 
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.SmallEntityType;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
@@ -154,7 +155,7 @@ public class UserAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	private boolean checkUserProfile(String username, String profileTypeCode) throws ApsSystemException {
+	private boolean checkUserProfile(String username, String profileTypeCode) throws EntException {
 		try {
 			IUserProfile userProfile = this.getUserProfileManager().getProfile(username);
 			if (null == userProfile) {
@@ -172,7 +173,7 @@ public class UserAction extends BaseAction {
 			}
 		} catch (Throwable t) {
 			logger.error("Error adding default profile for user {}", username, t);
-			throw new ApsSystemException("Error adding default profile for user " + username, t);
+			throw new EntException("Error adding default profile for user " + username, t);
 		}
 		return false;
 	}

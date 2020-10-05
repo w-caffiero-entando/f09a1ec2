@@ -18,8 +18,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.pagemodel.PageModel;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * Helper interface for PageModel Actions.
@@ -27,6 +28,6 @@ import com.agiletec.aps.system.services.pagemodel.PageModel;
  */
 public interface IPageModelActionHelper {
 	
-	public Map<String, List<Object>> getReferencingObjects(PageModel pageModel, HttpServletRequest request) throws ApsSystemException;
+	public Map<String, List<Object>> getReferencingObjects(PageModel pageModel, HttpServletRequest request) throws EntException;
 	
 }

@@ -22,10 +22,11 @@ import javax.xml.bind.JAXBContext;
 
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.aps.util.FileTextReader;
 
@@ -36,7 +37,7 @@ public class SchemaGeneratorActionHelper {
 
 	private static final Logger _logger =  LoggerFactory.getLogger(SchemaGeneratorActionHelper.class);
 	
-    public Class extractResponseClass(ApiMethod method, HttpServletRequest request) throws ApsSystemException {
+    public Class extractResponseClass(ApiMethod method, HttpServletRequest request) throws EntException {
         Class responseClass = null;
         try {
             if (null != method.getResponseClassName()) {
@@ -50,17 +51,17 @@ public class SchemaGeneratorActionHelper {
         } catch (Throwable t) {
         	_logger.error("Error extracting response Class", t);
             //ApsSystemUtils.logThrowable(t, this, "extractResponseClass", "Error extracting response Class");
-            throw new ApsSystemException("Error extracting response Class", t);
+            throw new EntException("Error extracting response Class", t);
         }
         return responseClass;
     }
     
-    protected Class extractReturnType(ApiMethod method, HttpServletRequest request) throws ApsSystemException {
+    protected Class extractReturnType(ApiMethod method, HttpServletRequest request) throws EntException {
         Class returnType = null;
         try {
             Object bean =  ApsWebApplicationUtils.getBean(method.getSpringBean(), request);
             if (null == bean) {
-                throw new ApsSystemException("Null bean '" + method.getSpringBean() 
+                throw new EntException("Null bean '" + method.getSpringBean()
                         + "' from method " + method.getHttpMethod() + " of resource " + method.getResourceName());
             }
             Class beanClass = bean.getClass();
@@ -72,7 +73,7 @@ public class SchemaGeneratorActionHelper {
             } else {
                 Class expectedType = method.getExpectedType();
                 if (null == expectedType) {
-                    throw new ApsSystemException("Null expectedType for Method " + method.getHttpMethod() + " for resource " + method.getResourceName());
+                    throw new EntException("Null expectedType for Method " + method.getHttpMethod() + " for resource " + method.getResourceName());
                 }
                 try {
                     //special case - put or post method with properties

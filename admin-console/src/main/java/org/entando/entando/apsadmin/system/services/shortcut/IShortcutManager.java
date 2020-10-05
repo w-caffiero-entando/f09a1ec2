@@ -15,11 +15,12 @@ package org.entando.entando.apsadmin.system.services.shortcut;
 
 import java.util.List;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.user.UserDetails;
 
 import org.entando.entando.apsadmin.system.services.shortcut.model.Shortcut;
 import org.entando.entando.apsadmin.system.services.shortcut.model.UserConfigBean;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * Interface of the manager of Shortcut catalog and user config.
@@ -34,9 +35,9 @@ public interface IShortcutManager {
 	 * @param user The user owner of the config to save.
 	 * @param config The config to save.
 	 * @return The saved config.
-	 * @throws ApsSystemException In case of error.
+	 * @throws EntException In case of error.
 	 */
-	public String[] saveUserConfig(UserDetails user, String[] config) throws ApsSystemException;
+	public String[] saveUserConfig(UserDetails user, String[] config) throws EntException;
 	
 	/**
 	 * Save a shortcut config of the given user.
@@ -45,9 +46,9 @@ public interface IShortcutManager {
 	 * @param user The user owner of the config to save.
 	 * @param userConfig The config to save.
 	 * @return The saved config.
-	 * @throws ApsSystemException In case of error.
+	 * @throws EntException In case of error.
 	 */
-	public UserConfigBean saveUserConfigBean(UserDetails user, UserConfigBean userConfig) throws ApsSystemException;
+	public UserConfigBean saveUserConfigBean(UserDetails user, UserConfigBean userConfig) throws EntException;
 	
 	/**
 	 * Return the size of the box that contains the user shortcuts.
@@ -60,33 +61,33 @@ public interface IShortcutManager {
 	 * The config contains only the shortcut allowed.
 	 * @param user The user that require the config.
 	 * @return The config of the given user.
-	 * @throws ApsSystemException In case of error.
+	 * @throws EntException In case of error.
 	 */
-	public String[] getUserConfig(UserDetails user) throws ApsSystemException;
+	public String[] getUserConfig(UserDetails user) throws EntException;
 	
 	/**
 	 * Return the shorcut config of the given user.
 	 * The config contains only the shortcut allowed.
 	 * @param user The user that require the config.
 	 * @return The user config of the given user.
-	 * @throws ApsSystemException In case of error.
+	 * @throws EntException In case of error.
 	 */
-	public UserConfigBean getUserConfigBean(UserDetails user) throws ApsSystemException;
+	public UserConfigBean getUserConfigBean(UserDetails user) throws EntException;
 	
 	/**
 	 * Delete a config by user
 	 * @param username The username of the config to delete.
-	 * @throws ApsSystemException In case of error.
+	 * @throws EntException In case of error.
 	 */
-	public void deleteUserConfig(String username) throws ApsSystemException;
+	public void deleteUserConfig(String username) throws EntException;
 	
 	/**
 	 * Return the list of the allowed shortcuts to the given user.
 	 * @param user The user making the request
 	 * @return The list of the allowed shortcut
-	 * @throws ApsSystemException In case of error.
+	 * @throws EntException In case of error.
 	 */
-	public List<Shortcut> getAllowedShortcuts(UserDetails user) throws ApsSystemException;
+	public List<Shortcut> getAllowedShortcuts(UserDetails user) throws EntException;
 	
 	/**
 	 * Return a shortcut by code.

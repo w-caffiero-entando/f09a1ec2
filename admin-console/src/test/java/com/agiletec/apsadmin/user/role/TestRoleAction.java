@@ -20,13 +20,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.role.IRoleManager;
 import com.agiletec.aps.system.services.role.Role;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import org.entando.entando.ent.exception.EntException;
 
 public class TestRoleAction extends ApsAdminBaseTestCase {
 	
@@ -249,7 +250,7 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	private void addRole(String roleName, String descr, String[] permissions) throws ApsSystemException {
+	private void addRole(String roleName, String descr, String[] permissions) throws EntException {
 		Role role = new Role();
 		role.setName(roleName);
 		role.setDescription(descr);
@@ -259,7 +260,7 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		this._roleManager.addRole(role);
 	}
 	
-	private void deleteRole(String roleName) throws ApsSystemException {
+	private void deleteRole(String roleName) throws EntException {
 		Role role = this._roleManager.getRole(roleName);
 		if (role!=null) {
 			this._roleManager.removeRole(role);

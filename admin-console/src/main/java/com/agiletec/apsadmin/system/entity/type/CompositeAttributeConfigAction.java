@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanComparator;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -30,7 +31,7 @@ import com.agiletec.aps.system.common.entity.model.attribute.AbstractListAttribu
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
 import com.agiletec.aps.system.common.entity.model.attribute.CompositeAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoListAttribute;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 
 /**
@@ -128,9 +129,9 @@ public class CompositeAttributeConfigAction extends AbstractBaseEntityAttributeC
 			if (attribute instanceof MonoListAttribute) {
 				((MonoListAttribute) attribute).setNestedAttributeType(composite);
 			} else if (!attribute.getName().equals(composite.getName())) {
-				throw new ApsSystemException("Attribute Name '" + attribute.getName() + "' incompatible with composite Attribute name '" + composite.getName() + "'");
+				throw new EntException("Attribute Name '" + attribute.getName() + "' incompatible with composite Attribute name '" + composite.getName() + "'");
 			} else if (!attribute.getType().equals(composite.getType())) {
-				throw new ApsSystemException("Attribute Type '" + attribute.getType() + "' incompatible with composite Attribute type '" + composite.getType() + "'");
+				throw new EntException("Attribute Type '" + attribute.getType() + "' incompatible with composite Attribute type '" + composite.getType() + "'");
 			}
 			this.getRequest().getSession().removeAttribute(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM);
 		} catch (Throwable t) {

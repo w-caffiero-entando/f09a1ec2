@@ -18,8 +18,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.group.Group;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * Interfaccia base per le classi action helper della gestione Gruppi.
@@ -35,8 +36,8 @@ public interface IGroupActionHelper {
      * @param group Il gruppo cui ricavare le referenze.
      * @param request La request.
      * @return La mappa della lista di oggetti referenzianti.
-     * @throws ApsSystemException In caso di errore.
+     * @throws EntException In caso di errore.
      */
-    public Map<String, List<Object>> getReferencingObjects(Group group, HttpServletRequest request) throws ApsSystemException;
+    public Map<String, List<Object>> getReferencingObjects(Group group, HttpServletRequest request) throws EntException;
     
 }

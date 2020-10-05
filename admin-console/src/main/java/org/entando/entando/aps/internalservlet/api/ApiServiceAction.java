@@ -13,7 +13,7 @@
  */
 package org.entando.entando.aps.internalservlet.api;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.url.IURLManager;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.entando.entando.aps.system.services.api.model.ApiService;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class ApiServiceAction extends org.entando.entando.apsadmin.api.ApiServic
 		return super.generateResponseBodySchema();
 	}
 	
-	private String generateRedirectUrl(String actionName) throws ApsSystemException {
+	private String generateRedirectUrl(String actionName) throws EntException {
 		String url = null;
 		try {
 			String applicationBaseUrl = this.getUrlManager().getApplicationBaseURL(this.getRequest());
@@ -82,7 +83,7 @@ public class ApiServiceAction extends org.entando.entando.apsadmin.api.ApiServic
 			url = this.getResponse().encodeRedirectURL(builder.toString());
 		} catch (Throwable t) {
 			_logger.error("Error generating redirect url", t);
-			throw new ApsSystemException("Error generating redirect url", t);
+			throw new EntException("Error generating redirect url", t);
 		}
 		return url;
 	}

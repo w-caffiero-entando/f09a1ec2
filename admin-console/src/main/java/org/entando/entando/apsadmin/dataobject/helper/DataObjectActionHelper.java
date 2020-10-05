@@ -23,13 +23,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
@@ -171,7 +172,7 @@ public class DataObjectActionHelper extends EntityActionHelper implements IDataO
     }
 
     @Override
-    public Map getReferencingObjects(DataObject dataobject, HttpServletRequest request) throws ApsSystemException {
+    public Map getReferencingObjects(DataObject dataobject, HttpServletRequest request) throws EntException {
         return this.getDataObjectHelper().getReferencingObjects(dataobject);
     }
 

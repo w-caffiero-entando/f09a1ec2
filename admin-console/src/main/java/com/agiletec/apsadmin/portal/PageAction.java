@@ -13,7 +13,7 @@
  */
 package com.agiletec.apsadmin.portal;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.*;
@@ -30,6 +30,7 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
 import org.entando.entando.apsadmin.portal.PageActionConstants;
 import org.entando.entando.apsadmin.portal.rs.model.PageResponse;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -414,7 +415,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
         return pageResponse;
     }
 
-    protected IPage buildNewPage() throws ApsSystemException {
+    protected IPage buildNewPage() throws EntException {
         Page page = new Page();
         try {
             page.setParentCode(this.getParentPageCode());
@@ -441,12 +442,12 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
             page.setCode(this.buildNewPageCode(page.getMetadata()));
         } catch (Throwable t) {
             logger.error("Error building new page", t);
-            throw new ApsSystemException("Error building new page", t);
+            throw new EntException("Error building new page", t);
         }
         return page;
     }
 
-    private String buildNewPageCode(PageMetadata metadata) throws ApsSystemException {
+    private String buildNewPageCode(PageMetadata metadata) throws EntException {
         String newPageCode = this.getPageCode();
         if (StringUtils.isNotBlank(newPageCode)) {
             newPageCode = newPageCode.trim();
@@ -457,7 +458,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
         return newPageCode;
     }
 
-    protected IPage getUpdatedPage() throws ApsSystemException {
+    protected IPage getUpdatedPage() throws EntException {
         Page page = null;
         try {
             page = (Page) this.getPage(this.getPageCode());
@@ -475,7 +476,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
             }
         } catch (Throwable t) {
             logger.error("Error updating page", t);
-            throw new ApsSystemException("Error updating page", t);
+            throw new EntException("Error updating page", t);
         }
         return page;
     }
@@ -666,7 +667,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
         return SUCCESS;
     }
 
-    protected String checkSetOffline(String selectedNode) throws ApsSystemException {
+    protected String checkSetOffline(String selectedNode) throws EntException {
         String check = this.checkSelectedNode(selectedNode);
         if (null != check) {
             return check;
@@ -702,7 +703,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
         return null;
     }
 
-    protected String checkDelete(String selectedNode) throws ApsSystemException {
+    protected String checkDelete(String selectedNode) throws EntException {
         String check = this.checkSelectedNode(selectedNode);
         if (null != check) {
             return check;
