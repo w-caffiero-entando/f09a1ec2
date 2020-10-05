@@ -21,6 +21,7 @@
  */
 package org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content;
 
+import com.agiletec.aps.system.exception.ApsSystemException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,6 +33,7 @@ import java.util.Set;
 import org.entando.entando.aps.system.services.cache.CacheInfoEvict;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.ContentThreadConstants;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.model.ContentState;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.model.ContentSuspendMove;
@@ -48,7 +50,6 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.authorization.IApsAuthority;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
@@ -90,29 +91,29 @@ public class ContentSchedulerManager extends AbstractService implements IContent
      * Carico la configurazione impostata nella tabella sysconfig di japsport
      * (parametro 'cthread_config')
      */
-    private void loadConfigs() throws ApsSystemException {
+    private void loadConfigs() throws EntException {
         try {
             String xml = this.getConfigManager().getConfigItem(ContentThreadConstants.CONTENTTHREAD_CONFIG_ITEM);
             if (xml == null) {
-                throw new ApsSystemException(ContentThreadConstants.READ_CONFIG_ERROR + ContentThreadConstants.CONTENTTHREAD_CONFIG_ITEM);
+                throw new EntException(ContentThreadConstants.READ_CONFIG_ERROR + ContentThreadConstants.CONTENTTHREAD_CONFIG_ITEM);
             }
             ContentThreadConfigDOM configDOM = new ContentThreadConfigDOM();
             this.setConfig(configDOM.extractConfig(xml));
         } catch (Throwable t) {
             ApsSystemUtils.logThrowable(t, this, "loadConfigs");
-            throw new ApsSystemException(ContentThreadConstants.INIT_ERROR, t);
+            throw new EntException(ContentThreadConstants.INIT_ERROR, t);
         }
     }
 
     @Override
-    public void updateConfig(ContentThreadConfig config) throws ApsSystemException {
+    public void updateConfig(ContentThreadConfig config) throws EntException {
         try {
             String xml = new ContentThreadConfigDOM().createConfigXml(config);
             this.getConfigManager().updateConfigItem(ContentThreadConstants.CONTENTTHREAD_CONFIG_ITEM, xml);
             this.setConfig(config);
         } catch (Throwable t) {
             ApsSystemUtils.logThrowable(t, this, "loadConfigs");
-            throw new ApsSystemException("error updating configuration", t);
+            throw new EntException("error updating configuration", t);
         }
 
     }
@@ -121,10 +122,10 @@ public class ContentSchedulerManager extends AbstractService implements IContent
      * Restituisce tutti i contenuti che hanno un attributo con nome key
      * Data_inizio e valore la data corrente
      *
-     * @throws com.agiletec.aps.system.exception.ApsSystemException
+     * @throws EntException
      */
     @Override
-    public List<String> getContentIdToPublish() throws ApsSystemException {
+    public List<String> getContentIdToPublish() throws EntException {
         List<String> ans = new ArrayList<String>();
         try {
             for (Iterator<ContentTypeElem> i = this.getConfig().getTypesList().iterator(); i.hasNext();) {
@@ -146,7 +147,7 @@ public class ContentSchedulerManager extends AbstractService implements IContent
             }
         } catch (Throwable t) {
             _logger.error(ContentThreadConstants.GET_CONTENTIDS_ERROR, t);
-            throw new ApsSystemException(ContentThreadConstants.GET_CONTENTIDS_ERROR, t);
+            throw new EntException(ContentThreadConstants.GET_CONTENTIDS_ERROR, t);
         }
         return ans;
     }
@@ -155,10 +156,10 @@ public class ContentSchedulerManager extends AbstractService implements IContent
      * Restituisce tutti i contenuti che hanno un attributo con nome key
      * Data_fine e valore la data corrente
      *
-     * @throws com.agiletec.aps.system.exception.ApsSystemException
+     * @throws EntException
      */
     @Override
-    public List<ContentSuspendMove> getContentAttrDataFine() throws ApsSystemException {
+    public List<ContentSuspendMove> getContentAttrDataFine() throws EntException {
         List<ContentSuspendMove> ans = new ArrayList<>();
         try {
             for (Iterator<ContentTypeElem> i = this.config.getTypesList().iterator(); i.hasNext();) {
@@ -188,7 +189,7 @@ public class ContentSchedulerManager extends AbstractService implements IContent
             }
         } catch (Throwable t) {
             _logger.error(ContentThreadConstants.GET_CONTENTIDS_ERROR, t);
-            throw new ApsSystemException(ContentThreadConstants.GET_CONTENTIDS_ERROR, t);
+            throw new EntException(ContentThreadConstants.GET_CONTENTIDS_ERROR, t);
         }
         return ans;
     }
@@ -198,11 +199,11 @@ public class ContentSchedulerManager extends AbstractService implements IContent
      *
      * @param publishedContents
      * @param suspendedContents
-     * @throws ApsSystemException
+     * @throws EntException
      */
     @Override
     public void sendMailWithResults(List<ContentState> publishedContents, List<ContentState> suspendedContents, List<ContentState> movedContents, Date startJobDate,
-            Date endJobDate) throws ApsSystemException {
+            Date endJobDate) throws EntException, ApsSystemException {
         // TODO send to groups
         // sendToGroups(publishedContents, suspendedContents);
         sendToUsers(publishedContents, suspendedContents, movedContents, startJobDate, endJobDate);
@@ -215,10 +216,10 @@ public class ContentSchedulerManager extends AbstractService implements IContent
      * @param suspendedContents
      * @param startJobDate
      * @param endJobDate
-     * @throws ApsSystemException
+     * @throws EntException
      */
     private void sendToUsers(List<ContentState> publishedContents, List<ContentState> suspendedContents, List<ContentState> moveContents, Date startJobDate, Date endJobDate)
-            throws ApsSystemException {
+            throws EntException, ApsSystemException {
         Map<String, List<String>> mapUsers = this.getConfig().getUsersContentType();
         Set<String> keys = mapUsers.keySet();
         for (Iterator<String> i = keys.iterator(); i.hasNext();) {
@@ -416,10 +417,10 @@ public class ContentSchedulerManager extends AbstractService implements IContent
      *
      * @param content
      * @param updateDate
-     * @throws ApsSystemException
+     * @throws EntException
      */
     @Override
-    public void moveOnLineContent(Content content, boolean updateDate, boolean updateLastModified) throws ApsSystemException {
+    public void moveOnLineContent(Content content, boolean updateDate, boolean updateLastModified) throws EntException {
         try {
             if (updateLastModified) {
                 content.setLastModified(new Date());
@@ -439,7 +440,7 @@ public class ContentSchedulerManager extends AbstractService implements IContent
             }
         } catch (Throwable t) {
             ApsSystemUtils.logThrowable(t, this, "moveOnLineContent");
-            throw new ApsSystemException("Error while move content on line", t);
+            throw new EntException("Error while move content on line", t);
         }
     }
 
@@ -449,12 +450,12 @@ public class ContentSchedulerManager extends AbstractService implements IContent
      *
      * @param content the content to unpublish.
      * @param updateLastModified .
-     * @throws ApsSystemException in case of error
+     * @throws EntException in case of error
      */
     @Override
     @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "T(com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants).CONTENT_CACHE_PREFIX.concat(#content.id)", condition = "#content.id != null")
     @CacheInfoEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, groups = "T(com.agiletec.plugins.jacms.aps.system.services.cache.CmsCacheWrapperManager).getContentCacheGroupsToEvictCsv(#content.id, #content.typeCode)")
-    public void removeOnLineContent(Content content, boolean updateLastModified) throws ApsSystemException {
+    public void removeOnLineContent(Content content, boolean updateLastModified) throws EntException {
         try {
             if (updateLastModified) {
                 content.setLastModified(new Date());
@@ -468,7 +469,7 @@ public class ContentSchedulerManager extends AbstractService implements IContent
             // PublicContentChangedEvent.REMOVE_OPERATION_CODE);
         } catch (Throwable t) {
             ApsSystemUtils.logThrowable(t, this, "removeOnLineContent");
-            throw new ApsSystemException("Error while removing onLine content", t);
+            throw new EntException("Error while removing onLine content", t);
         }
     }
 

@@ -21,14 +21,15 @@
  */
 package org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content;
 
+import com.agiletec.aps.system.exception.ApsSystemException;
 import java.util.Date;
 import java.util.List;
 
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.model.ContentState;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.model.ContentSuspendMove;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.model.ContentThreadConfig;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 
 /**
@@ -41,18 +42,18 @@ public interface IContentSchedulerManager {
 	 * Restituisce gli identificatori dei contenuti da pubblicare
 	 * 
 	 * @return
-	 * @throws ApsSystemException
+	 * @throws EntException
 	 */
-	public List<String> getContentIdToPublish() throws ApsSystemException;
+	public List<String> getContentIdToPublish() throws EntException;
 
 	/**
 	 * Restituisce una lista di identificatori dei contenuti da sospendere o
 	 * spostare e l'azione da eseguire
 	 * 
 	 * @return
-	 * @throws ApsSystemException
+	 * @throws EntException
 	 */
-	public List<ContentSuspendMove> getContentAttrDataFine() throws ApsSystemException;
+	public List<ContentSuspendMove> getContentAttrDataFine() throws EntException;
 
 	/**
 	 * Restituisce la configurazione del thread (gruppi, utenti, formato mail..)
@@ -61,10 +62,10 @@ public interface IContentSchedulerManager {
 	 */
 	public ContentThreadConfig getConfig();
 
-	public void updateConfig(ContentThreadConfig config) throws ApsSystemException;
+	public void updateConfig(ContentThreadConfig config) throws EntException;
 
 	public void sendMailWithResults(List<ContentState> publishedContents, List<ContentState> suspendedContents, List<ContentState> moveContents, Date startJobDate, Date endJobDate)
-			throws ApsSystemException;
+			throws EntException, ApsSystemException;
 
 	/**
 	 * Return the desired system parameter
@@ -83,10 +84,10 @@ public interface IContentSchedulerManager {
 	 * Il contenuto da rimuovere.
 	 * @param updateLastModified
 	 * Se impostato a true aggiorna la data di ultima modifica
-	 * @throws ApsSystemException
+	 * @throws EntException
 	 * in caso di errore nell'accesso al db.
 	 */
-	public void removeOnLineContent(Content content, boolean updateLastModified) throws ApsSystemException;
+	public void removeOnLineContent(Content content, boolean updateLastModified) throws EntException;
 
 	/**
 	 * Effettua l'aggiornamento di un contenuto sul DB senza modificarne stato e
@@ -100,8 +101,8 @@ public interface IContentSchedulerManager {
 	 * Se impostato a true incrementa la versione
 	 * @param updateLastModified
 	 * Se impostato a true aggiorna la data di ultima modifica
-	 * @throws ApsSystemException
+	 * @throws EntException
 	 */
-	public void moveOnLineContent(Content content, boolean updateDate, boolean updateLastModified) throws ApsSystemException;
+	public void moveOnLineContent(Content content, boolean updateDate, boolean updateLastModified) throws EntException;
 
 }
