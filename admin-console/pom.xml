@@ -39,7 +39,7 @@
         </repository>
     </repositories>
     <properties>
-        <entando-engine.version>6.2.23</entando-engine.version>
+        <entando-core-bom.version>6.2.3</entando-core-bom.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.skip>true</checkstyle.skip>
         <allTestsSuiteClass>com.agiletec.apsadmin.system.services.TestShortcutManager</allTestsSuiteClass>
@@ -207,17 +207,25 @@
             </plugins>
         </pluginManagement>
     </build>
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.entando</groupId>
+                <artifactId>entando-core-bom</artifactId>
+                <version>6.2.3</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-engine</artifactId>
-            <version>${entando-engine.version}</version>
         </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-engine</artifactId>
-            <version>${entando-engine.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
