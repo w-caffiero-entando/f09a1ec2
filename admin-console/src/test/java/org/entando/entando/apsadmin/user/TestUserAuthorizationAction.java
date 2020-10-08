@@ -29,6 +29,7 @@ import org.entando.entando.ent.exception.EntException;
 
 import java.util.Collection;
 import java.util.List;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * @author E.Santoboni
