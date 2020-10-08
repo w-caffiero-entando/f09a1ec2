@@ -47,7 +47,7 @@
             </div>
         </s:if>
     </s:if>
-    <s:elseif test="#attribute.textAttribute">
+    <s:elseif test="%{#attribute.textAttribute && #attribute.type != 'Email'}">
         <div class="form-group">
             <label class="col-sm-2 control-label" for="minLength"><s:text name="Entity.attribute.flag.minLength.full" />
             </label>

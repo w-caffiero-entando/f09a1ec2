@@ -16,7 +16,6 @@ package org.entando.entando.apsadmin.common.currentuser;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.apsadmin.common.UserAvatarAction;
 
-
 import com.agiletec.aps.system.services.user.UserDetails;
 import org.entando.entando.ent.exception.EntException;
 

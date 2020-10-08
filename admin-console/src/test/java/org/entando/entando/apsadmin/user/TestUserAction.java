@@ -31,6 +31,7 @@ import org.entando.entando.ent.exception.EntException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * @version 1.0
