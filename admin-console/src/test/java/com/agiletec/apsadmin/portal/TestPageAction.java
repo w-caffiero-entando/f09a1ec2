@@ -23,7 +23,7 @@ import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.apsadmin.portal.rs.model.PageResponse;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
@@ -37,6 +37,8 @@ import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import org.entando.entando.ent.exception.EntException;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -785,7 +787,7 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertTrue(extraGroups.contains("group2"));
     }
     
-    private void addPage(String pageCode) throws ApsSystemException {
+    private void addPage(String pageCode) throws EntException {
         IPage parentPage = _pageManager.getOnlinePage("service");
         PageModel pageModel = parentPage.getMetadata().getModel();
         PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel, true, "pagina temporanea", null, null, false, null,

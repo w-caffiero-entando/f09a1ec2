@@ -13,7 +13,7 @@
  */
 package org.entando.entando.apsadmin.system.services.shortcut;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,6 +34,7 @@ import javax.xml.validation.Validator;
 import org.entando.entando.apsadmin.system.services.shortcut.model.AbstractBaseBean;
 import org.entando.entando.apsadmin.system.services.shortcut.model.MenuSection;
 import org.entando.entando.apsadmin.system.services.shortcut.model.Shortcut;
+import org.entando.entando.ent.exception.EntException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -49,12 +50,12 @@ public class ShortcutDefDOM {
 
 	private static final Logger _logger = LoggerFactory.getLogger(ShortcutDefDOM.class);
 	
-	public ShortcutDefDOM(String xmlText, String definitionPath) throws ApsSystemException {
+	public ShortcutDefDOM(String xmlText, String definitionPath) throws EntException {
 		this.validate(xmlText, definitionPath);
 		this.decodeDOM(xmlText);
 	}
 	
-	private void validate(String xmlText, String definitionPath) throws ApsSystemException {
+	private void validate(String xmlText, String definitionPath) throws EntException {
 		SchemaFactory factory = 
             SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		InputStream schemaIs = null;
@@ -71,7 +72,7 @@ public class ShortcutDefDOM {
         } catch (Throwable t) {
         	String message = "Error validating Shortcut definition : " + definitionPath;
         	_logger.error(message, t);
-        	throw new ApsSystemException(message, t);
+        	throw new EntException(message, t);
         } finally {
         	try {
 				if (null != schemaIs) schemaIs.close();
@@ -159,7 +160,7 @@ public class ShortcutDefDOM {
 		return out.outputString(_doc);
 	}
 	
-	private void decodeDOM(String xmlText) throws ApsSystemException {
+	private void decodeDOM(String xmlText) throws EntException {
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		StringReader reader = new StringReader(xmlText);
@@ -167,7 +168,7 @@ public class ShortcutDefDOM {
 			this._doc = builder.build(reader);
 		} catch (Throwable t) {
 			_logger.error("Error while parsing. xml: {} ", xmlText,t);
-			throw new ApsSystemException("Error detected while parsing the XML", t);
+			throw new EntException("Error detected while parsing the XML", t);
 		}
 	}
 	

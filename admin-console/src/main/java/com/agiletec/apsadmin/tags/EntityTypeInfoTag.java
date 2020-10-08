@@ -13,11 +13,12 @@
  */
 package com.agiletec.apsadmin.tags;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.common.entity.IEntityManager;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 
 /**
@@ -43,7 +44,7 @@ public class EntityTypeInfoTag extends AbstractObjectInfoTag {
 			String message = "Error extracting entity prototype : key '" + keyValue + "' - entity manager '" + managerNameValue + "'";
 			_logger.error("Error extracting entity prototype : key '{}' - entity manager '{}'", keyValue, managerNameValue, t);
 			//ApsSystemUtils.logThrowable(t, this, "getMasterObject", message);
-			throw new ApsSystemException(message, t);
+			throw new EntException(message, t);
 		}
 		_logger.debug("Null entity manager : service name '{}'", managerNameValue);
 		return null;

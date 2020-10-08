@@ -17,11 +17,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.common.AbstractDAO;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 
 /**
  * Data Access Object for the configuration of user shortcut.
@@ -49,7 +50,7 @@ public class UserShortcutDAO extends AbstractDAO implements IUserShortcutDAO {
 		}
 	}
 	
-	private void addUserConfigRecord(String username, String config, Connection conn) throws ApsSystemException {
+	private void addUserConfigRecord(String username, String config, Connection conn) {
 		PreparedStatement stat = null;
 		try {
 			stat = conn.prepareStatement(ADD_CONFIG);

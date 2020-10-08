@@ -23,12 +23,13 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.beanutils.BeanComparator;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ServletContextAware;
 
 import com.agiletec.aps.system.common.AbstractService;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 
@@ -71,7 +72,7 @@ public class ShortcutManager extends AbstractService implements IShortcutManager
 	}
 	
 	@Override
-	public UserConfigBean saveUserConfigBean(UserDetails user, UserConfigBean userConfig) throws ApsSystemException {
+	public UserConfigBean saveUserConfigBean(UserDetails user, UserConfigBean userConfig) throws EntException {
 		if (null == user || null == userConfig 
 				|| userConfig.getUsername().equals(user.getUsername())) {
 			_logger.info("Required operation for null user or invalid user config");
@@ -82,7 +83,7 @@ public class ShortcutManager extends AbstractService implements IShortcutManager
 	}
 	
 	@Override
-	public String[] saveUserConfig(UserDetails user, String[] config) throws ApsSystemException {
+	public String[] saveUserConfig(UserDetails user, String[] config) throws EntException {
 		if (null == user) {
 			_logger.info("Required operation for null user");
 			return null;
@@ -94,20 +95,20 @@ public class ShortcutManager extends AbstractService implements IShortcutManager
 		} catch (Throwable t) {
 			_logger.error("Error saving user config by user ", user.getUsername(), t);
 			//ApsSystemUtils.logThrowable(t, this, "saveUserConfig");
-			throw new ApsSystemException("Error saving user config by user " + user.getUsername(), t);
+			throw new EntException("Error saving user config by user " + user.getUsername(), t);
 		}
 		return config;
 	}
 	
 	@Override
-	public UserConfigBean getUserConfigBean(UserDetails user) throws ApsSystemException {
+	public UserConfigBean getUserConfigBean(UserDetails user) throws EntException {
 		String[] config = this.getUserConfig(user);
 		if (null == config) return null;
 		return new UserConfigBean(user.getUsername(), config);
 	}
 	
 	@Override
-	public String[] getUserConfig(UserDetails user) throws ApsSystemException {
+	public String[] getUserConfig(UserDetails user) throws EntException {
 		String[] config = null;
 		if (null == user) {
 			_logger.info("Required shortcut config for null user");
@@ -120,7 +121,7 @@ public class ShortcutManager extends AbstractService implements IShortcutManager
 		} catch (Throwable t) {
 			_logger.error("Error loading user config", t);
 			//ApsSystemUtils.logThrowable(t, this, "getUserConfig");
-			throw new ApsSystemException("Error loading user config", t);
+			throw new EntException("Error loading user config", t);
 		}
 		return config;
 	}
@@ -149,24 +150,24 @@ public class ShortcutManager extends AbstractService implements IShortcutManager
 		} catch (Throwable t) {
 			_logger.error("Error checking Shortcut Config by user {}", user.getUsername(), t);
 			//ApsSystemUtils.logThrowable(t, this, "checkShortcutConfig");
-			throw new ApsSystemException("Error checking Shortcut Config by user " + user.getUsername(), t);
+			throw new EntException("Error checking Shortcut Config by user " + user.getUsername(), t);
 		}
 		return config;
 	}
 	
 	@Override
-	public void deleteUserConfig(String username) throws ApsSystemException {
+	public void deleteUserConfig(String username) throws EntException {
 		try {
 			this.getUserShortcutDAO().deleteUserConfig(username);
 		} catch (Throwable t) {
 			_logger.error("Error deleting user config by user {}", username, t);
 			//ApsSystemUtils.logThrowable(t, this, "deleteUserConfig");
-			throw new ApsSystemException("Error deleting user config by user " + username, t);
+			throw new EntException("Error deleting user config by user " + username, t);
 		}
 	}
 	
 	@Override
-	public List<Shortcut> getAllowedShortcuts(UserDetails user) throws ApsSystemException {
+	public List<Shortcut> getAllowedShortcuts(UserDetails user) throws EntException {
 		List<Shortcut> allowedShortcuts = new ArrayList<Shortcut>();
 		if (null == user) {
 			_logger.info("Required allowed shortcut for null user");
@@ -184,7 +185,7 @@ public class ShortcutManager extends AbstractService implements IShortcutManager
 		} catch (Throwable t) {
 			_logger.error("Error extracting allowed shortcuts by user {}", user.getUsername(), t);
 			//ApsSystemUtils.logThrowable(t, this, "getAllowedShortcuts");
-			throw new ApsSystemException("Error extracting allowed shortcuts by user " + user.getUsername(), t);
+			throw new EntException("Error extracting allowed shortcuts by user " + user.getUsername(), t);
 		}
 		BeanComparator comparator = new BeanComparator("source");
 		Collections.sort(allowedShortcuts, comparator);

@@ -18,10 +18,11 @@ import java.util.Collection;
 import javax.servlet.ServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.tags.util.IPagerVO;
 import com.agiletec.aps.tags.util.PagerTagHelper;
 import com.agiletec.apsadmin.util.ApsRequestParamsUtil;
@@ -36,19 +37,19 @@ public class AdminPagerTagHelper extends PagerTagHelper {
 	public static final String DEFAULT_PAGER_NAME = "pagerItem";
 	
 	public IPagerVO getPagerVO(Collection collection, int max, boolean isAdvanced, 
-			int offset, ServletRequest request) throws ApsSystemException {
+			int offset, ServletRequest request) throws EntException {
 		return this.getPagerVO(collection, null, max, isAdvanced, offset, request);
 	}
 	
 	public IPagerVO getPagerVO(Collection collection, String pagerId, int max, boolean isAdvanced, 
-			int offset, ServletRequest request) throws ApsSystemException {
+			int offset, ServletRequest request) throws EntException {
 		IPagerVO pagerVo = null;
 		try {
 			int item = this.getItemNumber(pagerId, request);
 			pagerVo = this.buildPageVO(collection, item, max, pagerId, isAdvanced, offset);
 		} catch (Throwable t) {
 			_logger.error("Error while building pagerVo", t);
-			throw new ApsSystemException("Error while building pagerVo", t);
+			throw new EntException("Error while building pagerVo", t);
 		}
 		return pagerVo;
 	}

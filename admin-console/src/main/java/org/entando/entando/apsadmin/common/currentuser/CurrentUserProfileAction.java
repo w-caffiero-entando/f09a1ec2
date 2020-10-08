@@ -18,13 +18,14 @@ import java.util.List;
 
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.i18n.II18nManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.user.AbstractUser;
@@ -118,7 +119,7 @@ public class CurrentUserProfileAction extends AbstractApsEntityAction implements
 		}
 	}
 	
-	protected void addLabelGroups(String key, String defaultValue) throws ApsSystemException {
+	protected void addLabelGroups(String key, String defaultValue) throws EntException {
 		try {
 			ApsProperties properties = new ApsProperties();
 			Lang defaultLang = super.getLangManager().getDefaultLang();

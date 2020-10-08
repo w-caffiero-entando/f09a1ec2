@@ -15,7 +15,7 @@ package org.entando.entando.apsadmin.user;
 
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.SmallEntityType;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.user.AbstractUser;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.system.entity.AbstractApsEntityAction;
@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +171,7 @@ public class UserProfileAction extends AbstractApsEntityAction {
         return SUCCESS;
     }
 	
-    private String checkUsername(String username, boolean checkNullProfile) throws ApsSystemException {
+    private String checkUsername(String username, boolean checkNullProfile) throws EntException {
         if (StringUtils.isBlank(username) || (checkNullProfile && null == this.getUserProfileManager().getProfile(username))) {
             String[] args = {username};
             this.addFieldError("username", this.getText("error.newUserProfile.invalidUsername", args));

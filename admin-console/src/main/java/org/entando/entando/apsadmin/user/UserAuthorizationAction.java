@@ -14,7 +14,7 @@
 package org.entando.entando.apsadmin.user;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.authorization.Authorization;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.IGroupManager;
@@ -25,6 +25,7 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.system.BaseAction;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang.StringUtils;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,9 +160,9 @@ public class UserAuthorizationAction extends BaseAction {
 	/**
 	 * Verifica l'esistenza dell'utente.
 	 * @return true in caso positivo, false nel caso l'utente non esista.
-	 * @throws ApsSystemException In caso di errore.
+	 * @throws EntException In caso di errore.
 	 */
-	protected boolean existsUser() throws ApsSystemException {
+	protected boolean existsUser() throws EntException {
 		return (username != null) && (userManager.getUser(username) != null);
 	}
 	

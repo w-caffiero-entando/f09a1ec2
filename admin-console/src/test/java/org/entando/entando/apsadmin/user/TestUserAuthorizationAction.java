@@ -14,7 +14,7 @@
 package org.entando.entando.apsadmin.user;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.authorization.Authorization;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.group.Group;
@@ -25,6 +25,7 @@ import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.entando.entando.ent.exception.EntException;
 
 import java.util.Collection;
 import java.util.List;
@@ -273,7 +274,7 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		return this.executeAction();
 	}
 	
-	private void addTestUserAndAuthorities() throws ApsSystemException {
+	private void addTestUserAndAuthorities() throws EntException {
 		Group groupForTest = new Group();
 		groupForTest.setName(TEST_GROUP_NAME);
 		groupForTest.setDescription("group test description");
@@ -292,7 +293,7 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		this._authorizationManager.addUserAuthorization(TEST_USER_NAME, TEST_GROUP_NAME, "admin");
 	}
 	
-	private void removeTestUserAndAuthorities() throws ApsSystemException {
+	private void removeTestUserAndAuthorities() throws EntException {
 		this._userManager.removeUser(TEST_USER_NAME);
 		Group groupForTest = this._groupManager.getGroup(TEST_GROUP_NAME);
 		this._groupManager.removeGroup(groupForTest);

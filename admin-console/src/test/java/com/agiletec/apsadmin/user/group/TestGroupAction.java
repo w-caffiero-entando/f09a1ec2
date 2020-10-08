@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.IGroupManager;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
+import org.entando.entando.ent.exception.EntException;
 
 public class TestGroupAction extends ApsAdminBaseTestCase {
 
@@ -261,14 +262,14 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         assertEquals(group.getDescr(), descr);
     }
 
-    private void addGroup(String name, String descr) throws ApsSystemException {
+    private void addGroup(String name, String descr) throws EntException {
         Group group = new Group();
         group.setName(name);
         group.setDescr(descr);
         this._groupManager.addGroup(group);
     }
 
-    private void deleteGroup(String groupName) throws ApsSystemException {
+    private void deleteGroup(String groupName) throws EntException {
         Group group = this._groupManager.getGroup(groupName);
         if (group != null) {
             this._groupManager.removeGroup(group);

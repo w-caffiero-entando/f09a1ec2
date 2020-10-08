@@ -13,12 +13,13 @@
  */
 package org.entando.entando.apsadmin.api;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.apsadmin.system.BaseAction;
 import java.util.Arrays;
 import org.entando.entando.aps.system.services.oauth2.IOAuthConsumerManager;
 import org.entando.entando.aps.system.services.oauth2.model.ConsumerRecordVO;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +149,7 @@ public class ConsumerAction extends BaseAction {
         return SUCCESS;
     }
 
-    protected String checkForDelete() throws ApsSystemException {
+    protected String checkForDelete() throws EntException {
         ConsumerRecordVO consumer = this.getOauthConsumerManager().getConsumerRecord(this.getConsumerKey());
         if (null == consumer) {
             String[] args = {this.getConsumerKey()};
@@ -162,7 +163,7 @@ public class ConsumerAction extends BaseAction {
         return this.getOauthConsumerManager().getConsumerRecord(key);
     }
 
-    public String[] getAllowedGrantTypes() {
+    public List<String> getAllowedGrantTypes() {
         return IOAuthConsumerManager.GRANT_TYPES;
     }
 

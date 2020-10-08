@@ -20,12 +20,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.common.tree.ITreeNodeManager;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.category.Category;
 import com.agiletec.aps.system.services.category.CategoryUtilizer;
 import com.agiletec.aps.system.services.category.ICategoryManager;
@@ -42,7 +43,7 @@ public class CategoryActionHelper extends TreeNodeBaseActionHelper implements IC
 	private static final Logger _logger = LoggerFactory.getLogger(CategoryActionHelper.class);
 	
 	@Override
-	public Map getReferencingObjects(Category category, HttpServletRequest request) throws ApsSystemException {
+	public Map getReferencingObjects(Category category, HttpServletRequest request) throws EntException {
     	Map<String, List> references = new HashMap<String, List>();
     	try {
     		String[] defNames = ApsWebApplicationUtils.getWebApplicationContext(request).getBeanNamesForType(CategoryUtilizer.class);
@@ -63,13 +64,13 @@ public class CategoryActionHelper extends TreeNodeBaseActionHelper implements IC
 				}
 			}
     	} catch (Throwable t) {
-    		throw new ApsSystemException("Errore in hasReferencingObjects", t);
+    		throw new EntException("Errore in hasReferencingObjects", t);
     	}
     	return references;
     }
 
 	@Override
-	public Map getReferencingObjectsForMove(Category category, HttpServletRequest request) throws ApsSystemException {
+	public Map getReferencingObjectsForMove(Category category, HttpServletRequest request) throws EntException {
 		Map<String, List> references = new HashMap<String, List>();
 		try {
 			String[] defNames = ApsWebApplicationUtils.getWebApplicationContext(request).getBeanNamesForType(CategoryUtilizer.class);
@@ -90,13 +91,13 @@ public class CategoryActionHelper extends TreeNodeBaseActionHelper implements IC
 				}
 			}
 		} catch (Throwable t) {
-			throw new ApsSystemException("Error in getReferencingObjectsForMove", t);
+			throw new EntException("Error in getReferencingObjectsForMove", t);
 		}
 		return references;
 	}
 	
 	@Override
-	public Category buildNewCategory(String code, String parentCode, ApsProperties titles) throws ApsSystemException {
+	public Category buildNewCategory(String code, String parentCode, ApsProperties titles) throws EntException {
 		Category category = new Category();
 		try {
 			category.setParentCode(parentCode);
@@ -112,7 +113,7 @@ public class CategoryActionHelper extends TreeNodeBaseActionHelper implements IC
 			}
 		} catch (Throwable t) {
 			_logger.error("Error creating new category", t);
-			throw new ApsSystemException("Error creating new category", t);
+			throw new EntException("Error creating new category", t);
 		}
 		return category;
 	}

@@ -19,10 +19,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
+import org.entando.entando.ent.exception.EntException;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
 
 public interface IGuiFragmentActionHelper {
 
-	public Map<String, List<Object>> getReferencingObjects(GuiFragment fragment, HttpServletRequest request) throws ApsSystemException;
+	public Map<String, List<Object>> getReferencingObjects(GuiFragment fragment, HttpServletRequest request) throws EntException;
 }

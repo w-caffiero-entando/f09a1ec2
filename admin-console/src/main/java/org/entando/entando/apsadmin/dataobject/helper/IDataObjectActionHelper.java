@@ -15,7 +15,7 @@ package org.entando.entando.apsadmin.dataobject.helper;
 
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.system.entity.IEntityActionHelper;
 
@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
 import org.entando.entando.aps.system.services.dataobject.model.DataObject;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * Interfaccia per gli Helper della DatObjectAction.
@@ -46,7 +47,7 @@ public interface IDataObjectActionHelper extends IEntityActionHelper {
 	 */
 	public boolean isUserAllowed(DataObject dataObject, UserDetails currentUser);
 
-	public Map getReferencingObjects(DataObject dataObject, HttpServletRequest request) throws ApsSystemException;
+	public Map getReferencingObjects(DataObject dataObject, HttpServletRequest request) throws EntException;
 
 	public EntitySearchFilter getOrderFilter(String groupBy, String lastOrder);
 

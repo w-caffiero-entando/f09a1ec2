@@ -15,7 +15,7 @@ package com.agiletec.apsadmin.portal.helper;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.common.tree.ITreeNodeManager;
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.lang.Lang;
@@ -41,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
 import org.entando.entando.apsadmin.portal.node.PageTreeNodeWrapper;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +113,7 @@ public abstract class AbstractPageActionHelper extends TreeNodeBaseActionHelper 
     protected abstract IPage getRoot();
 
     @Override
-    public Map getReferencingObjects(IPage page, HttpServletRequest request) throws ApsSystemException {
+    public Map getReferencingObjects(IPage page, HttpServletRequest request) throws EntException {
         Map<String, List> references = new HashMap<>();
         try {
             String[] defNames = ApsWebApplicationUtils.getWebApplicationContext(request).getBeanNamesForType(PageUtilizer.class);
@@ -133,18 +134,18 @@ public abstract class AbstractPageActionHelper extends TreeNodeBaseActionHelper 
                 }
             }
         } catch (Throwable t) {
-            throw new ApsSystemException("Error extracting Referencing Objects", t);
+            throw new EntException("Error extracting Referencing Objects", t);
         }
         return references;
     }
 
     @Override
-    public ITreeNode getAllowedTreeRoot(Collection<String> groupCodes) throws ApsSystemException {
+    public ITreeNode getAllowedTreeRoot(Collection<String> groupCodes) throws EntException {
         return this.getAllowedTreeRoot(groupCodes, false);
     }
 
     @Override
-    public ITreeNode getAllowedTreeRoot(Collection<String> userGroupCodes, boolean alsoFreeViewPages) throws ApsSystemException {
+    public ITreeNode getAllowedTreeRoot(Collection<String> userGroupCodes, boolean alsoFreeViewPages) throws EntException {
         PageTreeNodeWrapper root = null;
         IPage pageRoot = (IPage) this.getRoot();
         if (userGroupCodes.contains(Group.FREE_GROUP_NAME) || userGroupCodes.contains(Group.ADMINS_GROUP_NAME)

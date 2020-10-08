@@ -17,7 +17,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
+
 
 /**
  * Interfaccia base delle classi helper che gestiscono le operazioni su oggetti alberi.
@@ -35,11 +36,11 @@ public interface ITreeNodeBaseActionHelper {
 	 * @param baseDefaultCode Un codice nodo di default.
 	 * @param maxLength La lunghezza massima del codice.
 	 * @return Il codice univoco univoco ricavato.
-	 * @throws ApsSystemException In caso di errore.
+	 * @throws EntException In caso di errore.
 	 */
-	public String buildCode(String title, String baseDefaultCode, int maxLength) throws ApsSystemException;
+	public String buildCode(String title, String baseDefaultCode, int maxLength) throws EntException;
 	
-	public ITreeNode getAllowedTreeRoot(Collection<String> groupCodes) throws ApsSystemException;
+	public ITreeNode getAllowedTreeRoot(Collection<String> groupCodes) throws EntException;
 	
 	/**
 	 * Check and return the nodes to use to build the showable tree.
@@ -47,9 +48,9 @@ public interface ITreeNodeBaseActionHelper {
 	 * @param lastOpenedNodes The last opened nodes.
 	 * @param groupCodes The groups with whom check permissions.
 	 * @return The new opened tree nodes to use to build the showable tree.
-	 * @throws ApsSystemException In case of error.
+	 * @throws EntException In case of error.
 	 */
-	public Set<String> checkTargetNodes(String nodeToOpen, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws ApsSystemException;
+	public Set<String> checkTargetNodes(String nodeToOpen, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws EntException;
 	
 	/**
 	 * Check and return the nodes to use to build the showable tree.
@@ -58,7 +59,7 @@ public interface ITreeNodeBaseActionHelper {
 	 * @param groupCodes The groups with whom check permissions.
 	 * @return The new opened tree nodes to use to build the showable tree.
 	 */
-	public Set<String> checkTargetNodesOnClosing(String nodeToClose, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws ApsSystemException;
+	public Set<String> checkTargetNodesOnClosing(String nodeToClose, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws EntException;
 	
 	/**
 	 * Return the root node of the showable tree.
@@ -66,8 +67,8 @@ public interface ITreeNodeBaseActionHelper {
 	 * @param fullTree The root node of full tree.
 	 * @param groupCodes The groups with whom check permissions.
 	 * @return The root node to use to build the showble tree.
-	 * @throws ApsSystemException in case of error.
+	 * @throws EntException in case of error.
 	 */
-	public TreeNodeWrapper getShowableTree(Set<String> treeNodesToOpen, ITreeNode fullTree, Collection<String> groupCodes) throws ApsSystemException;
+	public TreeNodeWrapper getShowableTree(Set<String> treeNodesToOpen, ITreeNode fullTree, Collection<String> groupCodes) throws EntException;
 	
 }

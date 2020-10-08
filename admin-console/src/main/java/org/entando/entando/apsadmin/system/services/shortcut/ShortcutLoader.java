@@ -21,11 +21,12 @@ import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.aps.util.FileTextReader;
 
@@ -40,7 +41,7 @@ public class ShortcutLoader {
 
 	private static final Logger _logger = LoggerFactory.getLogger(ShortcutLoader.class);
 	
-	protected ShortcutLoader(String locationPatterns, ServletContext servletContext) throws ApsSystemException {
+	protected ShortcutLoader(String locationPatterns, ServletContext servletContext) throws EntException {
 		this.setSectionMenus(new HashMap<String, MenuSection>());
 		this.setShortcuts(new HashMap<String, Shortcut>());
 		try {
@@ -52,7 +53,7 @@ public class ShortcutLoader {
 			this.completeLoading();
 		} catch (Throwable t) {
 			_logger.error("Error loading Shortcut definitions", t);
-			throw new ApsSystemException("Error loading Shortcut definitions", t);
+			throw new EntException("Error loading Shortcut definitions", t);
 		}
 	}
 	

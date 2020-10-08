@@ -19,10 +19,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.pagemodel.PageModelUtilizer;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
@@ -37,7 +38,7 @@ public class PageModelActionHelper extends BaseActionHelper implements IPageMode
 	private static final Logger _logger = LoggerFactory.getLogger(PageModelActionHelper.class);
 	
 	@Override
-	public Map<String, List<Object>> getReferencingObjects(PageModel pageModel, HttpServletRequest request) throws ApsSystemException {
+	public Map<String, List<Object>> getReferencingObjects(PageModel pageModel, HttpServletRequest request) throws EntException {
 		Map<String, List<Object>> references = new HashMap<String, List<Object>>();
     	try {
     		String[] defNames = ApsWebApplicationUtils.getWebApplicationContext(request).getBeanNamesForType(PageModelUtilizer.class);
@@ -58,7 +59,7 @@ public class PageModelActionHelper extends BaseActionHelper implements IPageMode
 				}
 			}
     	} catch (Throwable t) {
-    		throw new ApsSystemException("Error on getReferencingObjects methods", t);
+    		throw new EntException("Error on getReferencingObjects methods", t);
     	}
     	return references;
 	}

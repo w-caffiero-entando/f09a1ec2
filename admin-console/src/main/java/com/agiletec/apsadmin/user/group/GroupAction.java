@@ -16,10 +16,11 @@ package com.agiletec.apsadmin.user.group;
 import java.util.List;
 import java.util.Map;
 
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.IGroupManager;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
@@ -156,9 +157,9 @@ public class GroupAction extends AbstractAuthorityAction {
 	 * Esegue i controlli necessari per la cancellazione di un gruppo. Imposta gli opportuni messaggi di errore come actionMessages.
 	 * Restituisce l'esito del controllo.
 	 * @return true in caso di cancellazione consentita, false in caso contrario.
-	 * @throws ApsSystemException In caso di errore.
+	 * @throws EntException In caso di errore.
 	 */
-	protected String checkGroupForDelete() throws ApsSystemException {
+	protected String checkGroupForDelete() throws EntException {
 		if (!this.existsGroup()) {
 			addActionError(getText(ERROR_GROUP_NOT_EXIST));
 			return GROUP_LIST;
