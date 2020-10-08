@@ -111,6 +111,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
         try {
             this.setStrutsAction(ApsAdminSystemConstants.ADD);
             this.setMainGroup(Group.FREE_GROUP_NAME);
+            this.setReadonlyDefaultConfig(false);
         } catch (Throwable t) {
             _logger.error("error in newWidget", t);
             return FAILURE;
@@ -141,6 +142,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
             }
             this.setStrutsAction(NEW_USER_WIDGET);
             this.setMainGroup(Group.FREE_GROUP_NAME);
+            this.setReadonlyDefaultConfig(false);
         } catch (Throwable t) {
             _logger.error("error in newUserWidget", t);
             return FAILURE;
@@ -199,11 +201,16 @@ public class WidgetTypeAction extends AbstractPortalAction {
             String mainGroupToSet = (this.hasCurrentUserPermission(Permission.SUPERUSER)) ? this.getMainGroup() : type.getMainGroup();
             String bundleIdToSet = (this.hasCurrentUserPermission(Permission.SUPERUSER)) ? this.getBundleId() : type.getBundleId();
             String configUiToSet = (this.hasCurrentUserPermission(Permission.SUPERUSER)) ? this.getConfigUi() : type.getConfigUi();
+
+            Boolean readonlyDefaultConf = (this.hasCurrentUserPermission(Permission.SUPERUSER)) ? this.isReadonlyDefaultConfig() : type.
+                    isReadonlyDefaultConfig();
+
             if (this.getStrutsAction() == ApsAdminSystemConstants.ADD) {
                 type.setTitles(titles);
                 type.setMainGroup(mainGroupToSet);
                 type.setBundleId(bundleIdToSet);
                 type.setConfigUi(configUiToSet);
+                type.setReadonlyDefaultConfig(readonlyDefaultConf);
                 this.getWidgetTypeManager().addWidgetType(type);
             } else {
                 ApsProperties configToSet = type.getConfig();
@@ -211,7 +218,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
                     configToSet = this.extractWidgetTypeConfig(type.getParentType().getTypeParameters());
                 }
                 this.getWidgetTypeManager().updateWidgetType(this.getWidgetTypeCode(), titles, configToSet, mainGroupToSet,
-                        configUiToSet, bundleIdToSet);
+                        configUiToSet, bundleIdToSet, readonlyDefaultConf);
             }
             if (!type.isLogic() && !super.isInternalServletWidget(this.getWidgetTypeCode())) {
                 GuiFragment guiFragment = this.extractUniqueGuiFragment(this.getWidgetTypeCode());
@@ -376,6 +383,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
         titles.setProperty("en", this.getEnglishTitle());
         type.setTitles(titles);
         type.setLocked(false);
+        type.setReadonlyDefaultConfig(false);
         return type;
     }
 
@@ -420,6 +428,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
             this.setMainGroup(mainGroup);
             this.setBundleId(type.getBundleId());
             this.setConfigUi(type.getConfigUi());
+            this.setReadonlyDefaultConfig(type.isReadonlyDefaultConfig());
             if (type.isLogic()) {
                 List<String> guiFragmentCodes = this.extractGuiFragmentCodes(this.getWidgetTypeCode());
                 for (int i = 0; i < guiFragmentCodes.size(); i++) {
@@ -764,6 +773,14 @@ public class WidgetTypeAction extends AbstractPortalAction {
         this._pageActionHelper = pageActionHelper;
     }
 
+    public boolean isReadonlyDefaultConfig() {
+        return readonlyDefaultConfig;
+    }
+
+    public void setReadonlyDefaultConfig(boolean readonlyDefaultConfig) {
+        this.readonlyDefaultConfig = readonlyDefaultConfig;
+    }
+
     private int _strutsAction;
 
     private String _widgetTypeCode;
@@ -787,7 +804,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
     private Widget _widgetToCopy;
 
     private boolean _replaceOnPage;
-
+    private boolean readonlyDefaultConfig;
     private IGuiFragmentManager _guiFragmentManager;
     private ConfigInterface _configManager;
 
