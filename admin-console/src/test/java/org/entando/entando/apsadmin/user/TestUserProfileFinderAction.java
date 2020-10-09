@@ -284,7 +284,7 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
             UserProfileFinderAction action = (UserProfileFinderAction) this.getAction();
             List<IApsEntity> currentEntityPrototypes = ((UserProfileFinderAction) action).getEntityPrototypes();
             assertEquals(Action.SUCCESS, result);
-            assertEquals(currentEntityPrototypes.size(), 1);
+            assertEquals(2, currentEntityPrototypes.size());
         } catch (Throwable t) {
             throw t;
         }

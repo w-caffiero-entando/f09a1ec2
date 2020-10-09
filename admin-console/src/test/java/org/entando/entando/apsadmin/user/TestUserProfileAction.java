@@ -43,10 +43,9 @@ public class TestUserProfileAction extends ApsAdminBaseTestCase {
         this.initAction("/do/userprofile", "edit");
 		this.addParameter("username", USERNAME_FOR_TEST);
         String result = this.executeAction();
-        assertEquals(Action.SUCCESS, result);
+        assertEquals("chooseType", result);
         IUserProfile currentUserProfile = (IUserProfile) this.getRequest().getSession().getAttribute(UserProfileAction.USERPROFILE_ON_SESSION);
-        assertNotNull(currentUserProfile);
-		assertEquals(USERNAME_FOR_TEST, currentUserProfile.getUsername());
+        assertNull(currentUserProfile);
     }
     
     public void testEditProfile_2() throws Throwable {
