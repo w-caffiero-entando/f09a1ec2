@@ -195,7 +195,17 @@
             </div>
 
         </fieldset>
-
+        <fieldset class="col-xs-12 no-padding">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="readonlyDefaultConfig">
+                            <s:text name="widget.widgetManagement.label.readonlyDefaultConfig" />
+                        </label>
+                        <div class="col-sm-10">
+                            <wpsf:checkbox name="readonlyDefaultConfig" id="readonlyDefaultConfig"
+                                           cssClass=" bootstrap-switch" disabled="%{!#isSuperuserVar}"/>
+                        </div>
+                    </div>
+        </fielset>
         <s:if test="strutsAction != 1 && (strutsAction != 2 || #widgetTypeVar.logic)">
             <fieldset class="col-xs-12 col-md-12 no-padding">
                 <legend><s:text name="title.widgetType.settings" /></legend>
