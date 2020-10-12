@@ -1,6 +1,26 @@
+/*
+ * Copyright 2018-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package org.entando.entando.plugins.jpseo.aps.system.services.page;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.page.IPage;
@@ -17,6 +37,7 @@ import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.page.PageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoData;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoDataByLang;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoMetaTag;
@@ -171,7 +192,7 @@ public class SeoPageService extends PageService {
         page.setMetadata(seoPageMetadata);
         try {
             pageManager.addPage(page);
-        } catch (ApsSystemException e) {
+        } catch (EntException e) {
             logger.error("error addding seo page: {}", e);
         }
         IPage addedPage = this.getPageManager().getDraftPage(page.getCode());
@@ -211,7 +232,7 @@ public class SeoPageService extends PageService {
                     IPage updatedPage = this.getPageManager().getDraftPage(pageCode);
                     updatedPage.setPosition(oldPage.getPosition());
                     return mapPageToSeoPageDto(pageCode, updatedPage);
-                } catch (ApsSystemException e) {
+                } catch (EntException e) {
                     this.logger.error("Error updating page {}", pageCode, e);
                     throw new RestServerError("error in update page", e);
                 }
