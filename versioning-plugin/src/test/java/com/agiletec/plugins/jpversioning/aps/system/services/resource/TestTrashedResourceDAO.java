@@ -28,7 +28,7 @@ import javax.sql.DataSource;
 
 import com.agiletec.plugins.jpversioning.aps.ApsPluginBaseTestCase;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
@@ -58,7 +58,7 @@ public class TestTrashedResourceDAO extends ApsPluginBaseTestCase {
 		assertTrue(resourceVO.getXml().length() > 0 );
 	}
 	
-	public void testAddGetDel_TrashedResource() throws ApsSystemException{
+	public void testAddGetDel_TrashedResource() throws EntException {
 		String resourceId = "22";
 		ResourceInterface resource = _resourceManager.loadResource(resourceId);
 		

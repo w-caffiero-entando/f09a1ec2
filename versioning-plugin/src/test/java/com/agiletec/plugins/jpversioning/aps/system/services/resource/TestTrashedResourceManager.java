@@ -28,7 +28,7 @@ import java.util.List;
 import com.agiletec.plugins.jpversioning.aps.ApsPluginBaseTestCase;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.category.Category;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.group.Group;
@@ -52,7 +52,7 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
 		this.init();
     }
 	
-	public void testSearchTrashedResourceIds() throws ApsSystemException {
+	public void testSearchTrashedResourceIds() throws EntException {
 		String resourceTypeCode = null;
 		String text = null;
 		List<String> allowedGroups = new ArrayList<String>();

@@ -16,8 +16,8 @@ package org.entando.entando.plugins.jpversioning.web.configuration;
 import javax.servlet.http.HttpSession;
 import org.entando.entando.plugins.jpversioning.services.configuration.VersioningConfigurationService;
 import org.entando.entando.plugins.jpversioning.web.configuration.model.VersioningConfigurationDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/plugins/versioning/configuration")
 public class VersioningConfigurationController implements IVersioningConfiguration {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
     @Autowired
     private VersioningConfigurationService versioningConfigurationService;

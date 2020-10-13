@@ -13,7 +13,7 @@
  */
 package org.entando.entando.plugins.jpversioning.services.content;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.plugins.jacms.aps.system.services.content.ContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentDto;
@@ -38,8 +38,8 @@ import org.entando.entando.plugins.jpversioning.web.content.model.ContentVersion
 import org.entando.entando.web.common.model.Filter;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -51,7 +51,7 @@ import org.xml.sax.SAXException;
 @Service
 public class ContentVersioningService {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
     private final static String RESOURCE = "resource";
     private final static String RESOURCE_ID = "id";
@@ -80,7 +80,7 @@ public class ContentVersioningService {
             contentVersionDTOs = requestList.getSublist(contentVersions).stream()
                     .map(cv -> mapContentVersionToDTO(getContentVersion(cv)))
                     .collect(Collectors.toList());
-        } catch (ApsSystemException e) {
+        } catch (EntException e) {
             logger.error("Error reading the list of content versions for content {}", contentId, e);
             throw new RestServerError(String.format("Error while getting content versions for content %s", contentId),
                     e);
@@ -107,7 +107,7 @@ public class ContentVersioningService {
             pagedResults.setBody(sublist);
 
             return pagedResults;
-        } catch (ApsSystemException e) {
+        } catch (EntException e) {
             logger.error("Error while getting latest versions for request {}", requestList, e);
             throw new RestServerError(String.format("Error while getting content versions for request %s", requestList),
                     e);
@@ -128,7 +128,7 @@ public class ContentVersioningService {
     public ContentVersion getContentVersion(Long versionId) {
         try {
             return versioningManager.getVersion(versionId);
-        } catch (ApsSystemException e) {
+        } catch (EntException e) {
             logger.error("Error reading version {} " + versionId, e);
         }
         return null;
@@ -140,7 +140,7 @@ public class ContentVersioningService {
             final Content content = versioningManager.getContent(contentVersion);
             final ContentDto contentDto = contentService.getDtoBuilder().convert(content);
             return contentDto;
-        } catch (ApsSystemException e) {
+        } catch (EntException e) {
             logger.error("Error reading the content from version {} ", versionId, e);
         }
         return null;

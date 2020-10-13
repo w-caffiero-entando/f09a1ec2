@@ -18,7 +18,7 @@ import static com.agiletec.plugins.jpversioning.aps.system.services.versioning.I
 import static com.agiletec.plugins.jpversioning.aps.system.services.versioning.IVersioningManager.VERSION_ID_FILTER_KEY;
 
 import com.agiletec.aps.system.common.FieldSearchFilter;
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.ContentVersion;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.IVersioningManager;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.VersioningManager;
@@ -40,20 +40,20 @@ public class ContentVersioningValidator extends AbstractPaginationValidator {
             if (versioningManager.getVersions(contentId) != null) {
                 return true;
             }
-        } catch (ApsSystemException e) {
+        } catch (EntException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    public void checkFilterKeys(FieldSearchFilter[] filters) throws ApsSystemException {
+    public void checkFilterKeys(FieldSearchFilter[] filters) throws EntException {
         if (null != filters && filters.length > 0) {
             String[] allowedFilterKeys = {VERSION_CONTENT_TYPE_FILTER_KEY, VERSION_DESCRIPTION_FILTER_KEY};
             List<String> allowedFilterKeysList = Arrays.asList(allowedFilterKeys);
             for (int i = 0; i < filters.length; i++) {
                 FieldSearchFilter filter = filters[i];
                 if (!allowedFilterKeysList.contains(filter.getKey())) {
-                    throw new ApsSystemException("Invalid filter key - '" + filter.getKey() + "'");
+                    throw new EntException("Invalid filter key - '" + filter.getKey() + "'");
                 }
             }
         }

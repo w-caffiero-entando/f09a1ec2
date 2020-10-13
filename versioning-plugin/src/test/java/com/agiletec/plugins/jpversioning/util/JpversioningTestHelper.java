@@ -29,12 +29,12 @@ import java.util.Date;
 
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.context.ApplicationContext;
 
 import com.agiletec.aps.system.common.AbstractDAO;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.util.DateConverter;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
@@ -45,14 +45,14 @@ import com.agiletec.plugins.jpversioning.aps.system.services.versioning.ContentV
 
 public class JpversioningTestHelper extends AbstractDAO {
 
-	private static final Logger _logger = LoggerFactory.getLogger(JpversioningTestHelper.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(JpversioningTestHelper.class);
 	
 	public JpversioningTestHelper(DataSource dataSource, ApplicationContext context) {
 		this.setDataSource(dataSource);
 		this._contentManager = (IContentManager) context.getBean(JacmsSystemConstants.CONTENT_MANAGER);
 	}
 	
-	public void initContentVersions() throws ApsSystemException {
+	public void initContentVersions() throws EntException {
 		this.cleanContentVersions();
 		ContentRecordVO record = this._contentManager.loadContentVO("ART1");
 		ContentVersion version1 = this.createContentVersion(1, record.getId(), record.getTypeCode(), 
@@ -69,7 +69,7 @@ public class JpversioningTestHelper extends AbstractDAO {
 		this.addContentVersion(version3);
 	}
 	
-	public void cleanContentVersions() throws ApsSystemException {
+	public void cleanContentVersions() throws EntException {
 		Connection conn = null;
 		Statement stat = null;
 		try {
@@ -77,13 +77,13 @@ public class JpversioningTestHelper extends AbstractDAO {
 			stat = conn.createStatement();
 			stat.executeUpdate(DELETE_VERSIONS);
 		} catch (Throwable t) {
-			throw new ApsSystemException("Error cleaning content versions", t);
+			throw new EntException("Error cleaning content versions", t);
 		} finally {
 			closeDaoResources(null, stat, conn);
 		}
 	}
 	
-	public void cleanTrashedResources() throws ApsSystemException {
+	public void cleanTrashedResources() throws EntException {
 		Connection conn = null;
 		Statement stat = null;
 		try {
@@ -91,7 +91,7 @@ public class JpversioningTestHelper extends AbstractDAO {
 			stat = conn.createStatement();
 			stat.executeUpdate(DELETE_TRASHED_RESOURCES);
 		} catch (Throwable t) {
-			throw new ApsSystemException("Error cleaning trashed resources", t);
+			throw new EntException("Error cleaning trashed resources", t);
 		} finally {
 			closeDaoResources(null, stat, conn);
 		}

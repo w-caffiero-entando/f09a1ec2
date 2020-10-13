@@ -14,7 +14,7 @@
 package com.agiletec.plugins.jpversioning.aps.servlet;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.group.Group;
@@ -47,19 +47,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.servlet.IProtectedResourceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 public class VersioningProtectedResourceProvider implements IProtectedResourceProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(VersioningProtectedResourceProvider.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(VersioningProtectedResourceProvider.class);
 
     private IUserManager userManager;
     private IAuthorizationManager authorizationManager;
     private ITrashedResourceManager trashedResourceManager;
 
     @Override
-    public boolean provideProtectedResource(HttpServletRequest request, HttpServletResponse response) throws ApsSystemException {
+    public boolean provideProtectedResource(HttpServletRequest request, HttpServletResponse response) throws EntException {
         try {
             String[] uriSegments = request.getRequestURI().split("/");
             int segments = uriSegments.length;
@@ -104,7 +104,7 @@ public class VersioningProtectedResourceProvider implements IProtectedResourcePr
             }
         } catch (Throwable t) {
             logger.error("Error extracting protected resource", t);
-            throw new ApsSystemException("Error extracting protected resource", t);
+            throw new EntException("Error extracting protected resource", t);
         }
         return false;
     }
@@ -135,7 +135,7 @@ public class VersioningProtectedResourceProvider implements IProtectedResourcePr
     }
 
     private InputStream getInputStream(Integer size, UserDetails user, ResourceInterface resource)
-            throws ApsSystemException {
+            throws EntException {
         String mainGroup = resource.getMainGroup();
         if (authorizationManager.isAuthOnGroup(user, mainGroup)) {
             return trashedResourceManager.getTrashFileStream(resource, getResourceInstance(size, resource));

@@ -24,7 +24,7 @@ package com.agiletec.plugins.jpversioning.aps.system.services.versioning;
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import java.util.List;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 
 /**
@@ -40,20 +40,20 @@ public interface IVersioningManager {
 	static final String[] METADATA_FILTER_KEYS = {VERSION_ID_FILTER_KEY, VERSION_CONTENT_TYPE_FILTER_KEY,
 			VERSION_DESCRIPTION_FILTER_KEY};
 
-	public List<Long> getVersions(String contentId) throws ApsSystemException;
+	public List<Long> getVersions(String contentId) throws EntException;
 	
-	public List<Long> getLastVersions(String contentType, String descr) throws ApsSystemException;
+	public List<Long> getLastVersions(String contentType, String descr) throws EntException;
 	
-	public ContentVersion getVersion(long id) throws ApsSystemException;
+	public ContentVersion getVersion(long id) throws EntException;
 	
-	public ContentVersion getLastVersion(String contentId) throws ApsSystemException;
+	public ContentVersion getLastVersion(String contentId) throws EntException;
 	
-	public void saveContentVersion(String contentId) throws ApsSystemException;
+	public void saveContentVersion(String contentId) throws EntException;
 	
-	public void deleteVersion(long versionid) throws ApsSystemException;
+	public void deleteVersion(long versionid) throws EntException;
 	
-	public void deleteWorkVersions(String contentId, int onlineVersion) throws ApsSystemException;
+	public void deleteWorkVersions(String contentId, int onlineVersion) throws EntException;
 	
-	public Content getContent(ContentVersion contentVersion) throws ApsSystemException;
+	public Content getContent(ContentVersion contentVersion) throws EntException;
 	
 }

@@ -29,13 +29,13 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.xml.sax.InputSource;
 
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.entity.parse.EntityHandler;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
@@ -53,7 +53,7 @@ import org.xml.sax.SAXException;
 @Aspect
 public class VersioningManager extends AbstractService implements IVersioningManager {
 
-    private static final Logger _logger = LoggerFactory.getLogger(VersioningManager.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(VersioningManager.class);
 
     @Override
     public void init() throws Exception {
@@ -133,47 +133,47 @@ public class VersioningManager extends AbstractService implements IVersioningMan
     }
 
     @Override
-    public List<Long> getVersions(String contentId) throws ApsSystemException {
+    public List<Long> getVersions(String contentId) throws EntException {
         try {
             return this.getVersioningDAO().getVersions(contentId);
         } catch (Exception e) {
             _logger.error("Error loading version identifiers", e);
-            throw new ApsSystemException("Error loading version identifiers");
+            throw new EntException("Error loading version identifiers");
         }
     }
 
     @Override
-    public List<Long> getLastVersions(String contentType, String descr) throws ApsSystemException {
+    public List<Long> getLastVersions(String contentType, String descr) throws EntException {
         try {
             return this.getVersioningDAO().getLastVersions(contentType, descr);
         } catch (Exception e) {
             _logger.error("Error loading last version identifiers", e);
-            throw new ApsSystemException("Error loading last version identifiers");
+            throw new EntException("Error loading last version identifiers");
         }
     }
 
     @Override
-    public ContentVersion getVersion(long id) throws ApsSystemException {
+    public ContentVersion getVersion(long id) throws EntException {
         try {
             return this.getVersioningDAO().getVersion(id);
         } catch (Exception e) {
             _logger.error("Error loading version of id {}", id, e);
-            throw new ApsSystemException("Error loading version of id " + id);
+            throw new EntException("Error loading version of id " + id);
         }
     }
 
     @Override
-    public ContentVersion getLastVersion(String contentId) throws ApsSystemException {
+    public ContentVersion getLastVersion(String contentId) throws EntException {
         try {
             return this.getVersioningDAO().getLastVersion(contentId);
         } catch (Exception e) {
             _logger.error("Error loading last version for content {}", contentId, e);
-            throw new ApsSystemException("Error loading last version for content" + contentId);
+            throw new EntException("Error loading last version for content" + contentId);
         }
     }
 
     @Override
-    public void saveContentVersion(String contentId) throws ApsSystemException {
+    public void saveContentVersion(String contentId) throws EntException {
         try {
             if (contentId != null) {
                 ContentRecordVO record = this.getContentManager().loadContentVO(contentId);
@@ -189,29 +189,29 @@ public class VersioningManager extends AbstractService implements IVersioningMan
             }
         } catch (Exception e) {
             _logger.error("error in Error saving version for content {}", contentId, e);
-            throw new ApsSystemException("Error saving version for content" + contentId);
+            throw new EntException("Error saving version for content" + contentId);
         }
     }
 
     @Override
-    public void deleteWorkVersions(String contentId, int onlineVersion) throws ApsSystemException {
+    public void deleteWorkVersions(String contentId, int onlineVersion) throws EntException {
         try {
             if (this.isDeleteMidVersions()) {
                 this.getVersioningDAO().deleteWorkVersions(contentId, onlineVersion);
             }
         } catch (Exception e) {
             _logger.error("Error in delete Work Versions", e);
-            throw new ApsSystemException("Errore in delete Work Versions", e);
+            throw new EntException("Errore in delete Work Versions", e);
         }
     }
 
     @Override
-    public Content getContent(ContentVersion contentVersion) throws ApsSystemException {
+    public Content getContent(ContentVersion contentVersion) throws EntException {
         try {
             return this.createContentFromXml(contentVersion.getContentType(), contentVersion.getXml());
         } catch (Exception e) {
             _logger.error("Error loading Content from version xml", e);
-            throw new ApsSystemException("Error loading Content from version xml", e);
+            throw new EntException("Error loading Content from version xml", e);
         }
     }
 
@@ -222,9 +222,9 @@ public class VersioningManager extends AbstractService implements IVersioningMan
      * @param entityTypeCode Il codice del tipo di entità.
      * @param xml L'xml dell'entità specifica.
      * @return L'entità valorizzata.
-     * @throws ApsSystemException In caso di errore nella lettura dell'entità.
+     * @throws EntException In caso di errore nella lettura dell'entità.
      */
-    protected Content createContentFromXml(String entityTypeCode, String xml) throws ApsSystemException {
+    protected Content createContentFromXml(String entityTypeCode, String xml) throws EntException {
         try {
             Content entityPrototype = (Content) this.getContentManager().getEntityPrototype(entityTypeCode);
             SAXParserFactory parseFactory = SAXParserFactory.newInstance();
@@ -236,7 +236,7 @@ public class VersioningManager extends AbstractService implements IVersioningMan
             return entityPrototype;
         } catch (ParserConfigurationException | SAXException | IOException e) {
             _logger.error("Error on creation entity. typecode: {} xml: {}", entityTypeCode, xml, e);
-            throw new ApsSystemException("Error on creation entity", e);
+            throw new EntException("Error on creation entity", e);
         }
     }
 

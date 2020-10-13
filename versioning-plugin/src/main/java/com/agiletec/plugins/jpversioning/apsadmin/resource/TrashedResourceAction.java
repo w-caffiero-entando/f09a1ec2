@@ -21,7 +21,7 @@
  */
 package com.agiletec.plugins.jpversioning.apsadmin.resource;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.AbstractMonoInstanceResource;
@@ -35,12 +35,12 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 public class TrashedResourceAction extends ResourceFinderAction {
     
-    private static final Logger logger = LoggerFactory.getLogger(TrashedResourceAction.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(TrashedResourceAction.class);
 	
 	private String _contentType;
 	private String _nameFile;
@@ -132,7 +132,7 @@ public class TrashedResourceAction extends ResourceFinderAction {
 		return resources;
 	}
 
-	private List<String> searchTrashedResources(String resourceTypeCode, String text, UserDetails currentUser) throws ApsSystemException {
+	private List<String> searchTrashedResources(String resourceTypeCode, String text, UserDetails currentUser) throws EntException {
 		List<String> allowedGroups = new ArrayList<>();
 		List<Group> userGroups = this.getAuthorizationManager().getUserGroups(currentUser);
 		for (int i=0; i<userGroups.size(); i++) {

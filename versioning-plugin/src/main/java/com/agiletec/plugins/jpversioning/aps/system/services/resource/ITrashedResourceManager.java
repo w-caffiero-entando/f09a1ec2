@@ -24,7 +24,7 @@ package com.agiletec.plugins.jpversioning.aps.system.services.resource;
 import java.util.List;
 import java.util.Map;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInstance;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
 import java.io.InputStream;
@@ -44,14 +44,14 @@ public interface ITrashedResourceManager {
 	 * @param allowedGroups la lista dei gruppi
 	 * */
 	List<String> searchTrashedResourceIds(String resourceTypeCode, String text,
-			List<String> allowedGroups) throws ApsSystemException;
+			List<String> allowedGroups) throws EntException;
 	
 	/**
 	 * Carica una risorsa cestinata dal cestino
 	 * 
 	 * @param id l'identificativo della risorsa
 	 * */
-	ResourceInterface loadTrashedResource(String id) throws ApsSystemException;
+	ResourceInterface loadTrashedResource(String id) throws EntException;
 	
 	/**
 	 * Ripristina una risorsa dal cestino all'archivio delle risorse correnti
@@ -59,7 +59,7 @@ public interface ITrashedResourceManager {
 	 * @param resourceId l'identificativo della risorsa
 	 * @param basePath il percorso RealPath di esecuzione per il calcolo dei percorsi sul filesystem
 	 * */
-	void restoreResource(String resourceId) throws ApsSystemException;
+	void restoreResource(String resourceId) throws EntException;
 	
 	/**
 	 * Rimuove una risorsa dal cestino
@@ -68,7 +68,7 @@ public interface ITrashedResourceManager {
 	 * @param basePath il percorso RealPath di esecuzione per il calcolo dei percorsi sul filesystem
 	 * */
 	void removeFromTrash(String resourceId)
-			throws ApsSystemException;
+			throws EntException;
 	
 	/**
 	 * Salva una risorsa nel cestino
@@ -76,13 +76,12 @@ public interface ITrashedResourceManager {
 	 * @param resource la risorsa da salvare
 	 * @param basePath il percorso RealPath di esecuzione per il calcolo dei percorsi sul filesystem
 	 * */
-	void addTrashedResource(ResourceInterface resource)
-			throws ApsSystemException;
+	void addTrashedResource(ResourceInterface resource) throws EntException;
 	
-	public InputStream getTrashFileStream(ResourceInterface resource, ResourceInstance instance) throws ApsSystemException;
+	public InputStream getTrashFileStream(ResourceInterface resource, ResourceInstance instance) throws EntException;
 	
 	//Map<String, String> resourceInstancesTrashFilePaths(
-	//		ResourceInterface resource) throws ApsSystemException;
+	//		ResourceInterface resource) throws EntException;
 
 	String getSubfolder(ResourceInterface resource);
 	
