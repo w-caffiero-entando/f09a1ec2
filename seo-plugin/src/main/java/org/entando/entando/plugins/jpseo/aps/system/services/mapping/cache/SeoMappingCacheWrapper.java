@@ -22,7 +22,7 @@
 package org.entando.entando.plugins.jpseo.aps.system.services.mapping.cache;
 
 import com.agiletec.aps.system.common.AbstractCacheWrapper;
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,8 +31,8 @@ import java.util.Map;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ContentFriendlyCode;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingDAO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.cache.Cache;
 
 /**
@@ -40,10 +40,10 @@ import org.springframework.cache.Cache;
  */
 public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeoMappingCacheWrapper {
 
-	private static final Logger _logger = LoggerFactory.getLogger(SeoMappingCacheWrapper.class);
+	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(SeoMappingCacheWrapper.class);
     
 	@Override
-	public void initCache(ISeoMappingDAO seoMappingDAO) throws ApsSystemException {
+	public void initCache(ISeoMappingDAO seoMappingDAO) throws EntException {
 		try {
             Cache cache = this.getCache();
             this.releaseCachedObjects(cache, MAPPING_BY_CODE_CACHE_KEY, MAPPING_BY_CODE_CACHE_KEY_PREFIX);
@@ -73,7 +73,7 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
 			this.insertVoObjectsOnCache(cache, contentFriendlyCodes, MAPPING_BY_CONTENT_CACHE_KEY, MAPPING_BY_CONTENT_CACHE_KEY_PREFIX);
 		} catch (Throwable t) {
 			_logger.error("Error loading seo mapper", t);
-			throw new ApsSystemException("Error loading seo mapper", t);
+			throw new EntException("Error loading seo mapper", t);
 		}
 	}
     

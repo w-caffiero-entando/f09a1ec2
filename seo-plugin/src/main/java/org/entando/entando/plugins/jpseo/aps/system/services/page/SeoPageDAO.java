@@ -23,10 +23,10 @@ package org.entando.entando.plugins.jpseo.aps.system.services.page;
 
 import java.sql.ResultSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.page.PageDAO;
 import com.agiletec.aps.system.services.page.PageExtraConfigDOM;
 import com.agiletec.aps.system.services.page.PageMetadata;
@@ -41,7 +41,7 @@ import java.util.Date;
  */
 public class SeoPageDAO extends PageDAO {
 
-    private static final Logger _logger = LoggerFactory.getLogger(SeoPageDAO.class);
+    private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(SeoPageDAO.class);
 
     @Override
     protected PageExtraConfigDOM getExtraConfigDOM() {
@@ -60,7 +60,7 @@ public class SeoPageDAO extends PageDAO {
         } catch (Throwable t) {
             _logger.error("IO error detected while parsing the titles of the page {}", code, t);
             String msg = "IO error detected while parsing the titles of the page '" + code + "'";
-            throw new ApsSystemException(msg, t);
+            throw new EntException(msg, t);
         }
         pageMetadata.setTitles(titles);
         pageMetadata.setModel(this.getPageModelManager().getPageModel(res.getString(index++)));
@@ -74,7 +74,7 @@ public class SeoPageDAO extends PageDAO {
             } catch (Throwable t) {
                 _logger.error("IO error detected while parsing the extra config of the page {}", code, t);
                 String msg = "IO error detected while parsing the extra config of the page '" + code + "'";
-                throw new ApsSystemException(msg, t);
+                throw new EntException(msg, t);
             }
         }
         Timestamp date = res.getTimestamp(index++);

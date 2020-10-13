@@ -34,8 +34,8 @@ import java.util.Map;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * Dom class for parse the xml of extra page config
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SeoPageExtraConfigDOM extends PageExtraConfigDOM {
 
-    private static final Logger _logger = LoggerFactory.getLogger(SeoPageExtraConfigDOM.class);
+    private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(SeoPageExtraConfigDOM.class);
 
     private static final String USE_EXTRA_DESCRIPTIONS_ELEMENT_NAME = "useextradescriptions";
     private static final String DESCRIPTIONS_ELEMENT_NAME = "descriptions";

@@ -19,8 +19,8 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class MetatagDOM {
 
-	private static final Logger logger = LoggerFactory.getLogger(MetatagDOM.class);
+	private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(MetatagDOM.class);
 	
 	private Document doc;
 	

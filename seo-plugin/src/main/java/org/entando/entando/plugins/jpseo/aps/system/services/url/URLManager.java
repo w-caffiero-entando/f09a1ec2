@@ -37,15 +37,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni
  */
 public class URLManager extends com.agiletec.aps.system.services.url.URLManager {
 	
-	private static final Logger _logger = LoggerFactory.getLogger(URLManager.class);
+	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(URLManager.class);
 	
 	private ISeoMappingManager seoMappingManager;
 	private IContentManager contentManager;

@@ -24,7 +24,7 @@ package org.entando.entando.plugins.jpseo.aps.system.sitemap;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.FieldSearchFilter;
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
@@ -48,15 +48,15 @@ import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.url.PageURL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni
  */
 public class SitemapAction extends BaseAction {
 
-    private static final Logger _logger = LoggerFactory.getLogger(SitemapAction.class);
+    private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(SitemapAction.class);
 
     private static final String header = "<urlset "
             + "xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" \n"
@@ -94,7 +94,7 @@ public class SitemapAction extends BaseAction {
             this.addContentLinks(urlList, root, lang, null);
         } catch (Throwable t) {
             _logger.error("error in doStartTag", t);
-            throw new ApsSystemException("Error during tag initialization ", t);
+            throw new EntException("Error during tag initialization ", t);
         }
         return urlList;
     }

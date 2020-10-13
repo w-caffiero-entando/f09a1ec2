@@ -21,6 +21,7 @@
  */
 package org.entando.entando.plugins.jpseo.aps.system.services.page;
 
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.page.IPage;
@@ -37,7 +38,6 @@ import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.page.PageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
-import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoData;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoDataByLang;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoMetaTag;
@@ -45,8 +45,8 @@ import org.entando.entando.plugins.jpseo.web.page.model.SeoPageRequest;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.page.model.PagePositionRequest;
 import org.entando.entando.web.page.model.PageRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -56,7 +56,7 @@ import org.springframework.validation.DataBinder;
 @Service("SeoPageService")
 public class SeoPageService extends PageService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SeoPageService.class);
+    private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoPageService.class);
 
     @Autowired
     private PageManager pageManager;

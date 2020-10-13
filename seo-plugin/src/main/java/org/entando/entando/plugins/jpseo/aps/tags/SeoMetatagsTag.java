@@ -43,8 +43,8 @@ import org.entando.entando.plugins.jpseo.aps.system.services.metatag.Metatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageExtraConfigDOM;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * Tag that handles the printing of the entire metatags section in the page
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SeoMetatagsTag extends ExtendedTagSupport {
 
-    private static final Logger logger = LoggerFactory.getLogger(SeoMetatagsTag.class);
+    private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoMetatagsTag.class);
 
     private String var;
 

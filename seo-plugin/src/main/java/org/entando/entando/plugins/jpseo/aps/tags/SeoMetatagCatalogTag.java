@@ -30,15 +30,15 @@ import javax.servlet.jsp.JspException;
 import org.apache.struts2.views.jsp.StrutsBodyTagSupport;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.metatag.IMetatagCatalog;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni
  */
 public class SeoMetatagCatalogTag extends StrutsBodyTagSupport {
 
-    private static final Logger logger = LoggerFactory.getLogger(SeoMetatagCatalogTag.class);
+    private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoMetatagCatalogTag.class);
 
     private String var;
 

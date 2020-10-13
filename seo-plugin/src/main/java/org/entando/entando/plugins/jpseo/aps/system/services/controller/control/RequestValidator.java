@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
@@ -45,7 +45,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
  */
 public class RequestValidator extends com.agiletec.aps.system.services.controller.control.RequestValidator {
 
-	private static final Logger _logger =  LoggerFactory.getLogger(RequestValidator.class);
+	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(RequestValidator.class);
 	
 	@Override
 	public int service(RequestContext reqCtx, int status) {

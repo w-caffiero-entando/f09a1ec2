@@ -23,8 +23,8 @@ package org.entando.entando.plugins.jpseo.aps.system.services.linkresolver;
 
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.url.PageURL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
@@ -39,7 +39,7 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInt
  */
 public class LinkResolverManager extends com.agiletec.plugins.jacms.aps.system.services.linkresolver.LinkResolverManager {
 
-    private static final Logger _logger = LoggerFactory.getLogger(LinkResolverManager.class);
+    private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(LinkResolverManager.class);
 
     private ISeoMappingManager seoMappingManager;
 
