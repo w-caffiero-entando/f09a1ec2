@@ -21,7 +21,6 @@
  */
 package org.entando.entando.plugins.jpseo.apsadmin.portal;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.apsadmin.portal.PageSettingsAction;
 import com.opensymphony.xwork2.ActionContext;
@@ -47,7 +46,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
 import static org.mockito.Mockito.when;
+
+import org.entando.entando.ent.exception.EntException;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -119,7 +121,7 @@ public class PageSettingsActionAspectTest {
     }
 
     @Test
-    public void executeInitConfig_1() throws ApsSystemException {
+    public void executeInitConfig_1() throws EntException {
         String path = System.getProperty("java.io.tmpdir") + File.separator + "robot.txt";
         when(configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
         actionAspect.executeInitConfig(joinPoint);
@@ -129,7 +131,7 @@ public class PageSettingsActionAspectTest {
     }
 
     @Test
-    public void executeInitConfig_2() throws ApsSystemException {
+    public void executeInitConfig_2() throws EntException {
         String path = System.getProperty("java.io.tmpdir") + File.separator + "meta-inf" + File.separator + "robot.txt";
         when(configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
         actionAspect.executeInitConfig(joinPoint);
@@ -139,7 +141,7 @@ public class PageSettingsActionAspectTest {
     }
 
     @Test
-    public void executeInitConfig_3() throws ApsSystemException {
+    public void executeInitConfig_3() throws EntException {
         this.request.getSession().setAttribute(PageSettingsActionAspect.SESSION_PARAM_ROBOT_ALTERNATIVE_PATH_CODE_ERROR, "Message");
         String path = System.getProperty("java.io.tmpdir") + File.separator + "robot.txt";
         when(configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
@@ -200,9 +202,9 @@ public class PageSettingsActionAspectTest {
     }
 
     @Test
-    public void executeUpdateSystemParams_9() throws ApsSystemException {
+    public void executeUpdateSystemParams_9() throws EntException {
         when(configManager.getConfigItem(ArgumentMatchers.anyString())).thenReturn(CONFIG_PARAMETER);
-        Mockito.doThrow(ApsSystemException.class).when(configManager).updateConfigItem(Mockito.anyString(), Mockito.anyString());
+        Mockito.doThrow(EntException.class).when(configManager).updateConfigItem(Mockito.anyString(), Mockito.anyString());
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(1)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
         Assert.assertFalse(pageSettingsAction.hasFieldErrors());
