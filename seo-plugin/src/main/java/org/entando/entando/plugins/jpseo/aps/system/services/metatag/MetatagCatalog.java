@@ -21,11 +21,11 @@
  */
 package org.entando.entando.plugins.jpseo.aps.system.services.metatag;
 
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.FileTextReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 

@@ -65,7 +65,13 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 		this.getCacheWrapper().initCache(this.getSeoMappingDAO());
 		logger.debug("{} ready. initialized",this.getClass().getName());
 	}
-	
+
+    @Override
+    protected void release() {
+        this.getCacheWrapper().release();
+        super.release();
+    }
+
 	@Override
 	public void updateFromPageChanged(PageChangedEvent event) {
 		IPage page = event.getPage();
