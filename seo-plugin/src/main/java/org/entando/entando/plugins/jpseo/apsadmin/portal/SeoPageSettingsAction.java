@@ -25,15 +25,15 @@ import com.agiletec.apsadmin.portal.PageSettingsAction;
 import java.io.File;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni
  */
 public class SeoPageSettingsAction extends PageSettingsAction {
 
-    private static final Logger logger = LoggerFactory.getLogger(SeoPageSettingsAction.class);
+    private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoPageSettingsAction.class);
 
     public String setRobotsPath() {
         String alternativePath = this.getRequest().getParameter(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE);

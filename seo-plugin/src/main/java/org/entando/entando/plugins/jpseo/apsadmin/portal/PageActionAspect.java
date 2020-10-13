@@ -50,13 +50,13 @@ import org.entando.entando.plugins.jpseo.aps.system.services.metatag.Metatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageExtraConfigDOM;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 @Aspect
 public class PageActionAspect {
 
-    private static final Logger _logger = LoggerFactory.getLogger(PageActionAspect.class);
+    private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(PageActionAspect.class);
 
     public static final String PARAM_FRIENDLY_CODE = "friendlyCode";
     public static final String PARAM_METATAGS = "pageMetatags";

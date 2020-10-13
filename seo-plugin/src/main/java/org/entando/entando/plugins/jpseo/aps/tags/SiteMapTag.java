@@ -32,8 +32,8 @@ import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.url.PageURL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
@@ -50,7 +50,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 
 public class SiteMapTag extends TagSupport {
 
-    private static final Logger _logger = LoggerFactory.getLogger(SiteMapTag.class);
+    private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(SiteMapTag.class);
 
     @Override
     public int doStartTag() throws JspException {

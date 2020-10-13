@@ -27,8 +27,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
@@ -47,7 +47,7 @@ import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadat
  */
 public class CurrentPageTag extends com.agiletec.aps.tags.CurrentPageTag {
 
-    private static final Logger _logger = LoggerFactory.getLogger(CurrentPageTag.class);
+    private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(CurrentPageTag.class);
 
     protected static final String DESCRIPTION_INFO = "description";
 

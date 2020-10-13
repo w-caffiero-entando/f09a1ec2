@@ -29,8 +29,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.plugins.jpseo.aps.system.services.metatag.Metatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.plugins.jpseo.aps.system.services.metatag.IMetatagCatalog;
 
 /**
@@ -38,7 +38,7 @@ import org.entando.entando.plugins.jpseo.aps.system.services.metatag.IMetatagCat
  */
 public class SeoPageAction extends PageAction {
     
-    private static final Logger logger = LoggerFactory.getLogger(SeoPageAction.class);
+    private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoPageAction.class);
     
     private IMetatagCatalog metatagCatalog;
     

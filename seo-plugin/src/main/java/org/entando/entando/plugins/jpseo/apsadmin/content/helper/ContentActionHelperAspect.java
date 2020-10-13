@@ -30,8 +30,8 @@ import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.util.FriendlyCodeGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
@@ -43,7 +43,7 @@ import com.opensymphony.xwork2.ActionSupport;
 @Aspect
 public class ContentActionHelperAspect {
 
-	private static final Logger _logger =  LoggerFactory.getLogger(ContentActionHelperAspect.class);
+	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(ContentActionHelperAspect.class);
 
 	@Before("execution(* com.agiletec.plugins.jacms.apsadmin.content.helper.ContentActionHelper.scanEntity(..))")
 	public void executeExtraScanEntity(JoinPoint joinPoint) {

@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.AbstractSearcherDAO;
 import com.agiletec.aps.system.common.FieldSearchFilter;
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpseo.aps.system.init.portdb.FriendlyCode;
 
 /**
@@ -44,7 +44,7 @@ import org.entando.entando.plugins.jpseo.aps.system.init.portdb.FriendlyCode;
  */
 public class SeoMappingDAO extends AbstractSearcherDAO implements ISeoMappingDAO {
 
-	private static final Logger _logger =  LoggerFactory.getLogger(SeoMappingDAO.class);
+	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(SeoMappingDAO.class);
 
 	private static final String ADD_MAPPING = 
 			"INSERT INTO " + FriendlyCode.TABLE_NAME + " (friendlycode, pagecode, contentid, langcode) VALUES (?, ?, ?, ?)";
@@ -135,7 +135,7 @@ public class SeoMappingDAO extends AbstractSearcherDAO implements ISeoMappingDAO
 		}
 	}
 	
-	protected void addRecord(FriendlyCodeVO vo, Connection conn) throws ApsSystemException {
+	protected void addRecord(FriendlyCodeVO vo, Connection conn) throws EntException {
 		PreparedStatement stat = null;
 		try {
 			stat = conn.prepareStatement(ADD_MAPPING);

@@ -24,8 +24,8 @@ package org.entando.entando.plugins.jpseo.aps.tags;
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
@@ -47,7 +47,7 @@ import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadat
  */
 public class PageInfoTag extends com.agiletec.aps.tags.PageInfoTag {
 
-    private static final Logger _logger = LoggerFactory.getLogger(PageInfoTag.class);
+    private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(PageInfoTag.class);
 
     @Override
     public int doEndTag() throws JspException {

@@ -43,13 +43,13 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 @Aspect
 public class PageSettingsActionAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(PageSettingsActionAspect.class);
+    private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(PageSettingsActionAspect.class);
 
     public static final String ROBOT_FILENAME = "robots.txt";
 

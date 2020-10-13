@@ -24,7 +24,7 @@ package org.entando.entando.plugins.jpseo.aps.system.services.mapping;
 import java.util.List;
 
 import com.agiletec.aps.system.common.FieldSearchFilter;
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * @author E.Santoboni
@@ -37,6 +37,6 @@ public interface ISeoMappingManager {
 	
 	public String getContentReference(String contentId, String langCode);
 	
-	public List<String> searchFriendlyCode(FieldSearchFilter[] filters) throws ApsSystemException;
+	public List<String> searchFriendlyCode(FieldSearchFilter[] filters) throws EntException;
 	
 }

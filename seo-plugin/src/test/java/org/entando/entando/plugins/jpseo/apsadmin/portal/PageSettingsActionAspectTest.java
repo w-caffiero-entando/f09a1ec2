@@ -21,6 +21,7 @@
  */
 package org.entando.entando.plugins.jpseo.apsadmin.portal;
 
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.apsadmin.portal.PageSettingsAction;
 import com.opensymphony.xwork2.ActionContext;
@@ -48,8 +49,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import static org.mockito.Mockito.when;
-
-import org.entando.entando.ent.exception.EntException;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;

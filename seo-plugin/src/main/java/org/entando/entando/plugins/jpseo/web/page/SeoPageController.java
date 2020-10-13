@@ -1,6 +1,6 @@
 package org.entando.entando.plugins.jpseo.web.page;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +17,8 @@ import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.RestResponse;
 import org.entando.entando.web.common.model.SimpleRestResponse;
 import org.entando.entando.web.page.model.PagePositionRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @SessionAttributes("user")
 public class SeoPageController implements ISeoPageController {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final EntLogger logger =  EntLogFactory.getSanitizedLogger(getClass());
 
     @Autowired
     @Qualifier("SeoPageService")
@@ -85,7 +85,7 @@ public class SeoPageController implements ISeoPageController {
 
     @Override
     public ResponseEntity<SimpleRestResponse<SeoPageDto>> addPage(UserDetails user,
-            SeoPageRequest pageRequest, BindingResult bindingResult) throws ApsSystemException {
+            SeoPageRequest pageRequest, BindingResult bindingResult) throws EntException {
         logger.debug("creating page with request {}", pageRequest);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);

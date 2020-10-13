@@ -25,7 +25,6 @@ import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
 import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
@@ -41,20 +40,21 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.cache.ISeoMappingCacheWrapper;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.event.SeoChangedEvent;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.entando.entando.plugins.jpseo.aps.util.FriendlyCodeGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni, E.Mezzano
  */
 public class SeoMappingManager extends AbstractService implements ISeoMappingManager, PageChangedObserver, PublicContentChangedObserver {
 
-	private static final Logger logger =  LoggerFactory.getLogger(SeoMappingManager.class);
+	private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoMappingManager.class);
 	
 	private ISeoMappingDAO seoMappingDAO;
 	private ILangManager langManager;
@@ -120,7 +120,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
         }
     }
 	
-	private ContentFriendlyCode prepareContentFriendlyCode(String contentId, ITextAttribute attribute) throws ApsSystemException {
+	private ContentFriendlyCode prepareContentFriendlyCode(String contentId, ITextAttribute attribute) throws EntException {
 		ContentFriendlyCode contentFriendlyCode = new ContentFriendlyCode();
 		contentFriendlyCode.setContentId(contentId);
 		String defaultLang = this.getLangManager().getDefaultLang().getCode();
@@ -181,13 +181,13 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     }
 	
 	@Override
-	public List<String> searchFriendlyCode(FieldSearchFilter[] filters) throws ApsSystemException {
+	public List<String> searchFriendlyCode(FieldSearchFilter[] filters) throws EntException {
 		List<String> codes = null;
 		try {
 			codes = this.getSeoMappingDAO().searchFriendlyCode(filters);
 		} catch (Throwable t) {
 			logger.error("Error searching Friendly Codes", t);
-			throw new ApsSystemException("Error searching Friendly Codes", t);
+			throw new EntException("Error searching Friendly Codes", t);
 		}
 		return codes;
 	}

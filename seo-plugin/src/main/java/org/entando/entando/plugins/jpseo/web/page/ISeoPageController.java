@@ -13,7 +13,6 @@
  */
 package org.entando.entando.plugins.jpseo.web.page;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
 import io.swagger.annotations.Api;
@@ -23,6 +22,7 @@ import java.util.Map;
 import javax.validation.Valid;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageDto;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoPageRequest;
 import org.entando.entando.web.common.annotation.ActivityStreamAuditable;
@@ -61,7 +61,7 @@ public interface ISeoPageController {
     @RestAccessControl(permission = Permission.MANAGE_PAGES)
     @PostMapping()
     ResponseEntity<SimpleRestResponse<SeoPageDto>> addPage(@ModelAttribute("user") UserDetails user,
-            @Valid @RequestBody SeoPageRequest pageRequest, BindingResult bindingResult) throws ApsSystemException;
+            @Valid @RequestBody SeoPageRequest pageRequest, BindingResult bindingResult) throws EntException;
 
     @ActivityStreamAuditable
     @RestAccessControl(permission = Permission.MANAGE_PAGES)
