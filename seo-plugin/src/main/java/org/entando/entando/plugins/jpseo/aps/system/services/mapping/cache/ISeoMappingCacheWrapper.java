@@ -21,6 +21,7 @@
  */
 package org.entando.entando.plugins.jpseo.aps.system.services.mapping.cache;
 
+import com.agiletec.aps.system.common.ICacheWrapper;
 import com.agiletec.plugins.jacms.aps.system.services.contentpagemapper.cache.IContentMapperCacheWrapper;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ContentFriendlyCode;
@@ -30,7 +31,7 @@ import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMapping
 /**
  * @author E.Santoboni
  */
-public interface ISeoMappingCacheWrapper {
+public interface ISeoMappingCacheWrapper extends ICacheWrapper {
 
 	public static final String SEO_MAPPER_CACHE_NAME = IContentMapperCacheWrapper.CONTENT_MAPPER_CACHE_NAME;
 	public static final String MAPPING_BY_CODE_CACHE_KEY = "SeoMappingManager_byCode";
