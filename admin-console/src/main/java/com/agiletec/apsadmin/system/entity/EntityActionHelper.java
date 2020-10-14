@@ -79,7 +79,7 @@ public class EntityActionHelper extends BaseActionHelper implements IEntityActio
 			for (int i = 0; i < attributes.size(); i++) {
 				AttributeInterface entityAttribute = attributes.get(i);
 				if (entityAttribute.isActive()) {
-					List<AttributeFieldError> errors = entityAttribute.validate(new AttributeTracer());
+					List<AttributeFieldError> errors = entityAttribute.validate(new AttributeTracer(), super.getLangManager());
 					if (null != errors && errors.size() > 0) {
 						for (int j = 0; j < errors.size(); j++) {
 							AttributeFieldError attributeFieldError = errors.get(j);
