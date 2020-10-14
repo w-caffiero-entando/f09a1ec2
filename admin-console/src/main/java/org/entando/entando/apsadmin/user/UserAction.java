@@ -18,8 +18,8 @@ import java.util.Date;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.SmallEntityType;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class UserAction extends BaseAction {
 	
-	private static final Logger logger =  LoggerFactory.getLogger(UserAction.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(UserAction.class);
 
 	private IUserManager userManager;
 	private IUserProfileManager userProfileManager;

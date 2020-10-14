@@ -13,8 +13,8 @@
  */
 package org.entando.entando.apsadmin.common;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.apsadmin.system.BaseAction;
@@ -29,7 +29,7 @@ import org.entando.entando.apsadmin.system.services.shortcut.model.UserConfigBea
  */
 public class MyShortcutConfigAction extends BaseAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(MyShortcutConfigAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(MyShortcutConfigAction.class);
 
 	/**
 	 * Join a shortcut in the user configuration.

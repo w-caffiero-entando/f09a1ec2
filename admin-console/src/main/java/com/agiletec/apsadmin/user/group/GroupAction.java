@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 
 import com.agiletec.aps.system.services.group.Group;
@@ -35,7 +35,7 @@ public class GroupAction extends AbstractAuthorityAction {
 	private static final String ERROR_GROUP_NOT_EXIST = "error.group.notExist";
 
 
-	private static final Logger logger = LoggerFactory.getLogger(GroupAction.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(GroupAction.class);
 	private static final String GROUP_LIST = "groupList";
 
 

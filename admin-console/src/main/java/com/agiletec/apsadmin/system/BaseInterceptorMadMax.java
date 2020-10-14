@@ -20,8 +20,8 @@ import java.util.Set;
 import javax.servlet.http.HttpSession;
 
 import org.apache.struts2.ServletActionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
@@ -38,7 +38,7 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
  */
 public abstract class BaseInterceptorMadMax extends AbstractInterceptor {
 	
-	private static final Logger _logger = LoggerFactory.getLogger(BaseInterceptorMadMax.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(BaseInterceptorMadMax.class);
 	
 	@Override
     public String intercept(ActionInvocation invocation) throws Exception {

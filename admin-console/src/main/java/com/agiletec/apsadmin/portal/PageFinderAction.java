@@ -19,8 +19,8 @@ import java.util.List;
 
 import org.entando.entando.apsadmin.portal.rs.model.PageJO;
 import org.entando.entando.apsadmin.portal.rs.model.PagesStatusResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
@@ -35,7 +35,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class PageFinderAction extends AbstractPortalAction {
 
-    private static final Logger _logger = LoggerFactory.getLogger(PageFinderAction.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageFinderAction.class);
     private static final int DEFAULT_LASTUPDATE_RESPONSE_SIZE = 5;
 
     private String _pageCodeToken;

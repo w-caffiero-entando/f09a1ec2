@@ -14,8 +14,8 @@
 package com.agiletec.apsadmin.common;
 
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 
 import com.agiletec.aps.system.services.user.IUserManager;
@@ -28,7 +28,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public class BaseCommonAction extends BaseAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(BaseCommonAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(BaseCommonAction.class);
 	
 	@Override
 	public void validate() {

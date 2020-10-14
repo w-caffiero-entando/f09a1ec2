@@ -19,8 +19,8 @@ import java.util.List;
 
 import org.entando.entando.aps.system.services.actionlog.IActionLogManager;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamSeachBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.apsadmin.system.BaseAction;
@@ -30,7 +30,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public class ActivityStreamAction extends BaseAction{
 
-	private static final Logger _logger =  LoggerFactory.getLogger(ActivityStreamAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ActivityStreamAction.class);
 	
 	public String viewMore(){
 		List<Integer> actionRecordIds = new ArrayList<Integer>();

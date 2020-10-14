@@ -18,8 +18,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
@@ -35,7 +35,7 @@ public class CustomLocalizedTextProvider extends StrutsLocalizedTextProvider {
     public static final String DEFAULT_LOCATION_PATTERN
             = "classpath*:/**/plugins/**/apsadmin/**/global-messages*.*";
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomLocalizedTextProvider.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CustomLocalizedTextProvider.class);
 
     public CustomLocalizedTextProvider() {
         super();

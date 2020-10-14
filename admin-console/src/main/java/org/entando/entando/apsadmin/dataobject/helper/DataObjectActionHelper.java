@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
@@ -48,7 +48,7 @@ import org.entando.entando.aps.system.services.dataobject.model.DataObject;
  */
 public class DataObjectActionHelper extends EntityActionHelper implements IDataObjectActionHelper {
 
-    private static final Logger _logger = LoggerFactory.getLogger(DataObjectActionHelper.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(DataObjectActionHelper.class);
 
     @Override
     public void updateDataObject(IApsEntity entity, boolean updateMainGroup, HttpServletRequest request) {

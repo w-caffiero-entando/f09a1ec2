@@ -18,16 +18,17 @@ import com.agiletec.aps.system.services.role.*;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.apsadmin.user.AbstractAuthorityAction;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.*;
 
 import java.util.*;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 /**
  * Classe action della gestione Ruoli.
  */
 public class RoleAction extends AbstractAuthorityAction {
 
-	private static final Logger logger = LoggerFactory.getLogger(RoleAction.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(RoleAction.class);
 	private static final String ERROR_ROLE_NOT_EXIST = "error.role.notExist";
 	private static final String ROLE_LIST = "roleList";
 

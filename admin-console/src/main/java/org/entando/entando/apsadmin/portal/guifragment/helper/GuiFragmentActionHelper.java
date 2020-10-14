@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.GuiFragmentUtilizer;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 
 import com.agiletec.aps.util.ApsWebApplicationUtils;
@@ -32,7 +32,7 @@ import com.agiletec.apsadmin.user.group.helper.GroupActionHelper;
 
 public class GuiFragmentActionHelper extends BaseActionHelper implements IGuiFragmentActionHelper {
 
-	private static final Logger _logger = LoggerFactory.getLogger(GroupActionHelper.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(GroupActionHelper.class);
 	
 	@SuppressWarnings("unchecked")
 	@Override

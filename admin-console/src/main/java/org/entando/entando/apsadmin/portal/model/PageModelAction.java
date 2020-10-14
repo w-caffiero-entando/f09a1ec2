@@ -31,8 +31,8 @@ import org.apache.struts2.json.JSONUtil;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.apsadmin.portal.model.helper.IPageModelActionHelper;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.http.HttpStatus;
@@ -50,7 +50,7 @@ import com.opensymphony.xwork2.Action;
  */
 public class PageModelAction extends AbstractPageModelAction implements ServletResponseAware {
 	
-	private static final Logger _logger = LoggerFactory.getLogger(PageModelAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageModelAction.class);
 
 	@Override
 	public void setServletResponse(HttpServletResponse response) {

@@ -18,8 +18,8 @@ import java.util.List;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.aps.system.services.widgettype.WidgetTypeParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.Widget;
@@ -35,7 +35,7 @@ import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
  */
 public class SimpleWidgetConfigAction extends AbstractPortalAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(SimpleWidgetConfigAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(SimpleWidgetConfigAction.class);
 
 	public String init() {
 		this.checkBaseParams();

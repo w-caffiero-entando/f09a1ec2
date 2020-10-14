@@ -34,15 +34,15 @@ import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.ApiService;
 import org.entando.entando.apsadmin.api.helper.SchemaGeneratorActionHelper;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni
  */
 public abstract class AbstractApiAction extends BaseAction {
 
-	private static final Logger _logger =  LoggerFactory.getLogger(AbstractApiAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractApiAction.class);
 	
     public List<SelectItem> getPermissionAutorityOptions() {
         List<SelectItem> items = new ArrayList<SelectItem>();

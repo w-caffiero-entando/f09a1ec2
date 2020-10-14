@@ -21,8 +21,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.common.tree.ITreeNodeManager;
@@ -40,7 +40,7 @@ import com.agiletec.apsadmin.system.TreeNodeBaseActionHelper;
  */
 public class CategoryActionHelper extends TreeNodeBaseActionHelper implements ICategoryActionHelper {
 
-	private static final Logger _logger = LoggerFactory.getLogger(CategoryActionHelper.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(CategoryActionHelper.class);
 	
 	@Override
 	public Map getReferencingObjects(Category category, HttpServletRequest request) throws EntException {

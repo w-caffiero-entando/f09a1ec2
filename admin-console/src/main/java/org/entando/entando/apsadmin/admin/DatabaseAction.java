@@ -22,8 +22,8 @@ import org.entando.entando.aps.system.init.IDatabaseManager;
 import org.entando.entando.aps.system.init.model.Component;
 import org.entando.entando.aps.system.init.model.ComponentInstallationReport;
 import org.entando.entando.aps.system.init.model.DataSourceDumpReport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.apsadmin.system.BaseAction;
 import com.j256.ormlite.table.DatabaseTable;
@@ -34,7 +34,7 @@ import org.entando.entando.aps.system.init.ComponentManager;
  */
 public class DatabaseAction extends BaseAction {
 
-    private static final Logger _logger = LoggerFactory.getLogger(DatabaseAction.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(DatabaseAction.class);
 
     public String executeBackup() {
         try {

@@ -27,8 +27,8 @@ import java.security.MessageDigest;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -37,7 +37,7 @@ import org.springframework.core.io.Resource;
  */
 public class UserAvatarAction extends BaseAction {
 
-	private static final Logger _logger =  LoggerFactory.getLogger(UserAvatarAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(UserAvatarAction.class);
 	
 	public String returnAvatarStream() {
 		if (!this.isGravatarIntegrationEnabled()) {

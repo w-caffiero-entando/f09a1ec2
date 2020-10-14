@@ -32,8 +32,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.result.ServletRedirectResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * Redirect Action Result with ancot for internal servlet actions.
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FrontServletActionRedirectResult extends ServletRedirectResult implements ReflectionExceptionHandler {
 
-    private static final Logger _logger = LoggerFactory.getLogger(FrontServletActionRedirectResult.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(FrontServletActionRedirectResult.class);
 
     protected String actionName;
     protected String namespace;

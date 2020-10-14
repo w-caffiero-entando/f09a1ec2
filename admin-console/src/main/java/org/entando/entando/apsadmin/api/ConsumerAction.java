@@ -20,8 +20,8 @@ import java.util.Arrays;
 import org.entando.entando.aps.system.services.oauth2.IOAuthConsumerManager;
 import org.entando.entando.aps.system.services.oauth2.model.ConsumerRecordVO;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import java.util.Date;
 import java.util.List;
@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ConsumerAction extends BaseAction {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConsumerAction.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ConsumerAction.class);
 
     private String consumerKey;
     private int strutsAction;

@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanComparator;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
@@ -35,7 +35,7 @@ import com.agiletec.apsadmin.tags.AbstractObjectInfoTag;
  */
 public class EntityTypesInfoTag extends AbstractObjectInfoTag {
 
-	private static final Logger _logger =  LoggerFactory.getLogger(EntityTypesInfoTag.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(EntityTypesInfoTag.class);
 	
 	@Override
 	protected Object getMasterObject(String keyValue) throws Throwable {

@@ -17,14 +17,15 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import org.entando.entando.aps.system.services.storage.*;
-import org.slf4j.*;
 
 import java.io.*;
 import java.util.*;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 public class TestFileBrowserAction extends ApsAdminBaseTestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestFileBrowserAction.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(TestFileBrowserAction.class);
 
     private IStorageManager localStorageManager;
 

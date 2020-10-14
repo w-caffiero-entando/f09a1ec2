@@ -25,8 +25,8 @@ import org.apache.struts2.ServletActionContext;
 import org.entando.entando.aps.system.services.actionlog.IActionLogManager;
 import org.entando.entando.aps.system.services.actionlog.model.ActionLogRecord;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.user.UserDetails;
@@ -43,7 +43,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ActionLoggerInterceptor extends AbstractInterceptor {
 
-    private static final Logger _logger = LoggerFactory.getLogger(ActionLoggerInterceptor.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ActionLoggerInterceptor.class);
 
     private String excludeRequestParameters = "";
     private String includeActionProperties = "";

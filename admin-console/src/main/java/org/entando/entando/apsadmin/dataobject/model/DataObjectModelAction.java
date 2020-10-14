@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.entity.model.attribute.AbstractAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
@@ -49,7 +49,7 @@ import org.entando.entando.aps.system.services.dataobjectmodel.IDataObjectModelM
  */
 public class DataObjectModelAction extends BaseAction {
 
-    private static final Logger _logger = LoggerFactory.getLogger(DataObjectModelAction.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(DataObjectModelAction.class);
 
     @Override
     public void validate() {

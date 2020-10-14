@@ -14,12 +14,12 @@
 package com.agiletec.apsadmin.portal;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 public class ScreenSize {
 
-	private static final Logger _logger = LoggerFactory.getLogger(ScreenSize.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ScreenSize.class);
 	
 	private static final String DEFAULT_SEPARATOR = "x";
 	private static final int WIDTH_DEFAULT = 600;

@@ -20,8 +20,8 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import java.io.StringReader;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class UserShortcutConfigDOM {
 
-	private static final Logger _logger = LoggerFactory.getLogger(UserShortcutConfigDOM.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(UserShortcutConfigDOM.class);
 	
 	protected static String createUserConfigXml(String[] config) throws EntException {
 		XMLOutputter out = new XMLOutputter();

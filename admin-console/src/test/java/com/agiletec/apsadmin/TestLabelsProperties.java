@@ -14,8 +14,8 @@
 package com.agiletec.apsadmin;
 
 import junit.framework.TestCase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
@@ -25,7 +25,7 @@ import java.util.Set;
 
 public class TestLabelsProperties extends TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestLabelsProperties.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(TestLabelsProperties.class);
 
     protected void testGlobalMessagesLabelsTranslations(String propertiesFolder) throws Throwable {
         testLabelsTranslations(propertiesFolder,

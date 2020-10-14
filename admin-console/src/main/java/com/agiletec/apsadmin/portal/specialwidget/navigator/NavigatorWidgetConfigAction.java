@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.Widget;
@@ -35,7 +35,7 @@ import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
  */
 public class NavigatorWidgetConfigAction extends SimpleWidgetConfigAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(NavigatorWidgetConfigAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(NavigatorWidgetConfigAction.class);
 
 	@Override
 	public void validate() {

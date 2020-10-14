@@ -24,8 +24,8 @@ import org.entando.entando.aps.system.services.api.model.ApiMethodRelatedWidget;
 import org.entando.entando.aps.system.services.api.model.ApiService;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.IGroupManager;
@@ -41,7 +41,7 @@ import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
  */
 public class ApiServiceAction extends AbstractApiAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(ApiServiceAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ApiServiceAction.class);
 
 	@Override
 	public void validate() {

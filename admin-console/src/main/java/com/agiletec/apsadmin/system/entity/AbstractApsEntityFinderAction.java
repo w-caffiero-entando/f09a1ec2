@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
@@ -35,7 +35,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public abstract class AbstractApsEntityFinderAction extends BaseAction implements IApsEntityFinderAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(AbstractApsEntityFinderAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractApsEntityFinderAction.class);
 	
 	@Override
 	public String execute() {

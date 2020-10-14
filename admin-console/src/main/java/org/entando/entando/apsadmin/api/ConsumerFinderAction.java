@@ -17,8 +17,8 @@ import java.util.List;
 
 import org.entando.entando.aps.system.services.oauth2.IOAuthConsumerManager;
 import org.entando.entando.aps.system.services.oauth2.model.ConsumerRecordVO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.apsadmin.system.BaseAction;
@@ -28,7 +28,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public class ConsumerFinderAction extends BaseAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(ConsumerAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ConsumerAction.class);
 
 	public List<String> getSearchResult() throws Throwable {
 		List<String> consumerKeys = null;

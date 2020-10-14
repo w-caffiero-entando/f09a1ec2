@@ -15,8 +15,8 @@ package com.agiletec.apsadmin.system;
 
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.FileUploadInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
@@ -29,7 +29,7 @@ import com.opensymphony.xwork2.ActionInvocation;
  */
 public class ApsFileUploadInterceptor extends FileUploadInterceptor {
 
-	private static final Logger _logger = LoggerFactory.getLogger(ApsFileUploadInterceptor.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ApsFileUploadInterceptor.class);
 	
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {

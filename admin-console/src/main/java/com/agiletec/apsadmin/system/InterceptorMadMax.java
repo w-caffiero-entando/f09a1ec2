@@ -22,8 +22,8 @@ import java.util.Set;
 import javax.servlet.http.HttpSession;
 
 import org.apache.struts2.ServletActionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * Interceptor gestore della verifica delle autorizzazioni dell'utente corrente.
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InterceptorMadMax extends BaseInterceptorMadMax {
 
-	private static final Logger _logger = LoggerFactory.getLogger(InterceptorMadMax.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(InterceptorMadMax.class);
 
 	/**
 	 * Return the single required permission.

@@ -20,8 +20,8 @@ import javax.servlet.jsp.JspException;
 
 import org.apache.struts2.views.jsp.StrutsBodyTagSupport;
 import org.entando.entando.aps.system.services.actionlog.IActionLogManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.FieldSearchFilter;
@@ -35,7 +35,7 @@ import com.opensymphony.xwork2.util.ValueStack;
  */
 public class ActivityStreamTag extends StrutsBodyTagSupport {
 
-	private static final Logger _logger =  LoggerFactory.getLogger(ActivityStreamTag.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ActivityStreamTag.class);
 	
 	@Override
 	public int doEndTag() throws JspException {

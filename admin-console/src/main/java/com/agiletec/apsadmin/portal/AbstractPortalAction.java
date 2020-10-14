@@ -24,8 +24,8 @@ import org.entando.entando.aps.system.services.api.IApiCatalogManager;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.IGroupManager;
@@ -43,7 +43,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public abstract class AbstractPortalAction extends BaseAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(AbstractPortalAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractPortalAction.class);
 
 	@Deprecated
 	public List<List<SelectItem>> getShowletFlavours() {

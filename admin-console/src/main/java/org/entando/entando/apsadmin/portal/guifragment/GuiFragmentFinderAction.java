@@ -30,15 +30,15 @@ import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni
  */
 public class GuiFragmentFinderAction extends AbstractPortalAction {
 	
-	private static final Logger _logger =  LoggerFactory.getLogger(GuiFragmentFinderAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(GuiFragmentFinderAction.class);
 	
 	public List<String> getGuiFragmentsCodes() {
 		try {

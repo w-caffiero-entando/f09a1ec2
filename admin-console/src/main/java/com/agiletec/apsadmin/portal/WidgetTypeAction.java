@@ -22,8 +22,8 @@ import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.aps.system.services.widgettype.WidgetTypeParameter;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
@@ -42,7 +42,7 @@ import javax.servlet.ServletContext;
  */
 public class WidgetTypeAction extends AbstractPortalAction {
 
-    private static final Logger _logger = LoggerFactory.getLogger(WidgetTypeAction.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(WidgetTypeAction.class);
 
     @Override
     public void validate() {

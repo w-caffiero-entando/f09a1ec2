@@ -19,8 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.agiletec.aps.system.SystemConstants;
@@ -41,7 +41,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public class BaseAdminAction extends BaseAction {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseAdminAction.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(BaseAdminAction.class);
 
     /**
      * Reload the system configuration.
