@@ -37,7 +37,7 @@
 		<label class="col-sm-2 control-label" for="<s:property value="%{#attributeTracer.getFormFieldName(#attribute)}" />"><s:property value="#attributeLabelVar" /><s:include value="/WEB-INF/apsadmin/jsp/entity/modules/include/attributeInfo.jsp" /></label>
 	</s:else>
 	<div class="col-sm-10">
-		<s:if test="#attribute.type == 'Monotext'">
+		<s:if test="#attribute.type == 'Monotext' || #attribute.type == 'Email'">
 		<!-- ############# ATTRIBUTE Monotext ############# -->
 		<s:include value="%{'/WEB-INF/apsadmin/jsp/entity/' + #attributeActiveMarker + '/monotextAttribute.jsp'}" />
 		</s:if>
