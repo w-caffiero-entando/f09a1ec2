@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
@@ -33,7 +33,7 @@ import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
  */
 public class EntityTypeConfigAction extends AbstractEntityConfigAction implements IEntityTypeConfigAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(EntityTypeConfigAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(EntityTypeConfigAction.class);
 	
 	@Override
 	public void validate() {

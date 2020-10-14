@@ -26,8 +26,8 @@ import com.agiletec.apsadmin.system.BaseAction;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang.StringUtils;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class UserAuthorizationAction extends BaseAction {
 	private static final String USER_LIST = "userList";
 
 
-	private static final Logger logger =  LoggerFactory.getLogger(UserAuthorizationAction.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(UserAuthorizationAction.class);
 
 
 	private String username;

@@ -13,8 +13,8 @@
  */
 package org.entando.entando.apsadmin.portal.guifragment;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.apsadmin.admin.BaseAdminAction;
 
@@ -24,7 +24,7 @@ import com.agiletec.apsadmin.admin.BaseAdminAction;
  */
 public class GuiFragmentSettingAction extends BaseAdminAction {
 
-    private static final Logger _logger = LoggerFactory.getLogger(GuiFragmentSettingAction.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(GuiFragmentSettingAction.class);
 
     /**
      * Update the system params.

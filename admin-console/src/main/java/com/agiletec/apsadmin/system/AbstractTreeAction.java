@@ -17,8 +17,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
 
@@ -29,7 +29,7 @@ import com.agiletec.aps.system.common.tree.ITreeNode;
  */
 public abstract class AbstractTreeAction extends BaseAction implements ITreeAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(AbstractTreeAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractTreeAction.class);
 
 	@Override
 	public String buildTree() {

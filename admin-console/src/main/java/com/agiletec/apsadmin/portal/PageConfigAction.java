@@ -26,8 +26,8 @@ import org.entando.entando.apsadmin.portal.rs.model.PageResponse;
 import org.entando.entando.apsadmin.portal.rs.model.SwapWidgetRequest;
 import org.entando.entando.apsadmin.portal.rs.model.SwapWidgetResponse;
 import org.entando.entando.apsadmin.portal.rs.validator.ISwapWidgetRequestValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -44,7 +44,7 @@ import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
  */
 public class PageConfigAction extends AbstractPortalAction implements ServletResponseAware {
 
-	private static final Logger _logger = LoggerFactory.getLogger(PageConfigAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageConfigAction.class);
 
 	public String configure() {
 		String pageCode = (this.getSelectedNode() != null ? this.getSelectedNode() : this.getPageCode());

@@ -24,8 +24,8 @@ import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.apsadmin.portal.guifragment.helper.IGuiFragmentActionHelper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.apsadmin.portal.helper.IPageActionHelper;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
@@ -36,7 +36,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public class GuiFragmentAction extends BaseAction {
 
-	private static final Logger _logger =  LoggerFactory.getLogger(GuiFragmentAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(GuiFragmentAction.class);
 	
 	@Override
 	public void validate() {

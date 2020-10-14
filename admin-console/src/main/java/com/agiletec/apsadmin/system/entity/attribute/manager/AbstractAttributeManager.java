@@ -15,8 +15,8 @@ package com.agiletec.apsadmin.system.entity.attribute.manager;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.agiletec.aps.system.SystemConstants;
@@ -39,7 +39,7 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 public abstract class AbstractAttributeManager implements AttributeManagerInterface {
 
-	private static final Logger _logger = LoggerFactory.getLogger(AbstractAttributeManager.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractAttributeManager.class);
 	
     /**
      * Return the key of the message to retrieve when an attribute is not valid.

@@ -18,8 +18,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.AbstractDAO;
 
@@ -30,7 +30,7 @@ import com.agiletec.aps.system.common.AbstractDAO;
  */
 public class UserShortcutDAO extends AbstractDAO implements IUserShortcutDAO {
 	
-	private static final Logger _logger =  LoggerFactory.getLogger(UserShortcutDAO.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(UserShortcutDAO.class);
 	
 	@Override
 	public void saveUserConfig(String username, String config) {

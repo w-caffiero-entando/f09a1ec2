@@ -35,8 +35,8 @@ import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanC
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * Renders a view using a GuiFragment (Entando object) builded by Freemarker.
@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GuiFragmentResult extends ServletDispatcherResult {
 
-	private static final Logger _logger = LoggerFactory.getLogger(GuiFragmentResult.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(GuiFragmentResult.class);
 	
 	/** The default parameter */
     public static final String DEFAULT_PARAM = "code";

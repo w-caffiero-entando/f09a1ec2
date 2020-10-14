@@ -21,15 +21,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts2.interceptor.ServletResponseAware;
 
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni
  */
 public class ApiResourceAction extends org.entando.entando.apsadmin.api.ApiResourceAction implements ServletResponseAware {
 
-	private static final Logger _logger = LoggerFactory.getLogger(ApiResourceAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ApiResourceAction.class);
 	
 	@Override
 	public String generateRequestBodySchema() {

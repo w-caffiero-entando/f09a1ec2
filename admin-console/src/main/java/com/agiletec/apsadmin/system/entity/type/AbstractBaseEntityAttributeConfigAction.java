@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.entando.entando.aps.system.common.entity.model.attribute.util.EnumeratorMapAttributeItemsExtractor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -49,7 +49,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
  */
 public class AbstractBaseEntityAttributeConfigAction extends BaseAction implements BeanFactoryAware {
 
-	private static final Logger _logger = LoggerFactory.getLogger(AbstractBaseEntityAttributeConfigAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractBaseEntityAttributeConfigAction.class);
 	
 	/**
 	 * Fill form fields.

@@ -16,8 +16,8 @@ package com.agiletec.apsadmin.portal;
 import java.util.List;
 
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
  */
 public class WidgetsViewerAction extends AbstractPortalAction {
 
-    private static final Logger _logger = LoggerFactory.getLogger(WidgetsViewerAction.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(WidgetsViewerAction.class);
 
     @Deprecated
     public String viewShowlets() {

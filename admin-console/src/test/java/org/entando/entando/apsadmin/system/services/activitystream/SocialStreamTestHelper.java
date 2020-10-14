@@ -15,8 +15,8 @@ package org.entando.entando.apsadmin.system.services.activitystream;
 
 import java.sql.Connection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.context.ApplicationContext;
 import org.entando.entando.aps.system.services.actionlog.ActionLoggerTestHelper;
 
@@ -25,7 +25,7 @@ import org.entando.entando.aps.system.services.actionlog.ActionLoggerTestHelper;
  */
 public class SocialStreamTestHelper extends ActionLoggerTestHelper {
 	
-	private static final Logger _logger =  LoggerFactory.getLogger(SocialStreamTestHelper.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(SocialStreamTestHelper.class);
 	
 	public SocialStreamTestHelper(ApplicationContext applicationContext) {
 		super(applicationContext);

@@ -31,15 +31,15 @@ import org.entando.entando.aps.system.services.storage.BasicFileAttributeView;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.aps.system.services.storage.RootFolderAttributeView;
 import org.entando.entando.aps.system.services.storage.StorageManagerUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author S.Loru - E.Santoboni
  */
 public class FileBrowserAction extends BaseAction {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileBrowserAction.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(FileBrowserAction.class);
 
     public static final int ADD_NEW_FILE = 11;
     public static final int ADD_NEW_DIRECTORY = 12;

@@ -42,8 +42,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
 import org.entando.entando.apsadmin.portal.node.PageTreeNodeWrapper;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -53,7 +53,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractPageActionHelper extends TreeNodeBaseActionHelper implements IPageActionHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractPageActionHelper.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(AbstractPageActionHelper.class);
 
     private IPageManager _pageManager;
     private ConfigInterface _configService;

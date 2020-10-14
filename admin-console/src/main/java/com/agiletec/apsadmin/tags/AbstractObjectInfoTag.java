@@ -21,8 +21,8 @@ import java.lang.reflect.Method;
 import javax.servlet.jsp.JspException;
 
 import org.apache.struts2.views.jsp.StrutsBodyTagSupport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.opensymphony.xwork2.util.ValueStack;
 
@@ -32,7 +32,7 @@ import com.opensymphony.xwork2.util.ValueStack;
  */
 public abstract class AbstractObjectInfoTag extends StrutsBodyTagSupport {
 
-	private static final Logger _logger = LoggerFactory.getLogger(AbstractObjectInfoTag.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractObjectInfoTag.class);
 	
 	@Override
 	public int doStartTag() throws JspException {

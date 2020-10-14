@@ -20,8 +20,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 
 import com.agiletec.aps.system.services.group.Group;
@@ -36,7 +36,7 @@ import com.agiletec.apsadmin.system.BaseActionHelper;
  */
 public class GroupActionHelper extends BaseActionHelper implements IGroupActionHelper {
 
-    private static final Logger _logger = LoggerFactory.getLogger(GroupActionHelper.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(GroupActionHelper.class);
     
     @Override
     public Map<String, List<Object>> getReferencingObjects(Group group, HttpServletRequest request) throws EntException {

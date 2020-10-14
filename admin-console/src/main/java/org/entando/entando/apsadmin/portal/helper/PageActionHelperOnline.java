@@ -15,8 +15,8 @@ package org.entando.entando.apsadmin.portal.helper;
 
 import java.util.Collection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.apsadmin.portal.helper.AbstractPageActionHelper;
@@ -26,7 +26,7 @@ import com.agiletec.apsadmin.portal.helper.AbstractPageActionHelper;
  */
 public class PageActionHelperOnline extends AbstractPageActionHelper {
 
-	private static final Logger _logger = LoggerFactory.getLogger(PageActionHelperOnline.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageActionHelperOnline.class);
 
 	@Override
 	protected IPage getPage(String pageCode) {

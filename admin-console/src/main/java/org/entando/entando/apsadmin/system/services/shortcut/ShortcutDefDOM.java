@@ -40,15 +40,15 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni
  */
 public class ShortcutDefDOM {
 
-	private static final Logger _logger = LoggerFactory.getLogger(ShortcutDefDOM.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ShortcutDefDOM.class);
 	
 	public ShortcutDefDOM(String xmlText, String definitionPath) throws EntException {
 		this.validate(xmlText, definitionPath);

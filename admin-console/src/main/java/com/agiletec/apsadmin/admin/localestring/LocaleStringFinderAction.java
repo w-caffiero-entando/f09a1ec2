@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.i18n.II18nManager;
 import com.agiletec.aps.system.services.lang.Lang;
@@ -32,7 +32,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public class LocaleStringFinderAction extends BaseAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(LocaleStringFinderAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(LocaleStringFinderAction.class);
 	
 	public List<String> getLocaleStrings() {
 		List<String> labelKeys = new ArrayList<String>();

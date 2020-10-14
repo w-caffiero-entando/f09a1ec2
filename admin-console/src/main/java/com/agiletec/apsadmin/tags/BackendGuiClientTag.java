@@ -16,8 +16,8 @@ package com.agiletec.apsadmin.tags;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * Print the style of the back-office. Can be normal|advanced.
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BackendGuiClientTag extends TagSupport {
 
-	private static final Logger _logger = LoggerFactory.getLogger(BackendGuiClientTag.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(BackendGuiClientTag.class);
 	
 	@Override
 	public int doEndTag() throws JspException {

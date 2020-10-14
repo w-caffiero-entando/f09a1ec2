@@ -13,8 +13,8 @@
  */
 package com.agiletec.apsadmin.system.entity.type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.entity.model.attribute.AbstractListAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
@@ -24,7 +24,7 @@ import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
  */
 public class ListElementAttributeConfigAction extends AbstractBaseEntityAttributeConfigAction implements IListElementAttributeConfigAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(ListElementAttributeConfigAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ListElementAttributeConfigAction.class);
 	
 	@Override
 	public String configureListElement() {

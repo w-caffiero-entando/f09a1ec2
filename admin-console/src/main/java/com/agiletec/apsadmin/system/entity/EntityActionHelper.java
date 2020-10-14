@@ -19,8 +19,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -51,7 +51,7 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 public class EntityActionHelper extends BaseActionHelper implements IEntityActionHelper, BeanFactoryAware {
 
-	private static final Logger _logger = LoggerFactory.getLogger(EntityActionHelper.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(EntityActionHelper.class);
 	
 	@Override
 	public void updateEntity(IApsEntity currentEntity, HttpServletRequest request) {

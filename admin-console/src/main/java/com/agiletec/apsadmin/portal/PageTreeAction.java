@@ -15,8 +15,9 @@ package com.agiletec.apsadmin.portal;
 
 import java.util.Collection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.services.group.Group;
@@ -36,7 +37,7 @@ import org.entando.entando.apsadmin.portal.rs.model.PageResponse;
  */
 public class PageTreeAction extends AbstractTreeAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(PageTreeAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageTreeAction.class);
 
 	@Override
 	public String execute() throws Exception {

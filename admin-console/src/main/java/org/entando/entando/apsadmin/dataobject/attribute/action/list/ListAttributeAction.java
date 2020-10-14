@@ -13,8 +13,8 @@
  */
 package org.entando.entando.apsadmin.dataobject.attribute.action.list;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import org.entando.entando.aps.system.services.dataobject.model.DataObject;
@@ -28,7 +28,7 @@ import org.entando.entando.apsadmin.dataobject.helper.IDataObjectActionHelper;
  */
 public class ListAttributeAction extends com.agiletec.apsadmin.system.entity.attribute.action.list.ListAttributeAction {
 
-    private static final Logger _logger = LoggerFactory.getLogger(ListAttributeAction.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ListAttributeAction.class);
 
     /*
 	@Override

@@ -19,8 +19,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.common.tree.ITreeNodeManager;
@@ -33,7 +33,7 @@ import com.agiletec.aps.system.common.tree.ITreeNodeManager;
  */
 public abstract class TreeNodeBaseActionHelper extends BaseActionHelper implements ITreeNodeBaseActionHelper {
 
-	private static final Logger _logger = LoggerFactory.getLogger(TreeNodeBaseActionHelper.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(TreeNodeBaseActionHelper.class);
 
 	/**
 	 * Costruisce il codice univoco di un nodo in base ai parametri specificato.

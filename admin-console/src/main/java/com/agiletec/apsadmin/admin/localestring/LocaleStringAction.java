@@ -16,8 +16,8 @@ package com.agiletec.apsadmin.admin.localestring;
 import java.util.Iterator;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.services.i18n.II18nManager;
 import com.agiletec.aps.system.services.lang.Lang;
@@ -33,7 +33,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public class LocaleStringAction extends BaseAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(LocaleStringAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(LocaleStringAction.class);
 
 	@Override
 	public void validate() {

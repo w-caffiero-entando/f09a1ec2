@@ -16,8 +16,8 @@ package com.agiletec.apsadmin.system.entity;
 import java.util.Arrays;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -31,7 +31,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  */
 public class EntityManagersAction extends BaseAction implements IEntityReferencesReloadingAction, BeanFactoryAware {
 
-	private static final Logger _logger = LoggerFactory.getLogger(EntityManagersAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(EntityManagersAction.class);
 	
 	@Override
 	public void validate() {

@@ -29,8 +29,8 @@ import org.apache.struts2.interceptor.ParameterAware;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.entando.entando.aps.system.init.IComponentManager;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -41,7 +41,7 @@ import java.util.*;
  */
 public class BaseAction extends ActionSupport implements ServletRequestAware, ParameterAware {
 
-	private static final Logger _logger = LoggerFactory.getLogger(BaseAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(BaseAction.class);
 	
 	/**
 	 * Check if the current user belongs to the given group. It always returns true if the user

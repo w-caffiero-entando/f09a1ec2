@@ -16,8 +16,8 @@ package org.entando.entando.apsadmin.common;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.system.BaseAction;
 import org.entando.entando.aps.system.services.activitystream.ISocialActivityStreamManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 
 /**
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ActivityStreamLikeAction extends BaseAction {
 
-	private static final Logger _logger =  LoggerFactory.getLogger(ActivityStreamLikeAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ActivityStreamLikeAction.class);
 	
 	public String likeActivity() {
 		return this.editLikeActivity(true);

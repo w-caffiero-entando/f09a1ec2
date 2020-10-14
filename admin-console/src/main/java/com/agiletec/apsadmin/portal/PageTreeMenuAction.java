@@ -26,8 +26,8 @@ import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.page.IPageTokenManager;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.services.group.Group;
@@ -45,7 +45,7 @@ import com.agiletec.apsadmin.portal.helper.IPageActionHelper;
  */
 public class PageTreeMenuAction extends PageTreeAction {
 
-    private static final Logger _logger = LoggerFactory.getLogger(PageTreeMenuAction.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageTreeMenuAction.class);
 
     public String intro() {
         String pageCode = (this.getSelectedNode() != null ? this.getSelectedNode() : this.getPageCode());

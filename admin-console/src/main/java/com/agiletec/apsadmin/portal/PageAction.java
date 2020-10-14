@@ -31,8 +31,8 @@ import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInf
 import org.entando.entando.apsadmin.portal.PageActionConstants;
 import org.entando.entando.apsadmin.portal.rs.model.PageResponse;
 import org.entando.entando.ent.exception.EntException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
@@ -45,7 +45,7 @@ import java.util.*;
  */
 public class PageAction extends AbstractPortalAction implements ServletResponseAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(PageAction.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(PageAction.class);
 
     private static final int PAGE_TITLE_MAX_LENGTH = 70;
     

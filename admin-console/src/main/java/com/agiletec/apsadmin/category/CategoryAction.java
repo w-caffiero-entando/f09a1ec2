@@ -22,8 +22,8 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.services.category.Category;
@@ -44,7 +44,7 @@ import com.agiletec.apsadmin.system.TreeNodeWrapper;
  */
 public class CategoryAction extends AbstractTreeAction {
 
-	private static final Logger _logger = LoggerFactory.getLogger(CategoryAction.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(CategoryAction.class);
 
 	@Override
 	public void validate() {

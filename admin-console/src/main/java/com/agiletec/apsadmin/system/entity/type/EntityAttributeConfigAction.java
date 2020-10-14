@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 
 import com.agiletec.aps.system.common.entity.IEntityManager;
@@ -42,7 +42,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class EntityAttributeConfigAction extends AbstractBaseEntityAttributeConfigAction implements IEntityAttributeConfigAction, BeanFactoryAware {
 
-    private static final Logger _logger = LoggerFactory.getLogger(EntityAttributeConfigAction.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(EntityAttributeConfigAction.class);
 
     @Override
     public void validate() {

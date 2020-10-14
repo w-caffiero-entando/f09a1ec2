@@ -26,8 +26,8 @@ import org.apache.struts2.views.jsp.StrutsBodyTagSupport;
 import org.entando.entando.apsadmin.common.MyShortcutConfigAction;
 import org.entando.entando.apsadmin.system.services.shortcut.IShortcutManager;
 import org.entando.entando.apsadmin.system.services.shortcut.model.UserConfigBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * Returns the configured shortcuts (object {@link UserConfigBean}) of the current user.
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UserShortcutsConfigTag extends StrutsBodyTagSupport {
 
-	private static final Logger _logger = LoggerFactory.getLogger(UserShortcutsConfigTag.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(UserShortcutsConfigTag.class);
 	
 	@Override
 	public int doEndTag() throws JspException {
