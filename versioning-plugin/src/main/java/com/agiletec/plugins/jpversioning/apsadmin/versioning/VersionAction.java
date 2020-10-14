@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,15 +51,15 @@ import com.agiletec.plugins.jacms.apsadmin.content.ContentActionConstants;
 import com.agiletec.plugins.jpversioning.aps.system.services.resource.ITrashedResourceManager;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.ContentVersion;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.IVersioningManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author G.Cocco
  */
 public class VersionAction extends AbstractContentAction {
 	
-	private static final Logger logger = LoggerFactory.getLogger(VersionAction.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(VersionAction.class);
 
     public String history() {
 		return SUCCESS;
@@ -310,7 +311,10 @@ public class VersionAction extends AbstractContentAction {
 	}
 	
 	private Document loadContentDocumentDOM(String contentXml) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+		DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance("com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", null);
+		// *1: Restricts fetching of external XML resources to avoid SSRFs.
+		fact.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");	// *1
+		fact.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // *1
 		DocumentBuilder builder = fact.newDocumentBuilder();
 		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(contentXml.getBytes("UTF-8"));
 		Document doc = builder.parse(byteArrayInputStream);

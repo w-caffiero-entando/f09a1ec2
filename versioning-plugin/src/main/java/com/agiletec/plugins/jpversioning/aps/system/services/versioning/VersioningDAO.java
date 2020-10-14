@@ -30,8 +30,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.AbstractDAO;
 
@@ -40,7 +40,7 @@ import com.agiletec.aps.system.common.AbstractDAO;
  */
 public class VersioningDAO extends AbstractDAO implements IVersioningDAO {
 
-    private static final Logger _logger = LoggerFactory.getLogger(VersioningDAO.class);
+    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(VersioningDAO.class);
 
     @Override
     public List<Long> getVersions(String contentId) {

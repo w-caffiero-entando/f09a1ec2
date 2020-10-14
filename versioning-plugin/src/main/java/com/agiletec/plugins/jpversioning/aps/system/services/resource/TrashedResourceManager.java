@@ -31,16 +31,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntSafeXmlUtils;
 import org.xml.sax.InputSource;
 import com.agiletec.aps.system.common.AbstractService;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.plugins.jacms.aps.system.services.resource.IResourceDAO;
@@ -60,7 +60,7 @@ import com.agiletec.plugins.jpversioning.aps.system.JpversioningSystemConstants;
 @Aspect
 public class TrashedResourceManager extends AbstractService implements ITrashedResourceManager {
 
-	private static final Logger _logger = LoggerFactory.getLogger(TrashedResourceManager.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(TrashedResourceManager.class);
 
 	@Override
 	public void init() throws Exception {
@@ -70,24 +70,24 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 	}
 
 	@Before("execution(* com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager.deleteResource(..)) && args(resource)")
-	public void onDeleteResource(ResourceInterface resource) throws ApsSystemException {
+	public void onDeleteResource(ResourceInterface resource) throws EntException {
 		this.addTrashedResource(resource);
 	}
 
 	@Override
-	public List<String> searchTrashedResourceIds(String resourceTypeCode, String text, List<String> allowedGroups) throws ApsSystemException {
+	public List<String> searchTrashedResourceIds(String resourceTypeCode, String text, List<String> allowedGroups) throws EntException {
 		List<String> resources = null;
     	try {
     		resources = this.getTrashedResourceDAO().searchTrashedResourceIds(resourceTypeCode, text, allowedGroups);
     	} catch (Throwable t) {
 			_logger.error("Error while extracting trashed resources", t);
-			throw new ApsSystemException("Error while extracting trashed resources", t);
+			throw new EntException("Error while extracting trashed resources", t);
     	}
     	return resources;
 	}
 
 	@Override
-	public ResourceInterface loadTrashedResource(String id) throws ApsSystemException{
+	public ResourceInterface loadTrashedResource(String id) throws EntException{
 		ResourceInterface resource = null;
 		try {
 			ResourceRecordVO resourceVo = this.getTrashedResourceDAO().getTrashedResource(id);
@@ -97,13 +97,13 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 			}
 		} catch (Throwable t) {
 			_logger.error("Error while loading trashed resource", t);
-			throw new ApsSystemException("Error while loading trashed resource", t);
+			throw new EntException("Error while loading trashed resource", t);
 		}
 		return resource;
 	}
 
 	@Override
-	public void restoreResource(String resourceId) throws ApsSystemException {
+	public void restoreResource(String resourceId) throws EntException {
 		ResourceInterface resource = this.loadTrashedResource(resourceId);
 		if (null != resource) {
 			try {
@@ -144,13 +144,13 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 				this.removeFromTrash(resource);
 			} catch (Throwable t) {
 				_logger.error("Error on restoring trashed resource", t);
-				throw new ApsSystemException("Error on restoring trashed resource", t);
+				throw new EntException("Error on restoring trashed resource", t);
 			}
 		}
 	}
 
 	@Override
-	public void removeFromTrash(String resourceId) throws ApsSystemException {
+	public void removeFromTrash(String resourceId) throws EntException {
 		try {
 			ResourceRecordVO resourceVo = this.getTrashedResourceDAO().getTrashedResource(resourceId);
 			if (null != resourceVo) {
@@ -159,11 +159,11 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 			}
 		} catch (Throwable t) {
     		_logger.error("Error removing Trashed Resource", t);
-    		throw new ApsSystemException("Error removing Trashed Resource", t);
+    		throw new EntException("Error removing Trashed Resource", t);
 		}
 	}
 
-	protected void removeFromTrash(ResourceInterface resource) throws ApsSystemException {
+	protected void removeFromTrash(ResourceInterface resource) throws EntException {
 		try {
 			//ResourceRecordVO resourceVo = this.getTrashedResourceDAO().getTrashedResource(resourceId);
 			//if (null != resourceVo) {
@@ -188,12 +188,12 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 			this.getTrashedResourceDAO().delTrashedResource(resource.getId());
 		} catch (Throwable t) {
     		_logger.error("Error removing Trashed Resource", t);
-    		throw new ApsSystemException("Error removing Trashed Resource", t);
+    		throw new EntException("Error removing Trashed Resource", t);
 		}
 	}
 
 	@Override
-	public void addTrashedResource(ResourceInterface resource) throws ApsSystemException {
+	public void addTrashedResource(ResourceInterface resource) throws EntException {
 		String folder = this.getSubfolder(resource);
 		List<String> paths = new ArrayList<String>();
 		try {
@@ -227,7 +227,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 				this.getStorageManager().deleteFile(path, true);
 			}
     		_logger.error("Error adding Trashed Resource", t);
-    		throw new ApsSystemException("Error adding Trashed Resource", t);
+    		throw new EntException("Error adding Trashed Resource", t);
     	}
 	}
 
@@ -246,7 +246,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 		}
 	}
 	/*
-	protected Map<String,String> resourceInstancesTrashFilePaths(ResourceInterface resource) throws ApsSystemException {
+	protected Map<String,String> resourceInstancesTrashFilePaths(ResourceInterface resource) throws EntException {
 		Map<String,String> filesPath = new HashMap<String, String>();
 		StringBuilder subfolder = new StringBuilder(this.getResourceTrashRootDiskSubFolder());
 		subfolder.append(File.separator).append(resource.getType())
@@ -274,13 +274,13 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 	}
 	*/
 	@Override
-	public InputStream getTrashFileStream(ResourceInterface resource, ResourceInstance instance) throws ApsSystemException {
+	public InputStream getTrashFileStream(ResourceInterface resource, ResourceInstance instance) throws EntException {
 		try {
 			String path = this.getSubfolder(resource) + instance.getFileName();
 			return this.getStorageManager().getStream(path, true);
 		} catch (Throwable t) {
 			_logger.error("Error on extracting stream", t);
-    		throw new ApsSystemException("Error on extracting stream", t);
+    		throw new EntException("Error on extracting stream", t);
 		}
 	}
 
@@ -297,9 +297,9 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
      * in base ai dati del corrispondente record del db.
      * @param resourceVo Il vo relativo al record del db.
      * @return La risorsa valorizzata.
-     * @throws ApsSystemException
+     * @throws EntException
      */
-    private ResourceInterface createResource(ResourceRecordVO resourceVo) throws ApsSystemException {
+    private ResourceInterface createResource(ResourceRecordVO resourceVo) throws EntException {
 		String resourceType = resourceVo.getResourceType();
 		String resourceXML = resourceVo.getXml();
 		ResourceInterface resource = this.getResourceManager().createResourceType(resourceType);
@@ -313,18 +313,17 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
      * dell'xml che rappresenta una risorsa specifica.
      * @param resource Il prototipo di risorsa da specializzare con gli attributi dell'xml.
      * @param xml L'xml della risorsa specifica.
-     * @throws ApsSystemException
+     * @throws EntException
      */
-    protected void fillEmptyResourceFromXml(ResourceInterface resource, String xml) throws ApsSystemException {
+    protected void fillEmptyResourceFromXml(ResourceInterface resource, String xml) throws EntException {
     	try {
-			SAXParserFactory parseFactory = SAXParserFactory.newInstance();
-    		SAXParser parser = parseFactory.newSAXParser();
+			SAXParser parser = EntSafeXmlUtils.newSafeSAXParser();
     		InputSource is = new InputSource(new StringReader(xml));
     		ResourceHandler handler = new ResourceHandler(resource, this.getCategoryManager());
     		parser.parse(is, handler);
     	} catch (Throwable t) {
     		_logger.error("Error on loading resource", t);
-    		throw new ApsSystemException("Error on loading resource", t);
+    		throw new EntException("Error on loading resource", t);
     	}
     }
 

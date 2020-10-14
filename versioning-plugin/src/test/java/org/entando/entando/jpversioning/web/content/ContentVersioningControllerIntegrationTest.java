@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.FileTextReader;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
@@ -25,12 +24,13 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,7 +39,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 public class ContentVersioningControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
     @Autowired
     private VersioningManager versioningManager;
@@ -528,7 +528,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         }
     }
 
-    private void deleteContentType(String contentTypeCode) throws ApsSystemException {
+    private void deleteContentType(String contentTypeCode) throws EntException {
         if (null != contentManager.getEntityPrototype(contentTypeCode)) {
             ((IEntityTypesConfigurer) contentManager).removeEntityPrototype(contentTypeCode);
         }

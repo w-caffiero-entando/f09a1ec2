@@ -30,15 +30,15 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.SmallContent
 import com.agiletec.plugins.jacms.apsadmin.portal.PageAction;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.ContentVersion;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.IVersioningManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author G.Cocco
  */
 public class VersionFinderAction extends BaseAction {
 	
-	private static final Logger logger = LoggerFactory.getLogger(VersionFinderAction.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(VersionFinderAction.class);
 
     public List<Long> getLatestVersions() {
 		List<Long> latestVersions = null;

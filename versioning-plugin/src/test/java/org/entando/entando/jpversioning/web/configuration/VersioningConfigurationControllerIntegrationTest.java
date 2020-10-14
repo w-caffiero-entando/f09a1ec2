@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.BaseConfigManager;
 import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
 import com.agiletec.aps.system.services.user.UserDetails;
@@ -80,7 +80,7 @@ public class VersioningConfigurationControllerIntegrationTest extends AbstractCo
         this.updateConfigItem(JpversioningSystemConstants.CONFIG_PARAM_CONTENT_TYPES_TO_IGNORE, CONTENT_TYPES_TO_IGNORE);
     }
 
-    private void setDefaultVersioningConfiguration() throws ApsSystemException {
+    private void setDefaultVersioningConfiguration() throws EntException {
         baseConfigManager.updateParam(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS, DELETE_MID_VERSION_FALSE);
         baseConfigManager.updateParam(JpversioningSystemConstants.CONFIG_PARAM_CONTENTS_TO_IGNORE,null);
         baseConfigManager.updateParam(JpversioningSystemConstants.CONFIG_PARAM_CONTENT_TYPES_TO_IGNORE,null);

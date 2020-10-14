@@ -15,7 +15,7 @@ package org.entando.entando.plugins.jpversioning.services.resource;
 
 import static org.entando.entando.plugins.jacms.web.resource.ResourcesController.ERRCODE_INVALID_RESOURCE_TYPE;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.authorization.AuthorizationManager;
 import com.agiletec.aps.system.services.category.Category;
 import com.agiletec.aps.system.services.group.Group;
@@ -53,8 +53,8 @@ import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.Filter;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -62,7 +62,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 @Service
 public class ResourcesVersioningService {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
     @Autowired
     private TrashedResourceManager trashedResourceManager;
@@ -90,7 +90,7 @@ public class ResourcesVersioningService {
             for (String id : resourcesId) {
                 try {
                     result.add(convertResourceToDto(trashedResourceManager.loadTrashedResource(id)));
-                } catch (ApsSystemException e) {
+                } catch (EntException e) {
                     logger.error("Error loading trashedResource with id: {}", id);
                 }
             }
@@ -101,7 +101,7 @@ public class ResourcesVersioningService {
             pagedResults.setBody(sublist);
 
             return pagedResults;
-        } catch (ApsSystemException e) {
+        } catch (EntException e) {
             logger.error("Error while getting trashed resources with request {}", requestList, e);
             throw new RestServerError(String.format("Error while getting trashed resources with request %s", requestList),
                     e);
@@ -123,7 +123,7 @@ public class ResourcesVersioningService {
                         VersioningValidatorErrorCodes.ERRCODE_TRASHED_RESOURCE_DOES_NOT_EXIST.value,
                         "Trashed resource: ", resourceId);
             }
-        } catch (ApsSystemException e) {
+        } catch (EntException e) {
             logger.error("Error while recovering trashed resources with id {}", resourceId, e);
             throw new RestServerError(String.format("Error while recovering trashed resources with id %s", resourceId),
                     e);
@@ -145,7 +145,7 @@ public class ResourcesVersioningService {
                         VersioningValidatorErrorCodes.ERRCODE_TRASHED_RESOURCE_DOES_NOT_EXIST.value,
                         "Trashed resource: ", resourceId);
             }
-        } catch (ApsSystemException e) {
+        } catch (EntException e) {
             logger.error("Error while deleting trashed resources with id {}", resourceId, e);
             throw new RestServerError(String.format("Error while deleting trashed resources with id %s", resourceId),
                     e);
@@ -170,7 +170,7 @@ public class ResourcesVersioningService {
             return new ResourceDownloadDTO(instance.getFileName(), instance.getMimeType(),
                     getInputStream(size, user, resource));
 
-        } catch (ApsSystemException | IOException e) {
+        } catch (EntException | IOException e) {
             logger.error("Error while getting input stream for trashed resources with id {}", resourceId, e);
             throw new RestServerError(
                     String.format("Error while getting input stream for trashed resources with id %s", resourceId), e);
@@ -178,7 +178,7 @@ public class ResourcesVersioningService {
     }
 
     private byte[] getInputStream(Integer size, UserDetails user, ResourceInterface resource)
-            throws ApsSystemException, IOException {
+            throws EntException, IOException {
         String mainGroup = resource.getMainGroup();
         if (authorizationManager.isAuthOnGroup(user, mainGroup)) {
             InputStream is = trashedResourceManager.getTrashFileStream(resource, getResourceInstance(size, resource));

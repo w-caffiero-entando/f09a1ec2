@@ -16,7 +16,7 @@ package org.entando.entando.jpversioning.services.content;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.FileTextReader;
 import com.agiletec.plugins.jacms.aps.system.services.content.ContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
@@ -75,7 +75,7 @@ public class ContentVersioningServiceTest extends TestCase {
     }
 
     @Test
-    public void testGetListContentVersions() throws ApsSystemException{
+    public void testGetListContentVersions() throws EntException{
         RestListRequest requestList = new RestListRequest();
         List<Long> mockedVersions = new ArrayList();
         mockedVersions.add(VERSION_ID_1);
@@ -91,7 +91,7 @@ public class ContentVersioningServiceTest extends TestCase {
     }
 
     @Test
-    public void testGetContent() throws ApsSystemException {
+    public void testGetContent() throws EntException {
         Content content = new Content();
         ContentDto contentDto = new ContentDto();
         contentDto.setStatus(STATUS);
@@ -106,7 +106,7 @@ public class ContentVersioningServiceTest extends TestCase {
     }
 
     @Test
-    public void testRecoverContentVersion() throws ApsSystemException {
+    public void testRecoverContentVersion() throws EntException {
         Content content = new Content();
         ContentDto contentDto = new ContentDto();
         String contentXml = null;
