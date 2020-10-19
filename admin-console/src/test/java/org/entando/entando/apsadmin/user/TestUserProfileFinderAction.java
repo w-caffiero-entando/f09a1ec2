@@ -83,11 +83,12 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
             UserProfileFinderAction action = (UserProfileFinderAction) this.getAction();
             List<String> result = action.getSearchResult();
             assertNotNull(result);
-            assertEquals(4, result.size());
+            assertEquals(5, result.size());
             assertEquals("editorCoach", result.get(0));
             assertEquals("editorCustomers", result.get(1));
             assertEquals("mainEditor", result.get(2));
             assertEquals("pageManagerCoach", result.get(3));
+            assertEquals("supervisorCoach", result.get(4));
         } catch (Throwable t) {
             throw t;
         }
@@ -284,7 +285,7 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
             UserProfileFinderAction action = (UserProfileFinderAction) this.getAction();
             List<IApsEntity> currentEntityPrototypes = ((UserProfileFinderAction) action).getEntityPrototypes();
             assertEquals(Action.SUCCESS, result);
-            assertEquals(2, currentEntityPrototypes.size());
+            assertEquals(3, currentEntityPrototypes.size());
         } catch (Throwable t) {
             throw t;
         }
