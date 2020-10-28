@@ -202,7 +202,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
             String bundleIdToSet = (this.hasCurrentUserPermission(Permission.SUPERUSER)) ? this.getBundleId() : type.getBundleId();
             String configUiToSet = (this.hasCurrentUserPermission(Permission.SUPERUSER)) ? this.getConfigUi() : type.getConfigUi();
 
-            Boolean readonlyPageWidgetConf = (this.hasCurrentUserPermission(Permission.SUPERUSER) && type.isLocked()) ? this.isReadonlyPageWidgetConfig() : type.
+            Boolean readonlyPageWidgetConf = (this.hasCurrentUserPermission(Permission.SUPERUSER)) ? this.isReadonlyPageWidgetConfig() : type.
                     isReadonlyPageWidgetConfig();
 
             if (this.getStrutsAction() == ApsAdminSystemConstants.ADD) {
