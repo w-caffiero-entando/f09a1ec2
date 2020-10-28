@@ -197,12 +197,12 @@
         </fieldset>
         <fieldset class="col-xs-12 no-padding">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label" for="readonlyDefaultConfig">
-                            <s:text name="widget.widgetManagement.label.readonlyDefaultConfig" />
+                        <label class="col-sm-2 control-label" for="readonlyPageWidgetConfig">
+                            <s:text name="widget.widgetManagement.label.readonlyPageWidgetConfig" />
                         </label>
                         <div class="col-sm-10">
-                            <wpsf:checkbox name="readonlyDefaultConfig" id="readonlyDefaultConfig"
-                                           cssClass=" bootstrap-switch" disabled="%{!#isSuperuserVar}"/>
+                            <wpsf:checkbox name="readonlyPageWidgetConfig" id="readonlyPageWidgetConfig"
+                                           cssClass=" bootstrap-switch" disabled="%{!#isSuperuserVar || null != #widgetTypeVar && #widgetTypeVar.locked}"/>
                         </div>
                     </div>
         </fielset>
