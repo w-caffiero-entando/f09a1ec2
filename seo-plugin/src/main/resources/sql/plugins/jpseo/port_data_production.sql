@@ -1,4 +1,4 @@
-INSERT INTO widgetcatalog ( code, titles, parameters, plugincode, locked, readonlydefaultconfig ) VALUES ( 'jpseo_content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO widgetcatalog ( code, titles, parameters, plugincode, locked, readonlypagewidgetconfig ) VALUES ( 'jpseo_content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Content SEO Meta-description</property>
 <property key="it">Content SEO Meta-description</property>
