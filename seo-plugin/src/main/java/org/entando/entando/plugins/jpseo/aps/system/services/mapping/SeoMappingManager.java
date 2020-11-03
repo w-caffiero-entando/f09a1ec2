@@ -109,7 +109,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
             if (event.getOperationCode() == PublicContentChangedEvent.REMOVE_OPERATION_CODE) {
                 this.getSeoMappingDAO().deleteMappingForContent(content.getId());
             } else {
-                FieldSearchFilter filter = new FieldSearchFilter("contentid", content.getId(), false);
+                FieldSearchFilter<String> filter = new FieldSearchFilter<>("contentid", content.getId(), false);
                 List<String> codes = this.searchFriendlyCode(new FieldSearchFilter[]{filter});
                 if (!codes.isEmpty()) {
                     logger.info("Content {} with friendly codes {}", content.getId(), codes);
@@ -133,49 +133,49 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
         }
     }
 	
-	private ContentFriendlyCode prepareContentFriendlyCode(String contentId, ITextAttribute attribute) throws EntException {
-		ContentFriendlyCode contentFriendlyCode = new ContentFriendlyCode();
-		contentFriendlyCode.setContentId(contentId);
-		String defaultLang = this.getLangManager().getDefaultLang().getCode();
-		if (((AttributeInterface) attribute).isMultilingual()) {
-			String defaultFriendlyCode = this.generateUniqueFriendlyCode(attribute.getTextForLang(defaultLang), defaultLang);
-			contentFriendlyCode.addFriendlyCode(defaultLang, defaultFriendlyCode);
-			Iterator<Lang> langs = this.getLangManager().getLangs().iterator();
-			while (langs.hasNext()) {
-				Lang currentLang = langs.next();
-				if (!currentLang.isDefault()) {
-					String langCode = currentLang.getCode();
-					String friendlyCode = this.generateUniqueFriendlyCode(attribute.getTextForLang(langCode), langCode);
-					if (friendlyCode != null && !friendlyCode.equals(defaultFriendlyCode)) {
-						contentFriendlyCode.addFriendlyCode(langCode, friendlyCode);
-					}
-				}
-			}
-		} else {
-			String friendlyCode = this.generateUniqueFriendlyCode(attribute.getText(), null);
+    private ContentFriendlyCode prepareContentFriendlyCode(String contentId, ITextAttribute attribute) throws EntException {
+        ContentFriendlyCode contentFriendlyCode = new ContentFriendlyCode();
+        contentFriendlyCode.setContentId(contentId);
+        String defaultLang = this.getLangManager().getDefaultLang().getCode();
+        if (((AttributeInterface) attribute).isMultilingual()) {
+            String defaultFriendlyCode = this.generateUniqueFriendlyCode(attribute.getTextForLang(defaultLang), defaultLang);
+            contentFriendlyCode.addFriendlyCode(defaultLang, defaultFriendlyCode);
+            Iterator<Lang> langs = this.getLangManager().getLangs().iterator();
+            while (langs.hasNext()) {
+                Lang currentLang = langs.next();
+                if (!currentLang.isDefault()) {
+                    String langCode = currentLang.getCode();
+                    String friendlyCode = this.generateUniqueFriendlyCode(attribute.getTextForLang(langCode), langCode);
+                    if (friendlyCode != null && !friendlyCode.equals(defaultFriendlyCode)) {
+                        contentFriendlyCode.addFriendlyCode(langCode, friendlyCode);
+                    }
+                }
+            }
+        } else {
+            String friendlyCode = this.generateUniqueFriendlyCode(attribute.getText(), null);
             contentFriendlyCode.addFriendlyCode(defaultLang, friendlyCode);
-		}
+        }
         List<String> langs = new ArrayList<>(contentFriendlyCode.getFriendlyCodes().keySet());
         for (int i = 0; i < langs.size(); i++) {
             String langCode = langs.get(i);
             String codesForLang = contentFriendlyCode.getFriendlyCodes().get(langCode);
-            FieldSearchFilter filterCode = new FieldSearchFilter("friendlycode", codesForLang, false);
-            FieldSearchFilter filterLang = new FieldSearchFilter("langcode", langCode, false);
+            FieldSearchFilter<String> filterCode = new FieldSearchFilter<>("friendlycode", codesForLang, false);
+            FieldSearchFilter<String> filterLang = new FieldSearchFilter<>("langcode", langCode, false);
             FieldSearchFilter[] filters = {filterCode, filterLang};
             List<String> codes = this.searchFriendlyCode(filters);
             if (null != codes && !codes.isEmpty()) {
                 for (int j = 0; j < codes.size(); j++) {
                     FriendlyCodeVO codeVo = this.getCacheWrapper().getMappingByFriendlyCode(codes.get(j));
                     if (null != codeVo && (null == codeVo.getContentId() || !contentId.equals(codeVo.getContentId()))) {
-                        logger.warn("Already existing mapping : code '{}' - contentId '{}' - pageCode '{}' - langCode '{}'", 
+                        logger.warn("Already existing mapping : code '{}' - contentId '{}' - pageCode '{}' - langCode '{}'",
                                 codeVo.getFriendlyCode(), codeVo.getContentId(), codeVo.getPageCode(), codeVo.getLangCode());
                         contentFriendlyCode.getFriendlyCodes().remove(langCode);
                     }
                 }
             }
         }
-		return contentFriendlyCode;
-	}
+        return contentFriendlyCode;
+    }
     
     private String generateUniqueFriendlyCode(String originalText, String langCode) {
         String friendlyCode = FriendlyCodeGenerator.generateFriendlyCode(originalText);
