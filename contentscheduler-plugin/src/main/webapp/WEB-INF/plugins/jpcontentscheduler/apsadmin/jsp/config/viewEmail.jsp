@@ -5,7 +5,6 @@
 
 <ol class="breadcrumb page-tabs-header breadcrumb-position">
     <li><s:text name="jpcontentscheduler.integrations"/></li>
-    <li><s:text name="jpcontentscheduler.components"/></li>
     <li><s:text name="jpcontentscheduler.admin.menu"/></li>
     <li class="page-title-container">
         <s:text name="jpcontentscheduler.admin.mail"/>
