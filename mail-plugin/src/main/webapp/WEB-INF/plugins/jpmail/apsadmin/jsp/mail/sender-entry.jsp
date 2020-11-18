@@ -4,9 +4,8 @@
 <%@ taglib uri="/apsadmin-form" prefix="wpsf" %>
 
 <ol class="breadcrumb page-tabs-header breadcrumb-position">
-    <li><s:text name="breadcrumb.integrations"/></li>
-    <li><s:text name="breadcrumb.integrations.components"/></li>
-    <li><s:text name="breadcrumb.jpmail"/></li>
+    <li><s:text name="jpmail.admin"/></li>
+    <li><s:text name="jpmail.admin.menu"/></li>
     <li> <a href="<s:url namespace="/do/jpmail/MailConfig" action="viewSenders" />"><s:text name="title.eMailManagement.sendersConfig"/></a></li>
         <s:if test="%{strutsAction==1}" >
         <li class="page-title-container"><s:text name="title.eMailManagement.newSender" /></li>
