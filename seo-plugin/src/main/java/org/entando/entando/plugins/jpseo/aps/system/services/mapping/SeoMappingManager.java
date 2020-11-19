@@ -211,15 +211,6 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 	}
 	
 	@Override
-	public String getPageReference(String pageCode) {
-		FriendlyCodeVO friendlyCode = this.getCacheWrapper().getMappingByPageCode(pageCode);
-		if (friendlyCode!=null) {
-			return friendlyCode.getPageCode();
-		}
-		return null;
-	}
-	
-	@Override
 	public String getContentReference(String contentId, String langCode) {
 		String friendlyCode = null;
 		ContentFriendlyCode content = this.getCacheWrapper().getMappingByContentId(contentId);

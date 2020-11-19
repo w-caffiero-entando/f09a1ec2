@@ -33,8 +33,6 @@ public interface ISeoMappingManager {
 	
 	public FriendlyCodeVO getReference(String friendlyCode);
 	
-	public String getPageReference(String pageCode);
-	
 	public String getContentReference(String contentId, String langCode);
 	
 	public List<String> searchFriendlyCode(FieldSearchFilter[] filters) throws EntException;
