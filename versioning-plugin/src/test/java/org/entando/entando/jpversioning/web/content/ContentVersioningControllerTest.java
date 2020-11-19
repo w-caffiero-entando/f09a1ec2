@@ -95,11 +95,15 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetExistingContentVersioningNotExist() throws Exception {
+        PagedMetadata<ContentVersionDTO> pagedMetadata = getContentVersionDTOPagedMetadata();
+        ContentDto content = new ContentDto();
         UserDetails user = this.createUser(true);
         when(this.httpSession.getAttribute("user")).thenReturn(user);
         when(this.validator.contentVersioningExist(CONTENT_ID)).thenReturn(false);
+        when(this.service.getListContentVersions(Mockito.eq(CONTENT_ID), Mockito.any(RestListRequest.class)))
+                .thenReturn(pagedMetadata);
         ResultActions result = getListContentVersioning(CONTENT_ID, user);
-        result.andExpect(status().isNotFound());
+        result.andExpect(status().isOk());
     }
 
     @Test

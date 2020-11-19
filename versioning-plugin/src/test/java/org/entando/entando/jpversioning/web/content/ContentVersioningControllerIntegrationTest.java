@@ -179,6 +179,8 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
             newContentId = saveContent("json/1_POST_content_with_boolean_attribute.json", accessToken);
 
             listContentVersions(user, newContentId)
+                    .andDo(print())
+                    .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(0)));
 
             Content newContent = contentManager.loadContent(newContentId, false);
@@ -216,6 +218,8 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
                     .andExpect(jsonPath("$.metaData.pageSize", is(4)))
                     .andExpect(jsonPath("$.metaData.totalItems", is(5)));
 
+        } catch (Exception e) {
+            Assert.fail();
         } finally {
             deleteContent(user, newContentId);
             deleteContentType(contentTypeCode);
