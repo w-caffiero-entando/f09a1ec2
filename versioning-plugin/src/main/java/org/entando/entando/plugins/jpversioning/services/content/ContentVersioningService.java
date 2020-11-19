@@ -13,6 +13,7 @@
  */
 package org.entando.entando.plugins.jpversioning.services.content;
 
+import java.nio.charset.StandardCharsets;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.plugins.jacms.aps.system.services.content.ContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
@@ -54,8 +55,8 @@ public class ContentVersioningService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
-    private final static String RESOURCE = "resource";
-    private final static String RESOURCE_ID = "id";
+    private static final String RESOURCE = "resource";
+    private static final String RESOURCE_ID = "id";
 
     @Autowired
     private VersioningManager versioningManager;
@@ -74,13 +75,17 @@ public class ContentVersioningService {
 
     public PagedMetadata<ContentVersionDTO> getListContentVersions(String contentId, RestListRequest requestList) {
         logger.debug("LIST listContentVersions for content {} with req {}", contentId, requestList);
-        List<ContentVersionDTO> contentVersionDTOs;
+        List<ContentVersionDTO> contentVersionDTOs = new ArrayList<>();
         List<Long> contentVersions;
         try {
             contentVersions = versioningManager.getVersions(contentId);
-            contentVersionDTOs = requestList.getSublist(contentVersions).stream()
-                    .map(cv -> mapContentVersionToDTO(getContentVersion(cv)))
-                    .collect(Collectors.toList());
+            if (contentVersions == null) {
+                contentVersions = new ArrayList<>();
+            } else {
+                contentVersionDTOs = requestList.getSublist(contentVersions).stream()
+                        .map(cv -> mapContentVersionToDTO(getContentVersion(cv)))
+                        .collect(Collectors.toList());
+            }
         } catch (EntException e) {
             logger.error("Error reading the list of content versions for content {}", contentId, e);
             throw new RestServerError(String.format("Error while getting content versions for content %s", contentId),
@@ -139,8 +144,7 @@ public class ContentVersioningService {
         try {
             final ContentVersion contentVersion = versioningManager.getVersion(versionId);
             final Content content = versioningManager.getContent(contentVersion);
-            final ContentDto contentDto = contentService.getDtoBuilder().convert(content);
-            return contentDto;
+            return contentService.getDtoBuilder().convert(content);
         } catch (EntException e) {
             logger.error("Error reading the content from version {} ", versionId, e);
         }
@@ -154,7 +158,7 @@ public class ContentVersioningService {
         try {
             ContentVersion contentVersion = getContentVersion(versionId);
             List<String> trashedResources = getTrashedResources(versionId);
-            if (null != trashedResources && trashedResources.size() > 0) {
+            if (null != trashedResources && trashedResources.isEmpty()) {
                 for (String resourceId : trashedResources) {
                     trashedResourceManager.restoreResource(resourceId);
                 }
@@ -187,7 +191,7 @@ public class ContentVersioningService {
             Document doc = loadContentDocumentDOM(contentXml);
             List<String> resourceIds = loadResourcesIdFromContentDocumentDOM(doc);
             List<String> archivedResources = getArchivedResourcesId(resourceIds);
-            if (null != resourceIds && resourceIds.size() > 0) {
+            if (null != resourceIds && resourceIds.isEmpty()) {
                 trashedResourcesId = getTrashedResourcesId(resourceIds, archivedResources);
             }
             return trashedResourcesId;
@@ -224,7 +228,7 @@ public class ContentVersioningService {
                         }
                         archivedResources.add(id);
                     }
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     logger.error("Error checking resource " + id, t);
                     throw new RestServerError(String.format("checking resource %s", id), t);
                 }
@@ -249,7 +253,7 @@ public class ContentVersioningService {
                         }
                         trashedResources.add(id);
                     }
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     logger.error("Error checking resource " + id, t);
                     throw new RestServerError(String.format("Error checking resource %s", id), t);
                 }
@@ -280,9 +284,8 @@ public class ContentVersioningService {
         fact.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");        // *1
         fact.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");     // *1
         DocumentBuilder builder = fact.newDocumentBuilder();
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(contentXml.getBytes("UTF-8"));
-        Document doc = builder.parse(byteArrayInputStream);
-        return doc;
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(contentXml.getBytes(StandardCharsets.UTF_8));
+        return builder.parse(byteArrayInputStream);
     }
 
     private ContentVersionDTO mapContentVersionToDTO(ContentVersion contentVersion) {

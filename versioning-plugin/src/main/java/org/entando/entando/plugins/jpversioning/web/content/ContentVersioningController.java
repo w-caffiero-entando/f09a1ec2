@@ -57,12 +57,6 @@ public class ContentVersioningController implements IContentVersioning {
 
         contentVersioningValidator.validateRestListRequest(requestList, ContentVersionDTO.class);
 
-        if (!contentVersioningValidator.contentVersioningExist(contentId)) {
-            throw new ResourceNotFoundException(
-                    VersioningValidatorErrorCodes.ERRCODE_CONTENT_VERSIONING_DOES_NOT_EXIST.value,
-                    "Content Versions", contentId);
-        }
-
         PagedMetadata<ContentVersionDTO> result = contentVersioningService
                 .getListContentVersions(contentId, requestList);
         return new ResponseEntity<>(new PagedRestResponse<>(result), HttpStatus.OK);
@@ -80,7 +74,7 @@ public class ContentVersioningController implements IContentVersioning {
 
     @Override
     public ResponseEntity<ContentDto> getContentVersion(String contentId, Long versionId) {
-        logger.debug("REST request - get content version for contentId: {} and versionId", contentId, versionId);
+        logger.debug("REST request - get content version for contentId: {} and versionId {}", contentId, versionId);
 
         if (!contentVersioningValidator.checkContentIdForVersion(contentId, versionId)) {
             throw new ResourceNotFoundException(
@@ -93,7 +87,8 @@ public class ContentVersioningController implements IContentVersioning {
 
     @Override
     public ResponseEntity<ContentDto> recoverContentVersion(String contentId, Long versionId) {
-        logger.debug("REST request - recover version content with contentId: {} and versionId", contentId, versionId);
+        logger.debug("REST request - recover version content with contentId: {} and versionId {}", contentId,
+                versionId);
         if (!contentVersioningValidator.checkContentIdForVersion(contentId, versionId)) {
             throw new ResourceNotFoundException(
                     VersioningValidatorErrorCodes.ERRCODE_CONTENT_VERSIONING_WRONG_CONTENT_ID.value,
