@@ -26,17 +26,32 @@ import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 
 import com.agiletec.aps.BaseTestCase;
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.attribute.TextAttribute;
 import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.page.Page;
+import com.agiletec.aps.system.services.page.PageMetadata;
+import com.agiletec.aps.system.services.page.PageTestUtil;
+import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
+import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
+import java.util.Date;
+import java.util.Set;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
+import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 
 public class SeoMappingManagerIntegrationTest extends BaseTestCase {
     
     private IContentManager contentManager;
+    private IPageManager pageManager;
     private ISeoMappingManager seoMappingManager;
+    private IWidgetTypeManager widgetTypeManager;
     
     @Override
     protected void setUp() throws Exception {
@@ -161,10 +176,85 @@ public class SeoMappingManagerIntegrationTest extends BaseTestCase {
         }
     }
     
+    public void testCreateFriendlyCode_3() throws Exception {
+        String code1 = "test1";
+        String code2 = "test2";
+        try {
+            this.addPage(code1, "service", "friendly1");
+            this.addPage(code2, "service", "friendly2");
+            synchronized (this) {
+                this.wait(500);
+            }
+            super.waitNotifyingThread();
+            FriendlyCodeVO friendlyCodeVO1 = this.seoMappingManager.getReference("friendly1");
+            assertNotNull(friendlyCodeVO1);
+            assertEquals(code1, friendlyCodeVO1.getPageCode());
+            FriendlyCodeVO friendlyCodeVO2 = this.seoMappingManager.getReference("friendly2");
+            assertNotNull(friendlyCodeVO2);
+            assertEquals(code2, friendlyCodeVO2.getPageCode());
+            
+            IPage page = this.pageManager.getOnlinePage(code1);
+            ((SeoPageMetadata) page.getMetadata()).setFriendlyCode("friendly2_bis");
+            this.pageManager.updatePage(page);
+            this.pageManager.setPageOnline(code1);
+            synchronized (this) {
+                this.wait(500);
+            }
+            super.waitNotifyingThread();
+            friendlyCodeVO1 = this.seoMappingManager.getReference("friendly1");
+            assertNull(friendlyCodeVO1);
+            friendlyCodeVO1 = this.seoMappingManager.getReference("friendly2_bis");
+            assertNotNull(friendlyCodeVO1);
+            assertEquals(code1, friendlyCodeVO1.getPageCode());
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.pageManager.setPageOffline(code2);
+            this.pageManager.deletePage(code2);
+            this.pageManager.setPageOffline(code1);
+            this.pageManager.deletePage(code1);
+        }
+    }
+    
+    private void addPage(String code, String parentCode, String friendlyCode) throws Exception {
+        IPage parentPage = pageManager.getDraftPage(parentCode);
+        String parentForNewPage = parentPage.getParentCode();
+        PageModel pageModel = parentPage.getMetadata().getModel();
+        PageMetadata metadata = this.createSeoPageMetadata(pageModel,
+                true, "pagina temporanea", null, null, false, null, null, friendlyCode);
+        ApsProperties config = PageTestUtil.createProperties("actionPath", "/myJsp.jsp", "param1", "value1");
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config, this.widgetTypeManager);
+        Widget[] widgets = new Widget[pageModel.getFrames().length]; 
+        widgets[0] = widgetToAdd;
+        Page pageToAdd = PageTestUtil.createPage(code, parentForNewPage, "free", metadata, widgets);
+        this.pageManager.addPage(pageToAdd);
+        this.pageManager.setPageOnline(code);
+    }
+    
+	private SeoPageMetadata createSeoPageMetadata(PageModel pageModel, boolean showable, String defaultTitle, String mimeType,
+			String charset, boolean useExtraTitles, Set<String> extraGroups, Date updatedAt, String friendlyCode) {
+        SeoPageMetadata metadata = new SeoPageMetadata();
+		metadata.setModel(pageModel);
+        metadata.setFriendlyCode(friendlyCode);
+		metadata.setShowable(showable);
+		metadata.setTitle("it", defaultTitle);
+		if (extraGroups != null) {
+			metadata.setExtraGroups(extraGroups);
+		}
+		metadata.setMimeType(mimeType);
+		metadata.setCharset(charset);
+		metadata.setUseExtraTitles(useExtraTitles);
+		metadata.setExtraGroups(extraGroups);
+		metadata.setUpdatedAt(updatedAt);
+		return metadata;
+	}
+    
     private void init() throws Exception {
         try {
             this.contentManager = (IContentManager) this.getService(JacmsSystemConstants.CONTENT_MANAGER);
             this.seoMappingManager = (ISeoMappingManager) this.getService(JpseoSystemConstants.SEO_MAPPING_MANAGER);
+            this.pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
+            this.widgetTypeManager = (IWidgetTypeManager) this.getService(SystemConstants.WIDGET_TYPE_MANAGER);
         } catch (Throwable t) {
             throw new Exception(t);
         }
