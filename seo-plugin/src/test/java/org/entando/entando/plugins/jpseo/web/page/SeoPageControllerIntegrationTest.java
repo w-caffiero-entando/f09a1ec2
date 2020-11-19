@@ -45,6 +45,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
 
     private static String SEO_TEST_1 = "seoTest1";
     private static String SEO_TEST_2 = "seoTest2";
+    private static String SEO_TEST_2_FC = "seoTest2fc";
 
 
     @Test
@@ -414,11 +415,21 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags.size()", is(0)));
 
+            final ResultActions resultCheckFriendlyCode1 = this.executePostSeoPage("2_POST_valid_friendly_code.json", accessToken, status().isOk());
+            resultCheckFriendlyCode1.andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2_FC)));
+
+            Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2_FC, IPageService.STATUS_DRAFT));
+            this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
 
         } finally {
-            PageDto page = this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT);
-            if (null != page) {
+            PageDto page1 = this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT);
+            PageDto page2 = this.pageService.getPage(SEO_TEST_2_FC, IPageService.STATUS_DRAFT);
+            if (null != page1) {
                 this.pageService.removePage(SEO_TEST_2);
+            }
+            if (null != page2) {
+                this.pageService.removePage(SEO_TEST_2_FC);
             }
         }
     }
@@ -436,24 +447,21 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(expected);
 
-        System.out.println("result: \n" + result.andReturn().getResponse().getContentAsString());
         return result;
     }
 
     private ResultActions executePutSeoPage(String fileName, String accessToken, ResultMatcher expected)
             throws Exception {
-        InputStream isJsonPostValid = this.getClass().getResourceAsStream(fileName);
-        String jsonPostValid = FileTextReader.getText(isJsonPostValid);
+        InputStream isJsonPutValid = this.getClass().getResourceAsStream(fileName);
+        String jsonPutValid = FileTextReader.getText(isJsonPutValid);
 
         String path = "/plugins/seo/pages/{pageCode}";
         ResultActions result1 = mockMvc
                 .perform(put(path, SEO_TEST_2)
-                        .content(jsonPostValid)
+                        .content(jsonPutValid)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result1.andExpect(expected);
-
-        System.out.println("result1: \n" + result1.andReturn().getResponse().getContentAsString());
 
         return result1;
     }
@@ -466,7 +474,6 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                 .perform(get(path, pageCode)
                         .header("Authorization", "Bearer " + accessToken));
 
-        System.out.println("result: \n" + result.andReturn().getResponse().getContentAsString());
         return result;
     }
 
