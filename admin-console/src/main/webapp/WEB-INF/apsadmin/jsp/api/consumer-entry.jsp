@@ -6,7 +6,7 @@
 <s:include value="/WEB-INF/apsadmin/jsp/common/layouts/assets-more/inc/snippet-datepicker.jsp" />
 
 <ol class="breadcrumb page-tabs-header breadcrumb-position">
-    <li><s:text name="title.integrations" /></li>
+    <li><s:text name="title.administration" /></li>
     <li><s:text name="title.apiManagement" /></li>
     <li><a href="<s:url action="list" />"><s:text name="title.apiConsumerManagement" /></a></li>
     <li class="page-title-container">

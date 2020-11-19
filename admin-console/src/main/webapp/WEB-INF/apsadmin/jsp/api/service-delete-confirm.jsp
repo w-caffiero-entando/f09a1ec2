@@ -2,7 +2,7 @@
 <%@ taglib prefix="wpsf" uri="/apsadmin-form" %>
 
 <ol class="breadcrumb page-tabs-header breadcrumb-position">
-    <li><s:text name="title.integrations" /></li>
+    <li><s:text name="title.administration" /></li>
     <li><s:text name="title.apiManagement" /></li>
 
 
