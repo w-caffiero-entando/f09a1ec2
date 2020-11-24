@@ -429,7 +429,11 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2_FC, IPageService.STATUS_DRAFT));
             this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
-
+            
+            this.pageManager.setPageOnline(SEO_TEST_2);
+            this.waitNotifyingThread();
+            this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
+            
         } finally {
             IPage page1 = this.pageManager.getDraftPage(SEO_TEST_2);
             IPage page2 = this.pageManager.getDraftPage(SEO_TEST_2_FC);
