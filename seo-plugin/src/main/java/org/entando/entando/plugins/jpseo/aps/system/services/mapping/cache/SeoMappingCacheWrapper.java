@@ -22,17 +22,22 @@
 package org.entando.entando.plugins.jpseo.aps.system.services.mapping.cache;
 
 import com.agiletec.aps.system.common.AbstractCacheWrapper;
+import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.page.PageMetadata;
 import org.entando.entando.ent.exception.EntException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ContentFriendlyCode;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingDAO;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.springframework.cache.Cache;
 
 /**
@@ -48,10 +53,11 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
         this.releaseCachedObjects(cache, MAPPING_BY_CODE_CACHE_KEY, MAPPING_BY_CODE_CACHE_KEY_PREFIX);
         this.releaseCachedObjects(cache, MAPPING_BY_PAGE_CACHE_KEY, MAPPING_BY_PAGE_CACHE_KEY_PREFIX);
         this.releaseCachedObjects(cache, MAPPING_BY_CONTENT_CACHE_KEY, MAPPING_BY_CONTENT_CACHE_KEY_PREFIX);
+        cache.evict(DRAFT_PAGES_MAPPING);
     }
 
 	@Override
-	public void initCache(ISeoMappingDAO seoMappingDAO) throws EntException {
+	public void initCache(IPageManager pageManager, ISeoMappingDAO seoMappingDAO, boolean initDraftPageMapping) throws EntException {
 		try {
             Map<String, FriendlyCodeVO> mapping = seoMappingDAO.loadMapping();
 			Map<String, FriendlyCodeVO> pageFriendlyCodes = new HashMap<>();
@@ -76,11 +82,38 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
             this.insertAndCleanVoObjectsOnCache(cache, mapping, MAPPING_BY_CODE_CACHE_KEY, MAPPING_BY_CODE_CACHE_KEY_PREFIX);
             this.insertAndCleanVoObjectsOnCache(cache, pageFriendlyCodes, MAPPING_BY_PAGE_CACHE_KEY, MAPPING_BY_PAGE_CACHE_KEY_PREFIX);
 			this.insertAndCleanVoObjectsOnCache(cache, contentFriendlyCodes, MAPPING_BY_CONTENT_CACHE_KEY, MAPPING_BY_CONTENT_CACHE_KEY_PREFIX);
+            if (initDraftPageMapping) {
+                this.createDraftPagesMapping(pageManager, cache);
+            }
 		} catch (Throwable t) {
 			_logger.error("Error loading seo mapper", t);
 			throw new EntException("Error loading seo mapper", t);
 		}
 	}
+    
+    protected Map<String, String> createDraftPagesMapping(IPageManager pageManager, Cache cache) {
+        Map<String, String> mapping = new HashMap<>();
+        this.createDraftPagesMapping(pageManager, pageManager.getDraftRoot(), mapping);
+        cache.put(DRAFT_PAGES_MAPPING, mapping);
+        return mapping;
+    }
+    
+    protected void createDraftPagesMapping(IPageManager pageManager, IPage current, Map<String, String> mapping) {
+        if (null == current) {
+            return;
+        }
+        PageMetadata metadata = current.getMetadata();
+        String friendlyCode = (metadata instanceof SeoPageMetadata) ? ((SeoPageMetadata) metadata).getFriendlyCode() : null;
+        if (!StringUtils.isBlank(friendlyCode)) {
+            mapping.put(friendlyCode, current.getCode());
+        }
+        String[] children = current.getChildrenCodes();
+        if (null != children) {
+            for (int i = 0; i < children.length; i++) {
+                this.createDraftPagesMapping(pageManager, pageManager.getDraftPage(children[i]), mapping);
+            }
+        }
+    }
     
     protected void releaseCachedObjects(Cache cache, String listKey, String prefixKey) {
 		List<String> codes = (List<String>) this.get(cache, listKey, List.class);
@@ -127,6 +160,24 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
     public ContentFriendlyCode getMappingByContentId(String contentId) {
         return this.get(this.getCache(), MAPPING_BY_CONTENT_CACHE_KEY_PREFIX + contentId, ContentFriendlyCode.class);
 	}
+
+    @Override
+    public String getDraftPageReference(String friendlyCode) {
+        Cache cache = this.getCache();
+        Map<String,String> mapping = (Map<String,String>) this.get(cache, DRAFT_PAGES_MAPPING, Map.class);
+        return mapping.get(friendlyCode);
+    }
+
+    @Override
+    public void updateDraftPageReference(String friendlyCode, String pageCode) {
+        Cache cache = this.getCache();
+        Map<String,String> mapping = (Map<String,String>) this.get(cache, DRAFT_PAGES_MAPPING, Map.class);
+        mapping.entrySet().removeIf(e -> e.getValue().equals(pageCode));
+        if (!StringUtils.isBlank(friendlyCode)) {
+            mapping.put(friendlyCode, pageCode);
+        }
+        cache.put(DRAFT_PAGES_MAPPING, mapping);
+    }
 
     @Override
     protected String getCacheName() {

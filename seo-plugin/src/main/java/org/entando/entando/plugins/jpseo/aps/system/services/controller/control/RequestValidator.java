@@ -76,71 +76,70 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
 		return retStatus;
 	}
 
-	private boolean isRightPath(RequestContext reqCtx) {
-		boolean ok = false;
-		String resourcePath;
-		Matcher matcher;
-		Lang lang = null;
-		IPage page = null;
-		if (this.getResourcePath(reqCtx).equals("/page")) {
-			resourcePath = this.getFullResourcePath(reqCtx);
-			matcher = this._patternSeoPath.matcher(resourcePath);
-			if (matcher.lookingAt()) {
-				ok = true;
-				String sect1 = matcher.group(1);
-				lang = getLangManager().getLang(sect1);
-				String friendlyCode = matcher.group(2).substring(1);
-				FriendlyCodeVO vo = this.getSeoMappingManager().getReference(friendlyCode);
-				if (null != vo) {
-					if (null != vo.getPageCode()) {
-						page = this.getPageManager().getOnlinePage(vo.getPageCode());
-					} else if (null != vo.getContentId() && null != lang && lang.getCode().equals(vo.getLangCode())) {
-						String contentId = vo.getContentId();
-						if (lang.getCode().equals(vo.getLangCode())) {
-							String viewPageCode = this.getContentManager().getViewPage(contentId);
-							page = this.getPageManager().getOnlinePage(viewPageCode);
-							reqCtx.addExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID, contentId);
-						}
-					}
-				}
-			}
-		} else if (this.getResourcePath(reqCtx).equals("/pages")) {
-			resourcePath = getFullResourcePath(reqCtx);
-			matcher = this._patternFullPath.matcher(resourcePath);
-			if (matcher.lookingAt()) {
-				ok = true;
-				String sect1 = matcher.group(1);
-				lang = getLangManager().getLang(sect1);
-				page = this.getPage(matcher);
-			}
-		} else {
-			resourcePath = getResourcePath(reqCtx);
-			matcher = this._pattern.matcher(resourcePath);
-			if (matcher.lookingAt()) {
-				ok = true;
-				String sect1 = matcher.group(1);
-				String sect2 = matcher.group(2);
-				lang = getLangManager().getLang(sect1);
-				page = this.getPageManager().getOnlinePage(sect2);
-			} else {
-				//to preserve url with ".wp" suffix
-				matcher = this._oldPattern.matcher(resourcePath);
-				if (matcher.lookingAt()) {
-					ok = true;
-					String sect1 = matcher.group(1);
-					String sect2 = matcher.group(2);
-					lang = getLangManager().getLang(sect1);
-					page = this.getPageManager().getOnlinePage(sect2);
-				}
-			}
-		}
-		if (!ok) {
-			return false;
-		}
-		reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, lang);
-		reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE, page);
-		return true;
-	}
+    private boolean isRightPath(RequestContext reqCtx) {
+        boolean ok = false;
+        String resourcePath;
+        Matcher matcher;
+        Lang lang = null;
+        IPage page = null;
+        if (this.getResourcePath(reqCtx).equals("/page")) {
+            resourcePath = this.getFullResourcePath(reqCtx);
+            matcher = this._patternSeoPath.matcher(resourcePath);
+            if (matcher.lookingAt()) {
+                ok = true;
+                String sect1 = matcher.group(1);
+                lang = getLangManager().getLang(sect1);
+                String friendlyCode = matcher.group(2).substring(1);
+                FriendlyCodeVO vo = this.getSeoMappingManager().getReference(friendlyCode);
+                if (null != vo) {
+                    if (null != vo.getPageCode()) {
+                        page = this.getPageManager().getOnlinePage(vo.getPageCode());
+                    } else if (null != vo.getContentId()) {
+                        String contentId = vo.getContentId();
+                        String viewPageCode = this.getContentManager().getViewPage(contentId);
+                        page = this.getPageManager().getOnlinePage(viewPageCode);
+                        reqCtx.addExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID, contentId);
+
+                    }
+                }
+            }
+        } else if (this.getResourcePath(reqCtx).equals("/pages")) {
+            resourcePath = getFullResourcePath(reqCtx);
+            matcher = this._patternFullPath.matcher(resourcePath);
+            if (matcher.lookingAt()) {
+                ok = true;
+                String sect1 = matcher.group(1);
+                lang = getLangManager().getLang(sect1);
+                page = this.getPage(matcher);
+            }
+        } else {
+            resourcePath = getResourcePath(reqCtx);
+            matcher = this._pattern.matcher(resourcePath);
+            if (matcher.lookingAt()) {
+                ok = true;
+                String sect1 = matcher.group(1);
+                String sect2 = matcher.group(2);
+                lang = getLangManager().getLang(sect1);
+                page = this.getPageManager().getOnlinePage(sect2);
+            } else {
+                //to preserve url with ".wp" suffix
+                matcher = this._oldPattern.matcher(resourcePath);
+                if (matcher.lookingAt()) {
+                    ok = true;
+                    String sect1 = matcher.group(1);
+                    String sect2 = matcher.group(2);
+                    lang = getLangManager().getLang(sect1);
+                    page = this.getPageManager().getOnlinePage(sect2);
+                }
+            }
+        }
+        if (!ok) {
+            return false;
+        }
+        reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, lang);
+        reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE, page);
+        return true;
+    }
 	
 	/**
 	 * Qualora si usasse il mapping /pages/*

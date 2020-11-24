@@ -37,4 +37,6 @@ public interface ISeoMappingManager {
 	
 	public List<String> searchFriendlyCode(FieldSearchFilter[] filters) throws EntException;
 	
+	public String getDraftPageReference(String friendlyCode);
+	
 }

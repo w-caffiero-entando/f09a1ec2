@@ -93,7 +93,7 @@ public class SeoPageController implements ISeoPageController {
         getSeoPageValidator().validate(pageRequest, bindingResult);
         if ((null!=pageRequest.getSeoData()) && (null!=pageRequest.getSeoData().getFriendlyCode())) {
             String friendlyCode = pageRequest.getSeoData().getFriendlyCode();
-            if (!getSeoPageValidator().checkFriendlyCode(friendlyCode)) {
+            if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), friendlyCode)) {
                 DataBinder binder = new DataBinder(friendlyCode);
                 bindingResult = binder.getBindingResult();
                 bindingResult.reject("10",  "Invalid friendly code");
@@ -125,7 +125,7 @@ public class SeoPageController implements ISeoPageController {
         }
         if ((null!=pageRequest.getSeoData()) && (null!=pageRequest.getSeoData().getFriendlyCode())) {
             String friendlyCode = pageRequest.getSeoData().getFriendlyCode();
-            if (!getSeoPageValidator().checkFriendlyCode(friendlyCode)) {
+            if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), friendlyCode)) {
                 DataBinder binder = new DataBinder(friendlyCode);
                 bindingResult = binder.getBindingResult();
                 bindingResult.reject("10",  "Invalid friendly code");
