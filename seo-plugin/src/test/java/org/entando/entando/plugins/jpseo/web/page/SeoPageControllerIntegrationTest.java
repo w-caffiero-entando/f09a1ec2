@@ -391,10 +391,6 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value", is("test in italiano")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang", is(true)));
             
-            Assert.assertNull(this.seoMappingManager.getReference("test_page_2_friendly_url"));
-            reference = this.seoMappingManager.getDraftPageReference("test_page_2_friendly_url");
-            Assert.assertEquals(SEO_TEST_2, reference);
-            
             final ResultActions resultNoMetatag = this
                     .executePutSeoPage("2_PUT_valid_no_metatag.json", accessToken, status().isOk());
             this.waitNotifyingThread();
@@ -425,10 +421,6 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags.size()", is(0)));
             
-            Assert.assertNull(this.seoMappingManager.getReference("test_page_2_friendly_url"));
-            reference = this.seoMappingManager.getDraftPageReference("test_page_2_friendly_url");
-            Assert.assertEquals(SEO_TEST_2, reference);
-            
             final ResultActions resultCheckFriendlyCode1 = this.executePostSeoPage("2_POST_valid_friendly_code.json", accessToken, status().isOk());
             resultCheckFriendlyCode1.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2_FC)));
@@ -442,8 +434,6 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
             this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
             
             this.pageManager.setPageOnline(SEO_TEST_2_FC);
-            this.waitNotifyingThread();
-            
             this.waitNotifyingThread();
             this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
             
