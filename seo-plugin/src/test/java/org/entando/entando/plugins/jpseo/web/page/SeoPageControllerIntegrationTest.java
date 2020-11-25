@@ -71,10 +71,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     public void testPostSeoPage() throws Exception {
         try {
             String accessToken = this.createAccessToken();
-
-            final ResultActions result = this
-                    .executePostSeoPage("1_POST_valid.json", accessToken, status().isOk());
-
+            final ResultActions result = this.executePostSeoPage("1_POST_valid.json", accessToken, status().isOk());
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
             result.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_1)))
@@ -341,10 +338,12 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                             jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value",
                                     is("descrizione meta test")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang", is(false)));
-
-            // resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(true)));
-            // resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(true)));
-
+            
+            Assert.assertNull(this.seoMappingManager.getReference("test_page_2_friendly_url"));
+            Assert.assertNull(this.seoMappingManager.getDraftPageReference("test_page_2"));
+            reference = this.seoMappingManager.getDraftPageReference("test_page_2_friendly_url");
+            Assert.assertEquals(SEO_TEST_2, reference);
+            
             final ResultActions resultPutMetaDefaultLangTrue = this
                     .executePutSeoPage("2_PUT_valid_meta_default_lang_true.json", accessToken, status().isOk());
             this.waitNotifyingThread();
@@ -391,7 +390,11 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value", is("test in italiano")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang", is(true)));
-
+            
+            Assert.assertNull(this.seoMappingManager.getReference("test_page_2_friendly_url"));
+            reference = this.seoMappingManager.getDraftPageReference("test_page_2_friendly_url");
+            Assert.assertEquals(SEO_TEST_2, reference);
+            
             final ResultActions resultNoMetatag = this
                     .executePutSeoPage("2_PUT_valid_no_metatag.json", accessToken, status().isOk());
             this.waitNotifyingThread();
@@ -422,15 +425,25 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags.size()", is(0)));
             
+            Assert.assertNull(this.seoMappingManager.getReference("test_page_2_friendly_url"));
+            reference = this.seoMappingManager.getDraftPageReference("test_page_2_friendly_url");
+            Assert.assertEquals(SEO_TEST_2, reference);
+            
             final ResultActions resultCheckFriendlyCode1 = this.executePostSeoPage("2_POST_valid_friendly_code.json", accessToken, status().isOk());
             resultCheckFriendlyCode1.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2_FC)));
             this.waitNotifyingThread();
             
+            Assert.assertNull(this.seoMappingManager.getReference("test_page_2_fc"));
+            reference = this.seoMappingManager.getDraftPageReference("test_page_2_fc");
+            Assert.assertEquals(SEO_TEST_2_FC, reference);
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2_FC, IPageService.STATUS_DRAFT));
+            
             this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
             
-            this.pageManager.setPageOnline(SEO_TEST_2);
+            this.pageManager.setPageOnline(SEO_TEST_2_FC);
+            this.waitNotifyingThread();
+            
             this.waitNotifyingThread();
             this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
             

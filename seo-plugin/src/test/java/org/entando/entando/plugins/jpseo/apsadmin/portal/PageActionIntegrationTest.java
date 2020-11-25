@@ -269,13 +269,12 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
             assertEquals("property", metaEn1.getKeyAttribute());
             assertFalse(metaEn1.isUseDefaultLangValue());
             
-            Map<String, String> params_bis = this.createParamForTest(pageCode_bis);
-			params_bis.put(PageActionAspect.PARAM_FRIENDLY_CODE, "friendly_code_test_2");
-            String result_bis = this.executeSave(params_bis, "admin");
-			assertEquals(Action.INPUT, result_bis);
-            ActionSupport action = super.getAction();
-            assertEquals(1, action.getFieldErrors().size());
-            assertEquals(1, action.getFieldErrors().get(PageActionAspect.PARAM_FRIENDLY_CODE).size());
+            this.testAddPageWithDuplicateFriendlyCode(pageCode_bis);
+            
+            this.pageManager.setPageOnline(pageCode);
+            super.waitNotifyingThread();
+            
+            this.testAddPageWithDuplicateFriendlyCode(pageCode_bis);
 		} catch (Throwable t) {
 			throw t;
 		} finally {
@@ -283,6 +282,16 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
 			this.pageManager.deletePage(pageCode_bis);
 		}
 	}
+    
+    private void testAddPageWithDuplicateFriendlyCode(String pageCode) throws Throwable {
+            Map<String, String> params_bis = this.createParamForTest(pageCode);
+			params_bis.put(PageActionAspect.PARAM_FRIENDLY_CODE, "friendly_code_test_2");
+            String result_bis = this.executeSave(params_bis, "admin");
+			assertEquals(Action.INPUT, result_bis);
+            ActionSupport action = super.getAction();
+            assertEquals(1, action.getFieldErrors().size());
+            assertEquals(1, action.getFieldErrors().get(PageActionAspect.PARAM_FRIENDLY_CODE).size());
+    }
     
     public void testSavePage_3() throws Throwable {
         String pageCode = "seo_test_3";

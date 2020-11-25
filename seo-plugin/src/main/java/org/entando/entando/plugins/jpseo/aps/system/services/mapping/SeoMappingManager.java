@@ -124,10 +124,10 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
                     return;
                 }
                 AttributeInterface attribute = content.getAttributeByRole(JpseoSystemConstants.ATTRIBUTE_ROLE_FRIENDLY_CODE);
-                if (!(attribute instanceof ITextAttribute)) {
+                if (null == attribute || !(attribute instanceof ITextAttribute)) {
                     attribute = content.getAttributeByRole(JacmsSystemConstants.ATTRIBUTE_ROLE_TITLE);
                 }
-                if (attribute instanceof ITextAttribute) {
+                if (null != attribute && attribute instanceof ITextAttribute) {
                     ContentFriendlyCode contentFriendlyCode = this.prepareContentFriendlyCode(content.getId(), (ITextAttribute) attribute);
                     this.getSeoMappingDAO().updateMapping(contentFriendlyCode);
                 }
