@@ -94,7 +94,7 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
                 if (null != vo) {
                     if (null != vo.getPageCode()) {
                         page = this.getPageManager().getOnlinePage(vo.getPageCode());
-                    } else if (null != vo.getContentId()) {
+					} else if (null != vo.getContentId() && null != lang && lang.getCode().equals(vo.getLangCode())) {
                         String contentId = vo.getContentId();
                         String viewPageCode = this.getContentManager().getViewPage(contentId);
                         page = this.getPageManager().getOnlinePage(viewPageCode);
