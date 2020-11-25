@@ -56,6 +56,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
 
     private static String SEO_TEST_1 = "seoTest1";
     private static String SEO_TEST_2 = "seoTest2";
+    private static String SEO_TEST_3 = "seoTest3";
     private static String SEO_TEST_2_FC = "seoTest2fc";
 
 
@@ -167,10 +168,8 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     public void testPostSeoPageNullSeoFields() throws Exception {
         try {
             String accessToken = this.createAccessToken();
-
             final ResultActions result = this
                     .executePostSeoPage("1_POST_valid_empty_fields_2.json", accessToken, status().isOk());
-
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
             result.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_1)))
@@ -186,7 +185,6 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
-
         } finally {
             PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
             if (null != page) {
@@ -199,10 +197,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     public void testPostSeoPageNullSeoData() throws Exception {
         try {
             String accessToken = this.createAccessToken();
-
-            final ResultActions result = this
-                    .executePostSeoPage("1_POST_valid_no_seoData.json", accessToken, status().isOk());
-
+            final ResultActions result = this.executePostSeoPage("1_POST_valid_no_seoData.json", accessToken, status().isOk());
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
             result.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_1)))
@@ -218,12 +213,27 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
-
         } finally {
-            PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
-            if (null != page) {
-                this.pageService.removePage(SEO_TEST_1);
-            }
+            this.pageManager.deletePage(SEO_TEST_1);
+        }
+    }
+    
+    @Test
+    public void testPostSeoPageDuplicateFriendlyCode() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+            ResultActions result1 = this.executePostSeoPage("2_POST_valid.json", accessToken, status().isOk());
+            Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
+            result1.andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2)))
+                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("test_page_2")));
+            
+            ResultActions result2 = this.executePostSeoPage("3_POST_invalid.json", accessToken, status().isConflict());
+            Assert.assertNull(this.pageManager.getDraftPage(SEO_TEST_3));
+            result2.andExpect(jsonPath("$.errors.size()", is(1)));
+        } finally {
+            this.pageManager.deletePage(SEO_TEST_2);
+            this.pageManager.deletePage(SEO_TEST_3);
         }
     }
     
