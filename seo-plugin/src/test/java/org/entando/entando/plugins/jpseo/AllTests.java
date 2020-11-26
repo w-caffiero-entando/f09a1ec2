@@ -24,6 +24,7 @@ package org.entando.entando.plugins.jpseo;
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.entando.entando.aps.system.services.controller.control.SeoRequestValidatorIntegrationTest;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.SeoMappingManagerIntegrationTest;
 import org.entando.entando.plugins.jpseo.aps.system.services.metatag.MetatagCatalogueIntegrationTest;
 import org.entando.entando.plugins.jpseo.apsadmin.content.ContentActionIntegrationTest;
@@ -38,6 +39,8 @@ public class AllTests {
     public static Test suite() {
         TestSuite suite = new TestSuite("Seo plugin");
 
+        suite.addTestSuite(SeoRequestValidatorIntegrationTest.class);
+        
         suite.addTestSuite(MetatagCatalogueIntegrationTest.class);
 
         suite.addTestSuite(SeoMappingManagerIntegrationTest.class);
@@ -48,7 +51,7 @@ public class AllTests {
         suite.addTest(new JUnit4TestAdapter(SeoPageControllerIntegrationTest.class));
 
         suite.addTest(new JUnit4TestAdapter(PageSettingsActionAspectTest.class));
-
+        
         return suite;
     }
 

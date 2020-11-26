@@ -13,10 +13,8 @@
  */
 package org.entando.entando.plugins.jpseo.web.page.validator;
 
-import com.agiletec.apsadmin.portal.PageAction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.web.page.validator.PageValidator;
@@ -32,7 +30,7 @@ public class SeoPageValidator extends PageValidator {
     @Autowired
     private ISeoMappingManager seoMappingManager;
 
-    public boolean checkFriendlyCode(String friendlyCode) {
+    public boolean checkFriendlyCode(String pageCode, String friendlyCode) {
         if (null != friendlyCode && friendlyCode.trim().length() > 100) {
             logger.error("Invalid friendly Code {}", friendlyCode);
             return false;
@@ -46,8 +44,13 @@ public class SeoPageValidator extends PageValidator {
             }
         }
         if (null != friendlyCode && friendlyCode.trim().length() > 0) {
-            FriendlyCodeVO vo = seoMappingManager.getReference(friendlyCode);
-            if (null != vo && (vo.getPageCode() == null || !vo.getPageCode().equals(friendlyCode))) {
+            FriendlyCodeVO vo = this.seoMappingManager.getReference(friendlyCode);
+            if (null != vo && (vo.getPageCode() == null || !vo.getPageCode().equals(pageCode))) {
+                logger.error("Invalid friendly Code {}", friendlyCode);
+                return false;
+            }
+            String draftPageReference = this.seoMappingManager.getDraftPageReference(friendlyCode);
+            if (null != draftPageReference && !pageCode.equals(draftPageReference)) {
                 logger.error("Invalid friendly Code {}", friendlyCode);
                 return false;
             }

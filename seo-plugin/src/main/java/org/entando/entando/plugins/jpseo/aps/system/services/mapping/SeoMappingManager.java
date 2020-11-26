@@ -28,6 +28,7 @@ import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.events.PageChangedEvent;
 import com.agiletec.aps.system.services.page.events.PageChangedObserver;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
@@ -58,11 +59,12 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 	
 	private ISeoMappingDAO seoMappingDAO;
 	private ILangManager langManager;
+	private IPageManager pageManager;
     private ISeoMappingCacheWrapper cacheWrapper;
 
 	@Override
 	public void init() throws Exception {
-		this.getCacheWrapper().initCache(this.getSeoMappingDAO());
+		this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), true);
 		logger.debug("{} ready. initialized",this.getClass().getName());
 	}
 
@@ -75,25 +77,31 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 	@Override
 	public void updateFromPageChanged(PageChangedEvent event) {
 		IPage page = event.getPage();
-        if (!PageChangedEvent.EVENT_TYPE_SET_PAGE_OFFLINE.equals(event.getEventType()) && 
-                !PageChangedEvent.EVENT_TYPE_SET_PAGE_ONLINE.equals(event.getEventType())) {
+        String eventType = event.getEventType();
+        if (null == page || !(page.getMetadata() instanceof SeoPageMetadata) || 
+                PageChangedEvent.EVENT_TYPE_JOIN_WIDGET.equals(eventType) || 
+                PageChangedEvent.EVENT_TYPE_MOVE_WIDGET.equals(eventType) || 
+                PageChangedEvent.EVENT_TYPE_REMOVE_WIDGET.equals(eventType)) {
             return;
         }
-		if (!(page.getMetadata() instanceof SeoPageMetadata)) {
+        SeoPageMetadata seoMetadata = (SeoPageMetadata) page.getMetadata();
+        String friendlyCode = (event.getOperationCode() == PageChangedEvent.REMOVE_OPERATION_CODE)
+                ? null : seoMetadata.getFriendlyCode();
+        this.getCacheWrapper().updateDraftPageReference(friendlyCode, page.getCode());
+        if (!PageChangedEvent.EVENT_TYPE_SET_PAGE_OFFLINE.equals(event.getEventType())
+                && !PageChangedEvent.EVENT_TYPE_SET_PAGE_ONLINE.equals(event.getEventType())) {
             return;
         }
-		try {
+        try {
             this.getSeoMappingDAO().deleteMappingForPage(page.getCode());
-            SeoPageMetadata seoMetadata = (SeoPageMetadata) page.getMetadata();
-            String friendlyCode = seoMetadata.getFriendlyCode();
-            if (!StringUtils.isEmpty(friendlyCode)) {
+            if (PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode() && !StringUtils.isEmpty(friendlyCode)) {
                 FriendlyCodeVO vo = new FriendlyCodeVO(seoMetadata.getFriendlyCode(), page.getCode());
                 this.getSeoMappingDAO().updateMapping(vo);
             }
 			SeoChangedEvent seoEvent = new SeoChangedEvent();
 			seoEvent.setOperationCode(SeoChangedEvent.PAGE_CHANGED_EVENT);
 			this.notifyEvent(seoEvent);
-            this.getCacheWrapper().initCache(this.getSeoMappingDAO());
+            this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), false);
 		} catch (Throwable t) {
 			logger.error("Error updating mapping from page changed", t);
 		}
@@ -127,7 +135,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
             SeoChangedEvent seoEvent = new SeoChangedEvent();
             seoEvent.setOperationCode(SeoChangedEvent.CONTENT_CHANGED_EVENT);
             this.notifyEvent(seoEvent);
-            this.getCacheWrapper().initCache(this.getSeoMappingDAO());
+            this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), false);
         } catch (Throwable t) {
             logger.error("Error updating mapping from public content changed", t);
         }
@@ -204,19 +212,15 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 		}
 		return codes;
 	}
+
+    @Override
+    public String getDraftPageReference(String friendlyCode) {
+        return this.getCacheWrapper().getDraftPageReference(friendlyCode);
+    }
 	
 	@Override
 	public FriendlyCodeVO getReference(String friendlyCode) {
 		return this.getCacheWrapper().getMappingByFriendlyCode(friendlyCode);
-	}
-	
-	@Override
-	public String getPageReference(String pageCode) {
-		FriendlyCodeVO friendlyCode = this.getCacheWrapper().getMappingByPageCode(pageCode);
-		if (friendlyCode!=null) {
-			return friendlyCode.getPageCode();
-		}
-		return null;
 	}
 	
 	@Override
@@ -245,6 +249,13 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 	public void setLangManager(ILangManager langManager) {
 		this.langManager = langManager;
 	}
+
+    protected IPageManager getPageManager() {
+        return pageManager;
+    }
+    public void setPageManager(IPageManager pageManager) {
+        this.pageManager = pageManager;
+    }
     
     protected ISeoMappingCacheWrapper getCacheWrapper() {
         return cacheWrapper;

@@ -20,13 +20,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.agiletec.aps.system.common.notify.NotifyManager;
 import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.FileTextReader;
 import java.io.InputStream;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
+import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
+import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.Assert;
@@ -42,9 +47,17 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     @Autowired
     @Qualifier("SeoPageService")
     private IPageService pageService;
+    
+    @Autowired
+    private IPageManager pageManager;
+    
+    @Autowired
+    private ISeoMappingManager seoMappingManager;
 
     private static String SEO_TEST_1 = "seoTest1";
     private static String SEO_TEST_2 = "seoTest2";
+    private static String SEO_TEST_3 = "seoTest3";
+    private static String SEO_TEST_2_FC = "seoTest2fc";
 
 
     @Test
@@ -54,15 +67,12 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
         final ResultActions result = this.executeGetSeoPage("service", accessToken);
         result.andExpect(status().isOk());
     }
-
+    
     @Test
     public void testPostSeoPage() throws Exception {
         try {
             String accessToken = this.createAccessToken();
-
-            final ResultActions result = this
-                    .executePostSeoPage("1_POST_valid.json", accessToken, status().isOk());
-
+            final ResultActions result = this.executePostSeoPage("1_POST_valid.json", accessToken, status().isOk());
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
             result.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_1)))
@@ -158,10 +168,8 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     public void testPostSeoPageNullSeoFields() throws Exception {
         try {
             String accessToken = this.createAccessToken();
-
             final ResultActions result = this
                     .executePostSeoPage("1_POST_valid_empty_fields_2.json", accessToken, status().isOk());
-
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
             result.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_1)))
@@ -177,7 +185,6 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
-
         } finally {
             PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
             if (null != page) {
@@ -190,10 +197,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     public void testPostSeoPageNullSeoData() throws Exception {
         try {
             String accessToken = this.createAccessToken();
-
-            final ResultActions result = this
-                    .executePostSeoPage("1_POST_valid_no_seoData.json", accessToken, status().isOk());
-
+            final ResultActions result = this.executePostSeoPage("1_POST_valid_no_seoData.json", accessToken, status().isOk());
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT));
             result.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_1)))
@@ -209,24 +213,37 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
-
         } finally {
-            PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
-            if (null != page) {
-                this.pageService.removePage(SEO_TEST_1);
-            }
+            this.pageManager.deletePage(SEO_TEST_1);
         }
     }
-
+    
+    @Test
+    public void testPostSeoPageDuplicateFriendlyCode() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+            ResultActions result1 = this.executePostSeoPage("2_POST_valid.json", accessToken, status().isOk());
+            Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
+            result1.andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2)))
+                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("test_page_2")));
+            
+            ResultActions result2 = this.executePostSeoPage("3_POST_invalid.json", accessToken, status().isConflict());
+            Assert.assertNull(this.pageManager.getDraftPage(SEO_TEST_3));
+            result2.andExpect(jsonPath("$.errors.size()", is(1)));
+        } finally {
+            this.pageManager.deletePage(SEO_TEST_2);
+            this.pageManager.deletePage(SEO_TEST_3);
+        }
+    }
+    
     @Test
     public void testPutSeoPage() throws Exception {
         try {
             String accessToken = this.createAccessToken();
-
             final ResultActions result = this
                     .executePostSeoPage("2_POST_valid.json", accessToken, status().isOk());
-
-            Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
+            this.waitNotifyingThread();
 
             result.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2)))
@@ -276,13 +293,15 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value", is("metatag di prova")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].useDefaultLang", is(false)));
 
-            //result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(true)));
-            //result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(true)));
-
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
+            FriendlyCodeVO vo = this.seoMappingManager.getReference("test_page_2");
+            Assert.assertNull(vo);
+            String reference = this.seoMappingManager.getDraftPageReference("test_page_2");
+            Assert.assertEquals(SEO_TEST_2, reference);
 
             final ResultActions resultPut = this
                     .executePutSeoPage("2_PUT_valid.json", accessToken, status().isOk());
+            this.waitNotifyingThread();
 
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
             resultPut.andExpect(jsonPath("$.errors.size()", is(0)))
@@ -329,13 +348,16 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                             jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value",
                                     is("descrizione meta test")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang", is(false)));
-
-            // resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(true)));
-            // resultPut.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(true)));
-
+            
+            Assert.assertNull(this.seoMappingManager.getReference("test_page_2_friendly_url"));
+            Assert.assertNull(this.seoMappingManager.getDraftPageReference("test_page_2"));
+            reference = this.seoMappingManager.getDraftPageReference("test_page_2_friendly_url");
+            Assert.assertEquals(SEO_TEST_2, reference);
+            
             final ResultActions resultPutMetaDefaultLangTrue = this
                     .executePutSeoPage("2_PUT_valid_meta_default_lang_true.json", accessToken, status().isOk());
-
+            this.waitNotifyingThread();
+            
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
             resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2)))
@@ -378,14 +400,10 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value", is("test in italiano")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang", is(true)));
-
-            //    resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(true)));
-            //    resultPutMetaDefaultLangTrue.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(true)));
-
+            
             final ResultActions resultNoMetatag = this
                     .executePutSeoPage("2_PUT_valid_no_metatag.json", accessToken, status().isOk());
-
-            Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
+            this.waitNotifyingThread();
 
             Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
             resultNoMetatag.andExpect(jsonPath("$.errors.size()", is(0)))
@@ -407,18 +425,54 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
                             is("keyword number 1, keyword number 2")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags.size()", is(0)))
 
-                    .andExpect(
-                            jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang", is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags.size()", is(0)));
-
-
+            
+            final ResultActions resultCheckFriendlyCode1 = this.executePostSeoPage("2_POST_valid_friendly_code.json", accessToken, status().isOk());
+            resultCheckFriendlyCode1.andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2_FC)));
+            this.waitNotifyingThread();
+            
+            Assert.assertNull(this.seoMappingManager.getReference("test_page_2_fc"));
+            reference = this.seoMappingManager.getDraftPageReference("test_page_2_fc");
+            Assert.assertEquals(SEO_TEST_2_FC, reference);
+            Assert.assertNotNull(this.pageService.getPage(SEO_TEST_2_FC, IPageService.STATUS_DRAFT));
+            
+            this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
+            
+            this.pageManager.setPageOnline(SEO_TEST_2_FC);
+            this.waitNotifyingThread();
+            this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
+            
         } finally {
-            PageDto page = this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT);
-            if (null != page) {
-                this.pageService.removePage(SEO_TEST_2);
+            IPage page1 = this.pageManager.getDraftPage(SEO_TEST_2);
+            IPage page2 = this.pageManager.getDraftPage(SEO_TEST_2_FC);
+            if (null != page1) {
+                this.pageManager.setPageOffline(SEO_TEST_2);
+                this.pageManager.deletePage(SEO_TEST_2);
+            }
+            if (null != page2) {
+                this.pageManager.setPageOffline(SEO_TEST_2_FC);
+                this.pageManager.deletePage(SEO_TEST_2_FC);
+            }
+        }
+    }
+    
+    protected void waitNotifyingThread() throws InterruptedException {
+        synchronized (this) {
+            this.wait(500);
+        }
+        String threadNamePrefix = NotifyManager.NOTIFYING_THREAD_NAME;
+        Thread[] threads = new Thread[Thread.activeCount()];
+        Thread.enumerate(threads);
+        for (int i = 0; i < threads.length; i++) {
+            Thread currentThread = threads[i];
+            if (currentThread != null
+                    && currentThread.getName().startsWith(threadNamePrefix)) {
+                currentThread.join();
             }
         }
     }
@@ -428,45 +482,35 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
         InputStream isJsonPostValid2 = this.getClass().getResourceAsStream(fileName);
         String jsonPostValid2 = FileTextReader.getText(isJsonPostValid2);
         String path = "/plugins/seo/pages/";
-
         ResultActions result = mockMvc
                 .perform(post(path)
                         .content(jsonPostValid2)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(expected);
-
-        System.out.println("result: \n" + result.andReturn().getResponse().getContentAsString());
         return result;
     }
 
     private ResultActions executePutSeoPage(String fileName, String accessToken, ResultMatcher expected)
             throws Exception {
-        InputStream isJsonPostValid = this.getClass().getResourceAsStream(fileName);
-        String jsonPostValid = FileTextReader.getText(isJsonPostValid);
-
+        InputStream isJsonPutValid = this.getClass().getResourceAsStream(fileName);
+        String jsonPutValid = FileTextReader.getText(isJsonPutValid);
         String path = "/plugins/seo/pages/{pageCode}";
         ResultActions result1 = mockMvc
                 .perform(put(path, SEO_TEST_2)
-                        .content(jsonPostValid)
+                        .content(jsonPutValid)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result1.andExpect(expected);
-
-        System.out.println("result1: \n" + result1.andReturn().getResponse().getContentAsString());
-
         return result1;
     }
 
     private ResultActions executeGetSeoPage(String pageCode, String accessToken)
             throws Exception {
         String path = "/plugins/seo/pages/{pageCode}";
-
         ResultActions result = mockMvc
                 .perform(get(path, pageCode)
                         .header("Authorization", "Bearer " + accessToken));
-
-        System.out.println("result: \n" + result.andReturn().getResponse().getContentAsString());
         return result;
     }
 

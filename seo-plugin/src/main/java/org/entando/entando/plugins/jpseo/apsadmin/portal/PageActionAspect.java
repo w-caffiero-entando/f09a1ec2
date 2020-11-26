@@ -159,8 +159,13 @@ public class PageActionAspect {
         if (null != code && code.trim().length() > 0) {
             FriendlyCodeVO vo = this.getSeoMappingManager().getReference(code);
             if (null != vo && (vo.getPageCode() == null || !vo.getPageCode().equals(action.getPageCode()))) {
-                String[] args = {code};
-                action.addFieldError(PARAM_FRIENDLY_CODE, action.getText("jpseo.error.page.duplicateFriendlyCode", args));
+                action.addFieldError(PARAM_FRIENDLY_CODE, action.getText("jpseo.error.page.duplicateFriendlyCode", new String[]{code}));
+            } else {
+                String pageCode = action.getPageCode();
+                String draftPageReference = this.seoMappingManager.getDraftPageReference(code);
+                if (null != draftPageReference && !pageCode.equals(draftPageReference)) {
+                    action.addFieldError(PARAM_FRIENDLY_CODE, action.getText("jpseo.error.page.duplicateFriendlyCode", new String[]{code}));
+                }
             }
         }
         request.setAttribute(PARAM_FRIENDLY_CODE, code);
