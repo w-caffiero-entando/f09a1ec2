@@ -35,6 +35,7 @@ import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.plugins.jacms.apsadmin.portal.PageAction;
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
@@ -224,6 +225,7 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
     
 	public void testSavePage_2() throws Throwable {
 		String pageCode = "seo_test_2";
+		String pageCode_bis = "seo_test_2_bis";
 		assertNull(this.pageManager.getDraftPage(pageCode));
 		try {
 			Map<String, String> params = this.createParamForTest(pageCode);
@@ -266,12 +268,30 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
             assertEquals("meta value EN 1", metaEn1.getValue());
             assertEquals("property", metaEn1.getKeyAttribute());
             assertFalse(metaEn1.isUseDefaultLangValue());
+            
+            this.testAddPageWithDuplicateFriendlyCode(pageCode_bis);
+            
+            this.pageManager.setPageOnline(pageCode);
+            super.waitNotifyingThread();
+            
+            this.testAddPageWithDuplicateFriendlyCode(pageCode_bis);
 		} catch (Throwable t) {
 			throw t;
 		} finally {
 			this.pageManager.deletePage(pageCode);
+			this.pageManager.deletePage(pageCode_bis);
 		}
 	}
+    
+    private void testAddPageWithDuplicateFriendlyCode(String pageCode) throws Throwable {
+            Map<String, String> params_bis = this.createParamForTest(pageCode);
+			params_bis.put(PageActionAspect.PARAM_FRIENDLY_CODE, "friendly_code_test_2");
+            String result_bis = this.executeSave(params_bis, "admin");
+			assertEquals(Action.INPUT, result_bis);
+            ActionSupport action = super.getAction();
+            assertEquals(1, action.getFieldErrors().size());
+            assertEquals(1, action.getFieldErrors().get(PageActionAspect.PARAM_FRIENDLY_CODE).size());
+    }
     
     public void testSavePage_3() throws Throwable {
         String pageCode = "seo_test_3";

@@ -22,6 +22,7 @@
 package org.entando.entando.plugins.jpseo.aps.system.services.mapping.cache;
 
 import com.agiletec.aps.system.common.ICacheWrapper;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.plugins.jacms.aps.system.services.contentpagemapper.cache.IContentMapperCacheWrapper;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ContentFriendlyCode;
@@ -38,15 +39,20 @@ public interface ISeoMappingCacheWrapper extends ICacheWrapper {
     public static final String MAPPING_BY_CODE_CACHE_KEY_PREFIX = "SeoMappingManager_byCode_";
     public static final String MAPPING_BY_PAGE_CACHE_KEY = "SeoMappingManager_byPage";
     public static final String MAPPING_BY_PAGE_CACHE_KEY_PREFIX = "SeoMappingManager_byPage_";
+    public static final String DRAFT_PAGES_MAPPING = "SeoMappingManager_draftPages";
     public static final String MAPPING_BY_CONTENT_CACHE_KEY = "SeoMappingManager_byContent";
     public static final String MAPPING_BY_CONTENT_CACHE_KEY_PREFIX = "SeoMappingManager_byContent_";
     
-	public void initCache(ISeoMappingDAO seoMappingDAO) throws EntException;
+	public void initCache(IPageManager pageManager, ISeoMappingDAO seoMappingDAO, boolean initDraftPageMapping) throws EntException;
     
     public FriendlyCodeVO getMappingByFriendlyCode(String friendlyCode);
     
     public FriendlyCodeVO getMappingByPageCode(String pageCode);
     
     public ContentFriendlyCode getMappingByContentId(String contentId);
+    
+    public String getDraftPageReference(String friendlyCode);
+    
+    public void updateDraftPageReference(String friendlyCode, String pageCode);
     
 }
