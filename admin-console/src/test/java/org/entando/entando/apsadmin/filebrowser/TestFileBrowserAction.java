@@ -20,6 +20,8 @@ import org.entando.entando.aps.system.services.storage.*;
 
 import java.io.*;
 import java.util.*;
+
+import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 
@@ -176,9 +178,15 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
             action = (FileBrowserAction) this.getAction();
             actionErrors = action.getActionErrors();
             assertEquals(1, actionErrors.size());
-            this.localStorageManager.deleteFile(fullPath, false);
+            try {
+                this.localStorageManager.deleteFile(fullPath, false);
+            } catch (EntRuntimeException ignore) {
+            }
         } catch (Throwable t) {
-            this.localStorageManager.deleteFile(fullPath, false);
+            try {
+                this.localStorageManager.deleteFile(fullPath, false);
+            } catch (EntRuntimeException ignore) {
+            }
             throw t;
         }
     }
