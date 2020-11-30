@@ -45,6 +45,7 @@ public class MockResourceDataBean implements ResourceDataBean {
     private String _mimeType;
     private String owner;
     Map<String, String> metadata;
+    private String correlationCode;
 
     @Override
     public String getResourceId() {
@@ -172,4 +173,13 @@ public class MockResourceDataBean implements ResourceDataBean {
 
     }
 
+    @Override
+    public String getCorrelationCode() {
+        return correlationCode;
+    }
+
+    @Override
+    public void setCorrelationCode(String correlationCode) {
+        this.correlationCode=correlationCode;
+    }
 }
