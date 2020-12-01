@@ -74,7 +74,7 @@
         <springsecurity.version>5.1.12.RELEASE</springsecurity.version>
         <springsecurityoauth2.version>2.3.6.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.22</struts2.version>
-        <cxf.version>3.3.6</cxf.version>
+        <cxf.version>3.3.8</cxf.version>
         <jackson.version>2.10.0</jackson.version>
         <hibernate-validator-version>6.0.17.Final</hibernate-validator-version>
         <lucene-core.version>7.2.0</lucene-core.version>
