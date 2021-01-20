@@ -13,6 +13,12 @@
  */
 package com.agiletec.apsadmin.portal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -37,25 +43,21 @@ import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import org.entando.entando.ent.exception.EntException;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import org.entando.entando.ent.exception.EntException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
 public class TestPageAction extends ApsAdminBaseTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-    
-    public void testNewPage_1() throws Throwable {
+    @Test
+	public void testNewPage_1() throws Throwable {
         String selectedPageCode = "homepage";
         String result = this.executeNewPage(selectedPageCode, "admin");
         assertEquals(Action.SUCCESS, result);
@@ -85,7 +87,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals("apslogin", result);
     }
 
-    public void testNewPage_2() throws Throwable {
+    @Test
+	public void testNewPage_2() throws Throwable {
         String result = this.executeNewPage("homepage", "pageManagerCustomers");
         assertEquals("pageTree", result);
 
@@ -102,7 +105,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals("apslogin", result);
     }
 
-    public void testEditPageForAdminUser() throws Throwable {
+    @Test
+	public void testEditPageForAdminUser() throws Throwable {
         String selectedPageCode = "pagina_1";
         String result = this.executeActionOnPage(selectedPageCode, "admin", "edit");
         assertEquals(Action.SUCCESS, result);
@@ -118,7 +122,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals("Page 1", action.getTitles().getProperty("en"));
     }
 
-    public void testEdit_1() throws Throwable {
+    @Test
+	public void testEdit_1() throws Throwable {
         String result = this.executeActionOnPage("pagina_1", "admin", "edit");
         assertEquals(Action.SUCCESS, result);
         PageAction action = (PageAction) this.getAction();
@@ -140,7 +145,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertTrue(action.isGroupSelectLock());
     }
 
-    public void testEdit_2() throws Throwable {
+    @Test
+	public void testEdit_2() throws Throwable {
         String result = this.executeActionOnPage("customers_page", "pageManagerCustomers", "edit");
         assertEquals(Action.SUCCESS, result);
         PageAction action = (PageAction) this.getAction();
@@ -156,7 +162,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertTrue(action.isGroupSelectLock());
     }
 
-    public void testEditForCoachUser() throws Throwable {
+    @Test
+	public void testEditForCoachUser() throws Throwable {
         String selectedPageCode = this._pageManager.getDraftRoot().getCode();
         String result = this.executeActionOnPage(selectedPageCode, "pageManagerCoach", "edit");
         assertEquals("pageTree", result);
@@ -178,7 +185,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSearchPage() throws Throwable {
+    @Test
+	public void testSearchPage() throws Throwable {
         String result = null;
         PageFinderAction action = null;
         try {
@@ -213,7 +221,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testDetailPageForAdmin() throws Throwable {
+    @Test
+	public void testDetailPageForAdmin() throws Throwable {
         String selectedPageCode = "contentview"; // PAGINA PREDISPOSTA PER LA
         // PUBBLICAZIONE VOLANTE
         String result = this.executeActionOnPage(selectedPageCode, "admin", "detail");
@@ -237,7 +246,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testDetailForCoachUser() throws Throwable {
+    @Test
+	public void testDetailForCoachUser() throws Throwable {
         String selectedPageCode = this._pageManager.getOnlineRoot().getCode();
         String result = this.executeActionOnPage(selectedPageCode, "pageManagerCoach", "detail");
         assertEquals("pageTree", result);
@@ -260,7 +270,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         return result;
     }
 
-    public void testAddForAdminUser() throws Throwable {
+    @Test
+	public void testAddForAdminUser() throws Throwable {
         IPage root = this._pageManager.getDraftRoot();
         String result = this.executeNewPage(root.getCode(), "admin");
         assertEquals(Action.SUCCESS, result);
@@ -274,7 +285,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertTrue(action.isDefaultShowlet());
     }
 
-    public void testNewPageByCustomerUser() throws Throwable {
+    @Test
+	public void testNewPageByCustomerUser() throws Throwable {
         IPage root = this._pageManager.getDraftRoot();
         String result = this.executeNewPage(root.getCode(), "pageManagerCustomers");
         assertEquals("pageTree", result);
@@ -299,7 +311,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertTrue(action.isDefaultShowlet());
     }
 
-    public void testNewPageByCoachUser() throws Throwable {
+    @Test
+	public void testNewPageByCoachUser() throws Throwable {
         IPage root = this._pageManager.getDraftRoot();
         String result = this.executeNewPage(root.getCode(), "pageManagerCoach");
         assertEquals("pageTree", result);
@@ -337,7 +350,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         return result;
     }
 
-    public void testCloneForAdminUser() throws Throwable {
+    @Test
+	public void testCloneForAdminUser() throws Throwable {
         IPage copied = this._pageManager.getDraftPage("service");
         String result = this.executeCopyPage(copied, "admin");
         assertEquals(Action.SUCCESS, result);
@@ -353,7 +367,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertNull(action.getTitles().getProperty("en"));
     }
 
-    public void testCloneForCoachUser() throws Throwable {
+    @Test
+	public void testCloneForCoachUser() throws Throwable {
         IPage copied = this._pageManager.getDraftPage("coach_page");
         String result = this.executeCopyPage(copied, "admin");
         assertEquals(Action.SUCCESS, result);
@@ -379,7 +394,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         return result;
     }
 
-    public void testValidateSavePage() throws Throwable {
+    @Test
+	public void testValidateSavePage() throws Throwable {
         String pageCode = "pagina_test";
         String longPageCode = "very_long_page_code__very_long_page_code";
         assertNull(this._pageManager.getDraftPage(pageCode));
@@ -451,7 +467,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSavePage_Draft_1() throws Throwable {
+    @Test
+	public void testSavePage_Draft_1() throws Throwable {
         String pageCode = "pagina_test_1";
         assertNull(this._pageManager.getDraftPage(pageCode));
         try {
@@ -476,7 +493,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         }
     }
     
-    public void testSavePage_Draft_2() throws Throwable {
+    @Test
+	public void testSavePage_Draft_2() throws Throwable {
         String pageCode = "pagina_test_2";
         assertNull(this._pageManager.getDraftPage(pageCode));
         try {
@@ -521,7 +539,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         }
     }
     
-    public void testSavePage_3() throws Throwable {
+    @Test
+	public void testSavePage_3() throws Throwable {
         String pageCode = "pagina_test_3";
         assertNull(this._pageManager.getDraftPage(pageCode));
         try {
@@ -562,7 +581,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSavePage_Clone() throws Throwable {
+    @Test
+	public void testSavePage_Clone() throws Throwable {
         String copiedPageCode = "pagina_2";
         IPage copiedPage = this._pageManager.getDraftPage(copiedPageCode);
         assertNotNull(copiedPage);
@@ -614,7 +634,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         return result;
     }
     
-    public void testTrashPage() throws Throwable {
+    @Test
+	public void testTrashPage() throws Throwable {
         String result = this.executeTrashPage(this._pageManager.getDraftRoot().getCode(), "admin");
         assertEquals("pageTree", result);
         ActionSupport action = this.getAction();
@@ -651,7 +672,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         return result;
     }
 
-    public void testGetBreadCrumbs() throws Throwable {
+    @Test
+	public void testGetBreadCrumbs() throws Throwable {
         IPage customers_page = this._pageManager.getDraftPage("customers_page");
         String result = this.executeActionOnPage(customers_page.getCode(), "pageManagerCustomers", "edit");
         assertEquals(Action.SUCCESS, result);
@@ -668,7 +690,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertNull(breadCrumbs);
     }
 
-    public void testGetBreadCrumbsTargets() throws Throwable {
+    @Test
+	public void testGetBreadCrumbsTargets() throws Throwable {
         IPage customers_page = this._pageManager.getDraftPage("customers_page");
         String result = this.executeActionOnPage(customers_page.getCode(), "pageManagerCustomers", "edit");
         assertEquals(Action.SUCCESS, result);
@@ -688,7 +711,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         assertNull(targets);
     }
 
-    public void testSetOffline_Wrong() throws Throwable {
+    @Test
+	public void testSetOffline_Wrong() throws Throwable {
         this.checkActionOnPage("checkSetOffline", "homepage", "pageManagerCustomers", "pageTree", "error.page.userNotAllowed");
         this.checkActionOnPage("doSetOffline", "homepage", "pageManagerCustomers", "pageTree", "error.page.userNotAllowed");
         this.checkActionOnPage("setOffline", "/do/rs/Page", "homepage", "pageManagerCustomers", "pageTree", "error.page.userNotAllowed");
@@ -705,7 +729,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         this.checkPageResponse("service", "error.page.offline.notAllowed");
     }
 
-    public void testSetOnlineOffline() throws Throwable {
+    @Test
+	public void testSetOnlineOffline() throws Throwable {
         String pageCode = "temp";
         try {
             this.addPage(pageCode);
@@ -734,7 +759,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSetOnlineOfflineJson() throws Throwable {
+    @Test
+	public void testSetOnlineOfflineJson() throws Throwable {
         String pageCode = "temp";
         try {
             this.addPage(pageCode);
@@ -766,7 +792,8 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testJoinRemoveExtraGroup() throws Throwable {
+    @Test
+	public void testJoinRemoveExtraGroup() throws Throwable {
         this.setUserOnSession("admin");
 
         // Add 2 groups
@@ -846,6 +873,7 @@ public class TestPageAction extends ApsAdminBaseTestCase {
         this.checkActionOnPage(actionName, "/do/Page", pageCode, username, expectedResult, errorLabel);
     }
 
+    @BeforeEach
     private void init() throws Exception {
         try {
             this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);

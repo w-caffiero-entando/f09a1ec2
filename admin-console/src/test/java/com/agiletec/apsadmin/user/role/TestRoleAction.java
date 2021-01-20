@@ -13,6 +13,11 @@
  */
 package com.agiletec.apsadmin.user.role;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -28,15 +33,13 @@ import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import org.entando.entando.ent.exception.EntException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestRoleAction extends ApsAdminBaseTestCase {
 	
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-	}
-	
-	public void testNew() throws Throwable {
+	@Test
+    public void testNew() throws Throwable {
 		// Utente non abilitato
 		String result = this.executeNew("developersConf");
 		assertEquals("apslogin", result);
@@ -47,7 +50,8 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		assertEquals(ApsAdminSystemConstants.ADD, roleAction.getStrutsAction());
 	}
 	
-	public void testFailureEdit() throws Throwable {
+	@Test
+    public void testFailureEdit() throws Throwable {
 		// Utente non autorizzato
 		String result = this.executeEdit("developersConf", "editor");
 		assertEquals("apslogin", result);
@@ -59,7 +63,8 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		assertEquals(1, actionErrors.size());
 	}
 	
-	public void testEdit() throws Throwable {
+	@Test
+    public void testEdit() throws Throwable {
 		String roleName = "editor";
 		String result = this.executeEdit("admin", roleName);
 		assertEquals(Action.SUCCESS, result);
@@ -73,7 +78,8 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		assertEquals(this._roleManager.getPermissions().size(), roleAction.getSystemPermissions().size());
 	}
 	
-	public void testSaveNew() throws Throwable {
+	@Test
+    public void testSaveNew() throws Throwable {
 		String roleName = "newRole";
 		String[] permissions = { "editContents" };
 		try {
@@ -90,7 +96,8 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testSaveEdit() throws Throwable {
+	@Test
+    public void testSaveEdit() throws Throwable {
 		String roleName = "newRole";
 		String[] permissions = { "editContents" };
 		try {
@@ -108,7 +115,8 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testFailureSave() throws Throwable {
+	@Test
+    public void testFailureSave() throws Throwable {
 		this.executeNew("admin");
 		String[] permissions = { "editContents" };
 		
@@ -152,7 +160,8 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		assertEquals(1, errors.size());
 	}
 	
-	public void testTrash() throws Throwable {
+	@Test
+    public void testTrash() throws Throwable {
 		String roleName = "newRole";
 		String[] permissions = { };
 		try {
@@ -168,7 +177,8 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testDelete() throws Throwable {
+	@Test
+    public void testDelete() throws Throwable {
 		String roleName = "newRole";
 		String[] permissions = { };
 		try {
@@ -267,6 +277,7 @@ public class TestRoleAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
+    @BeforeEach
 	private void init() {
 		this._roleManager = (IRoleManager) this.getService(SystemConstants.ROLE_MANAGER);
 	}

@@ -13,6 +13,9 @@
  */
 package com.agiletec.apsadmin.admin.localestring;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +23,7 @@ import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
@@ -27,6 +31,7 @@ import com.opensymphony.xwork2.Action;
  */
 public class TestLocaleStringFinderAction extends ApsAdminBaseTestCase {
 	
+	@Test
 	public void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
@@ -45,6 +50,7 @@ public class TestLocaleStringFinderAction extends ApsAdminBaseTestCase {
 		assertEquals(2, systemLangs.size());
 	}
 	
+	@Test
 	public void testSearch() throws Throwable {
 		String result = this.executeSearch("admin", "all", "");
 		assertEquals(Action.SUCCESS, result);

@@ -13,6 +13,10 @@
  */
 package com.agiletec.apsadmin.portal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
@@ -21,13 +25,15 @@ import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.util.SelectItem;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
 public class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
 
-    public void testViewWidgets() throws Throwable {
+    @Test
+	public void testViewWidgets() throws Throwable {
         String result = this.executeViewWidgets("admin");
         assertEquals(Action.SUCCESS, result);
 
@@ -41,7 +47,8 @@ public class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
         assertEquals("apslogin", result);
     }
 
-    public void testGetWidgetFlavours() throws Throwable {
+    @Test
+	public void testGetWidgetFlavours() throws Throwable {
         String result = this.executeViewWidgets("admin");
         assertEquals(Action.SUCCESS, result);
         AbstractPortalAction action = (AbstractPortalAction) this.getAction();
@@ -87,7 +94,8 @@ public class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testGetWidgetUtilizers_1() throws Throwable {
+    @Test
+	public void testGetWidgetUtilizers_1() throws Throwable {
         String result = this.executeViewWidgetUtilizers("admin", null);
         assertEquals(Action.INPUT, result);
         Map<String, List<String>> fieldErrors = this.getAction().getFieldErrors();
@@ -107,7 +115,8 @@ public class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
         assertEquals(1, fieldErrors.get("showletTypeCode").size());
     }
 
-    public void testGetWidgetUtilizers_2() throws Throwable {
+    @Test
+	public void testGetWidgetUtilizers_2() throws Throwable {
         String result = this.executeViewWidgetUtilizers("admin", "logic_type");
         assertEquals(Action.SUCCESS, result);
         WidgetsViewerAction action = (WidgetsViewerAction) this.getAction();

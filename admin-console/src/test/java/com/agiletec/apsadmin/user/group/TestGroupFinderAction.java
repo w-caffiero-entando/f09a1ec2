@@ -13,11 +13,15 @@
  */
 package com.agiletec.apsadmin.user.group;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.List;
 
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
@@ -25,12 +29,14 @@ import com.opensymphony.xwork2.Action;
  */
 public class TestGroupFinderAction extends ApsAdminBaseTestCase {
 	
-	public void testListWithUserNotAllowed() throws Throwable {
+	@Test
+    public void testListWithUserNotAllowed() throws Throwable {
 		String result = this.executeList("developersConf");
 		assertEquals("apslogin", result);
 	}
 	
-	public void testList() throws Throwable {
+	@Test
+    public void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		GroupFinderAction groupFinderAction = (GroupFinderAction) this.getAction();
@@ -38,7 +44,8 @@ public class TestGroupFinderAction extends ApsAdminBaseTestCase {
 		assertFalse(groups.isEmpty());
 	}
 	
-	private String executeList(String currentUser) throws Throwable {
+	@Test
+    private String executeList(String currentUser) throws Throwable {
 		this.setUserOnSession(currentUser);
 		this.initAction("/do/Group", "list");
 		return this.executeAction();

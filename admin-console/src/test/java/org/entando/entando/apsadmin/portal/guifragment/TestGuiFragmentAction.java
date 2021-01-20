@@ -13,6 +13,8 @@
  */
 package org.entando.entando.apsadmin.portal.guifragment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,9 +23,11 @@ import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 public class TestGuiFragmentAction extends ApsAdminBaseTestCase {
 
+    @Test
     public void testList() throws Throwable {
         String result = this.executeList("admin");
         assertEquals(Action.SUCCESS, result);
@@ -31,6 +35,7 @@ public class TestGuiFragmentAction extends ApsAdminBaseTestCase {
         assertEquals(1, action.getGuiFragmentsCodes().size());
     }
 
+    @Test
     public void testDetail() throws Throwable {
         Map<String, String> params = new HashMap<>();
         params.put("code", "login_form");

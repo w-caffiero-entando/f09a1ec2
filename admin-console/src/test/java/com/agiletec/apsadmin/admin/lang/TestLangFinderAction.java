@@ -13,11 +13,15 @@
  */
 package com.agiletec.apsadmin.admin.lang;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.List;
 
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
@@ -25,6 +29,7 @@ import com.opensymphony.xwork2.Action;
  */
 public class TestLangFinderAction extends ApsAdminBaseTestCase {
 	
+	@Test
 	public void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);

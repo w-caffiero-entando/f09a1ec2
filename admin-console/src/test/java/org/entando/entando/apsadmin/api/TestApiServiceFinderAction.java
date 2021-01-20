@@ -13,23 +13,22 @@
  */
 package org.entando.entando.apsadmin.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.entando.entando.aps.system.services.api.IApiCatalogManager;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
 public class TestApiServiceFinderAction extends ApsAdminBaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-	
+	@Test
 	public void testServiceList() throws Throwable {
 		String result = this.executeListServices("admin");
 		assertEquals(Action.SUCCESS, result);
@@ -44,6 +43,7 @@ public class TestApiServiceFinderAction extends ApsAdminBaseTestCase {
 		return this.executeAction();
 	}
 	
+    @BeforeEach
 	private void init() throws Exception {
     	try {
     		this._apiCatalogManager = (IApiCatalogManager) this.getService(SystemConstants.API_CATALOG_MANAGER);

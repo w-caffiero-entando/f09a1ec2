@@ -13,6 +13,12 @@
  */
 package com.agiletec.apsadmin.system.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import com.agiletec.aps.BaseTestCase;
@@ -21,19 +27,16 @@ import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 
 import org.entando.entando.apsadmin.system.services.shortcut.IShortcutManager;
 import org.entando.entando.apsadmin.system.services.shortcut.model.Shortcut;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
 public class TestShortcutManager extends BaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-	
-    public void testGetAllowedShortcuts() throws Throwable {
+    @Test
+	public void testGetAllowedShortcuts() throws Throwable {
     	assertNotNull(this._shortcutManager);
     	String expectedShortcut = "core.tools.setting";
     	UserDetails adminUser = super.getUser("admin");
@@ -55,28 +58,32 @@ public class TestShortcutManager extends BaseTestCase {
 		return false;
 	}
     
-    public void testSaveShortcutConfig_1() throws Throwable {
+    @Test
+	public void testSaveShortcutConfig_1() throws Throwable {
     	String username = "admin";
     	String[] configToSave = {null, "jacms.content.new", null, null, "jacms.content.list", "core.portal.widgetType", null, "core.tools.setting", null, null};
     	String[] expected = {null, null, null, null, "jacms.content.list", "core.portal.widgetType", null, "core.tools.setting", null, null};
     	this.addDeleteShortcutConfig(username, configToSave, expected, true);
     }
     
-    public void testSaveShortcutConfig_2() throws Throwable {
+    @Test
+	public void testSaveShortcutConfig_2() throws Throwable {
     	String username = "admin";
     	String[] configToSave = {null, "jacms.content.new", null, null, "jacms.content.list", "core.portal.widgetType", null, "core.tools.setting", "shortcut.invalid", null};
     	String[] expected = {null, null, null, null, "jacms.content.list", "core.portal.widgetType", null, "core.tools.setting", null, null};
     	this.addDeleteShortcutConfig(username, configToSave, expected, true);
     }
     
-    public void testSaveShortcutConfig_3() throws Throwable {
+    @Test
+	public void testSaveShortcutConfig_3() throws Throwable {
     	String username = "editorCoach";
     	String[] configToSave = {null, "jacms.content.new", null, null, "jacms.content.list"};
     	String[] expected = {null, null, null, null, "jacms.content.list", null, null, null, null, null};
     	this.addDeleteShortcutConfig(username, configToSave, expected, false);
     }
     
-    public void testSaveShortcutConfig_4() throws Throwable {
+    @Test
+	public void testSaveShortcutConfig_4() throws Throwable {
     	String username = "editorCoach";
     	String[] configToSave = {null, "jacms.content.new", null, null, "core.tools.setting", 
     			"jacms.content.list", "shortcut.invalid", null, null, null, "jacms.content.new"};
@@ -111,6 +118,7 @@ public class TestShortcutManager extends BaseTestCase {
 		}
     }
     
+    @BeforeEach
 	private void init() throws Exception {
     	try {
     		this._shortcutManager = (IShortcutManager) this.getService(ApsAdminSystemConstants.SHORTCUT_MANAGER);

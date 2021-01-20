@@ -13,11 +13,15 @@
  */
 package com.agiletec.apsadmin.user.role;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.List;
 
 import com.agiletec.aps.system.services.role.Role;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
@@ -25,12 +29,14 @@ import com.opensymphony.xwork2.Action;
  */
 public class TestRoleFinderAction extends ApsAdminBaseTestCase {
 	
-	public void testListWithUserNotAllowed() throws Throwable {
+	@Test
+    public void testListWithUserNotAllowed() throws Throwable {
 		String result = this.executeList("developersConf");
 		assertEquals("apslogin", result);
 	}
 	
-	public void testList() throws Throwable {
+	@Test
+    public void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		RoleFinderAction roleFinderAction = (RoleFinderAction) this.getAction();
@@ -38,7 +44,8 @@ public class TestRoleFinderAction extends ApsAdminBaseTestCase {
 		assertFalse(roles.isEmpty());
 	}
 	
-	private String executeList(String currentUser) throws Throwable {
+	@Test
+    private String executeList(String currentUser) throws Throwable {
 		this.setUserOnSession(currentUser);
 		this.initAction("/do/Role", "list");
 		return this.executeAction();

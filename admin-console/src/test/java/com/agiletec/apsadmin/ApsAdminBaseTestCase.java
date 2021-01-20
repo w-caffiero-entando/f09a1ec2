@@ -42,13 +42,13 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import junit.framework.TestCase;
-
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Dispatcher;
 import org.apache.struts2.dispatcher.HttpParameters;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.spring.StrutsSpringObjectFactory;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -62,44 +62,44 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Zarar Siddiqi - E.Santoboni
  */
-public class ApsAdminBaseTestCase extends TestCase {
+public class ApsAdminBaseTestCase {
 
     private static ApplicationContext applicationContext;
-    private Dispatcher dispatcher;
+    private static Dispatcher dispatcher;
     private ActionProxy proxy;
     private static MockServletContext servletContext;
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
+    private static MockHttpServletRequest request;
+    private static MockHttpServletResponse response;
     private ActionSupport action;
 
     private Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeAll
+    protected static void setUp() throws Exception {
         boolean refresh = false;
         if (null == applicationContext) {
             // Link the servlet context and the Spring context
             servletContext = new MockServletContext("", new FileSystemResourceLoader());
-            applicationContext = this.getConfigUtils().createApplicationContext(servletContext);
+            applicationContext = getConfigUtils().createApplicationContext(servletContext);
             servletContext.setAttribute(
                     WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
         } else {
             refresh = true;
         }
         RequestContext reqCtx = BaseTestCase.createRequestContext(applicationContext, servletContext);
-        this.request = new MockHttpServletRequest();
-        this.request.setAttribute(RequestContext.REQCTX, reqCtx);
-        this.response = new MockHttpServletResponse();
-        this.request.setSession(new MockHttpSession(servletContext));
+        request = new MockHttpServletRequest();
+        request.setAttribute(RequestContext.REQCTX, reqCtx);
+        response = new MockHttpServletResponse();
+        request.setSession(new MockHttpSession(servletContext));
         if (refresh) {
             try {
-                ApsWebApplicationUtils.executeSystemRefresh(this.request);
-                this.waitNotifyingThread();
+                ApsWebApplicationUtils.executeSystemRefresh(request);
+                waitNotifyingThread();
             } catch (Throwable e) {
             }
         }
         // Use spring as the object factory for Struts
-        StrutsSpringObjectFactory ssf = new StrutsSpringObjectFactory(null, null, null, null, servletContext, null, this.createContainer());
+        StrutsSpringObjectFactory ssf = new StrutsSpringObjectFactory(null, null, null, null, servletContext, null, createContainer());
         ssf.setApplicationContext(applicationContext);
         // Dispatcher is the guy that actually handles all requests.  Pass in
         // an empty Map as the parameters but if you want to change stuff like
@@ -108,38 +108,37 @@ public class ApsAdminBaseTestCase extends TestCase {
         java.net.URL url = ClassLoader.getSystemResource("struts.properties");
         Properties props = new Properties();
         props.load(url.openStream());
-        this.setInitParameters(props);
+        setInitParameters(props);
         Map params = new HashMap(props);
-        this.dispatcher = new Dispatcher(servletContext, params);
-        this.dispatcher.init();
-        Dispatcher.setInstance(this.dispatcher);
+        dispatcher = new Dispatcher(servletContext, params);
+        dispatcher.init();
+        Dispatcher.setInstance(dispatcher);
     }
 
     protected <T> T getContainerObject(Class<T> requiredType) {
         return this.dispatcher.getContainer().getInstance(requiredType);
     }
 
-    protected Container createContainer() {
+    protected static Container createContainer() {
         ContainerBuilder builder = new ContainerBuilder();
         builder.constant("devMode", "false");
         return builder.create(true);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        this.waitThreads(SystemConstants.ENTANDO_THREAD_NAME_PREFIX);
-        super.tearDown();
+    @AfterAll
+    protected static void tearDown() throws Exception {
+        waitThreads(SystemConstants.ENTANDO_THREAD_NAME_PREFIX);
         // This should not be called after each test method, because the
         // applicationContext used in this class is a static instance.
         // dbcp-commons 1.4+ doesn't allow reusing a closed DataSource.
         //this.getConfigUtils().closeDataSources(this.getApplicationContext());
     }
 
-    protected void waitNotifyingThread() throws InterruptedException {
-        this.waitThreads(NotifyManager.NOTIFYING_THREAD_NAME);
+    protected static void waitNotifyingThread() throws InterruptedException {
+        waitThreads(NotifyManager.NOTIFYING_THREAD_NAME);
     }
 
-    protected void waitThreads(String threadNamePrefix) throws InterruptedException {
+    protected static void waitThreads(String threadNamePrefix) throws InterruptedException {
         Thread[] threads = new Thread[20];
         Thread.enumerate(threads);
         for (int i = 0; i < threads.length; i++) {
@@ -150,6 +149,10 @@ public class ApsAdminBaseTestCase extends TestCase {
             }
         }
     }
+    
+    protected void initAction(String namespace, String name) throws Exception {
+        this.initAction(namespace, name, false);
+    }
 
     /**
      * Created action class based on namespace and name
@@ -158,7 +161,7 @@ public class ApsAdminBaseTestCase extends TestCase {
      * @param name The name of the action
      * @throws java.lang.Exception In case of error
      */
-    protected void initAction(String namespace, String name) throws Exception {
+    protected void initAction(String namespace, String name, boolean refreshResponse) throws Exception {
         // create a proxy class which is just a wrapper around the action call.
         // The proxy is created by checking the namespace and name against the
         // struts.xml configuration
@@ -173,7 +176,12 @@ public class ApsAdminBaseTestCase extends TestCase {
         this.proxy.getInvocation().getInvocationContext().setSession(new HashMap<>());
         ServletActionContext.setContext(this.proxy.getInvocation().getInvocationContext());
         ServletActionContext.setRequest(this.request);
-        ServletActionContext.setResponse(response);
+        if (refreshResponse) {
+            response = new MockHttpServletResponse();
+            RequestContext reqCtx = (RequestContext) getRequest().getAttribute(RequestContext.REQCTX);
+            reqCtx.setResponse(response);
+        }
+        ServletActionContext.setResponse(this.response);
         ServletActionContext.setServletContext(servletContext);
         this.action = (ActionSupport) this.proxy.getAction();
 
@@ -191,7 +199,7 @@ public class ApsAdminBaseTestCase extends TestCase {
      *
      * @param params The parameters
      */
-    protected void setInitParameters(Properties params) {
+    protected static void setInitParameters(Properties params) {
         params.setProperty("config",
                 "struts-default.xml,struts-plugin.xml,struts.xml,entando-struts-plugin.xml,japs-struts-plugin.xml");
     }
@@ -322,7 +330,7 @@ public class ApsAdminBaseTestCase extends TestCase {
         return applicationContext;
     }
 
-    protected ConfigTestUtils getConfigUtils() {
+    protected static ConfigTestUtils getConfigUtils() {
         return new ConfigTestUtils();
     }
 

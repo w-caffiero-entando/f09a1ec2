@@ -13,12 +13,20 @@
  */
 package com.agiletec.apsadmin.admin;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Map;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
@@ -28,13 +36,8 @@ public class TestBaseAdminAction extends ApsAdminBaseTestCase {
     private ConfigInterface configManager;
     private String oldConfigParam;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
-    public void testReloadConfig() throws Throwable {
+    @Test
+	public void testReloadConfig() throws Throwable {
         this.setUserOnSession("supervisorCoach");
         this.initAction("/do/BaseAdmin", "reloadConfig");
         String result = this.executeAction();
@@ -50,7 +53,8 @@ public class TestBaseAdminAction extends ApsAdminBaseTestCase {
         assertEquals(BaseAdminAction.SUCCESS_RELOADING_RESULT_CODE, ((BaseAdminAction) this.getAction()).getReloadingResult());
     }
 
-    public void testReloadEntitiesReferences() throws Throwable {
+    @Test
+	public void testReloadEntitiesReferences() throws Throwable {
         this.setUserOnSession("supervisorCoach");
         this.initAction("/do/BaseAdmin", "reloadEntitiesReferences");
         String result = this.executeAction();
@@ -66,7 +70,8 @@ public class TestBaseAdminAction extends ApsAdminBaseTestCase {
         super.waitNotifyingThread();
     }
 
-    public void testConfigSystemParams() throws Throwable {
+    @Test
+	public void testConfigSystemParams() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/BaseAdmin", "configSystemParams");
         String result = this.executeAction();
@@ -78,7 +83,8 @@ public class TestBaseAdminAction extends ApsAdminBaseTestCase {
         assertEquals("homepage", params.get(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
     }
 
-    public void testUpdateConfigParams_1() throws Throwable {
+    @Test
+	public void testUpdateConfigParams_1() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/BaseAdmin", "updateSystemParams");
         this.addParameter(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE, "newErrorPageCode");
@@ -90,7 +96,8 @@ public class TestBaseAdminAction extends ApsAdminBaseTestCase {
         assertEquals("newErrorPageCode", this.configManager.getParam(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE));
     }
 
-    public void testUpdateConfigParams_2() throws Throwable {
+    @Test
+	public void testUpdateConfigParams_2() throws Throwable {
         assertEquals("homepage", this.configManager.getParam(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
         assertEquals("errorpage", this.configManager.getParam(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE));
 
@@ -119,13 +126,13 @@ public class TestBaseAdminAction extends ApsAdminBaseTestCase {
         assertNotNull(this.configManager.getParam("newCustomParameter"));
         assertEquals("parameterValue", this.configManager.getParam("newCustomParameter"));
     }
-
-    @Override
-    protected void tearDown() throws Exception {
+    
+    @AfterEach
+    protected void destroy() throws Exception {
         this.configManager.updateConfigItem(SystemConstants.CONFIG_ITEM_PARAMS, this.oldConfigParam);
-        super.tearDown();
     }
 
+    @BeforeEach
     private void init() {
         this.configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);
         this.oldConfigParam = this.configManager.getConfigItem(SystemConstants.CONFIG_ITEM_PARAMS);

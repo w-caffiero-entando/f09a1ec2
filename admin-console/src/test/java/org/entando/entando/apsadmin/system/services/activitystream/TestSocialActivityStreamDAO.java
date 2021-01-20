@@ -13,6 +13,10 @@
  */
 package org.entando.entando.apsadmin.system.services.activitystream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -27,16 +31,13 @@ import org.entando.entando.aps.system.services.actionlog.model.IActionLogRecordS
 import org.entando.entando.aps.system.services.activitystream.ISocialActivityStreamDAO;
 import org.entando.entando.aps.system.services.activitystream.SocialActivityStreamDAO;
 import org.entando.entando.aps.system.services.activitystream.model.ActivityStreamComment;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSocialActivityStreamDAO extends BaseTestCase {
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-		this._helper.cleanRecords();
-	}
-
+	@Test
 	public void testGetActionRecords() {
 		IActionLogRecordSearchBean bean = null;
 		List<Integer> ids = this._actionLoggerDAO.getActionRecords(bean);
@@ -70,9 +71,9 @@ public class TestSocialActivityStreamDAO extends BaseTestCase {
 				DateConverter.parseDate("01/01/2009 10:01", "dd/MM/yyyy HH:mm"));
 		ids = this._actionLoggerDAO.getActionRecords(searchBean);
 		this.compareIds(new Integer[]{2}, ids);
-
 	}
 
+	@Test
 	public void testActionLogSearch() {
 		IActionLogRecordSearchBean bean = null;
 		List<Integer> ids = this._actionLoggerDAO.getActionRecords(bean);
@@ -93,6 +94,7 @@ public class TestSocialActivityStreamDAO extends BaseTestCase {
 		this.compareIds(new Integer[]{3}, ids);
 	}
 
+	@Test
 	public void testAddGetDeleteActionRecord() {
 		ActionLogRecord record1 = this._helper.createActionRecord(1, "username1", "actionName1",
 				"namespace1", DateConverter.parseDate("01/01/2009 00:00", "dd/MM/yyyy HH:mm"), "params1");
@@ -113,6 +115,7 @@ public class TestSocialActivityStreamDAO extends BaseTestCase {
 		assertNull(this._actionLoggerDAO.getActionRecord(record2.getId()));
 	}
 
+    @Test
 	public void testAddDeleteCommentRecord() throws Throwable {
 		ActionLogRecord record1 = this._helper.createActionRecord(1, "username1", "actionName1",
 				"namespace1", DateConverter.parseDate("01/01/2009 00:00", "dd/MM/yyyy HH:mm"), "params1");
@@ -161,6 +164,7 @@ public class TestSocialActivityStreamDAO extends BaseTestCase {
 				DateConverter.getFormattedDate(received.getActionDate(), "ddMMyyyyHHmm"));
 	}
 
+    @BeforeEach
 	private void init() {
 		DataSource dataSource = (DataSource) this.getApplicationContext().getBean("servDataSource");
 
@@ -173,12 +177,12 @@ public class TestSocialActivityStreamDAO extends BaseTestCase {
 		this._actionLoggerDAO = actionLoggerDAO;
 
 		this._helper = new SocialStreamTestHelper(this.getApplicationContext());
+        this._helper.cleanRecords();
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
+	@AfterEach
+	protected void destroy() throws Exception {
 		this._helper.cleanRecords();
-		super.tearDown();
 	}
 
 	private IActionLogDAO _actionLoggerDAO;

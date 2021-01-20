@@ -13,6 +13,12 @@
  */
 package org.entando.entando.apsadmin.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.agiletec.aps.system.SystemConstants;
 
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
@@ -26,14 +32,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.oauth2.IOAuthConsumerManager;
 import org.entando.entando.aps.system.services.oauth2.model.ConsumerRecordVO;
 import org.entando.entando.ent.exception.EntException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestConsumerAction extends ApsAdminBaseTestCase {
 
     private IOAuthConsumerManager consumerManager;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void init() throws Exception {
         this.consumerManager = (IOAuthConsumerManager) super.getApplicationContext().getBean(SystemConstants.OAUTH_CONSUMER_MANAGER, IOAuthConsumerManager.class);
     }
 
@@ -47,7 +54,8 @@ public class TestConsumerAction extends ApsAdminBaseTestCase {
         assertEquals(ApsAdminSystemConstants.ADD, action.getStrutsAction());
     }
 
-    public void testEdit() throws Throwable {
+    @Test
+	public void testEdit() throws Throwable {
         String result = this.executeEdit("developersConf", "test_consumer");
         assertEquals("apslogin", result);
 
@@ -63,7 +71,8 @@ public class TestConsumerAction extends ApsAdminBaseTestCase {
         assertEquals("Test 1 Consumer", action.getName());
     }
 
-    public void testSaveNew_1() throws Throwable {
+    @Test
+	public void testSaveNew_1() throws Throwable {
         String key = "key_test_1";
         try {
             List<String> grantTypes = Arrays.asList(new String[]{"implicit", "password"});
@@ -83,7 +92,8 @@ public class TestConsumerAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSaveNew_2() throws Throwable {
+    @Test
+	public void testSaveNew_2() throws Throwable {
         String key_existing = "test1_consumer";
         String key_invalid = "key_&_test";
         String key_long = StringUtils.repeat("test", 50);
@@ -127,7 +137,8 @@ public class TestConsumerAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSaveEdit() throws Throwable {
+    @Test
+	public void testSaveEdit() throws Throwable {
         String key_test = "key_test_2";
         String key_notexists = "wrong_consumer";
         try {
@@ -179,7 +190,8 @@ public class TestConsumerAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testTrash() throws Throwable {
+    @Test
+	public void testTrash() throws Throwable {
         String key_test = "key_test_3";
         try {
             List<String> grantTypes = Arrays.asList(new String[]{"implicit", "password", "refresh_token"});
@@ -202,7 +214,8 @@ public class TestConsumerAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testDelete() throws Throwable {
+    @Test
+	public void testDelete() throws Throwable {
         String key_test = "key_test_4";
         try {
             List<String> grantTypes = Arrays.asList(new String[]{"implicit", "password", "refresh_token"});

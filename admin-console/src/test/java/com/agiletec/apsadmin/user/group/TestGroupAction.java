@@ -13,6 +13,10 @@
  */
 package com.agiletec.apsadmin.user.group;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -25,15 +29,12 @@ import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
 import org.entando.entando.ent.exception.EntException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestGroupAction extends ApsAdminBaseTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
+    @Test
     public void testNew() throws Throwable {
         // Utente non autorizzato
         String result = this.executeNew("developersConf");
@@ -45,6 +46,7 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         assertEquals(ApsAdminSystemConstants.ADD, groupAction.getStrutsAction());
     }
 
+    @Test
     public void testFailureEdit() throws Throwable {
         // Utente non autorizzato
         String result = this.executeEdit("developersConf", "customers");
@@ -57,6 +59,7 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         assertEquals(1, actionErrors.size());
     }
 
+    @Test
     public void testEdit() throws Throwable {
         String groupName = "customers";
         String result = this.executeEdit("admin", groupName);
@@ -68,6 +71,7 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         assertEquals(group.getDescr(), groupAction.getDescription());
     }
 
+    @Test
     public void testSaveNew() throws Throwable {
         String groupName = "newGroup";
         try {
@@ -83,6 +87,7 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         }
     }
 
+    @Test
     public void testSaveEdit() throws Throwable {
         String groupName = "newGroup";
         try {
@@ -99,6 +104,7 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         }
     }
 
+    @Test
     public void testFailureSave() throws Throwable {
         this.executeNew("admin");
         // permessi non disponibili
@@ -140,6 +146,7 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         assertEquals(1, errors.size());
     }
 
+    @Test
     public void testFailureTrash() throws Throwable {
         // permessi non disponibili
         String result = this.executeTrash("developersConf", "customers");
@@ -158,12 +165,14 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         assertEquals(1, actionErrors.size());
     }
 
+    @Test
     public void testTrash() throws Throwable {
         String result = this.executeTrash("admin", "management");
         assertEquals(Action.SUCCESS, result);
         assertNotNull(this._groupManager.getGroup("management"));
     }
 
+    @Test
     public void testFailureTrashReferencedGroup() throws Throwable {
         String result = this.executeTrash("admin", "customers");
         assertEquals("references", result);
@@ -176,6 +185,7 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         assertEquals(6, users.size());
     }
 
+    @Test
     public void testDelete() throws Throwable {
         String groupName = "newGroup";
         try {
@@ -190,6 +200,7 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         }
     }
 
+    @Test
     public void testFailureDelete() throws Throwable {
         // permessi non disponibili
         String result = this.executeDelete("developersConf", "customers");
@@ -276,6 +287,7 @@ public class TestGroupAction extends ApsAdminBaseTestCase {
         }
     }
 
+    @BeforeEach
     private void init() {
         this._groupManager = (IGroupManager) this.getService(SystemConstants.GROUP_MANAGER);
     }

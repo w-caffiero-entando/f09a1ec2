@@ -13,19 +13,25 @@
  */
 package org.entando.entando.apsadmin.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author f.deidda
  */
 public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
 	
-    public void testSearchSuperUser() throws Throwable {
+    @Test
+	public void testSearchSuperUser() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "list");
@@ -36,7 +42,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSearchGenericUser() throws Throwable {
+    @Test
+	public void testSearchGenericUser() throws Throwable {
         try {
             this.setUserOnSession("editor");
             this.initAction("/do/User", "list");
@@ -47,7 +54,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 	
-    public void testInsertUsername() throws Throwable {
+    @Test
+	public void testInsertUsername() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -60,7 +68,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSearch_1() throws Throwable {
+    @Test
+	public void testSearch_1() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -74,7 +83,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSearch_2() throws Throwable {
+    @Test
+	public void testSearch_2() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -104,7 +114,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
      * START INPUT_FIELD: "<ATTRIBUTE_NAME>_dateStartFieldName"
      * END INPUT_FIELD: "<ATTRIBUTE_NAME>_dateEndFieldName"
      */
-    public void testFindByName() throws Throwable {
+    @Test
+	public void testFindByName() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -121,7 +132,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testNotName() throws Throwable {
+    @Test
+	public void testNotName() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -136,7 +148,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFindSurname() throws Throwable {
+    @Test
+	public void testFindSurname() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -154,7 +167,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 	
-    public void testNotSurname() throws Throwable {
+    @Test
+	public void testNotSurname() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -169,7 +183,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 	
-    public void testFindByDateRange() throws Throwable {
+    @Test
+	public void testFindByDateRange() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -189,7 +204,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testNotDateInRange() throws Throwable {
+    @Test
+	public void testNotDateInRange() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -205,7 +221,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFindEmail() throws Throwable {
+    @Test
+	public void testFindEmail() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -225,7 +242,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testNotEmailFind() throws Throwable {
+    @Test
+	public void testNotEmailFind() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -240,7 +258,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFindCrossAttribute() throws Throwable {
+    @Test
+	public void testFindCrossAttribute() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -260,7 +279,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFindNotCrossAttribute() throws Throwable {
+    @Test
+	public void testFindNotCrossAttribute() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -277,7 +297,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testGetEntityPrototypes() throws Throwable {
+    @Test
+	public void testGetEntityPrototypes() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -291,7 +312,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testChangeEntityType() throws Throwable {
+    @Test
+	public void testChangeEntityType() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -305,7 +327,8 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testGetEmail() throws Throwable {
+    @Test
+	public void testGetEmail() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "search");
@@ -333,7 +356,7 @@ public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
      * START INPUT_FIELD: "<ROLE_NAME>_dateStartFieldName"
      * END INPUT_FIELD: "<ROLE_NAME>_dateEndFieldName"
      */
-    
+	@Test
 	public void testSearchByRole() throws Throwable {
 		String fullNameRole = SystemConstants.USER_PROFILE_ATTRIBUTE_ROLE_FULL_NAME;
 		try {

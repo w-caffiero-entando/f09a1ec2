@@ -13,13 +13,17 @@
  */
 package org.entando.entando.apsadmin.system.resource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import static junit.framework.TestCase.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class TestCustomLocalizedTextProvider extends ApsAdminBaseTestCase {
 
+    @Test
     public void testExtractGlobalLabels_1() throws Throwable {
         ActionSupport action = this.executeList("admin", "en");
         String localLabel = action.getText("title.userManagement.searchUsers");
@@ -30,6 +34,7 @@ public class TestCustomLocalizedTextProvider extends ApsAdminBaseTestCase {
         assertEquals("GNU/LGPL license, Version 2.1", globalLabel);
     }
 
+    @Test
     public void testExtractGlobalLabels_2() throws Throwable {
         ActionSupport action = this.executeList("admin", "it");
         String localLabel = action.getText("title.userManagement.searchUsers");

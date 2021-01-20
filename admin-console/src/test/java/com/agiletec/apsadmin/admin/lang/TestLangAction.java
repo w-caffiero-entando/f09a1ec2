@@ -13,6 +13,9 @@
  */
 package com.agiletec.apsadmin.admin.lang;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Collection;
 
 import com.agiletec.aps.system.SystemConstants;
@@ -21,17 +24,13 @@ import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @version 1.0
  * @author E.Mezzano
  */
 public class TestLangAction extends ApsAdminBaseTestCase {
-
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
 
     public void testAddNewLang() throws Throwable {
         String langCode = "fr";
@@ -111,6 +110,7 @@ public class TestLangAction extends ApsAdminBaseTestCase {
         return result;
     }
 
+    @BeforeEach
     private void init() throws Exception {
         try {
             this._langManager = (ILangManager) this.getService(SystemConstants.LANGUAGE_MANAGER);

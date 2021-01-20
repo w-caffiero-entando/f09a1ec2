@@ -22,17 +22,12 @@ import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @author E.Santoboni
  */
 public abstract class AbstractTestPageModelAction extends ApsAdminBaseTestCase {
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
 
     protected PageModel createMockPageModel(String code) {
         PageModel model = new PageModel();
@@ -63,6 +58,7 @@ public abstract class AbstractTestPageModelAction extends ApsAdminBaseTestCase {
         return model;
     }
 
+    @BeforeEach
     private void init() throws Exception {
         try {
             this._widgetTypeManager = (IWidgetTypeManager) this.getService(SystemConstants.WIDGET_TYPE_MANAGER);

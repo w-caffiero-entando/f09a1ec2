@@ -13,6 +13,12 @@
  */
 package org.entando.entando.apsadmin.filebrowser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
@@ -24,6 +30,8 @@ import java.util.*;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestFileBrowserAction extends ApsAdminBaseTestCase {
 
@@ -31,17 +39,13 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
 
     private IStorageManager localStorageManager;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
+    @Test
     public void testBrowseFileSystemWithUserNotAllowed() throws Throwable {
         String result = this.executeList("developersConf", null, null);
         assertEquals("apslogin", result);
     }
 
+    @Test
     public void testBrowseFileSystem_1() throws Throwable {
         String result = this.executeList("admin", null, null);
         assertEquals(Action.SUCCESS, result);
@@ -61,6 +65,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
+    @Test
     public void testBrowseFileSystem_2() throws Throwable {
         String result = this.executeList("admin", null, false);
         assertEquals(Action.SUCCESS, result);
@@ -86,6 +91,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         assertTrue(containsConf);
     }
 
+    @Test
     public void testBrowseFileSystem_3() throws Throwable {
         String result = this.executeList("admin", "conf/", false);
         assertEquals(Action.SUCCESS, result);
@@ -105,6 +111,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         assertEquals(3, fileCounter);
     }
 
+    @Test
     public void testValidateAddTextFile() throws Throwable {
         String path = "conf/";
         try {
@@ -128,6 +135,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
+    @Test
     public void testAddTextFile() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_1";
@@ -155,6 +163,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
+    @Test
     public void testAddTextFileWithErrors() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_1";
@@ -191,6 +200,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
+    @Test
     public void testDeleteFile() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_2";
@@ -211,6 +221,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
+    @Test
     public void testTrash() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_2";
@@ -298,6 +309,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
+    @Test
     public void testUploadFile() throws Throwable {
         String filepath = "test/";
         String filename1 = "test-upload1.txt";
@@ -343,6 +355,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         assertFalse(localStorageManager.exists(filenameWithPath2, protectedFolder));
     }
 
+    @BeforeEach
     private void init() {
         try {
             this.localStorageManager = (IStorageManager) this.getApplicationContext().getBean(SystemConstants.STORAGE_MANAGER);

@@ -13,7 +13,8 @@
  */
 package com.agiletec.apsadmin;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.core.io.Resource;
@@ -23,7 +24,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-public class TestLabelsProperties extends TestCase {
+public class TestLabelsProperties {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(TestLabelsProperties.class);
 

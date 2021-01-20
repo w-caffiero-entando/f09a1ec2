@@ -13,6 +13,9 @@
  */
 package com.agiletec.apsadmin.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +24,8 @@ import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
@@ -28,20 +33,16 @@ import com.opensymphony.xwork2.Action;
  */
 public class TestBaseCommonAction extends ApsAdminBaseTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
-    public void testGoChangePasswordPage() throws Throwable {
+    @Test
+	public void testGoChangePasswordPage() throws Throwable {
         this.initAction("/do/CurrentUser", "editProfile");
         this.setUserOnSession("admin");
         String result = super.executeAction();
         assertEquals(Action.SUCCESS, result);
     }
 
-    public void testFailureUpdate() throws Throwable {
+    @Test
+	public void testFailureUpdate() throws Throwable {
         String username = "editorCoach";
         String rightOldPassword = "editorCoach";
         this.setUserOnSession(username);
@@ -90,7 +91,8 @@ public class TestBaseCommonAction extends ApsAdminBaseTestCase {
         assertEquals(expectedErrorsOnField, errors.size());
     }
 
-    public void testSuccessfulUpdate() throws Throwable {
+    @Test
+	public void testSuccessfulUpdate() throws Throwable {
         String username = "editorCoach";
         String rightOldPassword = "editorCoach";
         String newPassword = "newPassword";
@@ -117,6 +119,7 @@ public class TestBaseCommonAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
+    @BeforeEach
     private void init() {
         this._userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);
     }

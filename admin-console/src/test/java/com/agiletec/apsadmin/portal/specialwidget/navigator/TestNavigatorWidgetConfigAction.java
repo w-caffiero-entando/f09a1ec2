@@ -13,6 +13,11 @@
  */
 package com.agiletec.apsadmin.portal.specialwidget.navigator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,18 +32,15 @@ import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
 public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-	}
-
+	@Test
 	public void testInitConfigNavigator_1() throws Throwable {
 		String result = this.executeConfigNavigator("admin", "homepage", "1", "leftmenu");
 		assertEquals(Action.SUCCESS, result);
@@ -48,6 +50,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertEquals(0, widget.getConfig().size());
 	}
 
+	@Test
 	public void testInitConfigNavigator_2() throws Throwable {
 		String result = this.executeConfigNavigator("admin", "pagina_1", "2", null);
 		assertEquals(Action.SUCCESS, result);
@@ -66,6 +69,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertEquals(2, expression.getOperatorSubtreeLevel());
 	}
 
+	@Test
 	public void testExecuteMoveExpression_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -89,6 +93,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertTrue(expression1.getOperatorId() < 0);
 	}
 
+	@Test
 	public void testExecuteMoveExpression_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -112,6 +117,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertTrue(expression1.getOperatorId() < 0);
 	}
 
+	@Test
 	public void testExecuteMoveExpression_3() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -135,6 +141,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertTrue(expression2.getOperatorId() < 0);
 	}
 
+	@Test
 	public void testExecuteRemoveExpression_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -157,6 +164,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertTrue(expression1.getOperatorId() < 0);
 	}
 
+	@Test
 	public void testExecuteRemoveExpression_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -179,6 +187,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertTrue(expression2.getOperatorId() < 0);
 	}
 
+	@Test
 	public void testFailureAddExpression_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -201,6 +210,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertEquals(3, navAction.getExpressions().size());
 	}
 
+	@Test
 	public void testFailureAddExpression_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -223,6 +233,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertEquals(3, navAction.getExpressions().size());
 	}
 
+	@Test
 	public void testFailureAddExpression_3() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -245,6 +256,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertEquals(2, navAction.getExpressions().size());
 	}
 
+	@Test
 	public void testFailureAddExpression_4() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -269,6 +281,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertEquals(0, navAction.getExpressions().size());
 	}
 
+	@Test
 	public void testExecuteAddExpression_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -284,6 +297,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertEquals("abs(1).subtree(2) + parent.children", action.getNavSpec());
 	}
 
+	@Test
 	public void testExecuteAddExpression_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
@@ -301,6 +315,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertEquals("abs(1).subtree(2)", action.getNavSpec());
 	}
 
+	@Test
 	public void testSave() throws Throwable {
 		String pageCode = "pagina_2";
 		int frame = 3;
@@ -331,6 +346,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		}
 	}
 
+	@Test
 	public void testFailureSaveEmptyExpression() throws Throwable {
 		String pageCode = "pagina_2";
 		int frame = 3;
@@ -396,6 +412,7 @@ public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 		return result;
 	}
 
+    @BeforeEach
 	private void init() throws Exception {
 		try {
 			this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);

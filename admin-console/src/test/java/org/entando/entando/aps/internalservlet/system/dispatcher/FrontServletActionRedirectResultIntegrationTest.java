@@ -13,6 +13,9 @@
  */
 package org.entando.entando.aps.internalservlet.system.dispatcher;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
@@ -25,6 +28,8 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.struts2.views.util.UrlHelper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
@@ -34,9 +39,8 @@ public class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBas
 
     private ConfigInterface configManager;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void init() throws Exception {
         this.configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);
         IPageManager pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
         ILangManager langManager = (ILangManager) this.getService(SystemConstants.LANGUAGE_MANAGER);
@@ -50,11 +54,13 @@ public class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBas
         ((MockHttpServletRequest) super.getRequest()).setContextPath("/entando");
     }
 
-    public void testExecuteServlet_1() throws Throwable {
+    @Test
+	public void testExecuteServlet_1() throws Throwable {
         this.executeServlet("https", "www.myproduct.com", "/entando/it/homepage.page");
     }
 
-    public void testExecuteServlet_2() throws Throwable {
+    @Test
+	public void testExecuteServlet_2() throws Throwable {
         this.configManager.updateParam(SystemConstants.CONFIG_PARAM_BASE_URL, SystemConstants.CONFIG_PARAM_BASE_URL_RELATIVE);
         try {
             this.executeServlet("http", "www.entando.com", "/Entando/it/homepage.page");
@@ -65,7 +71,8 @@ public class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBas
         }
     }
 
-    public void testExecuteServlet_3() throws Throwable {
+    @Test
+	public void testExecuteServlet_3() throws Throwable {
         this.configManager.updateParam(SystemConstants.CONFIG_PARAM_BASE_URL, SystemConstants.CONFIG_PARAM_BASE_URL_STATIC);
         try {
             this.executeServlet("http", "www.entando.com", "/Entando/it/homepage.page");
@@ -78,7 +85,7 @@ public class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBas
 
     private void executeServlet(String expectedProtocol, String expectedAuthority, String expectedPath) throws Exception {
         UrlHelper urlHelper = this.getContainerObject(UrlHelper.class);
-        this.initAction("/do/Api/Service", "list");
+        this.initAction("/do/Api/Service", "list", true);
         FrontServletActionRedirectResult servlet = new FrontServletActionRedirectResult();
         servlet.setActionName("details");
         servlet.setUrlHelper(urlHelper);

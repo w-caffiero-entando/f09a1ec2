@@ -13,6 +13,10 @@
  */
 package org.entando.entando.apsadmin.common.currentuser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
@@ -26,19 +30,17 @@ import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
 public class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
     
-	@Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-    
-    public void testEditProfile_1() throws Throwable {
+	@Test
+	public void testEditProfile_1() throws Throwable {
     	this.setUserOnSession(USERNAME_FOR_TEST);
         this.initAction("/do/currentuser/profile", "edit");
         String result = this.executeAction();
@@ -47,7 +49,8 @@ public class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
         assertNull(currentUserProfile);
     }
     
-    public void testEditProfile_2() throws Throwable {
+    @Test
+	public void testEditProfile_2() throws Throwable {
     	this.setUserOnSession("editorCustomers");
         this.initAction("/do/currentuser/profile", "edit");
         String result = this.executeAction();
@@ -57,7 +60,8 @@ public class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
         assertEquals("editorCustomers", currentUserProfile.getUsername());
     }
     
-    public void testValidateProfile() throws Throwable {
+    @Test
+	public void testValidateProfile() throws Throwable {
     	this.setUserOnSession("editorCustomers");
         this.initAction("/do/currentuser/profile", "edit");
         String result = this.executeAction();
@@ -90,6 +94,7 @@ public class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
         assertEquals("Ronald Rossi", currentUserProfile.getValue("fullname"));
     }
     
+    @BeforeEach
     private void init() throws Exception {
         try {
             this._userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);
@@ -102,10 +107,9 @@ public class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
         }
     }
     
-	@Override
-    protected void tearDown() throws Exception {
+	@AfterEach
+    protected void destroy() throws Exception {
         this._userManager.removeUser(USERNAME_FOR_TEST);
-        super.tearDown();
     }
     
     protected User createUserForTest(String username) {
