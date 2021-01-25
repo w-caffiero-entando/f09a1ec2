@@ -248,36 +248,6 @@
 
                 <ul class="list-group">
                     <c:if test="${isSuperUser}">
-                        <li class="list-group-item tertiary-nav-item-pf" data-target="integrations-api-tertiary">
-                            <a>
-                                <span class="list-group-item-value"><s:text name="menu.integrations.APIManagement" /></span>
-                            </a>
-
-                            <div id="integrations-api-tertiary" class="nav-pf-tertiary-nav">
-                                <div class="nav-item-pf-header">
-                                    <a class="tertiary-collapse-toggle-pf" data-toggle="collapse-tertiary-nav"></a>
-                                    <span><s:text name="menu.integrations.APIManagement" /></span>
-                                </div>
-                                <ul class="list-group">
-                                    <li class="list-group-item">
-                                        <a href='<s:url action="list" namespace="/do/Api/Resource" />'>
-                                            <span class="list-group-item-value"><s:text name="menu.integrations.API.resources" /></span>
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href='<s:url action="list" namespace="/do/Api/Service" />'>
-                                            <span  class="list-group-item-value"><s:text name="menu.integrations.API.services" /></span>
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href='<s:url action="list" namespace="/do/Api/Consumer" />'>
-                                            <span class="list-group-item-value"><s:text name="menu.integrations.API.consumers" /></span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
                         <li class="list-group-item">
                             <a href='<c:out value="${appBuilderBaseURL}"/>database'>
                                 <span class="list-group-item-value"><s:text name="menu.settings.database" /></span>
