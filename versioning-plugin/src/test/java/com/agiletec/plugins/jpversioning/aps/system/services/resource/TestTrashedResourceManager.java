@@ -21,11 +21,13 @@
  */
 package com.agiletec.plugins.jpversioning.aps.system.services.resource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.agiletec.aps.BaseTestCase;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.agiletec.plugins.jpversioning.aps.ApsPluginBaseTestCase;
 
 import com.agiletec.aps.system.SystemConstants;
 import org.entando.entando.ent.exception.EntException;
@@ -38,20 +40,15 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.BaseResourc
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceDataBean;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
 import com.agiletec.plugins.jpversioning.aps.system.JpversioningSystemConstants;
-import com.agiletec.plugins.jpversioning.aps.system.services.resource.TrashedResourceManager;
-import java.io.InputStream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author G.Cocco
  */
-public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
+public class TestTrashedResourceManager extends BaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-    }
-	
+	@Test
 	public void testSearchTrashedResourceIds() throws EntException {
 		String resourceTypeCode = null;
 		String text = null;
@@ -72,6 +69,7 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
 		assertEquals("69", resourceIds.get(0));
 	}
 	
+	@Test
 	public void testAdd_Trash_LoadFromTrash_RemoveFromTrash() throws Throwable {
 		String mainGroup = Group.FREE_GROUP_NAME;
 		String resDescrToAdd = "Versioning test 1";
@@ -116,6 +114,7 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
 		}
 	}
 	
+	@Test
 	public void testAdd_Trash_RestoreResource_DeleteFromArchive() throws Throwable {
 		String mainGroup = Group.FREE_GROUP_NAME;
 		String resDescrToAdd = "Versioning test 2";
@@ -163,7 +162,8 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
 		}
 	}
 
-    public void testRestoreImageFromTrashProtectedResource() throws Throwable {
+    @Test
+	public void testRestoreImageFromTrashProtectedResource() throws Throwable {
         String mainGroup = Group.ADMINS_GROUP_NAME;
         String resDescrToAdd = "Test protected resource";
         String resourceType = "Image";
@@ -215,6 +215,7 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
         }
     }
 
+	@Test
 	public void testRestoreAttachmentFromTrashProtectedResource() throws Throwable {
 		String mainGroup = Group.ADMINS_GROUP_NAME;
 		String resDescrToAdd = "Test protected resource Attachment";
@@ -300,6 +301,7 @@ public class TestTrashedResourceManager extends ApsPluginBaseTestCase {
 		return bean;
 	}
 
+    @BeforeEach
 	private void init() throws Exception {
     	try {
     		this._resourceManager = (IResourceManager) this.getService(JacmsSystemConstants.RESOURCE_MANAGER);

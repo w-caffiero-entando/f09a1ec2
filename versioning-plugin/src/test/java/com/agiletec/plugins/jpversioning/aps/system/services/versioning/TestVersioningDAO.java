@@ -21,34 +21,31 @@
  */
 package com.agiletec.plugins.jpversioning.aps.system.services.versioning;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import com.agiletec.aps.BaseTestCase;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import com.agiletec.aps.util.DateConverter;
 
-import com.agiletec.plugins.jpversioning.aps.ApsPluginBaseTestCase;
 import com.agiletec.plugins.jpversioning.util.JpversioningTestHelper;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author G.Cocco
  */
-public class TestVersioningDAO extends ApsPluginBaseTestCase {
+public class TestVersioningDAO extends BaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-		this._helper.initContentVersions();
-	}
-	
-	@Override
-	protected void tearDown() throws Exception {
-		this._helper.cleanContentVersions();
-		super.tearDown();
-	}
-	
+    @Test
 	public void testGetVersions() throws Throwable {
 		List<Long> versions = this._versioningDAO.getVersions("CNG12");
 		assertNull(versions);
@@ -57,6 +54,7 @@ public class TestVersioningDAO extends ApsPluginBaseTestCase {
 		this.checkVersionIds(new long[] { 1, 2, 3 }, versions);
 	}
 	
+	@Test
 	public void testGetLastVersions() throws Throwable {
 		List<Long> versions = this._versioningDAO.getLastVersions("CNG", null);
 		assertTrue(versions.isEmpty());
@@ -65,6 +63,7 @@ public class TestVersioningDAO extends ApsPluginBaseTestCase {
 		this.checkVersionIds(new long[] { 3 }, versions);
 	}
 	
+	@Test
 	public void testGetVersion() {
 		ContentVersion contentVersion = this._versioningDAO.getVersion(10000);
 		assertNull(contentVersion);	
@@ -83,6 +82,7 @@ public class TestVersioningDAO extends ApsPluginBaseTestCase {
 		assertEquals("admin", contentVersion.getUsername());
 	}
 	
+	@Test
 	public void testGetLastVersion() {
 		ContentVersion contentVersion = this._versioningDAO.getLastVersion("CNG12");
 		assertNull(contentVersion);
@@ -100,6 +100,7 @@ public class TestVersioningDAO extends ApsPluginBaseTestCase {
 		assertEquals("mainEditor", contentVersion.getUsername());
 	}
 	
+	@Test
 	public void testAddGetDeleteVersion() {
 		ContentVersion versionRecord = this._versioningDAO.getVersion(1);
 		assertNotNull(versionRecord);
@@ -113,7 +114,8 @@ public class TestVersioningDAO extends ApsPluginBaseTestCase {
 		assertNull(newVersionRecord);		
 	}
 	
-	public void deleteWorkVersions() {
+	@Test
+	public void testDeleteWorkVersions() {
 		List<Long> versions = this._versioningDAO.getVersions("ART1");
 		this.checkVersionIds(new long[] { 1, 2, 3 }, versions);
 		
@@ -131,13 +133,20 @@ public class TestVersioningDAO extends ApsPluginBaseTestCase {
 		}
 	}
 	
+    @BeforeEach
 	private void init() throws Exception {
 		VersioningDAO versioningDAO = new VersioningDAO();
 		DataSource dataSource = (DataSource) this.getApplicationContext().getBean("portDataSource");
 		versioningDAO.setDataSource(dataSource);
 		this._versioningDAO = versioningDAO;
 		this._helper = new JpversioningTestHelper(dataSource, this.getApplicationContext());
+        this._helper.initContentVersions();
 	}
+    
+    @AfterEach
+    private void dispose() throws Exception {
+        this._helper.cleanContentVersions();
+    }
 	
 	private IVersioningDAO _versioningDAO;
 	private JpversioningTestHelper _helper;

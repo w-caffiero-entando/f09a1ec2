@@ -21,13 +21,17 @@
  */
 package com.agiletec.plugins.jpversioning.apsadmin.resource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
-
-import com.agiletec.plugins.jpversioning.apsadmin.ApsAdminPluginBaseTestCase;
 
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager;
@@ -38,18 +42,15 @@ import com.agiletec.plugins.jpversioning.aps.system.services.resource.ITrashedRe
 import com.agiletec.plugins.jpversioning.aps.system.services.resource.ITrashedResourceManager;
 import com.agiletec.plugins.jpversioning.aps.system.services.resource.TrashedResourceDAO;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author G.Cocco
  * */
-public class TestTrashedResourceAction extends ApsAdminPluginBaseTestCase {
+public class TestTrashedResourceAction extends ApsAdminBaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-	}
-	
+    @Test
 	public void testInit() throws Throwable{
 		this.setUserOnSession("admin");
 		this.initAction("/do/jpversioning/Resource/Trash", "list");
@@ -61,6 +62,7 @@ public class TestTrashedResourceAction extends ApsAdminPluginBaseTestCase {
 		assertTrue(action instanceof com.agiletec.plugins.jpversioning.apsadmin.resource.TrashedResourceAction);
 	}
 	
+	@Test
 	public void testGetTrashedResources() throws Throwable{
 		this.setUserOnSession("admin");
 		this.initAction("/do/jpversioning/Resource/Trash", "list");
@@ -97,6 +99,7 @@ public class TestTrashedResourceAction extends ApsAdminPluginBaseTestCase {
 		assertEquals("66", trashedResources.get(0));
 	}
 	
+	@Test
 	public void testList() throws Throwable{
 		String result = this.executeList("admin", "Image");
 		assertEquals(Action.SUCCESS, result);
@@ -129,6 +132,7 @@ public class TestTrashedResourceAction extends ApsAdminPluginBaseTestCase {
 
 	}
 	
+	@Test
 	public void testRemoveFromTrash() throws Throwable{
 		String resourceId = "22";
 		try {
@@ -149,6 +153,7 @@ public class TestTrashedResourceAction extends ApsAdminPluginBaseTestCase {
 		}
 	}
 	
+	@Test
 	public void testRestoreFromTrash() throws Throwable{
 		String resourceId = "70";
 		ResourceInterface originaryResourceInterface = this._trashedResourceManager.loadTrashedResource(resourceId);
@@ -212,6 +217,7 @@ public class TestTrashedResourceAction extends ApsAdminPluginBaseTestCase {
 		return result;
 	}
 	
+    @BeforeEach
 	private void init() throws Exception {
 		try {
 			TrashedResourceDAO trashedResourceDAO = new TrashedResourceDAO();

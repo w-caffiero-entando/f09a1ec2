@@ -27,10 +27,10 @@ import java.util.Optional;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
-import org.junit.Assert;
-import org.junit.Test;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -58,10 +58,10 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         try {
             String accessToken = mockOAuthInterceptor(user);
 
-            Assert.assertNull(contentManager.getEntityPrototype(contentTypeCode));
+            Assertions.assertNull(contentManager.getEntityPrototype(contentTypeCode));
             postContentType("json/1_POST_content_type_with_boolean_attribute.json", accessToken,
                     status().isCreated());
-            Assert.assertNotNull(contentManager.getEntityPrototype(contentTypeCode));
+            Assertions.assertNotNull(contentManager.getEntityPrototype(contentTypeCode));
 
             ResultActions result = postContent("json/1_POST_content_with_boolean_attribute.json", accessToken,
                     status().isOk());
@@ -219,7 +219,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
                     .andExpect(jsonPath("$.metaData.totalItems", is(5)));
 
         } catch (Exception e) {
-            Assert.fail();
+            Assertions.fail();
         } finally {
             deleteContent(user, newContentId);
             deleteContentType(contentTypeCode);

@@ -21,12 +21,17 @@
  */
 package com.agiletec.plugins.jpversioning.apsadmin.versioning;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import java.util.List;
 
 import javax.sql.DataSource;
 
-import com.agiletec.plugins.jpversioning.apsadmin.ApsAdminPluginBaseTestCase;
 import com.agiletec.plugins.jpversioning.util.JpversioningTestHelper;
 
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
@@ -38,25 +43,16 @@ import com.agiletec.plugins.jpversioning.aps.system.JpversioningSystemConstants;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.ContentVersion;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.IVersioningManager;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author G.Cocco
  */
-public class TestVersionAction extends ApsAdminPluginBaseTestCase {
+public class TestVersionAction extends ApsAdminBaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-		this.helper.initContentVersions();
-    }
-	
-	@Override
-	protected void tearDown() throws Exception {
-		this.helper.cleanContentVersions();
-		super.tearDown();
-	}
-	
+    @Test
 	public void testHistory() throws Throwable {
 		String result = this.executeHistory("admin", "ART1");
 		assertEquals(Action.SUCCESS, result);
@@ -71,27 +67,32 @@ public class TestVersionAction extends ApsAdminPluginBaseTestCase {
 		assertNull(versions);
 	}
 	
+	@Test
 	public void testTrash() throws Throwable {
 		String result = this.executeTrash("admin", 3);
 		assertEquals(Action.SUCCESS, result);
 	}
 	
+	@Test
 	public void testDelete() throws Throwable {
 		String result = this.executeDelete("admin", 300);
 		assertEquals(Action.SUCCESS, result);
 	}
 	
+	@Test
 	public void testPreview() throws Throwable {
 		String result = this.executePreview("admin", 3);
 		assertEquals(Action.SUCCESS, result);
 	}
 	
+	@Test
 	public void testEntryRecover() throws Throwable {
 		String result = this.executeEntryRecover("admin", 3);
 		assertEquals(Action.SUCCESS, result);
 	}
     
-    public void testRecoverAction() throws Throwable {
+    @Test
+	public void testRecoverAction() throws Throwable {
         String contentId = null;
         try {
             Content contentToVersion = this.contentManager.loadContent("ART187", false);
@@ -186,13 +187,20 @@ public class TestVersionAction extends ApsAdminPluginBaseTestCase {
 		return result;
 	}
 	
-	private void init() {
+    @BeforeEach
+	protected void init() throws Exception {
 		this.contentManager = (IContentManager) this.getService(JacmsSystemConstants.CONTENT_MANAGER);
         this.versioningManager = (IVersioningManager) this.getService(JpversioningSystemConstants.VERSIONING_MANAGER);
 		DataSource dataSource = (DataSource) this.getApplicationContext().getBean("portDataSource");
 		this.helper = new JpversioningTestHelper(dataSource, this.getApplicationContext());
+		this.helper.initContentVersions();
 	}
-	
+    
+    @AfterEach
+	protected void dispose() throws Exception {
+		this.helper.cleanContentVersions();
+	}
+    
 	private JpversioningTestHelper helper;
 	
 	private IContentManager contentManager;

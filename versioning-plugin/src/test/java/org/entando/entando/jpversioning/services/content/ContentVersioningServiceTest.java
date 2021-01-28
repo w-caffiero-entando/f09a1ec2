@@ -28,20 +28,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
 import org.entando.entando.aps.system.services.DtoBuilder;
 import org.entando.entando.plugins.jacms.aps.system.services.content.ContentService;
 import org.entando.entando.plugins.jpversioning.services.content.ContentVersioningService;
 import org.entando.entando.plugins.jpversioning.web.content.model.ContentVersionDTO;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-public class ContentVersioningServiceTest extends TestCase {
+@ExtendWith(MockitoExtension.class)
+public class ContentVersioningServiceTest {
 
     private static final String CONTENT_ID = "TST";
     private static final Long VERSION_ID_1 =1L;
@@ -68,11 +68,6 @@ public class ContentVersioningServiceTest extends TestCase {
 
     @InjectMocks
     private ContentVersioningService service;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testGetListContentVersions() throws EntException{

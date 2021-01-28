@@ -21,6 +21,13 @@
  */
 package com.agiletec.plugins.jpversioning.aps.system.services.versioning;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
@@ -29,7 +36,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import com.agiletec.plugins.jpversioning.aps.ApsPluginBaseTestCase;
 import com.agiletec.plugins.jpversioning.util.JpversioningTestHelper;
 
 import com.agiletec.aps.util.DateConverter;
@@ -39,29 +45,18 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jpversioning.aps.system.JpversioningSystemConstants;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @author G.Cocco
  */
-public class TestVersioningManager extends ApsPluginBaseTestCase {
+public class TestVersioningManager extends BaseTestCase {
 
     private ConfigInterface configManager;
     private IContentManager contentManager;
     private IVersioningManager versioningManager;
     private JpversioningTestHelper helper;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-        this.helper.initContentVersions();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        this.helper.cleanContentVersions();
-        super.tearDown();
-    }
 
     public void testGetVersions() throws Throwable {
         List<Long> versions = this.versioningManager.getVersions("CNG12");
@@ -219,12 +214,19 @@ public class TestVersioningManager extends ApsPluginBaseTestCase {
         this.configManager.updateConfigItem(SystemConstants.CONFIG_ITEM_PARAMS, newXmlParams);
     }
 
-    private void init() throws Exception {
+    @BeforeEach
+	private void init() throws Exception {
         this.versioningManager = (IVersioningManager) this.getService(JpversioningSystemConstants.VERSIONING_MANAGER);
         this.configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);
         this.contentManager = (IContentManager) this.getService(JacmsSystemConstants.CONTENT_MANAGER);
         DataSource dataSource = (DataSource) this.getApplicationContext().getBean("portDataSource");
         this.helper = new JpversioningTestHelper(dataSource, this.getApplicationContext());
+        this.helper.initContentVersions();
     }
-
+    
+    @AfterEach
+    private void dispose() throws Exception {
+        this.helper.cleanContentVersions();
+    }
+    
 }

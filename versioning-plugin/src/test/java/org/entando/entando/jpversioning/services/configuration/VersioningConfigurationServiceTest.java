@@ -21,16 +21,18 @@ import com.agiletec.plugins.jpversioning.aps.system.JpversioningSystemConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import junit.framework.TestCase;
 import org.entando.entando.plugins.jpversioning.services.configuration.VersioningConfigurationService;
 import org.entando.entando.plugins.jpversioning.web.configuration.model.VersioningConfigurationDTO;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-public class VersioningConfigurationServiceTest extends TestCase {
+@ExtendWith(MockitoExtension.class)
+public class VersioningConfigurationServiceTest {
+    
     private static String DELETE_MID_VERSION_FALSE = "false";
     private static String DELETE_MID_VERSION_TRUE = "true";
     private static String CONTENTS_TO_IGNORE = "TST1, TST2";
@@ -45,9 +47,8 @@ public class VersioningConfigurationServiceTest extends TestCase {
     @InjectMocks
     private VersioningConfigurationService service;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         contentsToIgnoreList = Arrays.asList(CONTENTS_TO_IGNORE.trim().split(SPLIT_REGEX));
         contentTypesToIgnoreList =Arrays.asList(CONTENT_TYPES_TO_IGNORE.trim().split(SPLIT_REGEX));
     }
@@ -84,6 +85,7 @@ public class VersioningConfigurationServiceTest extends TestCase {
         assertThat(versioningConfiguration.getContentsToIgnore()).isEqualTo(contentsToIgnoreList);
         assertThat(versioningConfiguration.getContentTypesToIgnore()).isEqualTo(contentTypesToIgnoreList);
     }
+    
     @Test
     public void testGetVersioningConfigurationDeleteMidVersionFalse() {
         when(baseConfigManager.getParam(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS)).thenReturn(DELETE_MID_VERSION_FALSE);
