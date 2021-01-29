@@ -21,9 +21,9 @@
  */
 package org.entando.entando.plugins.jpseo.aps.system.services.mapping;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.SystemConstants;
@@ -45,6 +45,8 @@ import java.util.Set;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SeoMappingManagerIntegrationTest extends BaseTestCase {
     
@@ -53,12 +55,7 @@ public class SeoMappingManagerIntegrationTest extends BaseTestCase {
     private ISeoMappingManager seoMappingManager;
     private IWidgetTypeManager widgetTypeManager;
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-    
+    @Test
     public void testCreateFriendlyCode_1() throws Exception {
         String contentId1 = null;
         Content content1 = null;
@@ -129,6 +126,7 @@ public class SeoMappingManagerIntegrationTest extends BaseTestCase {
         }
     }
     
+    @Test
     public void testCreateFriendlyCode_2() throws Exception {
         String contentId1 = null;
         Content content = null;
@@ -176,6 +174,7 @@ public class SeoMappingManagerIntegrationTest extends BaseTestCase {
         }
     }
     
+    @Test
     public void testCreateFriendlyCode_3() throws Exception {
         String code1 = "test1";
         String code2 = "test2";
@@ -249,6 +248,7 @@ public class SeoMappingManagerIntegrationTest extends BaseTestCase {
 		return metadata;
 	}
     
+    @BeforeEach
     private void init() throws Exception {
         try {
             this.contentManager = (IContentManager) this.getService(JacmsSystemConstants.CONTENT_MANAGER);

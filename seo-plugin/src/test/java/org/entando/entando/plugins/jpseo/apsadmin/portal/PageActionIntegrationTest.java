@@ -21,17 +21,22 @@
  */
 package org.entando.entando.plugins.jpseo.apsadmin.portal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.entando.entando.plugins.jpseo.apsadmin.ApsAdminPluginBaseTestCase;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.util.ApsProperties;
+import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.plugins.jacms.apsadmin.portal.PageAction;
 import com.opensymphony.xwork2.Action;
@@ -40,19 +45,16 @@ import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
+public class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 
 	private IPageManager pageManager = null;
     private ISeoMappingManager seoMappingManager;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-	}
-    
-	public void testEditPage_1() throws Throwable {
+	@Test
+    public void testEditPage_1() throws Throwable {
 		String selectedPageCode = "pagina_1";
 		String result = this.executeActionOnPage(selectedPageCode, "admin", "edit", null);
 		assertEquals(Action.SUCCESS, result);
@@ -69,7 +71,8 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
 		assertEquals("Page 1", action.getTitles().getProperty("en"));
 	}
     
-	public void testEditPage_2() throws Throwable {
+	@Test
+    public void testEditPage_2() throws Throwable {
 		String selectedPageCode = "seo_page_1";
 		String result = this.executeActionOnPage(selectedPageCode, "admin", "edit", null);
 		assertEquals(Action.SUCCESS, result);
@@ -104,7 +107,8 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
         assertTrue(useDefaultKeywordsEn);
 	}
 
-	public void testJoinGroupPageForAdminUser() throws Throwable {
+	@Test
+    public void testJoinGroupPageForAdminUser() throws Throwable {
 		String extraGroup = Group.ADMINS_GROUP_NAME;
 		String selectedPageCode = "pagina_1";
 		Map<String, String> params = new HashMap<>();
@@ -137,7 +141,8 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
 		return result;
 	}
     
-	public void testValidateSavePage() throws Throwable {
+	@Test
+    public void testValidateSavePage() throws Throwable {
 		String pageCode = "pagina_test";
 		String longPageCode = "very_long_page_code__very_long_page_code";
 		assertNull(this.pageManager.getDraftPage(pageCode));
@@ -190,7 +195,8 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
 		}
 	}
     
-	public void testSavePage_1() throws Throwable {
+	@Test
+    public void testSavePage_1() throws Throwable {
 		String pageCode = "seo_test_1";
 		assertNull(this.pageManager.getDraftPage(pageCode));
 		try {
@@ -223,7 +229,8 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
 		}
 	}
     
-	public void testSavePage_2() throws Throwable {
+	@Test
+    public void testSavePage_2() throws Throwable {
 		String pageCode = "seo_test_2";
 		String pageCode_bis = "seo_test_2_bis";
 		assertNull(this.pageManager.getDraftPage(pageCode));
@@ -293,6 +300,7 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
             assertEquals(1, action.getFieldErrors().get(PageActionAspect.PARAM_FRIENDLY_CODE).size());
     }
     
+    @Test
     public void testSavePage_3() throws Throwable {
         String pageCode = "seo_test_3";
         assertNull(this.pageManager.getDraftPage(pageCode));
@@ -357,6 +365,7 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
         }
     }
     
+    @Test
     public void testAddRemoveMetatag() throws Throwable {
         String pageCode = "seo_test_4";
         try {
@@ -436,6 +445,7 @@ public class PageActionIntegrationTest extends ApsAdminPluginBaseTestCase {
 		return this.executeAction();
 	}
 
+    @BeforeEach
 	private void init() throws Exception {
 		try {
 			this.pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);

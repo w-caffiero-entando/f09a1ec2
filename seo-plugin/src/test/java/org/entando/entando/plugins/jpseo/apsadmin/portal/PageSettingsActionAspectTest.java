@@ -39,17 +39,20 @@ import org.apache.struts2.ServletActionContext;
 import org.aspectj.lang.JoinPoint;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
 import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
@@ -57,6 +60,7 @@ import org.springframework.mock.web.MockHttpSession;
 /**
  * @author E.Santoboni
  */
+@ExtendWith(MockitoExtension.class)
 public class PageSettingsActionAspectTest {
 
     private static final String CONFIG_PARAMETER
@@ -82,33 +86,32 @@ public class PageSettingsActionAspectTest {
     @InjectMocks
     private PageSettingsActionAspect actionAspect;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         ActionContext actionContext = Mockito.mock(ActionContext.class);
         ServletContext servletContext = Mockito.mock(ServletContext.class);
         request.setSession(new MockHttpSession(servletContext));
-        when(actionContext.getLocale()).thenReturn(Locale.ENGLISH);
+        Mockito.lenient().when(actionContext.getLocale()).thenReturn(Locale.ENGLISH);
         ValueStack valueStack = Mockito.mock(ValueStack.class);
         Map<String, Object> context = new HashMap<>();
         Container container = Mockito.mock(Container.class);
         XWorkConverter conv = Mockito.mock(XWorkConverter.class);
-        when(container.getInstance(XWorkConverter.class)).thenReturn(conv);
-        when(conv.convertValue(Mockito.any(Map.class), Mockito.any(Object.class), Mockito.any(Class.class))).thenAnswer(new Answer<Object>() {
+        Mockito.lenient().when(container.getInstance(XWorkConverter.class)).thenReturn(conv);
+        Mockito.lenient().when(conv.convertValue(Mockito.any(Map.class), Mockito.any(Object.class), Mockito.any(Class.class))).thenAnswer(new Answer<Object>() {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 return "VALUE";
             }
         });
         context.put(ActionContext.CONTAINER, container);
-        when(valueStack.getContext()).thenReturn(context);
-        when(actionContext.getValueStack()).thenReturn(valueStack);
+        Mockito.lenient().when(valueStack.getContext()).thenReturn(context);
+        Mockito.lenient().when(actionContext.getValueStack()).thenReturn(valueStack);
         when(actionContext.get(ServletActionContext.HTTP_REQUEST)).thenReturn(request);
         ServletActionContext.setContext(actionContext);
         when(joinPoint.getTarget()).thenReturn(pageSettingsAction);
-        when(textProvider.getText(ArgumentMatchers.anyString(), ArgumentMatchers.anyList())).thenReturn("text");
+        Mockito.lenient().when(textProvider.getText(ArgumentMatchers.anyString(), ArgumentMatchers.anyList())).thenReturn("text");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         this.request.removeAllParameters();
         String path = System.getProperty("java.io.tmpdir") + File.separator + "robot.txt";
@@ -124,8 +127,8 @@ public class PageSettingsActionAspectTest {
         when(configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
         actionAspect.executeInitConfig(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).exists(Mockito.anyString(), Mockito.anyBoolean());
-        Assert.assertTrue(pageSettingsAction.hasFieldErrors());
-        Assert.assertEquals(1, pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_CONTENT_CODE).size());
+        Assertions.assertTrue(pageSettingsAction.hasFieldErrors());
+        Assertions.assertEquals(1, pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_CONTENT_CODE).size());
     }
 
     @Test
@@ -134,8 +137,8 @@ public class PageSettingsActionAspectTest {
         when(configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
         actionAspect.executeInitConfig(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).exists(Mockito.anyString(), Mockito.anyBoolean());
-        Assert.assertTrue(pageSettingsAction.hasFieldErrors());
-        Assert.assertEquals(1, pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE).size());
+        Assertions.assertTrue(pageSettingsAction.hasFieldErrors());
+        Assertions.assertEquals(1, pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE).size());
     }
 
     @Test
@@ -145,9 +148,9 @@ public class PageSettingsActionAspectTest {
         when(configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
         actionAspect.executeInitConfig(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).exists(Mockito.anyString(), Mockito.anyBoolean());
-        Assert.assertTrue(pageSettingsAction.hasFieldErrors());
-        Assert.assertEquals(1, pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE).size());
-        Assert.assertEquals("Message", pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE).get(0));
+        Assertions.assertTrue(pageSettingsAction.hasFieldErrors());
+        Assertions.assertEquals(1, pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE).size());
+        Assertions.assertEquals("Message", pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE).get(0));
     }
 
     @Test
@@ -156,7 +159,7 @@ public class PageSettingsActionAspectTest {
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).saveFile(Mockito.anyString(), Mockito.anyBoolean(), Mockito.any(InputStream.class));
         Mockito.verify(storageManager, Mockito.times(1)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
-        Assert.assertFalse(pageSettingsAction.hasFieldErrors());
+        Assertions.assertFalse(pageSettingsAction.hasFieldErrors());
         Mockito.verify(configManager, Mockito.times(1)).getConfigItem(ArgumentMatchers.anyString());
     }
 
@@ -167,7 +170,7 @@ public class PageSettingsActionAspectTest {
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(1)).saveFile(Mockito.anyString(), Mockito.anyBoolean(), Mockito.any(InputStream.class));
         Mockito.verify(storageManager, Mockito.times(0)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
-        Assert.assertFalse(pageSettingsAction.hasFieldErrors());
+        Assertions.assertFalse(pageSettingsAction.hasFieldErrors());
         Mockito.verify(configManager, Mockito.times(1)).getConfigItem(ArgumentMatchers.anyString());
     }
 
@@ -180,7 +183,7 @@ public class PageSettingsActionAspectTest {
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).saveFile(Mockito.anyString(), Mockito.anyBoolean(), Mockito.any(InputStream.class));
         Mockito.verify(storageManager, Mockito.times(0)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
-        Assert.assertFalse(pageSettingsAction.hasFieldErrors());
+        Assertions.assertFalse(pageSettingsAction.hasFieldErrors());
         Mockito.verify(configManager, Mockito.times(1)).getConfigItem(ArgumentMatchers.anyString());
 
     }
@@ -194,8 +197,8 @@ public class PageSettingsActionAspectTest {
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).saveFile(Mockito.anyString(), Mockito.anyBoolean(), Mockito.any(InputStream.class));
         Mockito.verify(storageManager, Mockito.times(0)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
-        Assert.assertTrue(pageSettingsAction.hasFieldErrors());
-        Assert.assertEquals(1, pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE).size());
+        Assertions.assertTrue(pageSettingsAction.hasFieldErrors());
+        Assertions.assertEquals(1, pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE).size());
         Mockito.verify(configManager, Mockito.times(1)).updateConfigItem(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
     }
 
@@ -205,8 +208,8 @@ public class PageSettingsActionAspectTest {
         Mockito.doThrow(EntException.class).when(configManager).updateConfigItem(Mockito.anyString(), Mockito.anyString());
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(1)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
-        Assert.assertFalse(pageSettingsAction.hasFieldErrors());
-        Assert.assertTrue(pageSettingsAction.hasActionErrors());
+        Assertions.assertFalse(pageSettingsAction.hasFieldErrors());
+        Assertions.assertTrue(pageSettingsAction.hasActionErrors());
     }
 
 }

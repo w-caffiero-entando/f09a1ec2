@@ -1,11 +1,14 @@
 package org.entando.entando.plugins.jpseo.aps.system.services.page;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.page.IPageManager;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SeoPageServiceTest extends BaseTestCase {
 
@@ -18,12 +21,7 @@ public class SeoPageServiceTest extends BaseTestCase {
         assertEquals("service", page.getCode());
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
+    @BeforeEach
     private void init() throws Exception {
         try {
             pageService = (IPageService) this.getApplicationContext().getBean("SeoPageService");

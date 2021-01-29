@@ -13,6 +13,10 @@
  */
 package org.entando.entando.aps.system.services.controller.control;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.agiletec.aps.BaseTestCase;
@@ -26,10 +30,11 @@ import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
-import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.controller.control.RequestValidator;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SeoRequestValidatorIntegrationTest extends BaseTestCase {
 
@@ -38,12 +43,7 @@ public class SeoRequestValidatorIntegrationTest extends BaseTestCase {
     private IPageManager pageManager;
     private IContentManager contentManager;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
+    @Test
     public void testService_1() throws Exception {
         RequestContext reqCtx = this.getRequestContext();
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
@@ -82,6 +82,7 @@ public class SeoRequestValidatorIntegrationTest extends BaseTestCase {
         }
     }
     
+    @Test
     public void testService_2() throws Exception {
         RequestContext reqCtx = this.getRequestContext();
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
@@ -136,6 +137,7 @@ public class SeoRequestValidatorIntegrationTest extends BaseTestCase {
         reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
     }
 
+    @BeforeEach
     private void init() throws Exception {
         try {
             this.requestValidator = (ControlServiceInterface) this.getApplicationContext().getBean(RequestValidator.class);
