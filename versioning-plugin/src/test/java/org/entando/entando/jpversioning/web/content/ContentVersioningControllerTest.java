@@ -73,8 +73,8 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     public void testGetExistingContentVersioning() throws Exception {
         PagedMetadata<ContentVersionDTO> pagedMetadata = getContentVersionDTOPagedMetadata();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.validator.contentVersioningExist(CONTENT_ID)).thenReturn(true);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.validator.contentVersioningExist(CONTENT_ID)).thenReturn(true);
         when(this.service.getListContentVersions(Mockito.eq(CONTENT_ID), Mockito.any(RestListRequest.class)))
                 .thenReturn(pagedMetadata);
         ResultActions result = getListContentVersioning(CONTENT_ID, user);
@@ -85,9 +85,9 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     public void testNotAuthorizedGetExistingContentVersioning() throws Exception {
         PagedMetadata<ContentVersionDTO> pagedMetadata = getContentVersionDTOPagedMetadata();
         UserDetails user = this.createUser(false);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.validator.contentVersioningExist(CONTENT_ID)).thenReturn(true);
-        when(this.service.getListContentVersions(Mockito.eq(CONTENT_ID), Mockito.any(RestListRequest.class)))
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.validator.contentVersioningExist(CONTENT_ID)).thenReturn(true);
+        Mockito.lenient().when(this.service.getListContentVersions(Mockito.eq(CONTENT_ID), Mockito.any(RestListRequest.class)))
                 .thenReturn(pagedMetadata);
         ResultActions result = getListContentVersioning(CONTENT_ID, user);
         result.andExpect(status().isForbidden());
@@ -98,8 +98,8 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
         PagedMetadata<ContentVersionDTO> pagedMetadata = getContentVersionDTOPagedMetadata();
         ContentDto content = new ContentDto();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.validator.contentVersioningExist(CONTENT_ID)).thenReturn(false);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.validator.contentVersioningExist(CONTENT_ID)).thenReturn(false);
         when(this.service.getListContentVersions(Mockito.eq(CONTENT_ID), Mockito.any(RestListRequest.class)))
                 .thenReturn(pagedMetadata);
         ResultActions result = getListContentVersioning(CONTENT_ID, user);
@@ -110,7 +110,7 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     public void testGetContentsVersioning() throws Exception {
         PagedMetadata<ContentVersionDTO> pagedMetadata = getContentVersionDTOPagedMetadata();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
         when(this.service.getLatestVersions(Mockito.any(RestListRequest.class))).thenReturn(pagedMetadata);
         ResultActions result = getListLatestVersions(user);
         result.andExpect(status().isOk());
@@ -120,9 +120,9 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     public void testNotAuthorizedGetContentVersion() throws Exception {
         ContentDto content = new ContentDto();
         UserDetails user = this.createUser(false);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(true);
-        when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(true);
+        Mockito.lenient().when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
         ResultActions result = getContentVersion(CONTENT_ID, VERSION_ID, user);
         result.andExpect(status().isForbidden());
     }
@@ -131,7 +131,7 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     public void testGetContentVersion() throws Exception {
         ContentDto content = new ContentDto();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
         when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(true);
         when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
         ResultActions result = getContentVersion(CONTENT_ID , VERSION_ID, user);
@@ -141,8 +141,8 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     @Test
     public void testGetContentVersionNotExist() throws Exception {
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(false);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(false);
         ResultActions result = getContentVersion(CONTENT_ID + 1, VERSION_ID, user);
         result.andExpect(status().isNotFound());
     }
@@ -151,9 +151,9 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     public void testNotAuthorizedPostRecoverContentVersion() throws Exception {
         ContentDto content = new ContentDto();
         UserDetails user = this.createUser(false);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(true);
-        when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(true);
+        Mockito.lenient().when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
         ResultActions result = postRecoverContentVersion(CONTENT_ID, VERSION_ID, user);
         result.andExpect(status().isForbidden());
     }
@@ -162,7 +162,7 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     public void testPostRecoverContentVersion() throws Exception {
         ContentDto content = new ContentDto();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
         when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(true);
         when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
         ResultActions result = postRecoverContentVersion(CONTENT_ID , VERSION_ID, user);
@@ -172,8 +172,8 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     @Test
     public void testPostRecoverContentVersionNotExist() throws Exception {
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(false);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(false);
         ResultActions result = postRecoverContentVersion(CONTENT_ID + 1, VERSION_ID, user);
         result.andExpect(status().isNotFound());
     }
@@ -182,9 +182,9 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     public void testNotAuthorizedDeleteContentVersion() throws Exception {
         ContentDto content = new ContentDto();
         UserDetails user = this.createUser(false);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(true);
-        when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(true);
+        Mockito.lenient().when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
         ResultActions result = deleteContentVersion(CONTENT_ID, VERSION_ID, user);
         result.andExpect(status().isForbidden());
     }
@@ -193,9 +193,9 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     public void testDeleteContentVersion() throws Exception {
         ContentDto content = new ContentDto();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
         when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(true);
-        when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
+        Mockito.lenient().when(this.service.getContent(Mockito.eq(VERSION_ID))).thenReturn(content);
         ResultActions result = deleteContentVersion(CONTENT_ID , VERSION_ID, user);
         result.andExpect(status().isOk());
     }
@@ -203,8 +203,8 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
     @Test
     public void testDeleteRecoverContentVersionNotExist() throws Exception {
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(false);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.validator.checkContentIdForVersion(CONTENT_ID, VERSION_ID)).thenReturn(false);
         ResultActions result = deleteContentVersion(CONTENT_ID + 1, VERSION_ID, user);
         result.andExpect(status().isNotFound());
     }

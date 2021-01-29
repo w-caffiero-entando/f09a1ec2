@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -75,22 +76,31 @@ public class VersioningConfigurationControllerIntegrationTest extends AbstractCo
     }
 
     private void initConfig() throws Exception {
-        this.updateConfigItem(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS, DELETE_MID_VERSION_TRUE);
-        this.updateConfigItem(JpversioningSystemConstants.CONFIG_PARAM_CONTENTS_TO_IGNORE, CONTENTS_TO_IGNORE);
-        this.updateConfigItem(JpversioningSystemConstants.CONFIG_PARAM_CONTENT_TYPES_TO_IGNORE, CONTENT_TYPES_TO_IGNORE);
+        this.updateConfigItem(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS, DELETE_MID_VERSION_TRUE, false);
+        this.updateConfigItem(JpversioningSystemConstants.CONFIG_PARAM_CONTENTS_TO_IGNORE, CONTENTS_TO_IGNORE, false);
+        this.updateConfigItem(JpversioningSystemConstants.CONFIG_PARAM_CONTENT_TYPES_TO_IGNORE, CONTENT_TYPES_TO_IGNORE, false);
     }
-
-    private void setDefaultVersioningConfiguration() throws EntException {
+    
+    private void setDefaultVersioningConfiguration() throws Exception {
         baseConfigManager.updateParam(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS, DELETE_MID_VERSION_FALSE);
-        baseConfigManager.updateParam(JpversioningSystemConstants.CONFIG_PARAM_CONTENTS_TO_IGNORE,null);
-        baseConfigManager.updateParam(JpversioningSystemConstants.CONFIG_PARAM_CONTENT_TYPES_TO_IGNORE,null);
+        this.updateConfigItem(JpversioningSystemConstants.CONFIG_PARAM_CONTENTS_TO_IGNORE, null, true);
+        this.updateConfigItem(JpversioningSystemConstants.CONFIG_PARAM_CONTENT_TYPES_TO_IGNORE, null, true);
+        Assertions.assertNull(this.baseConfigManager.getParam(JpversioningSystemConstants.CONFIG_PARAM_CONTENTS_TO_IGNORE));
+        Assertions.assertNull(this.baseConfigManager.getParam(JpversioningSystemConstants.CONFIG_PARAM_CONTENT_TYPES_TO_IGNORE));
     }
 
-    private void updateConfigItem(String paramKey, String paramValue) throws Exception {
+    private void updateConfigItem(String paramKey, String paramValue, boolean remove) throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put(paramKey, paramValue);
         String xmlParams = baseConfigManager.getConfigItem(SystemConstants.CONFIG_ITEM_PARAMS);
-        String newXmlParams = SystemParamsUtils.getNewXmlParams(xmlParams, params, true);
+        String newXmlParams = null;
+        if (remove) {
+            Map<String, String> allParams = SystemParamsUtils.getParams(xmlParams);
+            allParams.remove(paramKey);
+            newXmlParams = SystemParamsUtils.getNewXmlParams("<" + SystemParamsUtils.PARAMS_ELEMENT + "/>", allParams, true);
+        } else {
+            newXmlParams = SystemParamsUtils.getNewXmlParams(xmlParams, params, true);
+        }
         baseConfigManager.updateConfigItem(SystemConstants.CONFIG_ITEM_PARAMS, newXmlParams);
     }
 

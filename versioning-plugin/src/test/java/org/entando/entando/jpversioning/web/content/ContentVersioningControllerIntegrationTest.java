@@ -242,6 +242,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
             newContentId = saveContent("json/1_POST_content_with_boolean_attribute.json", accessToken);
             updateContent("json/1_PUT_content_with_boolean_attribute.json", newContentId, accessToken);
             final ContentVersion lastVersion = versioningManager.getLastVersion(newContentId);
+            Assertions.assertNotNull(lastVersion);
             final Long versionId = lastVersion.getId();
             updateContent("json/2_PUT_content_with_boolean_attribute.json", newContentId, accessToken);
             postRecoverContentVersion(user, newContentId, versionId)
@@ -277,6 +278,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
             updateContent("json/2_PUT_content_with_boolean_attribute.json", contentId, accessToken);
 
             final ContentVersion lastVersion = versioningManager.getLastVersion(contentId);
+            Assertions.assertNotNull(lastVersion);
             final Long versionId = lastVersion.getId();
 
             listContentVersions(user, contentId)
@@ -310,6 +312,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
             updateContent("json/1_PUT_content_with_boolean_attribute.json", newContentId, accessToken);
 
             final ContentVersion lastVersion = versioningManager.getLastVersion(newContentId);
+            Assertions.assertNotNull(lastVersion);
             final Long versionId = lastVersion.getId();
 
             updateContent("json/2_PUT_content_with_boolean_attribute.json", newContentId, accessToken);

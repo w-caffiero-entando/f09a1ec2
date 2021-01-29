@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -117,7 +118,7 @@ public class ContentVersioningServiceTest {
         when(contentVersion.getContentId()).thenReturn(CONTENT_ID);
         when(contentManager.loadContentVO(CONTENT_ID)).thenReturn(currentRecordVo);
         when(currentRecordVo.getVersion()).thenReturn("1.8");
-        when(manager.getLastVersion(CONTENT_ID)).thenReturn(contentVersion);
+        Mockito.lenient().when(manager.getLastVersion(CONTENT_ID)).thenReturn(contentVersion);
         when(manager.getContent(contentVersion)).thenReturn(content);
         when(contentService.getDtoBuilder()).thenReturn(dtoBuilder);
         when(dtoBuilder.convert(content)).thenReturn(contentDto);
