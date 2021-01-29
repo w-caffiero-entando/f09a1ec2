@@ -50,7 +50,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
 
     @Autowired
     private TrashedResourceManager trashedResourceManager;
-
+    
     @Test
     public void testListDeletedAttachments() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
@@ -352,7 +352,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
                 .andExpect(status().isOk());
 
     }
-
+    
     @Test
     public void testTrashedImageRecover() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
@@ -368,6 +368,10 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
         listTrashedResources(user, params)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)));
+        
+        performGetResources(user, "image")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payload.size()", is(1)));
 
         ResultActions result = performCreateResource(user, "image", "free", "application/jpeg");
 
@@ -380,7 +384,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
 
         performGetResources(user, "image")
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload.size()", is(1)));
+                .andExpect(jsonPath("$.payload.size()", is(2)));
 
         performDeleteResource(user, resourceTypeCode, resourceId)
                 .andExpect(status().isOk());
@@ -391,10 +395,10 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
 
         performGetResources(user, "image")
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload.size()", is(0)));
+                .andExpect(jsonPath("$.payload.size()", is(1)));
 
         bodyResult = result.andReturn().getResponse().getContentAsString();
-
+        
         versionResourceId = JsonPath.read(bodyResult, "$.payload[1].id");
 
         deleteTrashedResource(user, versionResourceId)
@@ -406,10 +410,10 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
 
         performGetResources(user, "image")
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload.size()", is(0)));
+                .andExpect(jsonPath("$.payload.size()", is(1)));
 
     }
-
+    
     @Test
     public void testDeleteTrashedAttachment() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
@@ -494,7 +498,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
 
         performGetResources(user, "image")
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload.size()", is(1)));
+                .andExpect(jsonPath("$.payload.size()", is(2)));
 
         performDeleteResource(user, resourceTypeCode, resourceId)
                 .andExpect(status().isOk());
@@ -505,7 +509,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
 
         performGetResources(user, "image")
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload.size()", is(0)));
+                .andExpect(jsonPath("$.payload.size()", is(1)));
 
         bodyResult = result.andReturn().getResponse().getContentAsString();
 
@@ -520,7 +524,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
 
         performGetResources(user, "image")
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload.size()", is(0)));
+                .andExpect(jsonPath("$.payload.size()", is(1)));
 
     }
 
@@ -616,7 +620,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
 
         performGetResources(user, "image")
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload.size()", is(1)));
+                .andExpect(jsonPath("$.payload.size()", is(2)));
 
         performDeleteResource(user, resourceTypeCode, resourceId)
                 .andExpect(status().isOk());
@@ -670,7 +674,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(6)));
     }
-
+    
     private void cleanUpImage(UserDetails user) throws Exception {
         ResultActions result = performGetResources(user, "image")
                 .andExpect(status().isOk());
@@ -829,6 +833,9 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
             return mockMvc.perform(get(path));
         }
 
+        System.out.println("*******************************************************************");
+        //System.out.println(bodyResult);
+        System.out.println("*******************************************************************");
         String accessToken = mockOAuthInterceptor(user);
         return mockMvc.perform(
                 get(path)
