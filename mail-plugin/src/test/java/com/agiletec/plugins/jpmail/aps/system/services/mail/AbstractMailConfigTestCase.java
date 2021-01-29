@@ -21,9 +21,15 @@
  */
 package com.agiletec.plugins.jpmail.aps.system.services.mail;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.agiletec.aps.BaseTestCase;
 import java.util.Iterator;
 
-import com.agiletec.plugins.jpmail.aps.ApsPluginBaseTestCase;
 import com.agiletec.plugins.jpmail.util.JpmailTestHelper;
 
 import com.agiletec.aps.system.SystemConstants;
@@ -31,25 +37,15 @@ import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Abstract base class for Mail Configuration testing.
  * @version 1.0
  * @author E.Mezzano
- *
  */
-public abstract class AbstractMailConfigTestCase extends ApsPluginBaseTestCase {
-	
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
-		this._helper.resetConfig();
-		super.tearDown();
-	}
+public abstract class AbstractMailConfigTestCase extends BaseTestCase {
 	
 	protected MailConfig createMailConfig() {
 		MailConfig config = new MailConfig();
@@ -98,6 +94,7 @@ public abstract class AbstractMailConfigTestCase extends ApsPluginBaseTestCase {
 		assertFalse(mailConfig.isCheckServerIdentity());
 	}
 	
+    @BeforeEach
 	protected void init() throws Exception {
 		try {
 			ConfigInterface configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);
@@ -106,6 +103,11 @@ public abstract class AbstractMailConfigTestCase extends ApsPluginBaseTestCase {
 		} catch (Exception e) {
 			throw e;
 		}
+	}
+    
+    @AfterEach
+	protected void dispose() throws Exception {
+		this._helper.resetConfig();
 	}
 	
 	protected JpmailTestHelper _helper;

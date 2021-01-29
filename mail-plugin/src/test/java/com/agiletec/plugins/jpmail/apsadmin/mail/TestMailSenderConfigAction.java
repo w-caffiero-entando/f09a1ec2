@@ -21,29 +21,31 @@
  */
 package com.agiletec.plugins.jpmail.apsadmin.mail;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
-import com.agiletec.plugins.jpmail.apsadmin.ApsAdminPluginBaseTestCase;
 import com.agiletec.plugins.jpmail.util.JpmailTestHelper;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
 
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
+public class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-	
+	@Test
 	public void testViewSenders() throws Throwable {
 		this.initAction("/do/jpmail/MailConfig", "viewSenders");
 		this.setUserOnSession("admin");
@@ -54,6 +56,7 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		this.checkOriginaryConfig(mailConfig);
 	}
 	
+	@Test
 	public void testNewSender() throws Throwable {
 		this.initAction("/do/jpmail/MailConfig", "newSender");
 		this.setUserOnSession("admin");
@@ -63,6 +66,7 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		assertEquals(ApsAdminSystemConstants.ADD, action.getStrutsAction());
 	}
 	
+	@Test
 	public void testEditSender() throws Throwable {
 		String result = this.executeEditSender("admin", "CODE2");
 		assertEquals(Action.SUCCESS, result);
@@ -75,6 +79,7 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		assertEquals(Action.ERROR, result);
 	}
 	
+	@Test
 	public void testSaveSenderFailure() throws Throwable {
 		String currentUser = "admin";
 		
@@ -98,6 +103,7 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		assertTrue(((String) mailErrors.get(0)).contains(this.getAction().getText("error.config.sender.mail.notValid")));
 	}
 	
+	@Test
 	public void testSaveSenderSuccessful() throws Throwable {
 		String currentUser = "admin";
 		try {
@@ -113,6 +119,7 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		}
 	}
 	
+	@Test
 	public void testTrashSender() throws Throwable {
 		this.initAction("/do/jpmail/MailConfig", "trashSender");
 		this.setUserOnSession("admin");
@@ -124,6 +131,7 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		assertNotNull(config.getSender("CODE2"));
 	}
 	
+    @Test
 	public void testDeleteSender() throws Throwable {
 		try {
 			this.initAction("/do/jpmail/MailConfig", "deleteSender");
@@ -169,6 +177,7 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		return result;
 	}
 	
+    @BeforeEach
     private void init() throws Exception {
     	try {
     		ConfigInterface configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);

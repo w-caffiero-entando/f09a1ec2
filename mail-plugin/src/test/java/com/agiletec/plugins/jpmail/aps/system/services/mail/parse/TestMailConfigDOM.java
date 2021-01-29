@@ -29,6 +29,8 @@ import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
 import com.agiletec.plugins.jpmail.aps.services.mail.parse.MailConfigDOM;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testing class for XML configuration DOM.
@@ -42,6 +44,7 @@ public class TestMailConfigDOM extends AbstractMailConfigTestCase {
 	 * Tests the extraction of the configuration from the XML.
 	 * @throws Throwable
 	 */
+    @Test
 	public void testExtractConfig() throws Throwable {
 		String xml = this._configManager.getConfigItem(JpmailSystemConstants.MAIL_CONFIG_ITEM);
 		MailConfig mailConfig = new MailConfigDOM().extractConfig(xml);
@@ -52,6 +55,7 @@ public class TestMailConfigDOM extends AbstractMailConfigTestCase {
 	 * Tests the updating of the configuration.
 	 * @throws Throwable
 	 */
+	@Test
 	public void testUpdateConfig() throws Throwable {
 		MailConfigDOM mailConfigDom = new MailConfigDOM();
 		String xml = this._configManager.getConfigItem(JpmailSystemConstants.MAIL_CONFIG_ITEM);
@@ -70,7 +74,7 @@ public class TestMailConfigDOM extends AbstractMailConfigTestCase {
 		}
 	}
 	
-	@Override
+	@BeforeEach
 	protected void init() throws Exception {
 		super.init();
 		try {

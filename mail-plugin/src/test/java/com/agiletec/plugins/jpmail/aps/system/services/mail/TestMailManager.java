@@ -21,6 +21,9 @@
  */
 package com.agiletec.plugins.jpmail.aps.system.services.mail;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 import java.util.Properties;
 
@@ -34,14 +37,19 @@ import com.agiletec.plugins.jpmail.util.JpmailTestHelper;
 
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMailManager extends AbstractMailConfigTestCase {
 	
+	@Test
 	public void testGetConfig() throws Throwable {
 		MailConfig mailConfig = this._mailManager.getMailConfig();
 		this.checkOriginaryConfig(mailConfig);
 	}
 	
+	@Test
 	public void testUpdateConfig() throws Throwable {
 		MailConfig originaryConfig = this._mailManager.getMailConfig();
 		try {
@@ -58,6 +66,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 		}
 	}
 	
+	@Test
 	public void testSendMail() throws Throwable {
 		String[] mailAddresses = JpmailTestHelper.MAIL_ADDRESSES;
 		this._mailManager.sendMail(MAIL_TEXT, "Mail semplice", mailAddresses, mailAddresses, mailAddresses, SENDER_CODE);
@@ -70,6 +79,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 		
 	}
 	
+	@Test
 	public void testSendMailWithChangedPort() throws Throwable {
 		
 		MockMessageHandlerFactory myFactory2 = new MockMessageHandlerFactory();
@@ -98,8 +108,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 		smtpServer2 = null;
 	}
 
-	
-	
+	@Test
 	public void testSendMailWithContentType() throws Throwable {
 		this._mailManager.sendMail(MAIL_TEXT, "Mail with contentType text/html", 
 				JpmailTestHelper.MAIL_ADDRESSES, null, null, SENDER_CODE, IMailManager.CONTENTTYPE_TEXT_HTML);
@@ -119,6 +128,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 		assertEquals(2, messages.size());
 	}
 	
+	@Test
 	public void testSendMailWithAttachment() throws Throwable {
 		Properties attachments = new Properties();
 		attachments.setProperty("ALLEGATO", "target/test/entando_logo.jpg");
@@ -140,6 +150,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 		assertEquals(2, messages.size());
 	}
 	
+	@Test
 	public void testSendMixedMail() throws Throwable {
 		Properties attachments = new Properties();
 		attachments.setProperty("ALLEGATO", "target/test/entando_logo.jpg");
@@ -154,23 +165,25 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 		assertEquals(1, messages.size());
 	}
 	
-	@Override
-	protected void setUp() throws Exception {
+    @Override
+	@BeforeEach
+	protected void init() throws Exception {
+        super.init();
 		this._myFactory = new MockMessageHandlerFactory();
 		this._myAuthFactory = new MockAuthenticationHandlerFactory();
 		this._smtpServer = new SMTPServer(this._myFactory, this._myAuthFactory);
 		this._smtpServer.setPort(25000);
 		this._smtpServer.start();
-		super.setUp();
 	}
 	
-	@Override
-	protected void tearDown() throws Exception {
+    @Override
+	@AfterEach
+	protected void dispose() throws Exception {
 		this._myFactory = null;
 		this._myAuthFactory = null;
 		this._smtpServer.stop();
 		this._smtpServer = null;
-		super.tearDown();
+        super.dispose();
 	}
 	
 	private final String MAIL_TEXT = "<a href=\"http://www.japsportal.org/\" >Test Mail di prova</a>";
