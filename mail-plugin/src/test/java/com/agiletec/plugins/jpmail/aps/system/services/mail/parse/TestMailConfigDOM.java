@@ -38,14 +38,14 @@ import org.junit.jupiter.api.Test;
  * @author E.Mezzano
  *
  */
-public class TestMailConfigDOM extends AbstractMailConfigTestCase {
+class TestMailConfigDOM extends AbstractMailConfigTestCase {
 	
 	/**
 	 * Tests the extraction of the configuration from the XML.
 	 * @throws Throwable
 	 */
     @Test
-	public void testExtractConfig() throws Throwable {
+	void testExtractConfig() throws Throwable {
 		String xml = this._configManager.getConfigItem(JpmailSystemConstants.MAIL_CONFIG_ITEM);
 		MailConfig mailConfig = new MailConfigDOM().extractConfig(xml);
 		this.checkOriginaryConfig(mailConfig);
@@ -56,7 +56,7 @@ public class TestMailConfigDOM extends AbstractMailConfigTestCase {
 	 * @throws Throwable
 	 */
 	@Test
-	public void testUpdateConfig() throws Throwable {
+	void testUpdateConfig() throws Throwable {
 		MailConfigDOM mailConfigDom = new MailConfigDOM();
 		String xml = this._configManager.getConfigItem(JpmailSystemConstants.MAIL_CONFIG_ITEM);
 		MailConfig originaryConfig = mailConfigDom.extractConfig(xml);

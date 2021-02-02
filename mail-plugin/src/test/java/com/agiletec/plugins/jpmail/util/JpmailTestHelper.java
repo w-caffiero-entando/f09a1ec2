@@ -31,7 +31,7 @@ import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
  * Helper for the jpmail tests. Use its functionalities to arrange the system for jpmail tests.
  * @author E.Mezzano
  */
-public class JpmailTestHelper {
+class JpmailTestHelper {
 	
 	/**
 	 * Instantiate 

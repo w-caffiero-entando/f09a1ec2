@@ -43,14 +43,14 @@ import com.opensymphony.xwork2.Action;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSmtpConfigAction extends ApsAdminBaseTestCase {
+class TestSmtpConfigAction extends ApsAdminBaseTestCase {
 	
 	/**
 	 * Tests the 'edit' action.
 	 * @throws Throwable
 	 */
 	@Test
-	public void testEdit() throws Throwable {
+	void testEdit() throws Throwable {
 		MailConfig config = this._mailManager.getMailConfig();
 		
 		this.setUserOnSession("admin");
@@ -65,7 +65,7 @@ public class TestSmtpConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSaveFailure_1() throws Throwable {
+	void testSaveFailure_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		String result = this.executeSave("admin", params);
 		assertEquals(Action.INPUT, result);
@@ -84,7 +84,7 @@ public class TestSmtpConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testSaveFailure_2() throws Throwable {
+	void testSaveFailure_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("smtpProtocol", "invalidNumber");
 		params.put("smtpPort", "invalidNumber");
@@ -98,7 +98,7 @@ public class TestSmtpConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testSaveFailure_3() throws Throwable {
+	void testSaveFailure_3() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("debug", "true");
 		params.put("smtpProtocol", "1");
@@ -136,7 +136,7 @@ public class TestSmtpConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testSaveFailure_4() throws Throwable {
+	void testSaveFailure_4() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("smtpHost", "localhost");
 		params.put("debug", "true");
@@ -154,7 +154,7 @@ public class TestSmtpConfigAction extends ApsAdminBaseTestCase {
 	 * @throws Throwable
 	 */
 	@Test
-	public void testSaveSuccessful() throws Throwable {
+	void testSaveSuccessful() throws Throwable {
 		try {
 			Map<String, String> params = new HashMap<String, String>();
 

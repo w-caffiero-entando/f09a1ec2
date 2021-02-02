@@ -41,16 +41,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMailManager extends AbstractMailConfigTestCase {
+class TestMailManager extends AbstractMailConfigTestCase {
 	
 	@Test
-	public void testGetConfig() throws Throwable {
+	void testGetConfig() throws Throwable {
 		MailConfig mailConfig = this._mailManager.getMailConfig();
 		this.checkOriginaryConfig(mailConfig);
 	}
 	
 	@Test
-	public void testUpdateConfig() throws Throwable {
+	void testUpdateConfig() throws Throwable {
 		MailConfig originaryConfig = this._mailManager.getMailConfig();
 		try {
 			MailConfig config = this.createMailConfig();
@@ -67,7 +67,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 	}
 	
 	@Test
-	public void testSendMail() throws Throwable {
+	void testSendMail() throws Throwable {
 		String[] mailAddresses = JpmailTestHelper.MAIL_ADDRESSES;
 		this._mailManager.sendMail(MAIL_TEXT, "Mail semplice", mailAddresses, mailAddresses, mailAddresses, SENDER_CODE);
 		
@@ -80,7 +80,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 	}
 	
 	@Test
-	public void testSendMailWithChangedPort() throws Throwable {
+	void testSendMailWithChangedPort() throws Throwable {
 		
 		MockMessageHandlerFactory myFactory2 = new MockMessageHandlerFactory();
 		MockAuthenticationHandlerFactory myAuthFactory2 = new MockAuthenticationHandlerFactory();
@@ -109,7 +109,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 	}
 
 	@Test
-	public void testSendMailWithContentType() throws Throwable {
+	void testSendMailWithContentType() throws Throwable {
 		this._mailManager.sendMail(MAIL_TEXT, "Mail with contentType text/html", 
 				JpmailTestHelper.MAIL_ADDRESSES, null, null, SENDER_CODE, IMailManager.CONTENTTYPE_TEXT_HTML);
 		
@@ -129,7 +129,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 	}
 	
 	@Test
-	public void testSendMailWithAttachment() throws Throwable {
+	void testSendMailWithAttachment() throws Throwable {
 		Properties attachments = new Properties();
 		attachments.setProperty("ALLEGATO", "target/test/entando_logo.jpg");
 		this._mailManager.sendMail(MAIL_TEXT, "Mail with attachment & text html", 
@@ -151,7 +151,7 @@ public class TestMailManager extends AbstractMailConfigTestCase {
 	}
 	
 	@Test
-	public void testSendMixedMail() throws Throwable {
+	void testSendMixedMail() throws Throwable {
 		Properties attachments = new Properties();
 		attachments.setProperty("ALLEGATO", "target/test/entando_logo.jpg");
 		String[] mailAddresses = JpmailTestHelper.MAIL_ADDRESSES;

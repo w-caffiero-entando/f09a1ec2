@@ -43,10 +43,10 @@ import com.opensymphony.xwork2.Action;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
+class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
 	
 	@Test
-	public void testViewSenders() throws Throwable {
+	void testViewSenders() throws Throwable {
 		this.initAction("/do/jpmail/MailConfig", "viewSenders");
 		this.setUserOnSession("admin");
 		String result = this.executeAction();
@@ -57,7 +57,7 @@ public class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testNewSender() throws Throwable {
+	void testNewSender() throws Throwable {
 		this.initAction("/do/jpmail/MailConfig", "newSender");
 		this.setUserOnSession("admin");
 		String result = this.executeAction();
@@ -67,7 +67,7 @@ public class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testEditSender() throws Throwable {
+	void testEditSender() throws Throwable {
 		String result = this.executeEditSender("admin", "CODE2");
 		assertEquals(Action.SUCCESS, result);
 		MailSenderConfigAction action = (MailSenderConfigAction) this.getAction();
@@ -80,7 +80,7 @@ public class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSaveSenderFailure() throws Throwable {
+	void testSaveSenderFailure() throws Throwable {
 		String currentUser = "admin";
 		
 		String result = this.executeSaveSender(currentUser, "CODE1", "", ApsAdminSystemConstants.ADD);
@@ -104,7 +104,7 @@ public class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSaveSenderSuccessful() throws Throwable {
+	void testSaveSenderSuccessful() throws Throwable {
 		String currentUser = "admin";
 		try {
 			String result = this.executeSaveSender(currentUser, "CODE1", "\"Indirizzo di Prova\" <mail@addresstest.it>", ApsAdminSystemConstants.EDIT);
@@ -120,7 +120,7 @@ public class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testTrashSender() throws Throwable {
+	void testTrashSender() throws Throwable {
 		this.initAction("/do/jpmail/MailConfig", "trashSender");
 		this.setUserOnSession("admin");
 		this.addParameter("code", "CODE1");
@@ -132,7 +132,7 @@ public class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
 	}
 	
     @Test
-	public void testDeleteSender() throws Throwable {
+	void testDeleteSender() throws Throwable {
 		try {
 			this.initAction("/do/jpmail/MailConfig", "deleteSender");
 			this.setUserOnSession("admin");

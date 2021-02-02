@@ -34,13 +34,13 @@ import org.junit.jupiter.api.Test;
  * @author E.Mezzano
  *
  */
-public class TestEmailAddressValidator extends BaseTestCase {
+class TestEmailAddressValidator extends BaseTestCase {
 	
 	/**
 	 * Tests the validation of mail addresses.
 	 */
 	@Test
-	public void testMail() {
+	void testMail() {
 		boolean bool1 = EmailAddressValidator.isValidEmailAddress(mail1);
 		boolean bool2 = EmailAddressValidator.isValidEmailAddress(mail2);
 		boolean bool3 = EmailAddressValidator.isValidEmailAddress(mail3);
