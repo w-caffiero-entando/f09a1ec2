@@ -42,7 +42,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 
-public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     @Autowired
     @Qualifier("SeoPageService")
@@ -60,7 +60,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     private static String SEO_TEST_2_FC = "seoTest2fc";
 
     @Test
-    public void testGetBuiltInSeoPage() throws Exception {
+    void testGetBuiltInSeoPage() throws Exception {
         String accessToken = this.createAccessToken();
 
         final ResultActions result = this.executeGetSeoPage("service", accessToken);
@@ -68,7 +68,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     }
     
     @Test
-    public void testPostSeoPage() throws Exception {
+    void testPostSeoPage() throws Exception {
         try {
             String accessToken = this.createAccessToken();
             final ResultActions result = this.executePostSeoPage("1_POST_valid.json", accessToken, status().isOk());
@@ -132,7 +132,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     @Test
-    public void testPostSeoPageNoSeoFields() throws Exception {
+    void testPostSeoPageNoSeoFields() throws Exception {
         try {
             String accessToken = this.createAccessToken();
 
@@ -164,7 +164,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     @Test
-    public void testPostSeoPageNullSeoFields() throws Exception {
+    void testPostSeoPageNullSeoFields() throws Exception {
         try {
             String accessToken = this.createAccessToken();
             final ResultActions result = this
@@ -193,7 +193,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     @Test
-    public void testPostSeoPageNullSeoData() throws Exception {
+    void testPostSeoPageNullSeoData() throws Exception {
         try {
             String accessToken = this.createAccessToken();
             final ResultActions result = this.executePostSeoPage("1_POST_valid_no_seoData.json", accessToken, status().isOk());
@@ -218,7 +218,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     }
     
     @Test
-    public void testPostSeoPageDuplicateFriendlyCode() throws Exception {
+    void testPostSeoPageDuplicateFriendlyCode() throws Exception {
         try {
             String accessToken = this.createAccessToken();
             ResultActions result1 = this.executePostSeoPage("2_POST_valid.json", accessToken, status().isOk());
@@ -237,7 +237,7 @@ public class SeoPageControllerIntegrationTest extends AbstractControllerIntegrat
     }
     
     @Test
-    public void testPutSeoPage() throws Exception {
+    void testPutSeoPage() throws Exception {
         try {
             String accessToken = this.createAccessToken();
             final ResultActions result = this

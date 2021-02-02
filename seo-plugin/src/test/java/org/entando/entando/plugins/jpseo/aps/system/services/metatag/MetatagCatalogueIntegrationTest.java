@@ -33,10 +33,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class MetatagCatalogueIntegrationTest extends BaseTestCase {
+class MetatagCatalogueIntegrationTest extends BaseTestCase {
     
 	@Test
-    public void testLoadCatalogue() {
+    void testLoadCatalogue() {
         IMetatagCatalog catalogue = super.getApplicationContext().getBean(JpseoSystemConstants.SEO_METATAG_CATALOG, IMetatagCatalog.class);
         Map<String, Metatag> map = catalogue.getCatalog();
         assertNotNull(map);

@@ -38,7 +38,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
-public class SeoPageControllerTest extends AbstractControllerTest {
+class SeoPageControllerTest extends AbstractControllerTest {
 
     private static final String PAGE_CODE = "TST";
     private static final String STATUS_DRAFT = "draft";
@@ -67,7 +67,7 @@ public class SeoPageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetSeoPage() throws Exception {
+    void testGetSeoPage() throws Exception {
         SeoPageDto seoPageDto = new SeoPageDto();
         UserDetails user = this.createUser(true);
         Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
@@ -79,7 +79,7 @@ public class SeoPageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetSeoPageNotAuthorized() throws Exception {
+    void testGetSeoPageNotAuthorized() throws Exception {
         SeoPageDto seoPageDto = new SeoPageDto();
         UserDetails user = this.createUser(true);
         Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);

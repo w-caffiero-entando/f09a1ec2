@@ -48,13 +48,13 @@ import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadat
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class PageActionIntegrationTest extends ApsAdminBaseTestCase {
+class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 
 	private IPageManager pageManager = null;
     private ISeoMappingManager seoMappingManager;
 
 	@Test
-    public void testEditPage_1() throws Throwable {
+    void testEditPage_1() throws Throwable {
 		String selectedPageCode = "pagina_1";
 		String result = this.executeActionOnPage(selectedPageCode, "admin", "edit", null);
 		assertEquals(Action.SUCCESS, result);
@@ -72,7 +72,7 @@ public class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 	}
     
 	@Test
-    public void testEditPage_2() throws Throwable {
+    void testEditPage_2() throws Throwable {
 		String selectedPageCode = "seo_page_1";
 		String result = this.executeActionOnPage(selectedPageCode, "admin", "edit", null);
 		assertEquals(Action.SUCCESS, result);
@@ -108,7 +108,7 @@ public class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-    public void testJoinGroupPageForAdminUser() throws Throwable {
+    void testJoinGroupPageForAdminUser() throws Throwable {
 		String extraGroup = Group.ADMINS_GROUP_NAME;
 		String selectedPageCode = "pagina_1";
 		Map<String, String> params = new HashMap<>();
@@ -142,7 +142,7 @@ public class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 	}
     
 	@Test
-    public void testValidateSavePage() throws Throwable {
+    void testValidateSavePage() throws Throwable {
 		String pageCode = "pagina_test";
 		String longPageCode = "very_long_page_code__very_long_page_code";
 		assertNull(this.pageManager.getDraftPage(pageCode));
@@ -196,7 +196,7 @@ public class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 	}
     
 	@Test
-    public void testSavePage_1() throws Throwable {
+    void testSavePage_1() throws Throwable {
 		String pageCode = "seo_test_1";
 		assertNull(this.pageManager.getDraftPage(pageCode));
 		try {
@@ -230,7 +230,7 @@ public class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 	}
     
 	@Test
-    public void testSavePage_2() throws Throwable {
+    void testSavePage_2() throws Throwable {
 		String pageCode = "seo_test_2";
 		String pageCode_bis = "seo_test_2_bis";
 		assertNull(this.pageManager.getDraftPage(pageCode));
@@ -301,7 +301,7 @@ public class PageActionIntegrationTest extends ApsAdminBaseTestCase {
     }
     
     @Test
-    public void testSavePage_3() throws Throwable {
+    void testSavePage_3() throws Throwable {
         String pageCode = "seo_test_3";
         assertNull(this.pageManager.getDraftPage(pageCode));
         String friendlyCode_1 = "friendly_code_test_3";
@@ -366,7 +366,7 @@ public class PageActionIntegrationTest extends ApsAdminBaseTestCase {
     }
     
     @Test
-    public void testAddRemoveMetatag() throws Throwable {
+    void testAddRemoveMetatag() throws Throwable {
         String pageCode = "seo_test_4";
         try {
             Map<String, String> params = this.createParamForTest(pageCode);

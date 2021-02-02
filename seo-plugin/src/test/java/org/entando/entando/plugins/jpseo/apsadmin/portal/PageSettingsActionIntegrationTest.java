@@ -38,14 +38,14 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
+class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
 
     private ConfigInterface configManager;
     private IStorageManager storageManager;
     private String oldConfigParam;
 
     @Test
-    public void testConfigSystemParams() throws Throwable {
+    void testConfigSystemParams() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/Page", "systemParams");
         String result = this.executeAction();
@@ -58,7 +58,7 @@ public class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testUpdateConfigParams_1() throws Throwable {
+    void testUpdateConfigParams_1() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/Page", "updateSystemParams");
@@ -81,7 +81,7 @@ public class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testUpdateConfigParams_2() throws Throwable {
+    void testUpdateConfigParams_2() throws Throwable {
         String path = "target/test/robot_test.txt";
         try {
             this.setUserOnSession("admin");
@@ -112,13 +112,13 @@ public class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testUpdateConfigParams_3() throws Throwable {
+    void testUpdateConfigParams_3() throws Throwable {
         String path = "target/test/invalid_folder/robot_test.txt";
         this.executeInvalidRobotPath(path);
     }
 
     @Test
-    public void testUpdateConfigParams_4() throws Throwable {
+    void testUpdateConfigParams_4() throws Throwable {
         String path = "target/../robot_test.txt";
         this.executeInvalidRobotPath(path);
     }

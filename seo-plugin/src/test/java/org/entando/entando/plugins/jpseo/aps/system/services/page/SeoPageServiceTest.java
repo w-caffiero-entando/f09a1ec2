@@ -10,13 +10,13 @@ import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SeoPageServiceTest extends BaseTestCase {
+class SeoPageServiceTest extends BaseTestCase {
 
     private IPageService pageService;
     private IPageManager pageManager;
 
     @Test
-    public void testGetBuiltInSeoPage() throws Exception {
+    void testGetBuiltInSeoPage() throws Exception {
         PageDto page = this.pageService.getPage("service", IPageService.STATUS_DRAFT);
         assertEquals("service", page.getCode());
     }

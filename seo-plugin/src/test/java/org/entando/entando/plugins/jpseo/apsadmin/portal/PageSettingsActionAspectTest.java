@@ -61,7 +61,7 @@ import org.springframework.mock.web.MockHttpSession;
  * @author E.Santoboni
  */
 @ExtendWith(MockitoExtension.class)
-public class PageSettingsActionAspectTest {
+class PageSettingsActionAspectTest {
 
     private static final String CONFIG_PARAMETER
             = "<Params><Param name=\"param_1\">value_1</Param><Param name=\"param_2\">value_2</Param></Params>";

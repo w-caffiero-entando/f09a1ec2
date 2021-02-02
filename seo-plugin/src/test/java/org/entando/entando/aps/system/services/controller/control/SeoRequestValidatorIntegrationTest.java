@@ -36,7 +36,7 @@ import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadat
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SeoRequestValidatorIntegrationTest extends BaseTestCase {
+class SeoRequestValidatorIntegrationTest extends BaseTestCase {
 
     private ControlServiceInterface requestValidator;
 
@@ -44,7 +44,7 @@ public class SeoRequestValidatorIntegrationTest extends BaseTestCase {
     private IContentManager contentManager;
 
     @Test
-    public void testService_1() throws Exception {
+    void testService_1() throws Exception {
         RequestContext reqCtx = this.getRequestContext();
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
         IPage root = this.pageManager.getDraftRoot();
@@ -83,7 +83,7 @@ public class SeoRequestValidatorIntegrationTest extends BaseTestCase {
     }
     
     @Test
-    public void testService_2() throws Exception {
+    void testService_2() throws Exception {
         RequestContext reqCtx = this.getRequestContext();
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
         Content content = this.contentManager.loadContent("EVN41", false);

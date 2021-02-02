@@ -48,7 +48,7 @@ import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadat
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SeoMappingManagerIntegrationTest extends BaseTestCase {
+class SeoMappingManagerIntegrationTest extends BaseTestCase {
     
     private IContentManager contentManager;
     private IPageManager pageManager;
@@ -56,7 +56,7 @@ public class SeoMappingManagerIntegrationTest extends BaseTestCase {
     private IWidgetTypeManager widgetTypeManager;
     
     @Test
-    public void testCreateFriendlyCode_1() throws Exception {
+    void testCreateFriendlyCode_1() throws Exception {
         String contentId1 = null;
         Content content1 = null;
         String contentId2 = null;
@@ -127,7 +127,7 @@ public class SeoMappingManagerIntegrationTest extends BaseTestCase {
     }
     
     @Test
-    public void testCreateFriendlyCode_2() throws Exception {
+    void testCreateFriendlyCode_2() throws Exception {
         String contentId1 = null;
         Content content = null;
         try {
@@ -175,7 +175,7 @@ public class SeoMappingManagerIntegrationTest extends BaseTestCase {
     }
     
     @Test
-    public void testCreateFriendlyCode_3() throws Exception {
+    void testCreateFriendlyCode_3() throws Exception {
         String code1 = "test1";
         String code2 = "test2";
         try {

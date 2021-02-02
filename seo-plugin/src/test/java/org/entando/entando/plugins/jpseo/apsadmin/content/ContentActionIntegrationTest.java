@@ -39,10 +39,10 @@ import com.opensymphony.xwork2.Action;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ContentActionIntegrationTest extends ApsAdminBaseTestCase {
+class ContentActionIntegrationTest extends ApsAdminBaseTestCase {
 
 	@Test
-    public void testSaveNewContent() throws Throwable {
+    void testSaveNewContent() throws Throwable {
 		String contentId = "ART1";
 		Content master = this.getContentManager().loadContent(contentId, false);
 		String contentOnSessionMarker = AbstractContentAction.buildContentOnSessionMarker(master, ApsAdminSystemConstants.ADD);
@@ -76,11 +76,11 @@ public class ContentActionIntegrationTest extends ApsAdminBaseTestCase {
 		}
 	}
 
-	//	public void test() {
+	//	void test() {
 	//		assertTrue(true);
 	//	}
 	//
-	//	public void testValidateContent() {
+	//	void testValidateContent() {
 	//
 	//	}
 
