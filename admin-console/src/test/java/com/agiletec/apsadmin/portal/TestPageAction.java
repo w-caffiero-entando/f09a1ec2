@@ -112,7 +112,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals(Action.SUCCESS, result);
         IPage page = this._pageManager.getDraftPage(selectedPageCode);
         PageAction action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.EDIT);
+        assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
         assertEquals(page.getCode(), action.getPageCode());
         assertEquals(page.getParentCode(), action.getParentPageCode());
         assertEquals(page.getModel().getCode(), action.getModel());
@@ -127,20 +127,20 @@ class TestPageAction extends ApsAdminBaseTestCase {
         String result = this.executeActionOnPage("pagina_1", "admin", "edit");
         assertEquals(Action.SUCCESS, result);
         PageAction action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.EDIT);
+        assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
         assertFalse(action.isGroupSelectLock());
 
         result = this.executeActionOnPage("customers_page", "admin", "edit");
         assertEquals(Action.SUCCESS, result);
         action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.EDIT);
+        assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
         assertEquals("customers", action.getGroup());
         assertFalse(action.isGroupSelectLock());
 
         result = this.executeActionOnPage("customer_subpage_1", "admin", "edit");
         assertEquals(Action.SUCCESS, result);
         action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.EDIT);
+        assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
         assertEquals("customers", action.getGroup());
         assertTrue(action.isGroupSelectLock());
     }
@@ -150,14 +150,14 @@ class TestPageAction extends ApsAdminBaseTestCase {
         String result = this.executeActionOnPage("customers_page", "pageManagerCustomers", "edit");
         assertEquals(Action.SUCCESS, result);
         PageAction action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.EDIT);
+        assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
         assertEquals("customers", action.getGroup());
         assertTrue(action.isGroupSelectLock());
 
         result = this.executeActionOnPage("customer_subpage_1", "pageManagerCustomers", "edit");
         assertEquals(Action.SUCCESS, result);
         action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.EDIT);
+        assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
         assertEquals("customers", action.getGroup());
         assertTrue(action.isGroupSelectLock());
     }
@@ -173,7 +173,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals(Action.SUCCESS, result);
 
         PageAction action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.EDIT);
+        assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
         assertEquals(customers_page.getCode(), action.getPageCode());
         assertEquals(customers_page.getModel().getCode(), action.getModel());
         assertTrue(action.isShowable());
@@ -198,7 +198,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
             action = (PageFinderAction) this.getAction();
             assertNotNull(action);
             assertNotNull(action.getPagesFound());
-            assertEquals(action.getPagesFound().size(), 5);
+            assertEquals(5, action.getPagesFound().size());
             // test unlikey events - empty search string
             this.initAction("/do/Page", "search");
             this.addParameter("pageCodeToken", "");
@@ -277,7 +277,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals(Action.SUCCESS, result);
 
         PageAction action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.ADD);
+        assertEquals(ApsAdminSystemConstants.ADD, action.getStrutsAction());
         assertEquals(root.getCode(), action.getParentPageCode());
         assertEquals(root.getGroup(), action.getGroup());
         assertFalse(action.isGroupSelectLock());
@@ -303,7 +303,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals(Action.SUCCESS, result);
 
         PageAction action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.ADD);
+        assertEquals(ApsAdminSystemConstants.ADD, action.getStrutsAction());
         assertEquals(customers_page.getCode(), action.getParentPageCode());
         assertEquals(customers_page.getGroup(), action.getGroup());
         assertFalse(action.isGroupSelectLock());
@@ -322,7 +322,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals(Action.SUCCESS, result);
 
         PageAction action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.ADD);
+        assertEquals(ApsAdminSystemConstants.ADD, action.getStrutsAction());
         assertEquals(coach_page.getCode(), action.getParentPageCode());
         assertEquals(coach_page.getGroup(), action.getGroup());
         assertFalse(action.isGroupSelectLock());
@@ -334,7 +334,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals(Action.SUCCESS, result);
 
         action = (PageAction) this.getAction();
-        assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.ADD);
+        assertEquals(ApsAdminSystemConstants.ADD, action.getStrutsAction());
         assertEquals(customers_page.getCode(), action.getParentPageCode());
         assertEquals(customers_page.getGroup(), action.getGroup());
         assertFalse(action.isGroupSelectLock());

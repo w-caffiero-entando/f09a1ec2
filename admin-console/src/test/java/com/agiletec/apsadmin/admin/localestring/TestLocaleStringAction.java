@@ -184,8 +184,8 @@ class TestLocaleStringAction extends ApsAdminBaseTestCase {
 			String result = this.executeSaveEdit("admin", key, "updatedKeyIt", "updatedKeyEn");
 			assertEquals(Action.SUCCESS, result);
 			assertTrue(this._i18nManager.getLabelGroups().containsKey(key));
-			assertEquals(this._i18nManager.getLabel(key, "it"), "updatedKeyIt");
-			assertEquals(this._i18nManager.getLabel(key, "en"), "updatedKeyEn");
+			assertEquals("updatedKeyIt", this._i18nManager.getLabel(key, "it"));
+			assertEquals("updatedKeyEn", this._i18nManager.getLabel(key, "en"));
 		} catch(Throwable t) {
 			throw t;
 		} finally {

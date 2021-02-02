@@ -42,7 +42,7 @@ class TestLangAction extends ApsAdminBaseTestCase {
             result = this.executeAddLang("admin", langCode);
             assertEquals(Action.SUCCESS, result);
             Lang language = this._langManager.getLang(langCode);
-            assertEquals(language.getDescr(), "French");
+            assertEquals("French", language.getDescr());
         } catch (Throwable t) {
             throw t;
         } finally {
@@ -56,7 +56,7 @@ class TestLangAction extends ApsAdminBaseTestCase {
             String result = this.executeAddLang("admin", langCode);
             assertEquals(Action.SUCCESS, result);
             Lang language = this._langManager.getLang(langCode);
-            assertEquals(language.getDescr(), "French");
+            assertEquals("French", language.getDescr());
             result = this.executeAddLang("admin", langCode);
             assertEquals(Action.INPUT, result);
             result = this.executeAddLang("admin", "en");

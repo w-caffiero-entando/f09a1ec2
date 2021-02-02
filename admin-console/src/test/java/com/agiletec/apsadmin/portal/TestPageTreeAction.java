@@ -196,9 +196,9 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
         assertEquals(0, messages.size());
         
         pageToMove = this._pageManager.getDraftPage(pageToMoveCode);
-        assertEquals(pageToMove.getPosition(), 1);
+        assertEquals(1, pageToMove.getPosition());
         sisterPage = this._pageManager.getDraftPage(sisterPageCode);
-        assertEquals(sisterPage.getPosition(), 2);
+        assertEquals(2, sisterPage.getPosition());
         IPage parent = this._pageManager.getDraftPage(sisterPage.getParentCode());
         String[] children = parent.getChildrenCodes();
         assertEquals("pagina_12", children[0]);
@@ -216,9 +216,9 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
         assertEquals(0, messages.size());
 
         pageToMove = _pageManager.getDraftPage(pageToMoveCode);
-        assertEquals(pageToMove.getPosition(), 2);
+        assertEquals(2, pageToMove.getPosition());
         sisterPage = _pageManager.getDraftPage(sisterPageCode);
-        assertEquals(sisterPage.getPosition(), 1);
+        assertEquals(1, sisterPage.getPosition());
     }
     
     @Test

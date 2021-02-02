@@ -62,7 +62,7 @@ class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
             this.addParameter("username", "admin2");
             UserProfileFinderAction action = (UserProfileFinderAction) this.getAction();
             this.executeAction();
-            assertEquals(action.getUsername(), "admin2");
+            assertEquals("admin2", action.getUsername());
         } catch (Throwable t) {
             throw t;
         }
@@ -321,7 +321,7 @@ class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
             String result = this.executeAction();
             UserProfileFinderAction action = (UserProfileFinderAction) this.getAction();
             assertEquals(Action.SUCCESS, result);
-            assertEquals(((UserProfileFinderAction) action).getEntityTypeCode(), "TEST");
+            assertEquals("TEST", ((UserProfileFinderAction) action).getEntityTypeCode());
         } catch (Throwable t) {
             throw t;
         }

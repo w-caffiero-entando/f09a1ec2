@@ -36,7 +36,7 @@ class TestLangFinderAction extends ApsAdminBaseTestCase {
 		LangFinderAction langFinderAction = (LangFinderAction) this.getAction();
 		
 		List<Lang> langs = langFinderAction.getLangs();
-		assertEquals(langs.size(), 2);
+		assertEquals(2, langs.size());
 		List<Lang> assignableLangs = langFinderAction.getAssignableLangs();
 		assertFalse(assignableLangs.isEmpty());
 	}
