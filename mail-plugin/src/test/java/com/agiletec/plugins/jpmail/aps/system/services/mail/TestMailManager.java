@@ -57,12 +57,14 @@ class TestMailManager extends AbstractMailConfigTestCase {
 			this._mailManager.updateMailConfig(config);
 			MailConfig updatedConfig = this._mailManager.getMailConfig();
 			this.compareConfigs(config, updatedConfig);
+            assertNotNull(updatedConfig);
 		} catch (Throwable t) {
 			throw t;
 		} finally {
 			this._mailManager.updateMailConfig(originaryConfig);
 			MailConfig updatedConfig = this._mailManager.getMailConfig();
 			this.compareConfigs(originaryConfig, updatedConfig);
+            assertNotNull(updatedConfig);
 		}
 	}
 	

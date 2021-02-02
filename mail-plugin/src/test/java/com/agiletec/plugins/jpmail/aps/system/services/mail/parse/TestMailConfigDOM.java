@@ -22,6 +22,8 @@
 package com.agiletec.plugins.jpmail.aps.system.services.mail.parse;
 
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.agiletec.plugins.jpmail.aps.system.services.mail.AbstractMailConfigTestCase;
 
 import com.agiletec.aps.system.SystemConstants;
@@ -65,12 +67,14 @@ class TestMailConfigDOM extends AbstractMailConfigTestCase {
 			xml = mailConfigDom.createConfigXml(config);
 			MailConfig updatedConfig = mailConfigDom.extractConfig(xml);
 			this.compareConfigs(config, updatedConfig);
+            assertNotNull(updatedConfig);
 		} catch (Throwable t) {
 			throw t;
 		} finally {
 			xml = mailConfigDom.createConfigXml(originaryConfig);
 			MailConfig updatedConfig = mailConfigDom.extractConfig(xml);
 			this.compareConfigs(originaryConfig, updatedConfig);
+            assertNotNull(updatedConfig);
 		}
 	}
 	
