@@ -34,7 +34,7 @@ class TestActivityStreamAction extends ApsAdminBaseTestCase {
 
     /*
 	@Test
-    public void testActivityStreamSearchBean() throws Throwable {
+    void testActivityStreamSearchBean() throws Throwable {
 		Content content = this._contentManager.loadContent("EVN41", false);//"coach" group
 		String contentOnSessionMarker = AbstractContentAction.buildContentOnSessionMarker(content, ApsAdminSystemConstants.ADD);
 		content.setId(null);
@@ -106,7 +106,7 @@ class TestActivityStreamAction extends ApsAdminBaseTestCase {
 	}
      */
     @Test
-    public void testCallAction() throws Throwable {
+    void testCallAction() throws Throwable {
         this.initActivityStreamAction("/do/ActivityStream", "update", "2012-12-12 12:12:12|121");
         this.setUserOnSession("admin");
         String result = this.executeAction();

@@ -30,13 +30,13 @@ import org.junit.jupiter.api.Test;
 class TestGroupFinderAction extends ApsAdminBaseTestCase {
 	
 	@Test
-    public void testListWithUserNotAllowed() throws Throwable {
+    void testListWithUserNotAllowed() throws Throwable {
 		String result = this.executeList("developersConf");
 		assertEquals("apslogin", result);
 	}
 	
 	@Test
-    public void testList() throws Throwable {
+    void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		GroupFinderAction groupFinderAction = (GroupFinderAction) this.getAction();

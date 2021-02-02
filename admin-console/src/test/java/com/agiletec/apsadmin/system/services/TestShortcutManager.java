@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 class TestShortcutManager extends BaseTestCase {
 	
     @Test
-	public void testGetAllowedShortcuts() throws Throwable {
+	void testGetAllowedShortcuts() throws Throwable {
     	assertNotNull(this._shortcutManager);
     	String expectedShortcut = "core.tools.setting";
     	UserDetails adminUser = super.getUser("admin");
@@ -59,7 +59,7 @@ class TestShortcutManager extends BaseTestCase {
 	}
     
     @Test
-	public void testSaveShortcutConfig_1() throws Throwable {
+	void testSaveShortcutConfig_1() throws Throwable {
     	String username = "admin";
     	String[] configToSave = {null, "jacms.content.new", null, null, "jacms.content.list", "core.portal.widgetType", null, "core.tools.setting", null, null};
     	String[] expected = {null, null, null, null, "jacms.content.list", "core.portal.widgetType", null, "core.tools.setting", null, null};
@@ -67,7 +67,7 @@ class TestShortcutManager extends BaseTestCase {
     }
     
     @Test
-	public void testSaveShortcutConfig_2() throws Throwable {
+	void testSaveShortcutConfig_2() throws Throwable {
     	String username = "admin";
     	String[] configToSave = {null, "jacms.content.new", null, null, "jacms.content.list", "core.portal.widgetType", null, "core.tools.setting", "shortcut.invalid", null};
     	String[] expected = {null, null, null, null, "jacms.content.list", "core.portal.widgetType", null, "core.tools.setting", null, null};
@@ -75,7 +75,7 @@ class TestShortcutManager extends BaseTestCase {
     }
     
     @Test
-	public void testSaveShortcutConfig_3() throws Throwable {
+	void testSaveShortcutConfig_3() throws Throwable {
     	String username = "editorCoach";
     	String[] configToSave = {null, "jacms.content.new", null, null, "jacms.content.list"};
     	String[] expected = {null, null, null, null, "jacms.content.list", null, null, null, null, null};
@@ -83,7 +83,7 @@ class TestShortcutManager extends BaseTestCase {
     }
     
     @Test
-	public void testSaveShortcutConfig_4() throws Throwable {
+	void testSaveShortcutConfig_4() throws Throwable {
     	String username = "editorCoach";
     	String[] configToSave = {null, "jacms.content.new", null, null, "core.tools.setting", 
     			"jacms.content.list", "shortcut.invalid", null, null, null, "jacms.content.new"};

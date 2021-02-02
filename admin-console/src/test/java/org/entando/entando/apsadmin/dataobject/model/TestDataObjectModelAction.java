@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 class TestDataObjectModelAction extends ApsAdminBaseTestCase {
 
     @Test
-    public void testNewModel() throws Throwable {
+    void testNewModel() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "new");
         String result = this.executeAction();
@@ -42,7 +42,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testEdit() throws Throwable {
+    void testEdit() throws Throwable {
         long modelId = 1;
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "edit");
@@ -60,7 +60,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testSaveWithErrors_1() throws Throwable {
+    void testSaveWithErrors_1() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "save");
         addParameter("strutsAction", new Integer(ApsAdminSystemConstants.ADD).toString());
@@ -72,7 +72,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testSaveWithErrors_2() throws Throwable {
+    void testSaveWithErrors_2() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "save");
         addParameter("dataType", "EVN");
@@ -100,7 +100,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testSaveWithErrors_3() throws Throwable {
+    void testSaveWithErrors_3() throws Throwable {
         String veryLongDescription = "Very but very very very long description (upper than 50 characters) for invoke description's length validation";
         int negativeModelId = 0;
         try {
@@ -128,7 +128,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testAddNewModel() throws Throwable {
+    void testAddNewModel() throws Throwable {
         List<DataObjectModel> eventModels = this._dataObjectModelManager.getModelsForDataObjectType("EVN");
         assertEquals(0, eventModels.size());
         long modelIdToAdd = 99;
@@ -161,7 +161,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testUpdateModel() throws Throwable {
+    void testUpdateModel() throws Throwable {
         List<DataObjectModel> eventModels = this._dataObjectModelManager.getModelsForDataObjectType("EVN");
         assertEquals(0, eventModels.size());
         long modelId = 99;
@@ -199,7 +199,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testTrashModel() throws Throwable {
+    void testTrashModel() throws Throwable {
         long modelId = 1;
         this.setUserOnSession("admin");
 
@@ -210,7 +210,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testTrashReferencedModel() throws Throwable {
+    void testTrashReferencedModel() throws Throwable {
         long modelId = 2;
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "trash");
@@ -220,7 +220,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testDeleteModel() throws Throwable {
+    void testDeleteModel() throws Throwable {
         List<DataObjectModel> eventModels = this._dataObjectModelManager.getModelsForDataObjectType("EVN");
         assertEquals(0, eventModels.size());
         long modelId = 99;
@@ -251,7 +251,7 @@ class TestDataObjectModelAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testDeleteReferencedModel() throws Throwable {
+    void testDeleteReferencedModel() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "trash");
         this.addParameter("modelId", "2");

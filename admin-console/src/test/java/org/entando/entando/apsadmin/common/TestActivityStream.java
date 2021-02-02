@@ -50,7 +50,7 @@ class TestActivityStream extends ApsAdminBaseTestCase {
     private ActionLoggerTestHelper helper;
 
     @Test
-    public void testLogAddPage() throws Throwable {
+    void testLogAddPage() throws Throwable {
         String pageCode = "act_stream_test";
         try {
             this.addPage(pageCode);

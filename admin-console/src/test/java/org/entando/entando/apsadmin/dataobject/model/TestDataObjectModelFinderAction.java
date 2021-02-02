@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
 
     @Test
-    public void testList() throws Throwable {
+    void testList() throws Throwable {
         this.initAction("/do/dataobject/model", "list");
         this.setUserOnSession("admin");
         String result = this.executeAction();
@@ -42,7 +42,7 @@ class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testSearch_1() throws Throwable {
+    void testSearch_1() throws Throwable {
         String result = this.executeSearch("ART");
         assertEquals(Action.SUCCESS, result);
         DataObjectModelFinderAction dataObjectModelFinderAction = (DataObjectModelFinderAction) this.getAction();
@@ -57,7 +57,7 @@ class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testSearch_2() throws Throwable {
+    void testSearch_2() throws Throwable {
         DataObjectModel dataObjectModel = this.createDataObjectModel(MODEL_ID, "EVN");
         this._dataObjectModelManager.addDataObjectModel(dataObjectModel);
 

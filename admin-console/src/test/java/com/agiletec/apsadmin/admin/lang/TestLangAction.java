@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
  */
 class TestLangAction extends ApsAdminBaseTestCase {
 
-    public void testAddNewLang() throws Throwable {
+    void testAddNewLang() throws Throwable {
         String langCode = "fr";
         try {
             //utente non autorizzato
@@ -50,7 +50,7 @@ class TestLangAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFailureAddNewLang() throws Throwable {
+    void testFailureAddNewLang() throws Throwable {
         String langCode = "fr";
         try {
             String result = this.executeAddLang("admin", langCode);
@@ -69,7 +69,7 @@ class TestLangAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testRemoveLang() throws Throwable {
+    void testRemoveLang() throws Throwable {
         String langCode = "fr";
         try {
             this._langManager.addLang(langCode);
@@ -82,7 +82,7 @@ class TestLangAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFailureRemoveDefaultLang() throws Throwable {
+    void testFailureRemoveDefaultLang() throws Throwable {
         int initLangs = this._langManager.getLangs().size();
         Lang defaultLang = this._langManager.getDefaultLang();
 

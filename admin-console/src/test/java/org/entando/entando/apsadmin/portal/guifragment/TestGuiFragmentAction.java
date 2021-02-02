@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 class TestGuiFragmentAction extends ApsAdminBaseTestCase {
 
     @Test
-    public void testList() throws Throwable {
+    void testList() throws Throwable {
         String result = this.executeList("admin");
         assertEquals(Action.SUCCESS, result);
         GuiFragmentFinderAction action = (GuiFragmentFinderAction) this.getAction();
@@ -36,7 +36,7 @@ class TestGuiFragmentAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testDetail() throws Throwable {
+    void testDetail() throws Throwable {
         Map<String, String> params = new HashMap<>();
         params.put("code", "login_form");
         String result = this.executeDetail("admin", params);

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 class TestGroupAction extends ApsAdminBaseTestCase {
 
     @Test
-    public void testNew() throws Throwable {
+    void testNew() throws Throwable {
         // Utente non autorizzato
         String result = this.executeNew("developersConf");
         assertEquals("apslogin", result);
@@ -47,7 +47,7 @@ class TestGroupAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testFailureEdit() throws Throwable {
+    void testFailureEdit() throws Throwable {
         // Utente non autorizzato
         String result = this.executeEdit("developersConf", "customers");
         assertEquals("apslogin", result);
@@ -60,7 +60,7 @@ class TestGroupAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testEdit() throws Throwable {
+    void testEdit() throws Throwable {
         String groupName = "customers";
         String result = this.executeEdit("admin", groupName);
         assertEquals(Action.SUCCESS, result);
@@ -72,7 +72,7 @@ class TestGroupAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testSaveNew() throws Throwable {
+    void testSaveNew() throws Throwable {
         String groupName = "newGroup";
         try {
             this.executeNew("admin");
@@ -88,7 +88,7 @@ class TestGroupAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testSaveEdit() throws Throwable {
+    void testSaveEdit() throws Throwable {
         String groupName = "newGroup";
         try {
             this.addGroup(groupName, "groupDescription");
@@ -105,7 +105,7 @@ class TestGroupAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testFailureSave() throws Throwable {
+    void testFailureSave() throws Throwable {
         this.executeNew("admin");
         // permessi non disponibili
         String result = this.executeSaveNew("developersConf", "groupName", "description");
@@ -147,7 +147,7 @@ class TestGroupAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testFailureTrash() throws Throwable {
+    void testFailureTrash() throws Throwable {
         // permessi non disponibili
         String result = this.executeTrash("developersConf", "customers");
         assertEquals("apslogin", result);
@@ -166,14 +166,14 @@ class TestGroupAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testTrash() throws Throwable {
+    void testTrash() throws Throwable {
         String result = this.executeTrash("admin", "management");
         assertEquals(Action.SUCCESS, result);
         assertNotNull(this._groupManager.getGroup("management"));
     }
 
     @Test
-    public void testFailureTrashReferencedGroup() throws Throwable {
+    void testFailureTrashReferencedGroup() throws Throwable {
         String result = this.executeTrash("admin", "customers");
         assertEquals("references", result);
         GroupAction groupAction = (GroupAction) this.getAction();
@@ -186,7 +186,7 @@ class TestGroupAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testDelete() throws Throwable {
+    void testDelete() throws Throwable {
         String groupName = "newGroup";
         try {
             this.addGroup(groupName, "groupDescription");
@@ -201,7 +201,7 @@ class TestGroupAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testFailureDelete() throws Throwable {
+    void testFailureDelete() throws Throwable {
         // permessi non disponibili
         String result = this.executeDelete("developersConf", "customers");
         assertEquals("apslogin", result);

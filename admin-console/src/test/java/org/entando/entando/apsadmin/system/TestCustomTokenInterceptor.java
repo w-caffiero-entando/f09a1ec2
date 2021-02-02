@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 class TestCustomTokenInterceptor extends ApsAdminBaseTestCase {
 
     @Test
-	public void testExecuteValidation_1() throws Exception {
+	void testExecuteValidation_1() throws Exception {
         ActionInvocation invocation = this.prepareAction();
         CustomTokenInterceptor interceptor = new CustomTokenInterceptor();
         String result = interceptor.intercept(invocation);
@@ -42,7 +42,7 @@ class TestCustomTokenInterceptor extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testExecuteValidation_2() throws Exception {
+	void testExecuteValidation_2() throws Exception {
         ActionInvocation invocation = this.prepareAction();
         CustomTokenInterceptor interceptor = new CustomTokenInterceptor();
         interceptor.setTypeMessages(CustomTokenInterceptor.TYPE_RETURN_ACTION_ERROR_MESSAGE);
@@ -56,7 +56,7 @@ class TestCustomTokenInterceptor extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testExecuteValidation_3() throws Exception {
+	void testExecuteValidation_3() throws Exception {
         ActionInvocation invocation = this.prepareAction();
         CustomTokenInterceptor interceptor = new CustomTokenInterceptor();
         interceptor.setTypeMessages(CustomTokenInterceptor.TYPE_RETURN_ACTION_MESSAGE);

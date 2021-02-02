@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
 
     @Test
-	public void testViewWidgets() throws Throwable {
+	void testViewWidgets() throws Throwable {
         String result = this.executeViewWidgets("admin");
         assertEquals(Action.SUCCESS, result);
 
@@ -48,7 +48,7 @@ class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testGetWidgetFlavours() throws Throwable {
+	void testGetWidgetFlavours() throws Throwable {
         String result = this.executeViewWidgets("admin");
         assertEquals(Action.SUCCESS, result);
         AbstractPortalAction action = (AbstractPortalAction) this.getAction();
@@ -95,7 +95,7 @@ class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testGetWidgetUtilizers_1() throws Throwable {
+	void testGetWidgetUtilizers_1() throws Throwable {
         String result = this.executeViewWidgetUtilizers("admin", null);
         assertEquals(Action.INPUT, result);
         Map<String, List<String>> fieldErrors = this.getAction().getFieldErrors();
@@ -116,7 +116,7 @@ class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testGetWidgetUtilizers_2() throws Throwable {
+	void testGetWidgetUtilizers_2() throws Throwable {
         String result = this.executeViewWidgetUtilizers("admin", "logic_type");
         assertEquals(Action.SUCCESS, result);
         WidgetsViewerAction action = (WidgetsViewerAction) this.getAction();

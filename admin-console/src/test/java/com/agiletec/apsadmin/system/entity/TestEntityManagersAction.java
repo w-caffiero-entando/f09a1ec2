@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 class TestEntityManagersAction extends ApsAdminBaseTestCase {
 
 	@Test
-	public void testExecuteViewServices() throws Throwable {
+	void testExecuteViewServices() throws Throwable {
 		this.setUserOnSession("supervisorCoach");
 		this.initAction("/do/Entity", "viewManagers");
 		String result = this.executeAction();
@@ -57,7 +57,7 @@ class TestEntityManagersAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testGetEntityPrototypes() throws Throwable {
+	void testGetEntityPrototypes() throws Throwable {
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;
 		this.setUserOnSession("admin");
@@ -71,7 +71,7 @@ class TestEntityManagersAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testGetWrongEntityPrototypes() throws Throwable {
+	void testGetWrongEntityPrototypes() throws Throwable {
 		this.executeGetWrongEntityPrototypes(null);
 		this.executeGetWrongEntityPrototypes("");
 		this.executeGetWrongEntityPrototypes("wrongEntityManagerName");
@@ -91,7 +91,7 @@ class TestEntityManagersAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testInitAddEntityType() throws Throwable {
+	void testInitAddEntityType() throws Throwable {
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;
 
@@ -114,7 +114,7 @@ class TestEntityManagersAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testInitEditEntityType() throws Throwable {
+	void testInitEditEntityType() throws Throwable {
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;
 		String entityManagerName = defNames[0];
@@ -160,7 +160,7 @@ class TestEntityManagersAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testEditAttribute() throws Throwable {
+	void testEditAttribute() throws Throwable {
 		//Search an entity manager
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;
@@ -212,7 +212,7 @@ class TestEntityManagersAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSaveNewAttribute() throws Throwable  {
+	void testSaveNewAttribute() throws Throwable  {
 		//Search an entity manager
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;

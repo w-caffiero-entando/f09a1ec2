@@ -40,13 +40,13 @@ class TestFileBrowserAction extends ApsAdminBaseTestCase {
     private IStorageManager localStorageManager;
 
     @Test
-    public void testBrowseFileSystemWithUserNotAllowed() throws Throwable {
+    void testBrowseFileSystemWithUserNotAllowed() throws Throwable {
         String result = this.executeList("developersConf", null, null);
         assertEquals("apslogin", result);
     }
 
     @Test
-    public void testBrowseFileSystem_1() throws Throwable {
+    void testBrowseFileSystem_1() throws Throwable {
         String result = this.executeList("admin", null, null);
         assertEquals(Action.SUCCESS, result);
         FileBrowserAction action = (FileBrowserAction) super.getAction();
@@ -66,7 +66,7 @@ class TestFileBrowserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testBrowseFileSystem_2() throws Throwable {
+    void testBrowseFileSystem_2() throws Throwable {
         String result = this.executeList("admin", null, false);
         assertEquals(Action.SUCCESS, result);
         FileBrowserAction action = (FileBrowserAction) super.getAction();
@@ -92,7 +92,7 @@ class TestFileBrowserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testBrowseFileSystem_3() throws Throwable {
+    void testBrowseFileSystem_3() throws Throwable {
         String result = this.executeList("admin", "conf/", false);
         assertEquals(Action.SUCCESS, result);
         FileBrowserAction action = (FileBrowserAction) super.getAction();
@@ -112,7 +112,7 @@ class TestFileBrowserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testValidateAddTextFile() throws Throwable {
+    void testValidateAddTextFile() throws Throwable {
         String path = "conf/";
         try {
             String result = this.executeAddTextFile("developersConf", path, "filename", "css", "content", false);
@@ -136,7 +136,7 @@ class TestFileBrowserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testAddTextFile() throws Throwable {
+    void testAddTextFile() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_1";
         String extension = "css";
@@ -164,7 +164,7 @@ class TestFileBrowserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testAddTextFileWithErrors() throws Throwable {
+    void testAddTextFileWithErrors() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_1";
         String extension = "css";
@@ -201,7 +201,7 @@ class TestFileBrowserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testDeleteFile() throws Throwable {
+    void testDeleteFile() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_2";
         String extension = "css";
@@ -222,7 +222,7 @@ class TestFileBrowserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testTrash() throws Throwable {
+    void testTrash() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_2";
         String extension = "css";
@@ -310,7 +310,7 @@ class TestFileBrowserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testUploadFile() throws Throwable {
+    void testUploadFile() throws Throwable {
         String filepath = "test/";
         String filename1 = "test-upload1.txt";
         String filename2 = "test-upload2.txt";

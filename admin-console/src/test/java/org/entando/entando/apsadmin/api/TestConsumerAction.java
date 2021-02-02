@@ -44,7 +44,7 @@ class TestConsumerAction extends ApsAdminBaseTestCase {
         this.consumerManager = (IOAuthConsumerManager) super.getApplicationContext().getBean(SystemConstants.OAUTH_CONSUMER_MANAGER, IOAuthConsumerManager.class);
     }
 
-    public void testNew() throws Throwable {
+    void testNew() throws Throwable {
         String result = this.executeNew("developersConf");
         assertEquals("apslogin", result);
         result = this.executeNew("admin");
@@ -55,7 +55,7 @@ class TestConsumerAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testEdit() throws Throwable {
+	void testEdit() throws Throwable {
         String result = this.executeEdit("developersConf", "test_consumer");
         assertEquals("apslogin", result);
 
@@ -72,7 +72,7 @@ class TestConsumerAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testSaveNew_1() throws Throwable {
+	void testSaveNew_1() throws Throwable {
         String key = "key_test_1";
         try {
             List<String> grantTypes = Arrays.asList(new String[]{"implicit", "password"});
@@ -93,7 +93,7 @@ class TestConsumerAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testSaveNew_2() throws Throwable {
+	void testSaveNew_2() throws Throwable {
         String key_existing = "test1_consumer";
         String key_invalid = "key_&_test";
         String key_long = StringUtils.repeat("test", 50);
@@ -138,7 +138,7 @@ class TestConsumerAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testSaveEdit() throws Throwable {
+	void testSaveEdit() throws Throwable {
         String key_test = "key_test_2";
         String key_notexists = "wrong_consumer";
         try {
@@ -191,7 +191,7 @@ class TestConsumerAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testTrash() throws Throwable {
+	void testTrash() throws Throwable {
         String key_test = "key_test_3";
         try {
             List<String> grantTypes = Arrays.asList(new String[]{"implicit", "password", "refresh_token"});
@@ -215,7 +215,7 @@ class TestConsumerAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testDelete() throws Throwable {
+	void testDelete() throws Throwable {
         String key_test = "key_test_4";
         try {
             List<String> grantTypes = Arrays.asList(new String[]{"implicit", "password", "refresh_token"});

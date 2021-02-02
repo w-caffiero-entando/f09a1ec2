@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 
 	@Test
-	public void testInitConfigNavigator_1() throws Throwable {
+	void testInitConfigNavigator_1() throws Throwable {
 		String result = this.executeConfigNavigator("admin", "homepage", "1", "leftmenu");
 		assertEquals(Action.SUCCESS, result);
 		NavigatorWidgetConfigAction action = (NavigatorWidgetConfigAction) this.getAction();
@@ -51,7 +51,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testInitConfigNavigator_2() throws Throwable {
+	void testInitConfigNavigator_2() throws Throwable {
 		String result = this.executeConfigNavigator("admin", "pagina_1", "2", null);
 		assertEquals(Action.SUCCESS, result);
 		NavigatorWidgetConfigAction action = (NavigatorWidgetConfigAction) this.getAction();
@@ -70,7 +70,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testExecuteMoveExpression_1() throws Throwable {
+	void testExecuteMoveExpression_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "3");
@@ -94,7 +94,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testExecuteMoveExpression_2() throws Throwable {
+	void testExecuteMoveExpression_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "0");
@@ -118,7 +118,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testExecuteMoveExpression_3() throws Throwable {
+	void testExecuteMoveExpression_3() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "0");
@@ -142,7 +142,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testExecuteRemoveExpression_1() throws Throwable {
+	void testExecuteRemoveExpression_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "0");
@@ -165,7 +165,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testExecuteRemoveExpression_2() throws Throwable {
+	void testExecuteRemoveExpression_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "0");
@@ -188,7 +188,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testFailureAddExpression_1() throws Throwable {
+	void testFailureAddExpression_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "3");
@@ -211,7 +211,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testFailureAddExpression_2() throws Throwable {
+	void testFailureAddExpression_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "3");
@@ -234,7 +234,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testFailureAddExpression_3() throws Throwable {
+	void testFailureAddExpression_3() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "3");
@@ -257,7 +257,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testFailureAddExpression_4() throws Throwable {
+	void testFailureAddExpression_4() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "3");
@@ -282,7 +282,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testExecuteAddExpression_1() throws Throwable {
+	void testExecuteAddExpression_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "0");
@@ -298,7 +298,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testExecuteAddExpression_2() throws Throwable {
+	void testExecuteAddExpression_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("pageCode", "pagina_2");
 		params.put("frame", "0");
@@ -316,7 +316,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testSave() throws Throwable {
+	void testSave() throws Throwable {
 		String pageCode = "pagina_2";
 		int frame = 3;
 		IPage page = this._pageManager.getDraftPage(pageCode);
@@ -347,7 +347,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testFailureSaveEmptyExpression() throws Throwable {
+	void testFailureSaveEmptyExpression() throws Throwable {
 		String pageCode = "pagina_2";
 		int frame = 3;
 		IPage page = this._pageManager.getDraftPage(pageCode);

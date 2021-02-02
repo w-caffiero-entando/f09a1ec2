@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
 
 	@Test
-	public void testInitConfigSimpleParameter_1() throws Throwable {
+	void testInitConfigSimpleParameter_1() throws Throwable {
 		String result = this.executeConfigSimpleParameter("admin", "homepage", "1", "formAction");
 		assertEquals(Action.SUCCESS, result);
 		SimpleWidgetConfigAction action = (SimpleWidgetConfigAction) this.getAction();
@@ -44,14 +44,14 @@ class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testInitConfigSimpleParameter_withNoShowletCode() throws Throwable {
+	void testInitConfigSimpleParameter_withNoShowletCode() throws Throwable {
 		String result = this.executeConfigSimpleParameter("admin", "homepage", "1", null);
 		assertEquals("pageTree", result);
 		assertEquals(1, this.getAction().getActionErrors().size());
 	}
 
 	@Test
-	public void testInitConfigSimpleParameter_2() throws Throwable {
+	void testInitConfigSimpleParameter_2() throws Throwable {
 		String result = this.executeConfigSimpleParameter("admin", "pagina_2", "2", null);
 		assertEquals(Action.SUCCESS, result);
 		SimpleWidgetConfigAction action = (SimpleWidgetConfigAction) this.getAction();
@@ -76,7 +76,7 @@ class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
 	}
 
 	@Test
-	public void testSave() throws Throwable {
+	void testSave() throws Throwable {
 		String pageCode = "pagina_2";
 		int frame = 3;
 		IPage page = this._pageManager.getDraftPage(pageCode);

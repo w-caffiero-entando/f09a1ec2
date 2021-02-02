@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 class TestPageModelAction extends AbstractTestPageModelAction {
 
     @Test
-    public void testEditPageModels() throws Throwable {
+    void testEditPageModels() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {
@@ -56,7 +56,7 @@ class TestPageModelAction extends AbstractTestPageModelAction {
     }
 
     @Test
-    public void testValidate_1() throws Throwable {
+    void testValidate_1() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {
@@ -79,7 +79,7 @@ class TestPageModelAction extends AbstractTestPageModelAction {
     }
 
     @Test
-    public void testValidate_2() throws Throwable {
+    void testValidate_2() throws Throwable {
         String testPageModelCode = "internal";
         PageModel model = this._pageModelManager.getPageModel(testPageModelCode);
         assertNotNull(model);
@@ -103,7 +103,7 @@ class TestPageModelAction extends AbstractTestPageModelAction {
     }
 
     @Test
-    public void testSave() throws Throwable {
+    void testSave() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {
@@ -128,7 +128,7 @@ class TestPageModelAction extends AbstractTestPageModelAction {
     }
 
     @Test
-    public void testTrashPageModels_1() throws Throwable {
+    void testTrashPageModels_1() throws Throwable {
         String result = this.executeAction("admin", "trash", null);
         assertEquals("pageModelList", result);
         result = this.executeAction("admin", "trash", "invalidCode");
@@ -145,7 +145,7 @@ class TestPageModelAction extends AbstractTestPageModelAction {
     }
 
     @Test
-    public void testTrashPageModels_2() throws Throwable {
+    void testTrashPageModels_2() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {
@@ -165,7 +165,7 @@ class TestPageModelAction extends AbstractTestPageModelAction {
     }
 
     @Test
-    public void testDeletePageModels_1() throws Throwable {
+    void testDeletePageModels_1() throws Throwable {
         String result = this.executeAction("admin", "delete", null);
         assertEquals("pageModelList", result);
         result = this.executeAction("admin", "delete", "invalidCode");
@@ -197,7 +197,7 @@ class TestPageModelAction extends AbstractTestPageModelAction {
     }
 
     @Test
-    public void testDeletePageModels_2() throws Throwable {
+    void testDeletePageModels_2() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {

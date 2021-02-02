@@ -37,7 +37,7 @@ class TestBaseAdminAction extends ApsAdminBaseTestCase {
     private String oldConfigParam;
 
     @Test
-	public void testReloadConfig() throws Throwable {
+	void testReloadConfig() throws Throwable {
         this.setUserOnSession("supervisorCoach");
         this.initAction("/do/BaseAdmin", "reloadConfig");
         String result = this.executeAction();
@@ -54,7 +54,7 @@ class TestBaseAdminAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testReloadEntitiesReferences() throws Throwable {
+	void testReloadEntitiesReferences() throws Throwable {
         this.setUserOnSession("supervisorCoach");
         this.initAction("/do/BaseAdmin", "reloadEntitiesReferences");
         String result = this.executeAction();
@@ -71,7 +71,7 @@ class TestBaseAdminAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testConfigSystemParams() throws Throwable {
+	void testConfigSystemParams() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/BaseAdmin", "configSystemParams");
         String result = this.executeAction();
@@ -84,7 +84,7 @@ class TestBaseAdminAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testUpdateConfigParams_1() throws Throwable {
+	void testUpdateConfigParams_1() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/BaseAdmin", "updateSystemParams");
         this.addParameter(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE, "newErrorPageCode");
@@ -97,7 +97,7 @@ class TestBaseAdminAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testUpdateConfigParams_2() throws Throwable {
+	void testUpdateConfigParams_2() throws Throwable {
         assertEquals("homepage", this.configManager.getParam(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
         assertEquals("errorpage", this.configManager.getParam(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE));
 

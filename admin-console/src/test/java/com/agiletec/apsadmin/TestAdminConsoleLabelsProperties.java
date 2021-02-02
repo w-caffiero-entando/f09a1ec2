@@ -21,87 +21,87 @@ class TestAdminConsoleLabelsProperties extends TestLabelsProperties {
     private static String APSADMIN2_PATH = "org/entando/entando/apsadmin/";
 
     @Test
-    public void testGlobalAdminProperties1() throws Throwable {
+    void testGlobalAdminProperties1() throws Throwable {
         super.testGlobalMessagesLabelsTranslations(APSADMIN1_PATH);
     }
     
     @Test
-    public void testGlobalAdminProperties2() throws Throwable {
+    void testGlobalAdminProperties2() throws Throwable {
         super.testGlobalMessagesLabelsTranslations(APSADMIN2_PATH);
     }
 
     @Test
-    public void testLangProperties() throws Throwable {
+    void testLangProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "admin/lang/");
     }
 
     @Test
-    public void testCategoryProperties() throws Throwable {
+    void testCategoryProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "category/");
     }
 
     @Test
-    public void testCommonProperties() throws Throwable {
+    void testCommonProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "common/");
     }
 
     @Test
-    public void testSystemEntityProperties() throws Throwable {
+    void testSystemEntityProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "system/entity/");
     }
 
     @Test
-    public void testSystemEntityTypeProperties() throws Throwable {
+    void testSystemEntityTypeProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "system/entity/type/");
     }
 
     @Test
-    public void testUserGroupProperties() throws Throwable {
+    void testUserGroupProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "user/group/");
     }
 
     @Test
-    public void testUserRoleProperties() throws Throwable {
+    void testUserRoleProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "user/role/");
     }
 
     @Test
-    public void testAdminProperties() throws Throwable {
+    void testAdminProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "admin/");
     }
 
     @Test
-    public void testApiProperties() throws Throwable {
+    void testApiProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "api/");
     }
 
     @Test
-    public void testCommonCurrebtUserProperties() throws Throwable {
+    void testCommonCurrebtUserProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "common/currentuser/");
     }
 
     @Test
-    public void testDataObjectModelProperties() throws Throwable {
+    void testDataObjectModelProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "dataobject/model/");
     }
 
     @Test
-    public void testFileBrowserProperties() throws Throwable {
+    void testFileBrowserProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "filebrowser/");
     }
 
     @Test
-    public void testPortalGuiFragmentProperties() throws Throwable {
+    void testPortalGuiFragmentProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "portal/guifragment/");
     }
 
     @Test
-    public void testPortalModelProperties() throws Throwable {
+    void testPortalModelProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "portal/model/");
     }
 
     @Test
-    public void testUserProperties() throws Throwable {
+    void testUserProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "user/");
     }
 }

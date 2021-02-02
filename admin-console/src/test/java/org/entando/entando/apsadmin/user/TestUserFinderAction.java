@@ -30,13 +30,13 @@ import org.junit.jupiter.api.Test;
 class TestUserFinderAction extends ApsAdminBaseTestCase {
 	
     @Test
-	public void testListWithUserNotAllowed() throws Throwable {
+	void testListWithUserNotAllowed() throws Throwable {
 		String result = this.executeList("developersConf");
 		assertEquals("apslogin", result);
 	}
 	
 	@Test
-	public void testList() throws Throwable {
+	void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		UserProfileFinderAction userFinderAction = (UserProfileFinderAction) this.getAction();
@@ -46,7 +46,7 @@ class TestUserFinderAction extends ApsAdminBaseTestCase {
 	}
 	
     @Test
-	public void testSearchUsers() throws Throwable {
+	void testSearchUsers() throws Throwable {
     	String result = this.executeSearch("admin", "ustomer");
     	assertEquals(Action.SUCCESS, result);
     	UserProfileFinderAction userFinderAction = (UserProfileFinderAction) this.getAction();

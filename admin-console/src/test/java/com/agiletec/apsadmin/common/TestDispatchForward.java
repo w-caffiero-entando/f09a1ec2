@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 class TestDispatchForward extends ApsAdminBaseTestCase {
 	
 	@Test
-	public void testGoOnMainPage() throws Throwable {
+	void testGoOnMainPage() throws Throwable {
     	this.initAction("/do", "main");
     	this.setUserOnSession("admin");
     	String result = super.executeAction();
@@ -34,7 +34,7 @@ class TestDispatchForward extends ApsAdminBaseTestCase {
 	}
 	
     @Test
-	public void testGoOnMainPageWithUserNotAbilitated() throws Throwable {
+	void testGoOnMainPageWithUserNotAbilitated() throws Throwable {
     	this.initAction("/do", "main");
     	this.setUserOnSession("guest");
     	String result = super.executeAction();
@@ -42,7 +42,7 @@ class TestDispatchForward extends ApsAdminBaseTestCase {
 	}
     
     @Test
-	public void testGoOnMainPageWithNullUser() throws Throwable {
+	void testGoOnMainPageWithNullUser() throws Throwable {
     	this.initAction("/do", "main");
     	this.removeUserOnSession();
     	String result = super.executeAction();

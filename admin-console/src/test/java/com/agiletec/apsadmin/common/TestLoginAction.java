@@ -36,13 +36,13 @@ class TestLoginAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSuccessfulLogin1() throws Throwable {
+	void testSuccessfulLogin1() throws Throwable {
 		String result = this.executeLogin("admin", "admin");
 		assertEquals(Action.SUCCESS, result);
     }
 	
 	@Test
-	public void testFailedLogin1() throws Throwable {
+	void testFailedLogin1() throws Throwable {
 		String result = this.executeLogin("", "");
 		assertEquals(Action.INPUT, result);
 		
@@ -53,7 +53,7 @@ class TestLoginAction extends ApsAdminBaseTestCase {
     }
 	
 	@Test
-	public void testFailedLogin2() throws Throwable {
+	void testFailedLogin2() throws Throwable {
 		String result = this.executeLogin("pippo", "");
 		assertEquals(Action.INPUT, result);
 		
@@ -64,7 +64,7 @@ class TestLoginAction extends ApsAdminBaseTestCase {
     }
 	
 	@Test
-	public void testFailedLogin3() throws Throwable {
+	void testFailedLogin3() throws Throwable {
 		String result = this.executeLogin("admin", "wrongPassword");
 		assertEquals(Action.INPUT, result);
 		
@@ -75,7 +75,7 @@ class TestLoginAction extends ApsAdminBaseTestCase {
     }
 	
 	@Test
-	public void testFailedLogin4() throws Throwable {
+	void testFailedLogin4() throws Throwable {
 		String result = this.executeLogin("guest", "guest");
 		assertEquals(Action.INPUT, result);
 		

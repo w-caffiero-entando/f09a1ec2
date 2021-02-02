@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 class TestPageConfigAction extends ApsAdminBaseTestCase {
 
     @Test
-	public void testConfigPage() throws Throwable {
+	void testConfigPage() throws Throwable {
         String result = this.executeConfigPage("pagina_1", "editorCoach");
         assertEquals("userNotAllowed", result);
         result = this.executeConfigPage("pagina_1", "pageManagerCoach");
@@ -50,7 +50,7 @@ class TestPageConfigAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testUpdateConfig() throws Throwable {
+	void testUpdateConfig() throws Throwable {
         String pageCode = "test_page";
         assertNull(this._pageManager.getDraftPage(pageCode));
         try {
@@ -87,7 +87,7 @@ class TestPageConfigAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testConfigEditFrame() throws Throwable {
+	void testConfigEditFrame() throws Throwable {
         String result = this.executeEditFrame("coach_page", -1, "pageManagerCoach");//invalid frame
         assertEquals("pageTree", result);
         assertEquals(1, this.getAction().getActionErrors().size());
@@ -122,7 +122,7 @@ class TestPageConfigAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testJoinWidget() throws Throwable {
+	void testJoinWidget() throws Throwable {
         String pageCode = "pagina_1";
         int frame = 1;
         IPage pagina_1 = this._pageManager.getDraftPage(pageCode);
@@ -142,7 +142,7 @@ class TestPageConfigAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testJoinRemoveWidget() throws Throwable {
+	void testJoinRemoveWidget() throws Throwable {
         this.testJoinRemoveWidget("login_form");
         this.testJoinRemoveWidget("logic_type");
     }
@@ -179,7 +179,7 @@ class TestPageConfigAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testTrashWidget() throws Throwable {
+	void testTrashWidget() throws Throwable {
         String pageCode = "contentview";
         int frame = 1;
         IPage contentview = this._pageManager.getDraftPage(pageCode);
@@ -203,7 +203,7 @@ class TestPageConfigAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testDeleteWidget() throws Throwable {
+	void testDeleteWidget() throws Throwable {
         String pageCode = "contentview";
         int frame = 1;
         IPage contentview = this._pageManager.getDraftPage(pageCode);

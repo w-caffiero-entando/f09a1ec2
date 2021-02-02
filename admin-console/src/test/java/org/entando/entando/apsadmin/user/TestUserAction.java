@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
 class TestUserAction extends ApsAdminBaseTestCase {
 
     @Test
-	public void testNew() throws Throwable {
+	void testNew() throws Throwable {
         String result = this.executeNew("developersConf");
         assertEquals("apslogin", result);
 
@@ -55,7 +55,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testFailureEdit() throws Throwable {
+	void testFailureEdit() throws Throwable {
         String result = this.executeNew("developersConf");
         assertEquals("apslogin", result);
 
@@ -64,7 +64,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testEdit() throws Throwable {
+	void testEdit() throws Throwable {
         String result = this.executeEdit("admin", "mainEditor");
         assertEquals(Action.SUCCESS, result);
         UserAction action = (UserAction) this.getAction();
@@ -72,7 +72,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testAddNew_1() throws Throwable {
+	void testAddNew_1() throws Throwable {
         String username = "usernameForTest";
         String password = "password";
         try {
@@ -98,7 +98,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testAddNew_2() throws Throwable {
+	void testAddNew_2() throws Throwable {
         String username = "user.name_for_test"; // the dot '.' is accepted in the username as well as the underscore '_'
         String password = "password";
         try {
@@ -125,7 +125,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testAddEditDelete() throws Throwable {
+	void testAddEditDelete() throws Throwable {
         String username = "username";
         String password = "password";
         String newPassword = "pluto1234";
@@ -158,7 +158,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testFailureDisableAdminUser() throws Throwable {
+	void testFailureDisableAdminUser() throws Throwable {
         String username = SystemConstants.ADMIN_USER_NAME;
         UserDetails adminUser = this._userManager.getUser(username);
         try {
@@ -180,7 +180,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testSaveNewFailure() throws Throwable {
+	void testSaveNewFailure() throws Throwable {
         UserDetails oldUser = this._userManager.getUser("admin");
         try {
             // permessi non disponibili
@@ -241,7 +241,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testSaveEditFailure() throws Throwable {
+	void testSaveEditFailure() throws Throwable {
         this.setUserOnSession("admin");
         String usernameForTest = "testUserName";
         this.addUser(usernameForTest, "password");
@@ -281,7 +281,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testTrash() throws Throwable {
+	void testTrash() throws Throwable {
         String username = "username";
         String password = "password";
         try {
@@ -298,7 +298,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testFailureTrash() throws Throwable {
+	void testFailureTrash() throws Throwable {
         String result = this.executeTrash("developersConf", "editor");
         assertEquals("apslogin", result);
 
@@ -309,7 +309,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testDelete() throws Throwable {
+	void testDelete() throws Throwable {
         String username = "user.name_to_delete";
         String password = "password";
         try {
@@ -325,7 +325,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testFailureDelete() throws Throwable {
+	void testFailureDelete() throws Throwable {
         String result = this.executeDelete("developersConf", "editor");
         assertEquals("apslogin", result);
 
@@ -336,7 +336,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testResetUser() throws Throwable {
+	void testResetUser() throws Throwable {
         String username = "username";
         String password = "password";
         String datePattern = "ddMMyyyy";

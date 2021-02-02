@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 class TestApiServiceFinderAction extends ApsAdminBaseTestCase {
 	
 	@Test
-	public void testServiceList() throws Throwable {
+	void testServiceList() throws Throwable {
 		String result = this.executeListServices("admin");
 		assertEquals(Action.SUCCESS, result);
 		

@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 class TestUserProfileAction extends ApsAdminBaseTestCase {
     
     @Test
-	public void testEditProfile_1() throws Throwable {
+	void testEditProfile_1() throws Throwable {
     	this.setUserOnSession("admin");
         this.initAction("/do/userprofile", "edit");
 		this.addParameter("username", USERNAME_FOR_TEST);
@@ -51,7 +51,7 @@ class TestUserProfileAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testEditProfile_2() throws Throwable {
+	void testEditProfile_2() throws Throwable {
     	this.setUserOnSession("admin");
         this.initAction("/do/userprofile", "edit");
 		this.addParameter("username", "editorCustomers");
@@ -63,7 +63,7 @@ class TestUserProfileAction extends ApsAdminBaseTestCase {
     }
 	
     @Test
-	public void testEditProfile_3() throws Throwable {
+	void testEditProfile_3() throws Throwable {
 		IUserProfile prototype = this._profileManager.getDefaultProfileType();
 		prototype.setTypeCode("XXX");
 		((IEntityTypesConfigurer) this._profileManager).addEntityPrototype(prototype);
@@ -83,7 +83,7 @@ class TestUserProfileAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testSaveNewEmptyProfile() throws Throwable {
+	void testSaveNewEmptyProfile() throws Throwable {
     	this.setUserOnSession("admin");
 		try {
 			this.initAction("/do/userprofile", "saveEmpty");
@@ -102,7 +102,7 @@ class TestUserProfileAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testNewProfile() throws Throwable {
+	void testNewProfile() throws Throwable {
     	this.setUserOnSession("admin");
 		try {
 			this.initAction("/do/userprofile", "saveAndContinue");
@@ -122,7 +122,7 @@ class TestUserProfileAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testValidateNewProfile() throws Throwable {
+	void testValidateNewProfile() throws Throwable {
     	this.setUserOnSession("admin");
         this.initAction("/do/userprofile", "saveAndContinue");
 		this.addParameter("username", USERNAME_FOR_TEST);
@@ -135,7 +135,7 @@ class TestUserProfileAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testValidateProfile() throws Throwable {
+	void testValidateProfile() throws Throwable {
     	this.setUserOnSession("admin");
         this.initAction("/do/userprofile", "edit");
 		this.addParameter("username", "editorCustomers");
@@ -169,7 +169,7 @@ class TestUserProfileAction extends ApsAdminBaseTestCase {
     }
 	
     @Test
-	public void testSaveProfile() throws Throwable {
+	void testSaveProfile() throws Throwable {
     	this.setUserOnSession("admin");
     	this.initAction("/do/userprofile", "saveAndContinue");
 		this.addParameter("username", USERNAME_FOR_TEST);

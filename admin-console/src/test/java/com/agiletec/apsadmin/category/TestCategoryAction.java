@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 class TestCategoryAction extends ApsAdminBaseTestCase {
 
     @Test
-	public void testNewCategory() throws Throwable {
+	void testNewCategory() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/Category", "new");
         String result = this.executeAction();
@@ -58,7 +58,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testEditCategory() throws Throwable {
+	void testEditCategory() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/Category", "edit");
         String result = this.executeAction();
@@ -78,7 +78,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testViewTree() throws Throwable {
+	void testViewTree() throws Throwable {
         this.setUserOnSession("pageManagerCoach");
         this.initAction("/do/Category", "viewTree");
         String result = this.executeAction();
@@ -94,7 +94,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testValidateAddCategory_1() throws Throwable {
+	void testValidateAddCategory_1() throws Throwable {
         Map<String, String> params = new HashMap<String, String>();
         params.put("parentCategoryCode", this._categoryManager.getRoot().getCode());
         params.put("strutsAction", "1");
@@ -110,7 +110,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testValidateAddCategory_2() throws Throwable {
+	void testValidateAddCategory_2() throws Throwable {
         String categoryCode = "veryLongCategoryCode_veryLongCategoryCode";
         assertNull(this._categoryManager.getCategory(categoryCode));
         Map<String, String> params = new HashMap<String, String>();
@@ -127,7 +127,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testValidateAddCategory_3() throws Throwable {
+	void testValidateAddCategory_3() throws Throwable {
         assertNotNull(this._categoryManager.getCategory("evento"));
         Map<String, String> params = new HashMap<String, String>();
         params.put("parentCategoryCode", this._categoryManager.getRoot().getCode());
@@ -143,7 +143,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testValidateAddCategory_4() throws Throwable {
+	void testValidateAddCategory_4() throws Throwable {
         String categoryCode = "cat_temp2";
         assertNull(this._categoryManager.getCategory(categoryCode));
         try {
@@ -166,7 +166,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testAddCategory_1() throws Throwable {
+	void testAddCategory_1() throws Throwable {
         String categoryCode = "cat_temp";
         assertNull(this._categoryManager.getCategory(categoryCode));
         try {
@@ -185,7 +185,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testAddCategory_2() throws Throwable {
+	void testAddCategory_2() throws Throwable {
         String expectedCategoryCode = "titolo_italiano";
         assertNull(this._categoryManager.getCategory(expectedCategoryCode));
         try {
@@ -209,7 +209,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testTrashCategory() throws Throwable {
+	void testTrashCategory() throws Throwable {
         String categoryCode = "cat_temp";
         assertNull(this._categoryManager.getCategory(categoryCode));
         try {
@@ -233,7 +233,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testDeleteCategory_1() throws Throwable {
+	void testDeleteCategory_1() throws Throwable {
         String categoryCode = "cat_temp";
         assertNull(this._categoryManager.getCategory(categoryCode));
         try {
@@ -267,7 +267,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testDeleteCategory_2() throws Throwable {
+	void testDeleteCategory_2() throws Throwable {
         this.setUserOnSession("admin");
         String categoryCode = "general_cat1";
         assertNotNull(this._categoryManager.getCategory(categoryCode));
@@ -297,7 +297,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testCategoryDetails_1() throws Throwable {
+	void testCategoryDetails_1() throws Throwable {
         String categoryCode = "cat_temp";
         assertNull(this._categoryManager.getCategory(categoryCode));
         try {
@@ -327,7 +327,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testCategoryDetails_2() throws Throwable {
+	void testCategoryDetails_2() throws Throwable {
         String categoryCode = "general_cat1";
         Category category = this._categoryManager.getCategory(categoryCode);
         assertNotNull(category);

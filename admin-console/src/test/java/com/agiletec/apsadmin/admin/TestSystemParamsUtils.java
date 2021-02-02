@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 class TestSystemParamsUtils extends ApsAdminBaseTestCase {
 	
 	@Test
-	public void testUpdateXmlItemParams() throws Throwable {
+	void testUpdateXmlItemParams() throws Throwable {
 		String xmlParams = this._configManager.getConfigItem(SystemConstants.CONFIG_ITEM_PARAMS);
 		assertNotNull(xmlParams);
 		Map<String, String> params = SystemParamsUtils.getParams(xmlParams);

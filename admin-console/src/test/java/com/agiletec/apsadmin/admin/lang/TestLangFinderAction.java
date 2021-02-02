@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 class TestLangFinderAction extends ApsAdminBaseTestCase {
 	
 	@Test
-	public void testList() throws Throwable {
+	void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		LangFinderAction langFinderAction = (LangFinderAction) this.getAction();

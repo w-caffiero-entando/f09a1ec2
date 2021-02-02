@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
     
 	@Test
-	public void testEditProfile_1() throws Throwable {
+	void testEditProfile_1() throws Throwable {
     	this.setUserOnSession(USERNAME_FOR_TEST);
         this.initAction("/do/currentuser/profile", "edit");
         String result = this.executeAction();
@@ -50,7 +50,7 @@ class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testEditProfile_2() throws Throwable {
+	void testEditProfile_2() throws Throwable {
     	this.setUserOnSession("editorCustomers");
         this.initAction("/do/currentuser/profile", "edit");
         String result = this.executeAction();
@@ -61,7 +61,7 @@ class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testValidateProfile() throws Throwable {
+	void testValidateProfile() throws Throwable {
     	this.setUserOnSession("editorCustomers");
         this.initAction("/do/currentuser/profile", "edit");
         String result = this.executeAction();

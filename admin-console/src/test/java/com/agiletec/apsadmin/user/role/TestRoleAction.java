@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 class TestRoleAction extends ApsAdminBaseTestCase {
 	
 	@Test
-    public void testNew() throws Throwable {
+    void testNew() throws Throwable {
 		// Utente non abilitato
 		String result = this.executeNew("developersConf");
 		assertEquals("apslogin", result);
@@ -51,7 +51,7 @@ class TestRoleAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testFailureEdit() throws Throwable {
+    void testFailureEdit() throws Throwable {
 		// Utente non autorizzato
 		String result = this.executeEdit("developersConf", "editor");
 		assertEquals("apslogin", result);
@@ -64,7 +64,7 @@ class TestRoleAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testEdit() throws Throwable {
+    void testEdit() throws Throwable {
 		String roleName = "editor";
 		String result = this.executeEdit("admin", roleName);
 		assertEquals(Action.SUCCESS, result);
@@ -79,7 +79,7 @@ class TestRoleAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testSaveNew() throws Throwable {
+    void testSaveNew() throws Throwable {
 		String roleName = "newRole";
 		String[] permissions = { "editContents" };
 		try {
@@ -97,7 +97,7 @@ class TestRoleAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testSaveEdit() throws Throwable {
+    void testSaveEdit() throws Throwable {
 		String roleName = "newRole";
 		String[] permissions = { "editContents" };
 		try {
@@ -116,7 +116,7 @@ class TestRoleAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testFailureSave() throws Throwable {
+    void testFailureSave() throws Throwable {
 		this.executeNew("admin");
 		String[] permissions = { "editContents" };
 		
@@ -161,7 +161,7 @@ class TestRoleAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testTrash() throws Throwable {
+    void testTrash() throws Throwable {
 		String roleName = "newRole";
 		String[] permissions = { };
 		try {
@@ -178,7 +178,7 @@ class TestRoleAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testDelete() throws Throwable {
+    void testDelete() throws Throwable {
 		String roleName = "newRole";
 		String[] permissions = { };
 		try {

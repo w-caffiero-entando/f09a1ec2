@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 class TestSocialActivityStreamDAO extends BaseTestCase {
 
 	@Test
-	public void testGetActionRecords() {
+	void testGetActionRecords() {
 		IActionLogRecordSearchBean bean = null;
 		List<Integer> ids = this._actionLoggerDAO.getActionRecords(bean);
 		this.compareIds(new Integer[]{}, ids);
@@ -74,7 +74,7 @@ class TestSocialActivityStreamDAO extends BaseTestCase {
 	}
 
 	@Test
-	public void testActionLogSearch() {
+	void testActionLogSearch() {
 		IActionLogRecordSearchBean bean = null;
 		List<Integer> ids = this._actionLoggerDAO.getActionRecords(bean);
 		this.compareIds(new Integer[]{}, ids);
@@ -95,7 +95,7 @@ class TestSocialActivityStreamDAO extends BaseTestCase {
 	}
 
 	@Test
-	public void testAddGetDeleteActionRecord() {
+	void testAddGetDeleteActionRecord() {
 		ActionLogRecord record1 = this._helper.createActionRecord(1, "username1", "actionName1",
 				"namespace1", DateConverter.parseDate("01/01/2009 00:00", "dd/MM/yyyy HH:mm"), "params1");
 		ActionLogRecord record2 = this._helper.createActionRecord(2, "username2", "actionName2",
@@ -116,7 +116,7 @@ class TestSocialActivityStreamDAO extends BaseTestCase {
 	}
 
     @Test
-	public void testAddDeleteCommentRecord() throws Throwable {
+	void testAddDeleteCommentRecord() throws Throwable {
 		ActionLogRecord record1 = this._helper.createActionRecord(1, "username1", "actionName1",
 				"namespace1", DateConverter.parseDate("01/01/2009 00:00", "dd/MM/yyyy HH:mm"), "params1");
 		ActionLogRecord record2 = this._helper.createActionRecord(2, "username2", "actionName2",

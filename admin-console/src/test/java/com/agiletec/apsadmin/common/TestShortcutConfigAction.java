@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 class TestShortcutConfigAction extends ApsAdminBaseTestCase {
     
 	@Test
-	public void testInit() throws Throwable {
+	void testInit() throws Throwable {
     	this.initAction("/do", "main");
     	this.setUserOnSession("admin");
     	String result = super.executeAction();
@@ -49,7 +49,7 @@ class TestShortcutConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testValidateConfigPosition() throws Throwable {
+	void testValidateConfigPosition() throws Throwable {
 		String result = this.executeConfigPosition(4, 3, null);
 		assertEquals("apslogin", result);
 		
@@ -64,7 +64,7 @@ class TestShortcutConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testValidateJoinMyShortcut_1() throws Throwable {
+	void testValidateJoinMyShortcut_1() throws Throwable {
 		try {
 			String result = this.executeJoinMyShortcut(null, 2, "admin", ApsAdminSystemConstants.ADD);
 			assertEquals(Action.INPUT, result);
@@ -98,7 +98,7 @@ class TestShortcutConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testValidateJoinMyShortcut_2() throws Throwable {
+	void testValidateJoinMyShortcut_2() throws Throwable {
 		try {
 			String result = this.executeJoinMyShortcut("core.component.user.list", 2, "editorCoach", ApsAdminSystemConstants.ADD);//shortcut not allowed
 			assertEquals(Action.INPUT, result);
@@ -111,7 +111,7 @@ class TestShortcutConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testJoinMyShortcut_1() throws Throwable {
+	void testJoinMyShortcut_1() throws Throwable {
 		UserDetails user = this.getUser("admin");
 		try {
 			String result = this.executeJoinMyShortcut("core.component.user.list", 3, "admin", ApsAdminSystemConstants.ADD);
@@ -132,7 +132,7 @@ class TestShortcutConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testJoinMyShortcut_2() throws Throwable {
+	void testJoinMyShortcut_2() throws Throwable {
 		UserDetails user = this.getUser("admin");
 		try {
 			String result = this.executeJoinMyShortcut("core.tools.setting", 9, "admin", ApsAdminSystemConstants.ADD);
@@ -153,7 +153,7 @@ class TestShortcutConfigAction extends ApsAdminBaseTestCase {
 	}
     
 	@Test
-	public void testValidateRemoveMyShortcut() throws Throwable {
+	void testValidateRemoveMyShortcut() throws Throwable {
 		try {
 			String result = this.executeEmptyPosition(20, "admin");//invalid position
 			assertEquals(Action.INPUT, result);
@@ -167,7 +167,7 @@ class TestShortcutConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testRemoveMyShortcut() throws Throwable {
+	void testRemoveMyShortcut() throws Throwable {
 		UserDetails user = this.getUser("admin");
 		try {
 			String result = this.executeEmptyPosition(3, "admin");
@@ -188,7 +188,7 @@ class TestShortcutConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testValidateSwapMyShortcut() throws Throwable {
+	void testValidateSwapMyShortcut() throws Throwable {
 		try {
 			String result = this.executeSwapMyShortcut(null, 2, "admin", ApsAdminSystemConstants.EDIT);
 			assertEquals(Action.INPUT, result);
@@ -222,7 +222,7 @@ class TestShortcutConfigAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSwapMyShortcut() throws Throwable {
+	void testSwapMyShortcut() throws Throwable {
 		UserDetails user = this.getUser("admin");
 		try {
 			String[] oldConfig = this._shortcutManager.getUserConfig(user);

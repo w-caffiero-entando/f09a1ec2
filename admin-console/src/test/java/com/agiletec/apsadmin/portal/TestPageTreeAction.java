@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
 class TestPageTreeAction extends ApsAdminBaseTestCase {
 
     @Test
-	public void testViewTree_1() throws Throwable {
+	void testViewTree_1() throws Throwable {
         this.initAction("/do/Page", "viewTree");
         this.setUserOnSession("admin");
         String result = this.executeAction();
@@ -57,7 +57,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testViewTree_2() throws Throwable {
+	void testViewTree_2() throws Throwable {
         this.initAction("/do/Page", "viewTree");
         this.setUserOnSession("pageManagerCustomers");
         String result = this.executeAction();
@@ -73,7 +73,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testViewTree_3() throws Throwable {
+	void testViewTree_3() throws Throwable {
         this.initAction("/do/Page", "openCloseTreeNode");
         this.addParameter("targetNode", "pagina_12");
         this.addParameter("treeNodeActionMarkerCode", ITreeAction.ACTION_MARKER_OPEN);
@@ -84,7 +84,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testViewTree_4() throws Throwable {
+	void testViewTree_4() throws Throwable {
         IPage page = this._pageManager.getDraftPage("pagina_1");
         System.out.println("CODES -> " + Arrays.asList(page.getChildrenCodes()));
         
@@ -120,7 +120,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testViewTree_5() throws Throwable {
+	void testViewTree_5() throws Throwable {
         this.initAction("/do/Page", "openCloseTreeNode");
         this.addParameter("targetNode", "customers_page");
         this.addParameter("treeNodeActionMarkerCode", ITreeAction.ACTION_MARKER_OPEN);
@@ -131,7 +131,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testViewTree_6() throws Throwable {
+	void testViewTree_6() throws Throwable {
         this.initAction("/do/Page", "viewTree");
         this.addParameter("selectedNode", "customers_page");
         this.setUserOnSession("pageManagerCustomers");
@@ -163,7 +163,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMoveHome() throws Throwable {
+	void testMoveHome() throws Throwable {
         this.initAction("/do/Page", "moveUp");
         this.setUserOnSession("admin");
         this.addParameter("selectedNode", "homepage");
@@ -174,7 +174,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testMoveForAdminUser() throws Throwable {
+	void testMoveForAdminUser() throws Throwable {
         String pageToMoveCode = "pagina_12";
         String sisterPageCode = "pagina_11";
         IPage pageToMove = _pageManager.getDraftPage(pageToMoveCode);
@@ -222,7 +222,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testMoveForCoachUser() throws Throwable {
+	void testMoveForCoachUser() throws Throwable {
         String pageToMoveCode = "pagina_12";
         this.setUserOnSession("pageManagerCoach");
         this.initAction("/do/Page", "moveDown");
@@ -234,7 +234,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMovementNotAllowed() throws Throwable {
+	void testMovementNotAllowed() throws Throwable {
         String pageToMoveCode = "primapagina";
         this.setUserOnSession("admin");
         this.initAction("/do/Page", "moveUp");
@@ -254,7 +254,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testCopyForAdminUser() throws Throwable {
+	void testCopyForAdminUser() throws Throwable {
         String pageToCopy = this._pageManager.getDraftRoot().getCode();
         this.executeCopyPage(pageToCopy, "admin");
 
@@ -276,7 +276,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testCopyForCoachUser() throws Throwable {
+	void testCopyForCoachUser() throws Throwable {
         String pageToCopy = this._pageManager.getDraftRoot().getCode();
         this.executeCopyPage(pageToCopy, "pageManagerCoach");
         String result = this.executeAction();
@@ -298,7 +298,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMoveWidgetUp() throws Throwable {
+	void testMoveWidgetUp() throws Throwable {
         IPage page = this._pageManager.getDraftPage("pagina_2");
         String pageCode = page.getCode();
         try {
@@ -344,7 +344,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testMoveTreeFreePageIntoFreePage() throws Throwable {
+	void testMoveTreeFreePageIntoFreePage() throws Throwable {
         String pageCode = "testFreePage";
         try {
             Page testPage = createDraftPage(pageCode);
@@ -362,7 +362,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testMoveReservedPageIntoFreePage() throws Throwable {
+	void testMoveReservedPageIntoFreePage() throws Throwable {
         String pageCode = "testReservedPage";
         try {
             Page testPage = createDraftPage(pageCode);
@@ -380,7 +380,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testMoveReservedPageIntoParentWithSameGroup() throws Throwable {
+	void testMoveReservedPageIntoParentWithSameGroup() throws Throwable {
         String parentCode = "testReservedParent";
         String childCode = "testReservedChild";
         try {
@@ -403,7 +403,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testMoveReservedPageIntoParentWithDifferentGroup() throws Throwable {
+	void testMoveReservedPageIntoParentWithDifferentGroup() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/rs/Page", "moveTree");
         this.addParameter("selectedNode", "customers_page");
@@ -414,7 +414,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testMoveTreeFreePageIntoReservedPage() throws Throwable {
+	void testMoveTreeFreePageIntoReservedPage() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/rs/Page", "moveTree");
         this.addParameter("selectedNode", "service");
@@ -425,7 +425,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
     
     @Test
-	public void testMoveTreeDraftInsideOnline() throws Throwable {
+	void testMoveTreeDraftInsideOnline() throws Throwable {
         String pageCode = "testPage";
         try {
             Page testPage = createDraftPage(pageCode);
@@ -443,7 +443,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMoveTreeOnlineInsideDraft() throws Throwable {
+	void testMoveTreeOnlineInsideDraft() throws Throwable {
         String draftPageCode = "testDraft";
         String onlinePageCode = "testOnline";
         try {
@@ -468,7 +468,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMoveDraftInsideDraft() throws Throwable {
+	void testMoveDraftInsideDraft() throws Throwable {
         String draft1PageCode = "draft1";
         String draft2PageCode = "draft2";
         try {
@@ -491,7 +491,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMoveTreeParentToChild() throws Throwable {
+	void testMoveTreeParentToChild() throws Throwable {
         this.setUserOnSession("pageManagerCoach");
         this.initAction("/do/rs/Page", "moveTree");
         this.addParameter("selectedNode", "pagina_1");
@@ -502,7 +502,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMoveTreeChildToParent() throws Throwable {
+	void testMoveTreeChildToParent() throws Throwable {
         this.setUserOnSession("pageManagerCoach");
         this.initAction("/do/rs/Page", "moveTree");
         this.addParameter("parentPageCode", "pagina_1");
@@ -513,7 +513,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMoveTreeMissingParent() throws Throwable {
+	void testMoveTreeMissingParent() throws Throwable {
         this.setUserOnSession("pageManagerCoach");
         this.initAction("/do/rs/Page", "moveTree");
         this.addParameter("selectedNode", "pagina_11");
@@ -523,7 +523,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMoveTreeNullNode() throws Throwable {
+	void testMoveTreeNullNode() throws Throwable {
         this.setUserOnSession("pageManagerCoach");
         this.initAction("/do/rs/Page", "moveTree");
         String node = null;
@@ -535,7 +535,7 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testMoveTreeNotFoundNode() throws Throwable {
+	void testMoveTreeNotFoundNode() throws Throwable {
         this.setUserOnSession("pageManagerCoach");
         this.initAction("/do/rs/Page", "moveTree");
         this.addParameter("selectedNode", "not_existing");

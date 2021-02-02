@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
 class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	
 	@Test
-    public void testFailureEdit() throws Throwable {
+    void testFailureEdit() throws Throwable {
 		// Utente non abilitato
 		String result = this.executeEdit("developersConf", "developersConf");
 		assertEquals("apslogin", result);
@@ -57,7 +57,7 @@ class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testEdit() throws Throwable {
+    void testEdit() throws Throwable {
 		String result = this.executeEdit("admin", "mainEditor");
 		assertEquals(Action.SUCCESS, result);
 		UserAuthorizationAction action = (UserAuthorizationAction) this.getAction();
@@ -78,7 +78,7 @@ class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testAddAuthorization_1() throws Throwable {
+    void testAddAuthorization_1() throws Throwable {
 		try {
 			this.executeEdit("admin", TEST_USER_NAME);
 			// New Authorization
@@ -108,7 +108,7 @@ class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testAddAuthorization_2() throws Throwable {
+    void testAddAuthorization_2() throws Throwable {
 		try {
 			String result = this.executeAddAuthorization("admin", TEST_USER_NAME, Group.ADMINS_GROUP_NAME, TEST_ROLE_NAME);
 			assertEquals("userList", result);
@@ -159,7 +159,7 @@ class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testRemoveAuthorization_1() throws Throwable {
+    void testRemoveAuthorization_1() throws Throwable {
 		try {
 			this.executeEdit("admin", TEST_USER_NAME);
 			
@@ -180,7 +180,7 @@ class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testRemoveAuthorization_2() throws Throwable {
+    void testRemoveAuthorization_2() throws Throwable {
 		try {
 			this.executeEdit("admin", TEST_USER_NAME);
 			
@@ -201,7 +201,7 @@ class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testSave_1() throws Throwable {
+    void testSave_1() throws Throwable {
 		List<Authorization> authorizations = this._authorizationManager.getUserAuthorizations(TEST_USER_NAME);
 		assertEquals(2, authorizations.size());
 		try {
@@ -220,7 +220,7 @@ class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-    public void testSave_2() throws Throwable {
+    void testSave_2() throws Throwable {
 		List<Authorization> authorizations = this._authorizationManager.getUserAuthorizations(TEST_USER_NAME);
 		assertEquals(2, authorizations.size());
 		try {

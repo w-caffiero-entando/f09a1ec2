@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 class TestCustomLocalizedTextProvider extends ApsAdminBaseTestCase {
 
     @Test
-    public void testExtractGlobalLabels_1() throws Throwable {
+    void testExtractGlobalLabels_1() throws Throwable {
         ActionSupport action = this.executeList("admin", "en");
         String localLabel = action.getText("title.userManagement.searchUsers");
         assertNotNull(localLabel);
@@ -35,7 +35,7 @@ class TestCustomLocalizedTextProvider extends ApsAdminBaseTestCase {
     }
 
     @Test
-    public void testExtractGlobalLabels_2() throws Throwable {
+    void testExtractGlobalLabels_2() throws Throwable {
         ActionSupport action = this.executeList("admin", "it");
         String localLabel = action.getText("title.userManagement.searchUsers");
         assertNotNull(localLabel);

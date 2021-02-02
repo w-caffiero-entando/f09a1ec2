@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 class TestPageModelFinderAction extends AbstractTestPageModelAction {
 	
 	@Test
-    public void testGetPageModels_1() throws Throwable {
+    void testGetPageModels_1() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		PageModelFinderAction pageModelFinderAction = (PageModelFinderAction) this.getAction();
@@ -40,7 +40,7 @@ class TestPageModelFinderAction extends AbstractTestPageModelAction {
 	}
 	
 	@Test
-    public void testGetPageModels_2() throws Throwable {
+    void testGetPageModels_2() throws Throwable {
 		String testPageModelCode = "test_pagemodel";
 		assertNull(this._pageModelManager.getPageModel(testPageModelCode));
 		try {

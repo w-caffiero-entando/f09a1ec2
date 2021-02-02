@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 class TestLocaleStringFinderAction extends ApsAdminBaseTestCase {
 	
 	@Test
-	public void testList() throws Throwable {
+	void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		LocaleStringFinderAction finderAction = (LocaleStringFinderAction) this.getAction();
@@ -51,7 +51,7 @@ class TestLocaleStringFinderAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSearch() throws Throwable {
+	void testSearch() throws Throwable {
 		String result = this.executeSearch("admin", "all", "");
 		assertEquals(Action.SUCCESS, result);
 		List<String> localeStrings = ((LocaleStringFinderAction) this.getAction()).getLocaleStrings();

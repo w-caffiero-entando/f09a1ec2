@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 class TestBaseCommonAction extends ApsAdminBaseTestCase {
 
     @Test
-	public void testGoChangePasswordPage() throws Throwable {
+	void testGoChangePasswordPage() throws Throwable {
         this.initAction("/do/CurrentUser", "editProfile");
         this.setUserOnSession("admin");
         String result = super.executeAction();
@@ -42,7 +42,7 @@ class TestBaseCommonAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testFailureUpdate() throws Throwable {
+	void testFailureUpdate() throws Throwable {
         String username = "editorCoach";
         String rightOldPassword = "editorCoach";
         this.setUserOnSession(username);
@@ -92,7 +92,7 @@ class TestBaseCommonAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	public void testSuccessfulUpdate() throws Throwable {
+	void testSuccessfulUpdate() throws Throwable {
         String username = "editorCoach";
         String rightOldPassword = "editorCoach";
         String newPassword = "newPassword";

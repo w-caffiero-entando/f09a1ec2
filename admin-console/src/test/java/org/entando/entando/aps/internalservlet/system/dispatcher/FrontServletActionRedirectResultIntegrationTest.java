@@ -55,12 +55,12 @@ class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBaseTestCa
     }
 
     @Test
-	public void testExecuteServlet_1() throws Throwable {
+	void testExecuteServlet_1() throws Throwable {
         this.executeServlet("https", "www.myproduct.com", "/entando/it/homepage.page");
     }
 
     @Test
-	public void testExecuteServlet_2() throws Throwable {
+	void testExecuteServlet_2() throws Throwable {
         this.configManager.updateParam(SystemConstants.CONFIG_PARAM_BASE_URL, SystemConstants.CONFIG_PARAM_BASE_URL_RELATIVE);
         try {
             this.executeServlet("http", "www.entando.com", "/Entando/it/homepage.page");
@@ -72,7 +72,7 @@ class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBaseTestCa
     }
 
     @Test
-	public void testExecuteServlet_3() throws Throwable {
+	void testExecuteServlet_3() throws Throwable {
         this.configManager.updateParam(SystemConstants.CONFIG_PARAM_BASE_URL, SystemConstants.CONFIG_PARAM_BASE_URL_STATIC);
         try {
             this.executeServlet("http", "www.entando.com", "/Entando/it/homepage.page");

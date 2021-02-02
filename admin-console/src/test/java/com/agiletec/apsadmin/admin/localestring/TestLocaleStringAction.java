@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	
 	@Test
-	public void testNew() throws Throwable {
+	void testNew() throws Throwable {
 		String result = this.executeNew("admin");
 		assertEquals(Action.SUCCESS, result);
 		LocaleStringAction localeStringAction = (LocaleStringAction) this.getAction();
@@ -45,7 +45,7 @@ class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testEdit() throws Throwable {
+	void testEdit() throws Throwable {
 		assertEquals(Action.SUCCESS, this.executeEdit("admin", "PAGE"));
 		LocaleStringAction localeStringAction = (LocaleStringAction) this.getAction();
 		assertEquals(2, localeStringAction.getLangs().size());
@@ -53,7 +53,7 @@ class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testFailureSaveNew_1() throws Throwable {
+	void testFailureSaveNew_1() throws Throwable {
 		// Chiave label duplicata
 		String duplicatedKey = "PAGE";
 		String result = this.executeSaveNew("admin", duplicatedKey, "newKeyIt", "newKeyEn");
@@ -86,7 +86,7 @@ class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testFailureSaveNew_2() throws Throwable {
+	void testFailureSaveNew_2() throws Throwable {
 		//key length exceed max
 		String longKey = "veryLongCategoryCode_veryLongCategoryCode_veryLongCategoryCode";
 		assertNull(this._i18nManager.getLabelGroup(longKey));
@@ -104,7 +104,7 @@ class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testFailureSaveNew_3() throws Throwable {
+	void testFailureSaveNew_3() throws Throwable {
 		//key with special characters
 		String wrongKey = "test_&HF";
 		assertNull(this._i18nManager.getLabelGroup(wrongKey));
@@ -122,7 +122,7 @@ class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSaveNew() throws Throwable {
+	void testSaveNew() throws Throwable {
 		String key = "NEW_KEY_12";
 		assertFalse(this._i18nManager.getLabelGroups().containsKey(key));
 		try {
@@ -143,7 +143,7 @@ class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testFailureSaveEdit() throws Throwable {
+	void testFailureSaveEdit() throws Throwable {
         String key = "NEW_KEY_X";
 		assertFalse(this._i18nManager.getLabelGroups().containsKey(key));
 		try {
@@ -174,7 +174,7 @@ class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSaveEdit() throws Throwable {
+	void testSaveEdit() throws Throwable {
 		String key = "NEW_KEY";
 		assertFalse(this._i18nManager.getLabelGroups().containsKey(key));
 		try {
@@ -195,7 +195,7 @@ class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSaveDelete() throws Throwable {
+	void testSaveDelete() throws Throwable {
 		String key = "NEW_KEY";
 		try {
 			ApsProperties labels = this.prepareLabelProperties("itLabel", "enLabel");
