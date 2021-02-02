@@ -44,8 +44,7 @@ class TestGroupFinderAction extends ApsAdminBaseTestCase {
 		assertFalse(groups.isEmpty());
 	}
 	
-	@Test
-    private String executeList(String currentUser) throws Throwable {
+	private String executeList(String currentUser) throws Throwable {
 		this.setUserOnSession(currentUser);
 		this.initAction("/do/Group", "list");
 		return this.executeAction();

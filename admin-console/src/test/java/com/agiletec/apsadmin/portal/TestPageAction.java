@@ -862,7 +862,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
             assertEquals(expectedFieldErrors.length, response.getFieldErrors().size());
             List<String> expectedFieldErrorsList = Arrays.asList(expectedFieldErrors);
             expectedFieldErrorsList.removeAll(response.getFieldErrors().keySet());
-            assertEquals(0, expectedFieldErrors);
+            assertEquals(0, expectedFieldErrors.length);
         } else {
             assertEquals(0, response.getFieldErrors().size());
         }

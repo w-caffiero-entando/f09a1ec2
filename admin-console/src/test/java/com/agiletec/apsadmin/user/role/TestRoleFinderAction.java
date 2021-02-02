@@ -44,8 +44,7 @@ class TestRoleFinderAction extends ApsAdminBaseTestCase {
 		assertFalse(roles.isEmpty());
 	}
 	
-	@Test
-    private String executeList(String currentUser) throws Throwable {
+	private String executeList(String currentUser) throws Throwable {
 		this.setUserOnSession(currentUser);
 		this.initAction("/do/Role", "list");
 		return this.executeAction();
