@@ -44,7 +44,7 @@ public class VersioningConfigurationControllerIntegrationTest extends AbstractCo
     private BaseConfigManager baseConfigManager;
 
     @Test
-    public void testPutVersioningConfiguration() throws Exception {
+    void testPutVersioningConfiguration() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         try {
             String accessToken = mockOAuthInterceptor(user);
@@ -61,7 +61,7 @@ public class VersioningConfigurationControllerIntegrationTest extends AbstractCo
     }
 
     @Test
-    public void testGetVersioningConfiguration() throws Exception {
+    void testGetVersioningConfiguration() throws Exception {
         initConfig();
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         try {

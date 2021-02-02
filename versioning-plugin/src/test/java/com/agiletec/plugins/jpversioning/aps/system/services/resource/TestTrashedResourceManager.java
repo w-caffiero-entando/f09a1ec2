@@ -49,7 +49,7 @@ import org.junit.jupiter.api.Test;
 public class TestTrashedResourceManager extends BaseTestCase {
 	
 	@Test
-	public void testSearchTrashedResourceIds() throws EntException {
+	void testSearchTrashedResourceIds() throws EntException {
 		String resourceTypeCode = null;
 		String text = null;
 		List<String> allowedGroups = new ArrayList<String>();
@@ -70,7 +70,7 @@ public class TestTrashedResourceManager extends BaseTestCase {
 	}
 	
 	@Test
-	public void testAdd_Trash_LoadFromTrash_RemoveFromTrash() throws Throwable {
+	void testAdd_Trash_LoadFromTrash_RemoveFromTrash() throws Throwable {
 		String mainGroup = Group.FREE_GROUP_NAME;
 		String resDescrToAdd = "Versioning test 1";
 		String resourceType = "Image";
@@ -115,7 +115,7 @@ public class TestTrashedResourceManager extends BaseTestCase {
 	}
 	
 	@Test
-	public void testAdd_Trash_RestoreResource_DeleteFromArchive() throws Throwable {
+	void testAdd_Trash_RestoreResource_DeleteFromArchive() throws Throwable {
 		String mainGroup = Group.FREE_GROUP_NAME;
 		String resDescrToAdd = "Versioning test 2";
 		String resourceType = "Image";
@@ -163,7 +163,7 @@ public class TestTrashedResourceManager extends BaseTestCase {
 	}
 
     @Test
-	public void testRestoreImageFromTrashProtectedResource() throws Throwable {
+	void testRestoreImageFromTrashProtectedResource() throws Throwable {
         String mainGroup = Group.ADMINS_GROUP_NAME;
         String resDescrToAdd = "Test protected resource";
         String resourceType = "Image";
@@ -216,7 +216,7 @@ public class TestTrashedResourceManager extends BaseTestCase {
     }
 
 	@Test
-	public void testRestoreAttachmentFromTrashProtectedResource() throws Throwable {
+	void testRestoreAttachmentFromTrashProtectedResource() throws Throwable {
 		String mainGroup = Group.ADMINS_GROUP_NAME;
 		String resDescrToAdd = "Test protected resource Attachment";
 		String resourceType = "Attach";

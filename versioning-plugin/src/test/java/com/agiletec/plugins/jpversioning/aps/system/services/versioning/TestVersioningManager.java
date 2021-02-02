@@ -58,7 +58,7 @@ public class TestVersioningManager extends BaseTestCase {
     private IVersioningManager versioningManager;
     private JpversioningTestHelper helper;
 
-    public void testGetVersions() throws Throwable {
+    void testGetVersions() throws Throwable {
         List<Long> versions = this.versioningManager.getVersions("CNG12");
         assertNull(versions);
 
@@ -66,7 +66,7 @@ public class TestVersioningManager extends BaseTestCase {
         this.checkVersionIds(new long[]{1, 2, 3}, versions);
     }
 
-    public void testGetLastVersions() throws Throwable {
+    void testGetLastVersions() throws Throwable {
         List<Long> versions = this.versioningManager.getLastVersions("CNG", null);
         assertTrue(versions.isEmpty());
 
@@ -74,7 +74,7 @@ public class TestVersioningManager extends BaseTestCase {
         this.checkVersionIds(new long[]{3}, versions);
     }
 
-    public void testGetVersion() throws Throwable {
+    void testGetVersion() throws Throwable {
         ContentVersion contentVersion = this.versioningManager.getVersion(10000);
         assertNull(contentVersion);
         long id = 1;
@@ -92,7 +92,7 @@ public class TestVersioningManager extends BaseTestCase {
         assertEquals("admin", contentVersion.getUsername());
     }
 
-    public void testGetLastVersion() throws Throwable {
+    void testGetLastVersion() throws Throwable {
         ContentVersion contentVersion = this.versioningManager.getLastVersion("CNG12");
         assertNull(contentVersion);
         contentVersion = this.versioningManager.getLastVersion("ART1");
@@ -109,7 +109,7 @@ public class TestVersioningManager extends BaseTestCase {
         assertEquals("mainEditor", contentVersion.getUsername());
     }
 
-    public void testSaveGetDeleteVersion() throws Throwable {
+    void testSaveGetDeleteVersion() throws Throwable {
         ((VersioningManager) this.versioningManager).saveContentVersion("ART102");
         ContentVersion contentVersion = this.versioningManager.getLastVersion("ART102");
         assertEquals(4, contentVersion.getId());
@@ -145,12 +145,12 @@ public class TestVersioningManager extends BaseTestCase {
         }
     }
 
-    public void testContentVersionToIgnore_1() throws Exception {
+    void testContentVersionToIgnore_1() throws Exception {
         this.testContentVersionToIgnore(false, true);
         this.testContentVersionToIgnore(true, true);
     }
 
-    public void testContentVersionToIgnore_2() throws Exception {
+    void testContentVersionToIgnore_2() throws Exception {
         this.testContentVersionToIgnore(false, false);
         this.testContentVersionToIgnore(true, false);
     }

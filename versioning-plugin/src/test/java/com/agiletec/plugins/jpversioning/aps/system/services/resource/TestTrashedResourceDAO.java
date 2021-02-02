@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
 public class TestTrashedResourceDAO extends BaseTestCase {
 	
     @Test
-	public void testGetTrashedResource () {
+	void testGetTrashedResource () {
 		String resourceId = "66";
 		ResourceRecordVO resourceVO = _trashedResourceDAO.getTrashedResource(resourceId);
 		assertNotNull(resourceVO);
@@ -58,7 +58,7 @@ public class TestTrashedResourceDAO extends BaseTestCase {
 	}
 	
 	@Test
-	public void testAddGetDel_TrashedResource() throws EntException {
+	void testAddGetDel_TrashedResource() throws EntException {
 		String resourceId = "22";
 		ResourceInterface resource = _resourceManager.loadResource(resourceId);
 		
@@ -77,7 +77,7 @@ public class TestTrashedResourceDAO extends BaseTestCase {
 	}
 	
 	@Test
-	public void testSearchTrashedResourceIds(){
+	void testSearchTrashedResourceIds(){
 		String resourceTypeCode = "";
 		List<String> resourceIds = _trashedResourceDAO.searchTrashedResourceIds(resourceTypeCode, null, null);
 		assertNotNull(resourceIds);

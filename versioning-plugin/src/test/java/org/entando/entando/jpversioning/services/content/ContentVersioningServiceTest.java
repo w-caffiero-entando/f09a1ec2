@@ -71,7 +71,7 @@ public class ContentVersioningServiceTest {
     private ContentVersioningService service;
 
     @Test
-    public void testGetListContentVersions() throws EntException{
+    void testGetListContentVersions() throws EntException{
         RestListRequest requestList = new RestListRequest();
         List<Long> mockedVersions = new ArrayList();
         mockedVersions.add(VERSION_ID_1);
@@ -87,7 +87,7 @@ public class ContentVersioningServiceTest {
     }
 
     @Test
-    public void testGetContent() throws EntException {
+    void testGetContent() throws EntException {
         Content content = new Content();
         ContentDto contentDto = new ContentDto();
         contentDto.setStatus(STATUS);
@@ -102,7 +102,7 @@ public class ContentVersioningServiceTest {
     }
 
     @Test
-    public void testRecoverContentVersion() throws EntException {
+    void testRecoverContentVersion() throws EntException {
         Content content = new Content();
         ContentDto contentDto = new ContentDto();
         String contentXml = null;

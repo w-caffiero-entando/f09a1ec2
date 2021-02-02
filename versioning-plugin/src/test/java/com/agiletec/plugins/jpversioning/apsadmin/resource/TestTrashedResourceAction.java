@@ -51,7 +51,7 @@ import org.junit.jupiter.api.Test;
 public class TestTrashedResourceAction extends ApsAdminBaseTestCase {
 	
     @Test
-	public void testInit() throws Throwable{
+	void testInit() throws Throwable{
 		this.setUserOnSession("admin");
 		this.initAction("/do/jpversioning/Resource/Trash", "list");
 		this.addParameter("resourceTypeCode", "Image");
@@ -63,7 +63,7 @@ public class TestTrashedResourceAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testGetTrashedResources() throws Throwable{
+	void testGetTrashedResources() throws Throwable{
 		this.setUserOnSession("admin");
 		this.initAction("/do/jpversioning/Resource/Trash", "list");
 		this.addParameter("resourceTypeCode", "Image");
@@ -100,7 +100,7 @@ public class TestTrashedResourceAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testList() throws Throwable{
+	void testList() throws Throwable{
 		String result = this.executeList("admin", "Image");
 		assertEquals(Action.SUCCESS, result);
 		List<String> trashedResources = ((TrashedResourceAction) this.getAction()).getTrashedResources();
@@ -133,7 +133,7 @@ public class TestTrashedResourceAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testRemoveFromTrash() throws Throwable{
+	void testRemoveFromTrash() throws Throwable{
 		String resourceId = "22";
 		try {
 			ResourceInterface resource = this._resourceManager.loadResource(resourceId);
@@ -154,7 +154,7 @@ public class TestTrashedResourceAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testRestoreFromTrash() throws Throwable{
+	void testRestoreFromTrash() throws Throwable{
 		String resourceId = "70";
 		ResourceInterface originaryResourceInterface = this._trashedResourceManager.loadTrashedResource(resourceId);
 		assertNotNull(originaryResourceInterface);

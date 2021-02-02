@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
 public class TestVersioningDAO extends BaseTestCase {
 	
     @Test
-	public void testGetVersions() throws Throwable {
+	void testGetVersions() throws Throwable {
 		List<Long> versions = this._versioningDAO.getVersions("CNG12");
 		assertNull(versions);
 		
@@ -55,7 +55,7 @@ public class TestVersioningDAO extends BaseTestCase {
 	}
 	
 	@Test
-	public void testGetLastVersions() throws Throwable {
+	void testGetLastVersions() throws Throwable {
 		List<Long> versions = this._versioningDAO.getLastVersions("CNG", null);
 		assertTrue(versions.isEmpty());
 		
@@ -64,7 +64,7 @@ public class TestVersioningDAO extends BaseTestCase {
 	}
 	
 	@Test
-	public void testGetVersion() {
+	void testGetVersion() {
 		ContentVersion contentVersion = this._versioningDAO.getVersion(10000);
 		assertNull(contentVersion);	
 		long id = 1;
@@ -83,7 +83,7 @@ public class TestVersioningDAO extends BaseTestCase {
 	}
 	
 	@Test
-	public void testGetLastVersion() {
+	void testGetLastVersion() {
 		ContentVersion contentVersion = this._versioningDAO.getLastVersion("CNG12");
 		assertNull(contentVersion);
 		contentVersion = this._versioningDAO.getLastVersion("ART1");
@@ -101,7 +101,7 @@ public class TestVersioningDAO extends BaseTestCase {
 	}
 	
 	@Test
-	public void testAddGetDeleteVersion() {
+	void testAddGetDeleteVersion() {
 		ContentVersion versionRecord = this._versioningDAO.getVersion(1);
 		assertNotNull(versionRecord);
 		versionRecord.setVersion("1.1");
@@ -115,7 +115,7 @@ public class TestVersioningDAO extends BaseTestCase {
 	}
 	
 	@Test
-	public void testDeleteWorkVersions() {
+	void testDeleteWorkVersions() {
 		List<Long> versions = this._versioningDAO.getVersions("ART1");
 		this.checkVersionIds(new long[] { 1, 2, 3 }, versions);
 		

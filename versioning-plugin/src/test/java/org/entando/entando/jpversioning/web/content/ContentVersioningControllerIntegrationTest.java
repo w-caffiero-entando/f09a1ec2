@@ -50,7 +50,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     public static final String PLACEHOLDER_STRING = "resourceIdPlaceHolder";
 
     @Test
-    public void testListContentVersion() throws Exception {
+    void testListContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId = null;
@@ -89,7 +89,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testListLatestVersions() throws Exception {
+    void testListLatestVersions() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId1 = null;
@@ -123,7 +123,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testListLatestVersionsWithMultipleVersion() throws Exception {
+    void testListLatestVersionsWithMultipleVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId1 = null;
@@ -165,7 +165,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testPaginationListContentVersion() throws Exception {
+    void testPaginationListContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId = null;
@@ -227,7 +227,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testRecoverContentVersion() throws Exception {
+    void testRecoverContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId = null;
@@ -264,7 +264,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testDeleteContentVersion() throws Exception {
+    void testDeleteContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String contentId = null;
@@ -298,7 +298,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
 
 
     @Test
-    public void testGetContentVersion() throws Exception {
+    void testGetContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId = null;
@@ -334,7 +334,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testPaginationListLatestVersions() throws Exception {
+    void testPaginationListLatestVersions() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId1 = null;
@@ -389,7 +389,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testFilterListLatestVersions() throws Exception {
+    void testFilterListLatestVersions() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode1 = "CT1";
         String contentTypeCode2 = "CT2";

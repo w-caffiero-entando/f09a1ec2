@@ -54,7 +54,7 @@ public class VersioningConfigurationServiceTest {
     }
 
     @Test
-    public void testGetVersioningConfigurationNotExists() {
+    void testGetVersioningConfigurationNotExists() {
         when(baseConfigManager.getParam(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS)).thenReturn(null);
         when(baseConfigManager.getParam(
                 JpversioningSystemConstants.CONFIG_PARAM_CONTENTS_TO_IGNORE)).thenReturn(null);
@@ -72,7 +72,7 @@ public class VersioningConfigurationServiceTest {
     }
 
     @Test
-    public void testGetVersioningConfigurationDeleteMidVersionTrue() {
+    void testGetVersioningConfigurationDeleteMidVersionTrue() {
         when(baseConfigManager.getParam(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS)).thenReturn(DELETE_MID_VERSION_TRUE);
         when(baseConfigManager.getParam(
                 JpversioningSystemConstants.CONFIG_PARAM_CONTENTS_TO_IGNORE)).thenReturn(CONTENTS_TO_IGNORE);
@@ -87,7 +87,7 @@ public class VersioningConfigurationServiceTest {
     }
     
     @Test
-    public void testGetVersioningConfigurationDeleteMidVersionFalse() {
+    void testGetVersioningConfigurationDeleteMidVersionFalse() {
         when(baseConfigManager.getParam(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS)).thenReturn(DELETE_MID_VERSION_FALSE);
         when(baseConfigManager.getParam(
                 JpversioningSystemConstants.CONFIG_PARAM_CONTENTS_TO_IGNORE)).thenReturn(CONTENTS_TO_IGNORE);

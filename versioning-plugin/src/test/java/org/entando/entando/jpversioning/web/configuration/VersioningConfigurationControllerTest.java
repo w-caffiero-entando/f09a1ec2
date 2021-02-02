@@ -57,7 +57,7 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
     }
 
     @Test
-    public void testGetExistingContentVersioning() throws Exception {
+    void testGetExistingContentVersioning() throws Exception {
         VersioningConfigurationDTO configuration = new VersioningConfigurationDTO();
         UserDetails user = this.createUser(true);
         Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
@@ -68,7 +68,7 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
     }
 
     @Test
-    public void testNotAuthorizedGetExistingContentVersioning() throws Exception {
+    void testNotAuthorizedGetExistingContentVersioning() throws Exception {
         VersioningConfigurationDTO configuration = new VersioningConfigurationDTO();
         UserDetails user = this.createUser(false);
         Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
@@ -79,7 +79,7 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
     }
 
     @Test
-    public void testPutExistingContentVersioning() throws Exception {
+    void testPutExistingContentVersioning() throws Exception {
         VersioningConfigurationDTO configuration = new VersioningConfigurationDTO();
         UserDetails user = this.createUser(true);
         Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
@@ -90,7 +90,7 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
     }
 
     @Test
-    public void testNotAuthorizedPutExistingContentVersioning() throws Exception {
+    void testNotAuthorizedPutExistingContentVersioning() throws Exception {
         VersioningConfigurationDTO configuration = new VersioningConfigurationDTO();
         UserDetails user = this.createUser(false);
         Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);

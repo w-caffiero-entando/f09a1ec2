@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
 public class TestVersionFinderAction  extends ApsAdminBaseTestCase {
 	
     @Test
-	public void testList() throws Throwable{
+	void testList() throws Throwable{
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		
@@ -64,7 +64,7 @@ public class TestVersionFinderAction  extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testSearch() throws Throwable{
+	void testSearch() throws Throwable{
 		String result = this.executeSearch("admin", null, null);
 		assertEquals(Action.SUCCESS, result);
 		

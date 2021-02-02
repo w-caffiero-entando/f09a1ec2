@@ -52,7 +52,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     private TrashedResourceManager trashedResourceManager;
     
     @Test
-    public void testListDeletedAttachments() throws Exception {
+    void testListDeletedAttachments() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Attach";
 
@@ -85,7 +85,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testListDeletedAttachmentsPagination() throws Exception {
+    void testListDeletedAttachmentsPagination() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Attach";
         String type = "file";
@@ -133,7 +133,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testListDeletedAttachmentsFiltering() throws Exception {
+    void testListDeletedAttachmentsFiltering() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Attach";
         String type = "file";
@@ -179,7 +179,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testListDeletedImage() throws Exception {
+    void testListDeletedImage() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Image";
         String type = "image";
@@ -205,7 +205,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testListDeletedImagePagination() throws Exception {
+    void testListDeletedImagePagination() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Image";
         String type = "image";
@@ -252,7 +252,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testListDeletedImageFiltering() throws Exception {
+    void testListDeletedImageFiltering() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Image";
         String type = "image";
@@ -296,7 +296,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testTrashedAttachmentsRecover() throws Exception {
+    void testTrashedAttachmentsRecover() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Attach";
 
@@ -354,7 +354,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
     
     @Test
-    public void testTrashedImageRecover() throws Exception {
+    void testTrashedImageRecover() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Image";
         String resourceId = null;
@@ -415,7 +415,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
     
     @Test
-    public void testDeleteTrashedAttachment() throws Exception {
+    void testDeleteTrashedAttachment() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Attach";
         String resourceId = null;
@@ -472,7 +472,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testDeleteTrashedImage() throws Exception {
+    void testDeleteTrashedImage() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Image";
         String resourceId = null;
@@ -529,7 +529,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testGetTrashedAttachment() throws Exception {
+    void testGetTrashedAttachment() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Attach";
         String resourceId = null;
@@ -595,7 +595,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testGetTrashedImage() throws Exception {
+    void testGetTrashedImage() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String resourceTypeCode = "Image";
         String resourceId = null;
@@ -649,7 +649,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void testResourceVersioningPermissionsContentEditor() throws Exception {
+    void testResourceVersioningPermissionsContentEditor() throws Exception {
 
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
                 .withAuthorization(Group.FREE_GROUP_NAME, "editor", Permission.CONTENT_EDITOR)

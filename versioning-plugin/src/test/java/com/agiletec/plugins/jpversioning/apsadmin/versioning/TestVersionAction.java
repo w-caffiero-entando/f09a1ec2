@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
 public class TestVersionAction extends ApsAdminBaseTestCase {
 	
     @Test
-	public void testHistory() throws Throwable {
+	void testHistory() throws Throwable {
 		String result = this.executeHistory("admin", "ART1");
 		assertEquals(Action.SUCCESS, result);
 		List<Long> versions = ((VersionAction) this.getAction()).getContentVersions();
@@ -68,31 +68,31 @@ public class TestVersionAction extends ApsAdminBaseTestCase {
 	}
 	
 	@Test
-	public void testTrash() throws Throwable {
+	void testTrash() throws Throwable {
 		String result = this.executeTrash("admin", 3);
 		assertEquals(Action.SUCCESS, result);
 	}
 	
 	@Test
-	public void testDelete() throws Throwable {
+	void testDelete() throws Throwable {
 		String result = this.executeDelete("admin", 300);
 		assertEquals(Action.SUCCESS, result);
 	}
 	
 	@Test
-	public void testPreview() throws Throwable {
+	void testPreview() throws Throwable {
 		String result = this.executePreview("admin", 3);
 		assertEquals(Action.SUCCESS, result);
 	}
 	
 	@Test
-	public void testEntryRecover() throws Throwable {
+	void testEntryRecover() throws Throwable {
 		String result = this.executeEntryRecover("admin", 3);
 		assertEquals(Action.SUCCESS, result);
 	}
     
     @Test
-	public void testRecoverAction() throws Throwable {
+	void testRecoverAction() throws Throwable {
         String contentId = null;
         try {
             Content contentToVersion = this.contentManager.loadContent("ART187", false);
