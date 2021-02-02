@@ -26,15 +26,17 @@ import org.entando.entando.plugins.jpversioning.web.configuration.VersioningConf
 import org.entando.entando.plugins.jpversioning.web.configuration.model.VersioningConfigurationDTO;
 import org.entando.entando.web.AbstractControllerTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+@ExtendWith(MockitoExtension.class)
 public class VersioningConfigurationControllerTest extends AbstractControllerTest {
 
     @Mock
@@ -46,9 +48,8 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
     @InjectMocks
     private VersioningConfigurationController controller;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
                 .setHandlerExceptionResolvers(createHandlerExceptionResolver())
@@ -56,10 +57,10 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
     }
 
     @Test
-    public void testGetExistingContentVersioning() throws Exception {
+    void testGetExistingContentVersioning() throws Exception {
         VersioningConfigurationDTO configuration = new VersioningConfigurationDTO();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
         when(this.service.getVersioningConfiguration())
                 .thenReturn(configuration);
         ResultActions result = getVersioningConfiguration(user);
@@ -67,33 +68,33 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
     }
 
     @Test
-    public void testNotAuthorizedGetExistingContentVersioning() throws Exception {
+    void testNotAuthorizedGetExistingContentVersioning() throws Exception {
         VersioningConfigurationDTO configuration = new VersioningConfigurationDTO();
         UserDetails user = this.createUser(false);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.service.getVersioningConfiguration())
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.service.getVersioningConfiguration())
                 .thenReturn(configuration);
         ResultActions result = getVersioningConfiguration(user);
         result.andExpect(status().isForbidden());
     }
 
     @Test
-    public void testPutExistingContentVersioning() throws Exception {
+    void testPutExistingContentVersioning() throws Exception {
         VersioningConfigurationDTO configuration = new VersioningConfigurationDTO();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.service.putVersioningConfiguration(Mockito.any(VersioningConfigurationDTO.class)))
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.service.putVersioningConfiguration(Mockito.any(VersioningConfigurationDTO.class)))
                 .thenReturn(configuration);
         ResultActions result = getVersioningConfiguration(user);
         result.andExpect(status().isOk());
     }
 
     @Test
-    public void testNotAuthorizedPutExistingContentVersioning() throws Exception {
+    void testNotAuthorizedPutExistingContentVersioning() throws Exception {
         VersioningConfigurationDTO configuration = new VersioningConfigurationDTO();
         UserDetails user = this.createUser(false);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.service.putVersioningConfiguration(Mockito.any(VersioningConfigurationDTO.class)))
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.service.putVersioningConfiguration(Mockito.any(VersioningConfigurationDTO.class)))
                 .thenReturn(configuration);
         ResultActions result = putVersioningConfiguration(user);
         result.andExpect(status().isForbidden());

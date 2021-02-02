@@ -21,32 +21,31 @@
  */
 package com.agiletec.plugins.jpversioning.aps.system.services.resource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.agiletec.aps.BaseTestCase;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
-
-import com.agiletec.plugins.jpversioning.aps.ApsPluginBaseTestCase;
 
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceRecordVO;
-import com.agiletec.plugins.jpversioning.aps.system.services.resource.ITrashedResourceDAO;
-import com.agiletec.plugins.jpversioning.aps.system.services.resource.TrashedResourceDAO;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author G.Cocco
  */
-public class TestTrashedResourceDAO extends ApsPluginBaseTestCase {
+public class TestTrashedResourceDAO extends BaseTestCase {
 	
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-	}
-	
-	public void testGetTrashedResource () {
+    @Test
+	void testGetTrashedResource () {
 		String resourceId = "66";
 		ResourceRecordVO resourceVO = _trashedResourceDAO.getTrashedResource(resourceId);
 		assertNotNull(resourceVO);
@@ -58,7 +57,8 @@ public class TestTrashedResourceDAO extends ApsPluginBaseTestCase {
 		assertTrue(resourceVO.getXml().length() > 0 );
 	}
 	
-	public void testAddGetDel_TrashedResource() throws EntException {
+	@Test
+	void testAddGetDel_TrashedResource() throws EntException {
 		String resourceId = "22";
 		ResourceInterface resource = _resourceManager.loadResource(resourceId);
 		
@@ -76,7 +76,8 @@ public class TestTrashedResourceDAO extends ApsPluginBaseTestCase {
 		_trashedResourceDAO.delTrashedResource(resource.getId());
 	}
 	
-	public void testSearchTrashedResourceIds(){
+	@Test
+	void testSearchTrashedResourceIds(){
 		String resourceTypeCode = "";
 		List<String> resourceIds = _trashedResourceDAO.searchTrashedResourceIds(resourceTypeCode, null, null);
 		assertNotNull(resourceIds);
@@ -112,6 +113,7 @@ public class TestTrashedResourceDAO extends ApsPluginBaseTestCase {
 		assertEquals(1, resourceIds.size());
 	}
 	
+    @BeforeEach
 	private void init() throws Exception {
 		TrashedResourceDAO trashedResourceDAO = new TrashedResourceDAO();
 		DataSource dataSource = (DataSource) this.getApplicationContext().getBean("portDataSource");

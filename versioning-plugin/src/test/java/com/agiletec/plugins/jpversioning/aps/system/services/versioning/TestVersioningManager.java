@@ -21,6 +21,13 @@
  */
 package com.agiletec.plugins.jpversioning.aps.system.services.versioning;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
@@ -29,7 +36,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import com.agiletec.plugins.jpversioning.aps.ApsPluginBaseTestCase;
 import com.agiletec.plugins.jpversioning.util.JpversioningTestHelper;
 
 import com.agiletec.aps.util.DateConverter;
@@ -39,31 +45,20 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jpversioning.aps.system.JpversioningSystemConstants;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @author G.Cocco
  */
-public class TestVersioningManager extends ApsPluginBaseTestCase {
+public class TestVersioningManager extends BaseTestCase {
 
     private ConfigInterface configManager;
     private IContentManager contentManager;
     private IVersioningManager versioningManager;
     private JpversioningTestHelper helper;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-        this.helper.initContentVersions();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        this.helper.cleanContentVersions();
-        super.tearDown();
-    }
-
-    public void testGetVersions() throws Throwable {
+    void testGetVersions() throws Throwable {
         List<Long> versions = this.versioningManager.getVersions("CNG12");
         assertNull(versions);
 
@@ -71,7 +66,7 @@ public class TestVersioningManager extends ApsPluginBaseTestCase {
         this.checkVersionIds(new long[]{1, 2, 3}, versions);
     }
 
-    public void testGetLastVersions() throws Throwable {
+    void testGetLastVersions() throws Throwable {
         List<Long> versions = this.versioningManager.getLastVersions("CNG", null);
         assertTrue(versions.isEmpty());
 
@@ -79,7 +74,7 @@ public class TestVersioningManager extends ApsPluginBaseTestCase {
         this.checkVersionIds(new long[]{3}, versions);
     }
 
-    public void testGetVersion() throws Throwable {
+    void testGetVersion() throws Throwable {
         ContentVersion contentVersion = this.versioningManager.getVersion(10000);
         assertNull(contentVersion);
         long id = 1;
@@ -97,7 +92,7 @@ public class TestVersioningManager extends ApsPluginBaseTestCase {
         assertEquals("admin", contentVersion.getUsername());
     }
 
-    public void testGetLastVersion() throws Throwable {
+    void testGetLastVersion() throws Throwable {
         ContentVersion contentVersion = this.versioningManager.getLastVersion("CNG12");
         assertNull(contentVersion);
         contentVersion = this.versioningManager.getLastVersion("ART1");
@@ -114,7 +109,7 @@ public class TestVersioningManager extends ApsPluginBaseTestCase {
         assertEquals("mainEditor", contentVersion.getUsername());
     }
 
-    public void testSaveGetDeleteVersion() throws Throwable {
+    void testSaveGetDeleteVersion() throws Throwable {
         ((VersioningManager) this.versioningManager).saveContentVersion("ART102");
         ContentVersion contentVersion = this.versioningManager.getLastVersion("ART102");
         assertEquals(4, contentVersion.getId());
@@ -150,12 +145,12 @@ public class TestVersioningManager extends ApsPluginBaseTestCase {
         }
     }
 
-    public void testContentVersionToIgnore_1() throws Exception {
+    void testContentVersionToIgnore_1() throws Exception {
         this.testContentVersionToIgnore(false, true);
         this.testContentVersionToIgnore(true, true);
     }
 
-    public void testContentVersionToIgnore_2() throws Exception {
+    void testContentVersionToIgnore_2() throws Exception {
         this.testContentVersionToIgnore(false, false);
         this.testContentVersionToIgnore(true, false);
     }
@@ -219,12 +214,19 @@ public class TestVersioningManager extends ApsPluginBaseTestCase {
         this.configManager.updateConfigItem(SystemConstants.CONFIG_ITEM_PARAMS, newXmlParams);
     }
 
-    private void init() throws Exception {
+    @BeforeEach
+	private void init() throws Exception {
         this.versioningManager = (IVersioningManager) this.getService(JpversioningSystemConstants.VERSIONING_MANAGER);
         this.configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);
         this.contentManager = (IContentManager) this.getService(JacmsSystemConstants.CONTENT_MANAGER);
         DataSource dataSource = (DataSource) this.getApplicationContext().getBean("portDataSource");
         this.helper = new JpversioningTestHelper(dataSource, this.getApplicationContext());
+        this.helper.initContentVersions();
     }
-
+    
+    @AfterEach
+    private void dispose() throws Exception {
+        this.helper.cleanContentVersions();
+    }
+    
 }

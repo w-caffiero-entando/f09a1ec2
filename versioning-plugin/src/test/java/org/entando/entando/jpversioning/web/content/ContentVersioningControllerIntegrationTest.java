@@ -27,10 +27,10 @@ import java.util.Optional;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
-import org.junit.Assert;
-import org.junit.Test;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -50,7 +50,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     public static final String PLACEHOLDER_STRING = "resourceIdPlaceHolder";
 
     @Test
-    public void testListContentVersion() throws Exception {
+    void testListContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId = null;
@@ -58,10 +58,10 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         try {
             String accessToken = mockOAuthInterceptor(user);
 
-            Assert.assertNull(contentManager.getEntityPrototype(contentTypeCode));
+            Assertions.assertNull(contentManager.getEntityPrototype(contentTypeCode));
             postContentType("json/1_POST_content_type_with_boolean_attribute.json", accessToken,
                     status().isCreated());
-            Assert.assertNotNull(contentManager.getEntityPrototype(contentTypeCode));
+            Assertions.assertNotNull(contentManager.getEntityPrototype(contentTypeCode));
 
             ResultActions result = postContent("json/1_POST_content_with_boolean_attribute.json", accessToken,
                     status().isOk());
@@ -89,7 +89,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testListLatestVersions() throws Exception {
+    void testListLatestVersions() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId1 = null;
@@ -123,7 +123,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testListLatestVersionsWithMultipleVersion() throws Exception {
+    void testListLatestVersionsWithMultipleVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId1 = null;
@@ -165,7 +165,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testPaginationListContentVersion() throws Exception {
+    void testPaginationListContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId = null;
@@ -219,7 +219,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
                     .andExpect(jsonPath("$.metaData.totalItems", is(5)));
 
         } catch (Exception e) {
-            Assert.fail();
+            Assertions.fail();
         } finally {
             deleteContent(user, newContentId);
             deleteContentType(contentTypeCode);
@@ -227,7 +227,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testRecoverContentVersion() throws Exception {
+    void testRecoverContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId = null;
@@ -242,6 +242,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
             newContentId = saveContent("json/1_POST_content_with_boolean_attribute.json", accessToken);
             updateContent("json/1_PUT_content_with_boolean_attribute.json", newContentId, accessToken);
             final ContentVersion lastVersion = versioningManager.getLastVersion(newContentId);
+            Assertions.assertNotNull(lastVersion);
             final Long versionId = lastVersion.getId();
             updateContent("json/2_PUT_content_with_boolean_attribute.json", newContentId, accessToken);
             postRecoverContentVersion(user, newContentId, versionId)
@@ -263,7 +264,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testDeleteContentVersion() throws Exception {
+    void testDeleteContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String contentId = null;
@@ -277,6 +278,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
             updateContent("json/2_PUT_content_with_boolean_attribute.json", contentId, accessToken);
 
             final ContentVersion lastVersion = versioningManager.getLastVersion(contentId);
+            Assertions.assertNotNull(lastVersion);
             final Long versionId = lastVersion.getId();
 
             listContentVersions(user, contentId)
@@ -296,7 +298,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
 
 
     @Test
-    public void testGetContentVersion() throws Exception {
+    void testGetContentVersion() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId = null;
@@ -310,6 +312,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
             updateContent("json/1_PUT_content_with_boolean_attribute.json", newContentId, accessToken);
 
             final ContentVersion lastVersion = versioningManager.getLastVersion(newContentId);
+            Assertions.assertNotNull(lastVersion);
             final Long versionId = lastVersion.getId();
 
             updateContent("json/2_PUT_content_with_boolean_attribute.json", newContentId, accessToken);
@@ -331,7 +334,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testPaginationListLatestVersions() throws Exception {
+    void testPaginationListLatestVersions() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode = "CT1";
         String newContentId1 = null;
@@ -386,7 +389,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void testFilterListLatestVersions() throws Exception {
+    void testFilterListLatestVersions() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String contentTypeCode1 = "CT1";
         String contentTypeCode2 = "CT2";

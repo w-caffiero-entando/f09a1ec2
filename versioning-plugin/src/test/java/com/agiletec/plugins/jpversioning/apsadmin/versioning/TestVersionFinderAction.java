@@ -21,36 +21,29 @@
  */
 package com.agiletec.plugins.jpversioning.apsadmin.versioning;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import java.util.List;
 
 import javax.sql.DataSource;
 
-import com.agiletec.plugins.jpversioning.apsadmin.ApsAdminPluginBaseTestCase;
 import com.agiletec.plugins.jpversioning.util.JpversioningTestHelper;
 
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.ContentVersion;
-import com.agiletec.plugins.jpversioning.apsadmin.versioning.VersionFinderAction;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author G.Cocco
  */
-public class TestVersionFinderAction  extends ApsAdminPluginBaseTestCase {
+public class TestVersionFinderAction  extends ApsAdminBaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-		this._helper.initContentVersions();
-    }
-	
-	@Override
-	protected void tearDown() throws Exception {
-		this._helper.cleanContentVersions();
-		super.tearDown();
-	}
-	
-	public void testList() throws Throwable{
+    @Test
+	void testList() throws Throwable{
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		
@@ -70,7 +63,8 @@ public class TestVersionFinderAction  extends ApsAdminPluginBaseTestCase {
 		assertNotNull(contentVersion.getXml());
 	}
 	
-	public void testSearch() throws Throwable{
+	@Test
+	void testSearch() throws Throwable{
 		String result = this.executeSearch("admin", null, null);
 		assertEquals(Action.SUCCESS, result);
 		
@@ -123,11 +117,18 @@ public class TestVersionFinderAction  extends ApsAdminPluginBaseTestCase {
 		return result;
 	}
 	
-	private void init() throws Exception {
+    @BeforeEach
+	protected void init() throws Exception {
 		DataSource dataSource = (DataSource) this.getApplicationContext().getBean("portDataSource");
 		this._helper = new JpversioningTestHelper(dataSource, this.getApplicationContext());
+		this._helper.initContentVersions();
 	}
-	
+    
+    @AfterEach
+	protected void dispose() throws Exception {
+		this._helper.cleanContentVersions();
+	}
+    
 	private JpversioningTestHelper _helper;
 	
 }

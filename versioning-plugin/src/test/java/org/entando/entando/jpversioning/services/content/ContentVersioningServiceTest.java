@@ -28,20 +28,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
 import org.entando.entando.aps.system.services.DtoBuilder;
 import org.entando.entando.plugins.jacms.aps.system.services.content.ContentService;
 import org.entando.entando.plugins.jpversioning.services.content.ContentVersioningService;
 import org.entando.entando.plugins.jpversioning.web.content.model.ContentVersionDTO;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-public class ContentVersioningServiceTest extends TestCase {
+@ExtendWith(MockitoExtension.class)
+public class ContentVersioningServiceTest {
 
     private static final String CONTENT_ID = "TST";
     private static final Long VERSION_ID_1 =1L;
@@ -69,13 +70,8 @@ public class ContentVersioningServiceTest extends TestCase {
     @InjectMocks
     private ContentVersioningService service;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
-    public void testGetListContentVersions() throws EntException{
+    void testGetListContentVersions() throws EntException{
         RestListRequest requestList = new RestListRequest();
         List<Long> mockedVersions = new ArrayList();
         mockedVersions.add(VERSION_ID_1);
@@ -91,7 +87,7 @@ public class ContentVersioningServiceTest extends TestCase {
     }
 
     @Test
-    public void testGetContent() throws EntException {
+    void testGetContent() throws EntException {
         Content content = new Content();
         ContentDto contentDto = new ContentDto();
         contentDto.setStatus(STATUS);
@@ -106,7 +102,7 @@ public class ContentVersioningServiceTest extends TestCase {
     }
 
     @Test
-    public void testRecoverContentVersion() throws EntException {
+    void testRecoverContentVersion() throws EntException {
         Content content = new Content();
         ContentDto contentDto = new ContentDto();
         String contentXml = null;
@@ -122,7 +118,7 @@ public class ContentVersioningServiceTest extends TestCase {
         when(contentVersion.getContentId()).thenReturn(CONTENT_ID);
         when(contentManager.loadContentVO(CONTENT_ID)).thenReturn(currentRecordVo);
         when(currentRecordVo.getVersion()).thenReturn("1.8");
-        when(manager.getLastVersion(CONTENT_ID)).thenReturn(contentVersion);
+        Mockito.lenient().when(manager.getLastVersion(CONTENT_ID)).thenReturn(contentVersion);
         when(manager.getContent(contentVersion)).thenReturn(content);
         when(contentService.getDtoBuilder()).thenReturn(dtoBuilder);
         when(dtoBuilder.convert(content)).thenReturn(contentDto);
