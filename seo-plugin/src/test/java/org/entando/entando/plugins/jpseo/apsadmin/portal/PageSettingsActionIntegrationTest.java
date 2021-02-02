@@ -13,6 +13,12 @@
  */
 package org.entando.entando.plugins.jpseo.apsadmin.portal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Map;
 
 import com.agiletec.aps.system.SystemConstants;
@@ -25,23 +31,21 @@ import java.io.File;
 import java.util.List;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
+class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
 
     private ConfigInterface configManager;
     private IStorageManager storageManager;
     private String oldConfigParam;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
-    public void testConfigSystemParams() throws Throwable {
+    @Test
+    void testConfigSystemParams() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/Page", "systemParams");
         String result = this.executeAction();
@@ -53,7 +57,8 @@ public class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
         assertEquals("homepage", params.get(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
     }
 
-    public void testUpdateConfigParams_1() throws Throwable {
+    @Test
+    void testUpdateConfigParams_1() throws Throwable {
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/Page", "updateSystemParams");
@@ -75,7 +80,8 @@ public class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testUpdateConfigParams_2() throws Throwable {
+    @Test
+    void testUpdateConfigParams_2() throws Throwable {
         String path = "target/test/robot_test.txt";
         try {
             this.setUserOnSession("admin");
@@ -105,12 +111,14 @@ public class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testUpdateConfigParams_3() throws Throwable {
+    @Test
+    void testUpdateConfigParams_3() throws Throwable {
         String path = "target/test/invalid_folder/robot_test.txt";
         this.executeInvalidRobotPath(path);
     }
 
-    public void testUpdateConfigParams_4() throws Throwable {
+    @Test
+    void testUpdateConfigParams_4() throws Throwable {
         String path = "target/../robot_test.txt";
         this.executeInvalidRobotPath(path);
     }
@@ -139,16 +147,16 @@ public class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        this.configManager.updateConfigItem(SystemConstants.CONFIG_ITEM_PARAMS, this.oldConfigParam);
-        super.tearDown();
-    }
-
+    @BeforeEach
     private void init() {
         this.configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);
         this.storageManager = this.getApplicationContext().getBean(SystemConstants.STORAGE_MANAGER, IStorageManager.class);
         this.oldConfigParam = this.configManager.getConfigItem(SystemConstants.CONFIG_ITEM_PARAMS);
+    }
+
+    @AfterEach
+    protected void dispose() throws Exception {
+        this.configManager.updateConfigItem(SystemConstants.CONFIG_ITEM_PARAMS, this.oldConfigParam);
     }
 
 }

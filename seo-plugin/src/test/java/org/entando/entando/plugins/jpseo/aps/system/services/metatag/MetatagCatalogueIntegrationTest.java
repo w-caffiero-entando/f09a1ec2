@@ -21,16 +21,22 @@
  */
 package org.entando.entando.plugins.jpseo.aps.system.services.metatag;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.agiletec.aps.BaseTestCase;
 import java.util.Map;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class MetatagCatalogueIntegrationTest extends BaseTestCase {
+class MetatagCatalogueIntegrationTest extends BaseTestCase {
     
-	public void testLoadCatalogue() {
+	@Test
+    void testLoadCatalogue() {
         IMetatagCatalog catalogue = super.getApplicationContext().getBean(JpseoSystemConstants.SEO_METATAG_CATALOG, IMetatagCatalog.class);
         Map<String, Metatag> map = catalogue.getCatalog();
         assertNotNull(map);

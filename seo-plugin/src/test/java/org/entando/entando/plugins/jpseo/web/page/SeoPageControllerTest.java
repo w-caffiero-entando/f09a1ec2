@@ -27,16 +27,18 @@ import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageService
 import org.entando.entando.plugins.jpseo.web.page.validator.SeoPageValidator;
 import org.entando.entando.web.AbstractControllerTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-public class SeoPageControllerTest extends AbstractControllerTest {
+@ExtendWith(MockitoExtension.class)
+class SeoPageControllerTest extends AbstractControllerTest {
 
     private static final String PAGE_CODE = "TST";
     private static final String STATUS_DRAFT = "draft";
@@ -56,9 +58,8 @@ public class SeoPageControllerTest extends AbstractControllerTest {
     @InjectMocks
     private SeoPageController controller;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
                 .setHandlerExceptionResolvers(createHandlerExceptionResolver())
@@ -66,10 +67,10 @@ public class SeoPageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetSeoPage() throws Exception {
+    void testGetSeoPage() throws Exception {
         SeoPageDto seoPageDto = new SeoPageDto();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
         when(this.service.getPage(Mockito.eq(PAGE_CODE),Mockito.eq(STATUS_DRAFT)))
                 .thenReturn(seoPageDto);
         when(this.authorizationService.isAuth(user,PAGE_CODE)).thenReturn(true);
@@ -78,11 +79,11 @@ public class SeoPageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetSeoPageNotAuthorized() throws Exception {
+    void testGetSeoPageNotAuthorized() throws Exception {
         SeoPageDto seoPageDto = new SeoPageDto();
         UserDetails user = this.createUser(true);
-        when(this.httpSession.getAttribute("user")).thenReturn(user);
-        when(this.service.getPage(Mockito.eq(PAGE_CODE),Mockito.eq(STATUS_DRAFT)))
+        Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
+        Mockito.lenient().when(this.service.getPage(Mockito.eq(PAGE_CODE),Mockito.eq(STATUS_DRAFT)))
                 .thenReturn(seoPageDto);
         when(this.authorizationService.isAuth(user,PAGE_CODE)).thenReturn(false);
         ResultActions result = getSeoPage(PAGE_CODE, STATUS_DRAFT, user);
@@ -108,4 +109,5 @@ public class SeoPageControllerTest extends AbstractControllerTest {
                         .build());
         return user;
     }
+    
 }

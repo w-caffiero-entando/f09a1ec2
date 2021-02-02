@@ -21,9 +21,13 @@
  */
 package org.entando.entando.plugins.jpseo.apsadmin.content;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
+import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
@@ -32,17 +36,13 @@ import com.agiletec.plugins.jacms.apsadmin.content.AbstractContentAction;
 import com.agiletec.plugins.jacms.apsadmin.content.ContentActionConstants;
 import com.opensymphony.xwork2.Action;
 
-import org.entando.entando.plugins.jpseo.apsadmin.ApsAdminPluginBaseTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class ContentActionIntegrationTest extends ApsAdminPluginBaseTestCase {
+class ContentActionIntegrationTest extends ApsAdminBaseTestCase {
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-	}
-
-	public void testSaveNewContent() throws Throwable {
+	@Test
+    void testSaveNewContent() throws Throwable {
 		String contentId = "ART1";
 		Content master = this.getContentManager().loadContent(contentId, false);
 		String contentOnSessionMarker = AbstractContentAction.buildContentOnSessionMarker(master, ApsAdminSystemConstants.ADD);
@@ -76,11 +76,11 @@ public class ContentActionIntegrationTest extends ApsAdminPluginBaseTestCase {
 		}
 	}
 
-	//	public void test() {
+	//	void test() {
 	//		assertTrue(true);
 	//	}
 	//
-	//	public void testValidateContent() {
+	//	void testValidateContent() {
 	//
 	//	}
 
@@ -131,6 +131,7 @@ public class ContentActionIntegrationTest extends ApsAdminPluginBaseTestCase {
 		this.addParameter("contentOnSessionMarker", contentOnSessionMarker);
 	}
 
+    @BeforeEach
 	private void init() throws Exception {
 		try {
 			_contentManager = (IContentManager) this.getService(JacmsSystemConstants.CONTENT_MANAGER);

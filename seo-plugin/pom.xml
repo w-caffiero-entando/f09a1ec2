@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.2.22</version>
+        <version>6.3.0</version>
     </parent>
     <artifactId>entando-plugin-jpseo</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
@@ -94,7 +94,7 @@
             <dependency>
                 <groupId>org.entando</groupId>
                 <artifactId>entando-core-bom</artifactId>
-                <version>6.2.185</version>
+                <version>6.2.209</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -145,8 +145,20 @@
             <type>test-jar</type>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>3.7.7</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
