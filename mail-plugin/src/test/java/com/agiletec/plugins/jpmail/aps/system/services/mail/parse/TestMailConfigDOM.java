@@ -22,6 +22,8 @@
 package com.agiletec.plugins.jpmail.aps.system.services.mail.parse;
 
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.agiletec.plugins.jpmail.aps.system.services.mail.AbstractMailConfigTestCase;
 
 import com.agiletec.aps.system.SystemConstants;
@@ -29,6 +31,8 @@ import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
 import com.agiletec.plugins.jpmail.aps.services.mail.parse.MailConfigDOM;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testing class for XML configuration DOM.
@@ -36,13 +40,14 @@ import com.agiletec.plugins.jpmail.aps.services.mail.parse.MailConfigDOM;
  * @author E.Mezzano
  *
  */
-public class TestMailConfigDOM extends AbstractMailConfigTestCase {
+class TestMailConfigDOM extends AbstractMailConfigTestCase {
 	
 	/**
 	 * Tests the extraction of the configuration from the XML.
 	 * @throws Throwable
 	 */
-	public void testExtractConfig() throws Throwable {
+    @Test
+	void testExtractConfig() throws Throwable {
 		String xml = this._configManager.getConfigItem(JpmailSystemConstants.MAIL_CONFIG_ITEM);
 		MailConfig mailConfig = new MailConfigDOM().extractConfig(xml);
 		this.checkOriginaryConfig(mailConfig);
@@ -52,7 +57,8 @@ public class TestMailConfigDOM extends AbstractMailConfigTestCase {
 	 * Tests the updating of the configuration.
 	 * @throws Throwable
 	 */
-	public void testUpdateConfig() throws Throwable {
+	@Test
+	void testUpdateConfig() throws Throwable {
 		MailConfigDOM mailConfigDom = new MailConfigDOM();
 		String xml = this._configManager.getConfigItem(JpmailSystemConstants.MAIL_CONFIG_ITEM);
 		MailConfig originaryConfig = mailConfigDom.extractConfig(xml);
@@ -61,16 +67,18 @@ public class TestMailConfigDOM extends AbstractMailConfigTestCase {
 			xml = mailConfigDom.createConfigXml(config);
 			MailConfig updatedConfig = mailConfigDom.extractConfig(xml);
 			this.compareConfigs(config, updatedConfig);
+            assertNotNull(updatedConfig);
 		} catch (Throwable t) {
 			throw t;
 		} finally {
 			xml = mailConfigDom.createConfigXml(originaryConfig);
 			MailConfig updatedConfig = mailConfigDom.extractConfig(xml);
 			this.compareConfigs(originaryConfig, updatedConfig);
+            assertNotNull(updatedConfig);
 		}
 	}
 	
-	@Override
+	@BeforeEach
 	protected void init() throws Exception {
 		super.init();
 		try {

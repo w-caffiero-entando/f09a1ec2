@@ -21,9 +21,12 @@
  */
 package com.agiletec.plugins.jpmail.aps.system.services.mail.util;
 
-import com.agiletec.plugins.jpmail.aps.ApsPluginBaseTestCase;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.agiletec.aps.BaseTestCase;
 import com.agiletec.plugins.jpmail.aps.services.mail.util.EmailAddressValidator;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testing class for Email Address validator
@@ -31,12 +34,13 @@ import com.agiletec.plugins.jpmail.aps.services.mail.util.EmailAddressValidator;
  * @author E.Mezzano
  *
  */
-public class TestEmailAddressValidator extends ApsPluginBaseTestCase {
+class TestEmailAddressValidator extends BaseTestCase {
 	
 	/**
 	 * Tests the validation of mail addresses.
 	 */
-	public void testMail() {
+	@Test
+	void testMail() {
 		boolean bool1 = EmailAddressValidator.isValidEmailAddress(mail1);
 		boolean bool2 = EmailAddressValidator.isValidEmailAddress(mail2);
 		boolean bool3 = EmailAddressValidator.isValidEmailAddress(mail3);

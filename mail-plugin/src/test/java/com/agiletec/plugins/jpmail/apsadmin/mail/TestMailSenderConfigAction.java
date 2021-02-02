@@ -21,30 +21,32 @@
  */
 package com.agiletec.plugins.jpmail.apsadmin.mail;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
-import com.agiletec.plugins.jpmail.apsadmin.ApsAdminPluginBaseTestCase;
 import com.agiletec.plugins.jpmail.util.JpmailTestHelper;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
 
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
+class TestMailSenderConfigAction extends ApsAdminBaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-	
-	public void testViewSenders() throws Throwable {
+	@Test
+	void testViewSenders() throws Throwable {
 		this.initAction("/do/jpmail/MailConfig", "viewSenders");
 		this.setUserOnSession("admin");
 		String result = this.executeAction();
@@ -54,7 +56,8 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		this.checkOriginaryConfig(mailConfig);
 	}
 	
-	public void testNewSender() throws Throwable {
+	@Test
+	void testNewSender() throws Throwable {
 		this.initAction("/do/jpmail/MailConfig", "newSender");
 		this.setUserOnSession("admin");
 		String result = this.executeAction();
@@ -63,7 +66,8 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		assertEquals(ApsAdminSystemConstants.ADD, action.getStrutsAction());
 	}
 	
-	public void testEditSender() throws Throwable {
+	@Test
+	void testEditSender() throws Throwable {
 		String result = this.executeEditSender("admin", "CODE2");
 		assertEquals(Action.SUCCESS, result);
 		MailSenderConfigAction action = (MailSenderConfigAction) this.getAction();
@@ -75,7 +79,8 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		assertEquals(Action.ERROR, result);
 	}
 	
-	public void testSaveSenderFailure() throws Throwable {
+	@Test
+	void testSaveSenderFailure() throws Throwable {
 		String currentUser = "admin";
 		
 		String result = this.executeSaveSender(currentUser, "CODE1", "", ApsAdminSystemConstants.ADD);
@@ -98,7 +103,8 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		assertTrue(((String) mailErrors.get(0)).contains(this.getAction().getText("error.config.sender.mail.notValid")));
 	}
 	
-	public void testSaveSenderSuccessful() throws Throwable {
+	@Test
+	void testSaveSenderSuccessful() throws Throwable {
 		String currentUser = "admin";
 		try {
 			String result = this.executeSaveSender(currentUser, "CODE1", "\"Indirizzo di Prova\" <mail@addresstest.it>", ApsAdminSystemConstants.EDIT);
@@ -113,7 +119,8 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		}
 	}
 	
-	public void testTrashSender() throws Throwable {
+	@Test
+	void testTrashSender() throws Throwable {
 		this.initAction("/do/jpmail/MailConfig", "trashSender");
 		this.setUserOnSession("admin");
 		this.addParameter("code", "CODE1");
@@ -124,7 +131,8 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		assertNotNull(config.getSender("CODE2"));
 	}
 	
-	public void testDeleteSender() throws Throwable {
+    @Test
+	void testDeleteSender() throws Throwable {
 		try {
 			this.initAction("/do/jpmail/MailConfig", "deleteSender");
 			this.setUserOnSession("admin");
@@ -169,6 +177,7 @@ public class TestMailSenderConfigAction extends ApsAdminPluginBaseTestCase {
 		return result;
 	}
 	
+    @BeforeEach
     private void init() throws Exception {
     	try {
     		ConfigInterface configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);

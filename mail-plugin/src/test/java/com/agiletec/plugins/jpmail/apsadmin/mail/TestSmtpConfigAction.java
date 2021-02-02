@@ -21,34 +21,36 @@
  */
 package com.agiletec.plugins.jpmail.apsadmin.mail;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
-import com.agiletec.plugins.jpmail.apsadmin.ApsAdminPluginBaseTestCase;
 import com.agiletec.plugins.jpmail.util.JpmailTestHelper;
 
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
-	
-	@Override
-	protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
+class TestSmtpConfigAction extends ApsAdminBaseTestCase {
 	
 	/**
 	 * Tests the 'edit' action.
 	 * @throws Throwable
 	 */
-	public void testEdit() throws Throwable {
+	@Test
+	void testEdit() throws Throwable {
 		MailConfig config = this._mailManager.getMailConfig();
 		
 		this.setUserOnSession("admin");
@@ -62,7 +64,8 @@ public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
 		assertEquals(config.getSmtpPassword(), action.getSmtpPassword());
 	}
 	
-	public void testSaveFailure_1() throws Throwable {
+	@Test
+	void testSaveFailure_1() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		String result = this.executeSave("admin", params);
 		assertEquals(Action.INPUT, result);
@@ -80,7 +83,8 @@ public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
 		assertEquals(1, fieldErrors.get("smtpProtocol").size());
 	}
 
-	public void testSaveFailure_2() throws Throwable {
+	@Test
+	void testSaveFailure_2() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("smtpProtocol", "invalidNumber");
 		params.put("smtpPort", "invalidNumber");
@@ -93,7 +97,8 @@ public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
 		assertEquals(1, fieldErrors.get("smtpPort").size());
 	}
 
-	public void testSaveFailure_3() throws Throwable {
+	@Test
+	void testSaveFailure_3() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("debug", "true");
 		params.put("smtpProtocol", "1");
@@ -130,7 +135,8 @@ public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
 		assertEquals(1, fieldErrors.get("smtpUserName").size());
 	}
 
-	public void testSaveFailure_4() throws Throwable {
+	@Test
+	void testSaveFailure_4() throws Throwable {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("smtpHost", "localhost");
 		params.put("debug", "true");
@@ -147,7 +153,8 @@ public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
 	 * Tests the 'save' action with successful result.
 	 * @throws Throwable
 	 */
-	public void testSaveSuccessful() throws Throwable {
+	@Test
+	void testSaveSuccessful() throws Throwable {
 		try {
 			Map<String, String> params = new HashMap<String, String>();
 
@@ -196,6 +203,7 @@ public class TestSmtpConfigAction extends ApsAdminPluginBaseTestCase {
 		return this.executeAction();
 	}
 	
+    @BeforeEach
     protected void init() throws Exception {
     	try {
     		ConfigInterface configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);
