@@ -13,30 +13,36 @@
  */
 package com.agiletec.apsadmin.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
  * @author E.Santoboni
  */
-public class TestLoginAction extends ApsAdminBaseTestCase {
+class TestLoginAction extends ApsAdminBaseTestCase {
 	
-	protected void setUp() throws Exception {
-		super.setUp();
+    @BeforeEach
+	protected void init() throws Exception {
 		this.initAction("/do", "doLogin");
 	}
 	
-	public void testSuccessfulLogin1() throws Throwable {
+	@Test
+	void testSuccessfulLogin1() throws Throwable {
 		String result = this.executeLogin("admin", "admin");
 		assertEquals(Action.SUCCESS, result);
     }
 	
-	public void testFailedLogin1() throws Throwable {
+	@Test
+	void testFailedLogin1() throws Throwable {
 		String result = this.executeLogin("", "");
 		assertEquals(Action.INPUT, result);
 		
@@ -46,7 +52,8 @@ public class TestLoginAction extends ApsAdminBaseTestCase {
 		assertEquals(0, actionError.size());
     }
 	
-	public void testFailedLogin2() throws Throwable {
+	@Test
+	void testFailedLogin2() throws Throwable {
 		String result = this.executeLogin("pippo", "");
 		assertEquals(Action.INPUT, result);
 		
@@ -56,7 +63,8 @@ public class TestLoginAction extends ApsAdminBaseTestCase {
 		assertEquals(0, actionError.size());
     }
 	
-	public void testFailedLogin3() throws Throwable {
+	@Test
+	void testFailedLogin3() throws Throwable {
 		String result = this.executeLogin("admin", "wrongPassword");
 		assertEquals(Action.INPUT, result);
 		
@@ -66,7 +74,8 @@ public class TestLoginAction extends ApsAdminBaseTestCase {
 		assertEquals(1, actionError.size());
     }
 	
-	public void testFailedLogin4() throws Throwable {
+	@Test
+	void testFailedLogin4() throws Throwable {
 		String result = this.executeLogin("guest", "guest");
 		assertEquals(Action.INPUT, result);
 		

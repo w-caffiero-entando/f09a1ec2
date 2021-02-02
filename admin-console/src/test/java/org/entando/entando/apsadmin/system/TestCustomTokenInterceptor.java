@@ -13,20 +13,23 @@
  */
 package org.entando.entando.apsadmin.system;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionSupport;
-import static junit.framework.TestCase.assertEquals;
 import org.apache.struts2.dispatcher.HttpParameters;
 import org.apache.struts2.util.TokenHelper;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestCustomTokenInterceptor extends ApsAdminBaseTestCase {
+class TestCustomTokenInterceptor extends ApsAdminBaseTestCase {
 
-    public void testExecuteValidation_1() throws Exception {
+    @Test
+	void testExecuteValidation_1() throws Exception {
         ActionInvocation invocation = this.prepareAction();
         CustomTokenInterceptor interceptor = new CustomTokenInterceptor();
         String result = interceptor.intercept(invocation);
@@ -38,7 +41,8 @@ public class TestCustomTokenInterceptor extends ApsAdminBaseTestCase {
         assertEquals(0, action.getActionMessages().size());
     }
 
-    public void testExecuteValidation_2() throws Exception {
+    @Test
+	void testExecuteValidation_2() throws Exception {
         ActionInvocation invocation = this.prepareAction();
         CustomTokenInterceptor interceptor = new CustomTokenInterceptor();
         interceptor.setTypeMessages(CustomTokenInterceptor.TYPE_RETURN_ACTION_ERROR_MESSAGE);
@@ -51,7 +55,8 @@ public class TestCustomTokenInterceptor extends ApsAdminBaseTestCase {
         assertEquals(0, action.getActionMessages().size());
     }
 
-    public void testExecuteValidation_3() throws Exception {
+    @Test
+	void testExecuteValidation_3() throws Exception {
         ActionInvocation invocation = this.prepareAction();
         CustomTokenInterceptor interceptor = new CustomTokenInterceptor();
         interceptor.setTypeMessages(CustomTokenInterceptor.TYPE_RETURN_ACTION_MESSAGE);

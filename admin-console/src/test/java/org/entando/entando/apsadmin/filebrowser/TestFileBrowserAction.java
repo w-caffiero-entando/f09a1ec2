@@ -13,6 +13,12 @@
  */
 package org.entando.entando.apsadmin.filebrowser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
@@ -24,25 +30,23 @@ import java.util.*;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestFileBrowserAction extends ApsAdminBaseTestCase {
+class TestFileBrowserAction extends ApsAdminBaseTestCase {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(TestFileBrowserAction.class);
 
     private IStorageManager localStorageManager;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
-    public void testBrowseFileSystemWithUserNotAllowed() throws Throwable {
+    @Test
+    void testBrowseFileSystemWithUserNotAllowed() throws Throwable {
         String result = this.executeList("developersConf", null, null);
         assertEquals("apslogin", result);
     }
 
-    public void testBrowseFileSystem_1() throws Throwable {
+    @Test
+    void testBrowseFileSystem_1() throws Throwable {
         String result = this.executeList("admin", null, null);
         assertEquals(Action.SUCCESS, result);
         FileBrowserAction action = (FileBrowserAction) super.getAction();
@@ -61,7 +65,8 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testBrowseFileSystem_2() throws Throwable {
+    @Test
+    void testBrowseFileSystem_2() throws Throwable {
         String result = this.executeList("admin", null, false);
         assertEquals(Action.SUCCESS, result);
         FileBrowserAction action = (FileBrowserAction) super.getAction();
@@ -86,7 +91,8 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         assertTrue(containsConf);
     }
 
-    public void testBrowseFileSystem_3() throws Throwable {
+    @Test
+    void testBrowseFileSystem_3() throws Throwable {
         String result = this.executeList("admin", "conf/", false);
         assertEquals(Action.SUCCESS, result);
         FileBrowserAction action = (FileBrowserAction) super.getAction();
@@ -105,7 +111,8 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         assertEquals(3, fileCounter);
     }
 
-    public void testValidateAddTextFile() throws Throwable {
+    @Test
+    void testValidateAddTextFile() throws Throwable {
         String path = "conf/";
         try {
             String result = this.executeAddTextFile("developersConf", path, "filename", "css", "content", false);
@@ -128,7 +135,8 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testAddTextFile() throws Throwable {
+    @Test
+    void testAddTextFile() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_1";
         String extension = "css";
@@ -155,7 +163,8 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testAddTextFileWithErrors() throws Throwable {
+    @Test
+    void testAddTextFileWithErrors() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_1";
         String extension = "css";
@@ -191,7 +200,8 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testDeleteFile() throws Throwable {
+    @Test
+    void testDeleteFile() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_2";
         String extension = "css";
@@ -211,7 +221,8 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testTrash() throws Throwable {
+    @Test
+    void testTrash() throws Throwable {
         String path = "conf/";
         String filename = "test_filename_2";
         String extension = "css";
@@ -298,7 +309,8 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
-    public void testUploadFile() throws Throwable {
+    @Test
+    void testUploadFile() throws Throwable {
         String filepath = "test/";
         String filename1 = "test-upload1.txt";
         String filename2 = "test-upload2.txt";
@@ -343,6 +355,7 @@ public class TestFileBrowserAction extends ApsAdminBaseTestCase {
         assertFalse(localStorageManager.exists(filenameWithPath2, protectedFolder));
     }
 
+    @BeforeEach
     private void init() {
         try {
             this.localStorageManager = (IStorageManager) this.getApplicationContext().getBean(SystemConstants.STORAGE_MANAGER);

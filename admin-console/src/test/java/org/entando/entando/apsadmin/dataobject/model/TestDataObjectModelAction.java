@@ -13,6 +13,10 @@
  */
 package org.entando.entando.apsadmin.dataobject.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 import java.util.Map;
 
@@ -21,26 +25,24 @@ import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
 import org.entando.entando.aps.system.services.dataobjectmodel.DataObjectModel;
 import org.entando.entando.aps.system.services.dataobjectmodel.IDataObjectModelManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
+class TestDataObjectModelAction extends ApsAdminBaseTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
-    public void testNewModel() throws Throwable {
+    @Test
+    void testNewModel() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "new");
         String result = this.executeAction();
         assertEquals(Action.SUCCESS, result);
     }
 
-    public void testEdit() throws Throwable {
+    @Test
+    void testEdit() throws Throwable {
         long modelId = 1;
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "edit");
@@ -57,7 +59,8 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         assertEquals(currentModel.getStylesheet(), action.getStylesheet());
     }
 
-    public void testSaveWithErrors_1() throws Throwable {
+    @Test
+    void testSaveWithErrors_1() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "save");
         addParameter("strutsAction", new Integer(ApsAdminSystemConstants.ADD).toString());
@@ -68,7 +71,8 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         assertEquals(4, fieldErrors.size());
     }
 
-    public void testSaveWithErrors_2() throws Throwable {
+    @Test
+    void testSaveWithErrors_2() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "save");
         addParameter("dataType", "EVN");
@@ -95,7 +99,8 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         assertEquals(2, fieldErrors.get("modelId").size());//wrong format
     }
 
-    public void testSaveWithErrors_3() throws Throwable {
+    @Test
+    void testSaveWithErrors_3() throws Throwable {
         String veryLongDescription = "Very but very very very long description (upper than 50 characters) for invoke description's length validation";
         int negativeModelId = 0;
         try {
@@ -122,7 +127,8 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testAddNewModel() throws Throwable {
+    @Test
+    void testAddNewModel() throws Throwable {
         List<DataObjectModel> eventModels = this._dataObjectModelManager.getModelsForDataObjectType("EVN");
         assertEquals(0, eventModels.size());
         long modelIdToAdd = 99;
@@ -154,7 +160,8 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testUpdateModel() throws Throwable {
+    @Test
+    void testUpdateModel() throws Throwable {
         List<DataObjectModel> eventModels = this._dataObjectModelManager.getModelsForDataObjectType("EVN");
         assertEquals(0, eventModels.size());
         long modelId = 99;
@@ -191,7 +198,8 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testTrashModel() throws Throwable {
+    @Test
+    void testTrashModel() throws Throwable {
         long modelId = 1;
         this.setUserOnSession("admin");
 
@@ -201,7 +209,8 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         assertEquals(Action.SUCCESS, result);
     }
 
-    public void testTrashReferencedModel() throws Throwable {
+    @Test
+    void testTrashReferencedModel() throws Throwable {
         long modelId = 2;
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "trash");
@@ -210,7 +219,8 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         assertEquals("success", result);
     }
 
-    public void testDeleteModel() throws Throwable {
+    @Test
+    void testDeleteModel() throws Throwable {
         List<DataObjectModel> eventModels = this._dataObjectModelManager.getModelsForDataObjectType("EVN");
         assertEquals(0, eventModels.size());
         long modelId = 99;
@@ -240,7 +250,8 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testDeleteReferencedModel() throws Throwable {
+    @Test
+    void testDeleteReferencedModel() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/dataobject/model", "trash");
         this.addParameter("modelId", "2");
@@ -259,6 +270,7 @@ public class TestDataObjectModelAction extends ApsAdminBaseTestCase {
         this._dataObjectModelManager.addDataObjectModel(model);
     }
 
+    @BeforeEach
     private void init() {
         this._dataObjectModelManager = (IDataObjectModelManager) this.getService("DataObjectModelManager");
     }

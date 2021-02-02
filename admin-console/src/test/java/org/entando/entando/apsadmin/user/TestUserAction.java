@@ -13,6 +13,11 @@
  */
 package org.entando.entando.apsadmin.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -27,25 +32,19 @@ import com.agiletec.aps.util.DateConverter;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
-import org.entando.entando.ent.exception.EntException;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.entando.entando.ent.exception.EntException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
  * @author E.Santoboni, E.Mezzano
  */
-public class TestUserAction extends ApsAdminBaseTestCase {
+class TestUserAction extends ApsAdminBaseTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
-    public void testNew() throws Throwable {
+    @Test
+	void testNew() throws Throwable {
         String result = this.executeNew("developersConf");
         assertEquals("apslogin", result);
 
@@ -55,7 +54,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         assertNull(action.getUsername());
     }
 
-    public void testFailureEdit() throws Throwable {
+    @Test
+	void testFailureEdit() throws Throwable {
         String result = this.executeNew("developersConf");
         assertEquals("apslogin", result);
 
@@ -63,14 +63,16 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         assertEquals(Action.SUCCESS, result);
     }
 
-    public void testEdit() throws Throwable {
+    @Test
+	void testEdit() throws Throwable {
         String result = this.executeEdit("admin", "mainEditor");
         assertEquals(Action.SUCCESS, result);
         UserAction action = (UserAction) this.getAction();
         assertNotNull(action.getUsername());
     }
 
-    public void testAddNew_1() throws Throwable {
+    @Test
+	void testAddNew_1() throws Throwable {
         String username = "usernameForTest";
         String password = "password";
         try {
@@ -95,7 +97,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testAddNew_2() throws Throwable {
+    @Test
+	void testAddNew_2() throws Throwable {
         String username = "user.name_for_test"; // the dot '.' is accepted in the username as well as the underscore '_'
         String password = "password";
         try {
@@ -121,7 +124,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testAddEditDelete() throws Throwable {
+    @Test
+	void testAddEditDelete() throws Throwable {
         String username = "username";
         String password = "password";
         String newPassword = "pluto1234";
@@ -153,7 +157,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFailureDisableAdminUser() throws Throwable {
+    @Test
+	void testFailureDisableAdminUser() throws Throwable {
         String username = SystemConstants.ADMIN_USER_NAME;
         UserDetails adminUser = this._userManager.getUser(username);
         try {
@@ -174,7 +179,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testSaveNewFailure() throws Throwable {
+    @Test
+	void testSaveNewFailure() throws Throwable {
         UserDetails oldUser = this._userManager.getUser("admin");
         try {
             // permessi non disponibili
@@ -234,7 +240,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
-    public void testSaveEditFailure() throws Throwable {
+    @Test
+	void testSaveEditFailure() throws Throwable {
         this.setUserOnSession("admin");
         String usernameForTest = "testUserName";
         this.addUser(usernameForTest, "password");
@@ -273,7 +280,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         assertEquals(expectedErrorsOnField, errors.size());
     }
 
-    public void testTrash() throws Throwable {
+    @Test
+	void testTrash() throws Throwable {
         String username = "username";
         String password = "password";
         try {
@@ -289,7 +297,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFailureTrash() throws Throwable {
+    @Test
+	void testFailureTrash() throws Throwable {
         String result = this.executeTrash("developersConf", "editor");
         assertEquals("apslogin", result);
 
@@ -299,7 +308,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         assertEquals(1, actionErrors.size());
     }
 
-    public void testDelete() throws Throwable {
+    @Test
+	void testDelete() throws Throwable {
         String username = "user.name_to_delete";
         String password = "password";
         try {
@@ -314,7 +324,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFailureDelete() throws Throwable {
+    @Test
+	void testFailureDelete() throws Throwable {
         String result = this.executeDelete("developersConf", "editor");
         assertEquals("apslogin", result);
 
@@ -324,7 +335,8 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         assertEquals(1, actionErrors.size());
     }
 
-    public void testResetUser() throws Throwable {
+    @Test
+	void testResetUser() throws Throwable {
         String username = "username";
         String password = "password";
         String datePattern = "ddMMyyyy";
@@ -400,6 +412,7 @@ public class TestUserAction extends ApsAdminBaseTestCase {
         this._userManager.addUser(user);
     }
 
+    @BeforeEach
     private void init() {
         this._userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);
     }

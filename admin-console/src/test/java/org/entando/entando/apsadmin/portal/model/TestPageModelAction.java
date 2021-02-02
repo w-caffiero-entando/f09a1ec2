@@ -13,6 +13,12 @@
  */
 package org.entando.entando.apsadmin.portal.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.pagemodel.PageModelDOM;
@@ -23,13 +29,15 @@ import com.opensymphony.xwork2.ActionSupport;
 
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestPageModelAction extends AbstractTestPageModelAction {
+class TestPageModelAction extends AbstractTestPageModelAction {
 
-    public void testEditPageModels() throws Throwable {
+    @Test
+    void testEditPageModels() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {
@@ -47,7 +55,8 @@ public class TestPageModelAction extends AbstractTestPageModelAction {
         }
     }
 
-    public void testValidate_1() throws Throwable {
+    @Test
+    void testValidate_1() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {
@@ -69,7 +78,8 @@ public class TestPageModelAction extends AbstractTestPageModelAction {
         }
     }
 
-    public void testValidate_2() throws Throwable {
+    @Test
+    void testValidate_2() throws Throwable {
         String testPageModelCode = "internal";
         PageModel model = this._pageModelManager.getPageModel(testPageModelCode);
         assertNotNull(model);
@@ -92,7 +102,8 @@ public class TestPageModelAction extends AbstractTestPageModelAction {
         }
     }
 
-    public void testSave() throws Throwable {
+    @Test
+    void testSave() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {
@@ -116,7 +127,8 @@ public class TestPageModelAction extends AbstractTestPageModelAction {
         }
     }
 
-    public void testTrashPageModels_1() throws Throwable {
+    @Test
+    void testTrashPageModels_1() throws Throwable {
         String result = this.executeAction("admin", "trash", null);
         assertEquals("pageModelList", result);
         result = this.executeAction("admin", "trash", "invalidCode");
@@ -132,7 +144,8 @@ public class TestPageModelAction extends AbstractTestPageModelAction {
         this.checkUtilizers(referendedPages, 13, 12);
     }
 
-    public void testTrashPageModels_2() throws Throwable {
+    @Test
+    void testTrashPageModels_2() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {
@@ -151,7 +164,8 @@ public class TestPageModelAction extends AbstractTestPageModelAction {
         }
     }
 
-    public void testDeletePageModels_1() throws Throwable {
+    @Test
+    void testDeletePageModels_1() throws Throwable {
         String result = this.executeAction("admin", "delete", null);
         assertEquals("pageModelList", result);
         result = this.executeAction("admin", "delete", "invalidCode");
@@ -182,7 +196,8 @@ public class TestPageModelAction extends AbstractTestPageModelAction {
         assertEquals(expectedDraft, draft);
     }
 
-    public void testDeletePageModels_2() throws Throwable {
+    @Test
+    void testDeletePageModels_2() throws Throwable {
         String testPageModelCode = "test_pagemodel";
         assertNull(this._pageModelManager.getPageModel(testPageModelCode));
         try {

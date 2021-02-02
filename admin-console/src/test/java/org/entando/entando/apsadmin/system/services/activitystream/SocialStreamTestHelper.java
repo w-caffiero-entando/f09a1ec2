@@ -23,7 +23,7 @@ import org.entando.entando.aps.system.services.actionlog.ActionLoggerTestHelper;
 /**
  * @author E.Santoboni
  */
-public class SocialStreamTestHelper extends ActionLoggerTestHelper {
+class SocialStreamTestHelper extends ActionLoggerTestHelper {
 	
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(SocialStreamTestHelper.class);
 	

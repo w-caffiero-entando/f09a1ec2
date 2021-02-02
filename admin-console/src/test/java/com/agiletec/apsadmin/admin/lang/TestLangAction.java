@@ -13,6 +13,9 @@
  */
 package com.agiletec.apsadmin.admin.lang;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Collection;
 
 import com.agiletec.aps.system.SystemConstants;
@@ -21,19 +24,15 @@ import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @version 1.0
  * @author E.Mezzano
  */
-public class TestLangAction extends ApsAdminBaseTestCase {
+class TestLangAction extends ApsAdminBaseTestCase {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
-    public void testAddNewLang() throws Throwable {
+    void testAddNewLang() throws Throwable {
         String langCode = "fr";
         try {
             //utente non autorizzato
@@ -43,7 +42,7 @@ public class TestLangAction extends ApsAdminBaseTestCase {
             result = this.executeAddLang("admin", langCode);
             assertEquals(Action.SUCCESS, result);
             Lang language = this._langManager.getLang(langCode);
-            assertEquals(language.getDescr(), "French");
+            assertEquals("French", language.getDescr());
         } catch (Throwable t) {
             throw t;
         } finally {
@@ -51,13 +50,13 @@ public class TestLangAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFailureAddNewLang() throws Throwable {
+    void testFailureAddNewLang() throws Throwable {
         String langCode = "fr";
         try {
             String result = this.executeAddLang("admin", langCode);
             assertEquals(Action.SUCCESS, result);
             Lang language = this._langManager.getLang(langCode);
-            assertEquals(language.getDescr(), "French");
+            assertEquals("French", language.getDescr());
             result = this.executeAddLang("admin", langCode);
             assertEquals(Action.INPUT, result);
             result = this.executeAddLang("admin", "en");
@@ -70,7 +69,7 @@ public class TestLangAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testRemoveLang() throws Throwable {
+    void testRemoveLang() throws Throwable {
         String langCode = "fr";
         try {
             this._langManager.addLang(langCode);
@@ -83,7 +82,7 @@ public class TestLangAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFailureRemoveDefaultLang() throws Throwable {
+    void testFailureRemoveDefaultLang() throws Throwable {
         int initLangs = this._langManager.getLangs().size();
         Lang defaultLang = this._langManager.getDefaultLang();
 
@@ -111,6 +110,7 @@ public class TestLangAction extends ApsAdminBaseTestCase {
         return result;
     }
 
+    @BeforeEach
     private void init() throws Exception {
         try {
             this._langManager = (ILangManager) this.getService(SystemConstants.LANGUAGE_MANAGER);

@@ -13,30 +13,36 @@
  */
 package com.agiletec.apsadmin.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
  * @author E.Santoboni
  */
-public class TestDispatchForward extends ApsAdminBaseTestCase {
+class TestDispatchForward extends ApsAdminBaseTestCase {
 	
-	public void testGoOnMainPage() throws Throwable {
+	@Test
+	void testGoOnMainPage() throws Throwable {
     	this.initAction("/do", "main");
     	this.setUserOnSession("admin");
     	String result = super.executeAction();
 		assertEquals(Action.SUCCESS, result);
 	}
 	
-    public void testGoOnMainPageWithUserNotAbilitated() throws Throwable {
+    @Test
+	void testGoOnMainPageWithUserNotAbilitated() throws Throwable {
     	this.initAction("/do", "main");
     	this.setUserOnSession("guest");
     	String result = super.executeAction();
 		assertEquals("apslogin", result);
 	}
     
-    public void testGoOnMainPageWithNullUser() throws Throwable {
+    @Test
+	void testGoOnMainPageWithNullUser() throws Throwable {
     	this.initAction("/do", "main");
     	this.removeUserOnSession();
     	String result = super.executeAction();

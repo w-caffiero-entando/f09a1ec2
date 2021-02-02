@@ -13,6 +13,12 @@
  */
 package com.agiletec.apsadmin.system.entity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +36,12 @@ import com.agiletec.apsadmin.system.entity.type.EntityAttributeConfigAction;
 import com.agiletec.apsadmin.system.entity.type.IEntityTypeConfigAction;
 import com.agiletec.apsadmin.system.entity.type.IEntityTypesAction;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
-public class TestEntityManagersAction extends ApsAdminBaseTestCase {
+class TestEntityManagersAction extends ApsAdminBaseTestCase {
 
-	public void testExecuteViewServices() throws Throwable {
+	@Test
+	void testExecuteViewServices() throws Throwable {
 		this.setUserOnSession("supervisorCoach");
 		this.initAction("/do/Entity", "viewManagers");
 		String result = this.executeAction();
@@ -48,7 +56,8 @@ public class TestEntityManagersAction extends ApsAdminBaseTestCase {
 		assertNotNull(entityManagers);
 	}
 
-	public void testGetEntityPrototypes() throws Throwable {
+	@Test
+	void testGetEntityPrototypes() throws Throwable {
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;
 		this.setUserOnSession("admin");
@@ -61,7 +70,8 @@ public class TestEntityManagersAction extends ApsAdminBaseTestCase {
 		assertNotNull(entityPrototypes);
 	}
 
-	public void testGetWrongEntityPrototypes() throws Throwable {
+	@Test
+	void testGetWrongEntityPrototypes() throws Throwable {
 		this.executeGetWrongEntityPrototypes(null);
 		this.executeGetWrongEntityPrototypes("");
 		this.executeGetWrongEntityPrototypes("wrongEntityManagerName");
@@ -80,7 +90,8 @@ public class TestEntityManagersAction extends ApsAdminBaseTestCase {
 		assertEquals(1, fieldErrors.get("entityManagerName").size());
 	}
 
-	public void testInitAddEntityType() throws Throwable {
+	@Test
+	void testInitAddEntityType() throws Throwable {
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;
 
@@ -102,7 +113,8 @@ public class TestEntityManagersAction extends ApsAdminBaseTestCase {
 		return this.executeAction();
 	}
 
-	public void testInitEditEntityType() throws Throwable {
+	@Test
+	void testInitEditEntityType() throws Throwable {
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;
 		String entityManagerName = defNames[0];
@@ -147,7 +159,8 @@ public class TestEntityManagersAction extends ApsAdminBaseTestCase {
 		return this.executeAction();
 	}
 
-	public void testEditAttribute() throws Throwable {
+	@Test
+	void testEditAttribute() throws Throwable {
 		//Search an entity manager
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;
@@ -198,7 +211,8 @@ public class TestEntityManagersAction extends ApsAdminBaseTestCase {
 		return this.executeAction();
 	}
 	
-	public void testSaveNewAttribute() throws Throwable  {
+	@Test
+	void testSaveNewAttribute() throws Throwable  {
 		//Search an entity manager
 		String[] defNames = this.getApplicationContext().getBeanNamesForType(ApsEntityManager.class);
 		if (null == defNames || defNames.length == 0) return;

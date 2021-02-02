@@ -13,24 +13,30 @@
  */
 package com.agiletec.apsadmin.user.group;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.List;
 
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
  * @author E.Mezzano
  */
-public class TestGroupFinderAction extends ApsAdminBaseTestCase {
+class TestGroupFinderAction extends ApsAdminBaseTestCase {
 	
-	public void testListWithUserNotAllowed() throws Throwable {
+	@Test
+    void testListWithUserNotAllowed() throws Throwable {
 		String result = this.executeList("developersConf");
 		assertEquals("apslogin", result);
 	}
 	
-	public void testList() throws Throwable {
+	@Test
+    void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		GroupFinderAction groupFinderAction = (GroupFinderAction) this.getAction();

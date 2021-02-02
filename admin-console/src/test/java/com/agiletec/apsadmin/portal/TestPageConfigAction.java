@@ -13,6 +13,11 @@
  */
 package com.agiletec.apsadmin.portal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
@@ -24,19 +29,16 @@ import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import java.util.Date;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestPageConfigAction extends ApsAdminBaseTestCase {
+class TestPageConfigAction extends ApsAdminBaseTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
-    public void testConfigPage() throws Throwable {
+    @Test
+	void testConfigPage() throws Throwable {
         String result = this.executeConfigPage("pagina_1", "editorCoach");
         assertEquals("userNotAllowed", result);
         result = this.executeConfigPage("pagina_1", "pageManagerCoach");
@@ -47,7 +49,8 @@ public class TestPageConfigAction extends ApsAdminBaseTestCase {
         assertEquals(Action.SUCCESS, result);
     }
     
-    public void testUpdateConfig() throws Throwable {
+    @Test
+	void testUpdateConfig() throws Throwable {
         String pageCode = "test_page";
         assertNull(this._pageManager.getDraftPage(pageCode));
         try {
@@ -83,7 +86,8 @@ public class TestPageConfigAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
-    public void testConfigEditFrame() throws Throwable {
+    @Test
+	void testConfigEditFrame() throws Throwable {
         String result = this.executeEditFrame("coach_page", -1, "pageManagerCoach");//invalid frame
         assertEquals("pageTree", result);
         assertEquals(1, this.getAction().getActionErrors().size());
@@ -117,7 +121,8 @@ public class TestPageConfigAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
-    public void testJoinWidget() throws Throwable {
+    @Test
+	void testJoinWidget() throws Throwable {
         String pageCode = "pagina_1";
         int frame = 1;
         IPage pagina_1 = this._pageManager.getDraftPage(pageCode);
@@ -136,7 +141,8 @@ public class TestPageConfigAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testJoinRemoveWidget() throws Throwable {
+    @Test
+	void testJoinRemoveWidget() throws Throwable {
         this.testJoinRemoveWidget("login_form");
         this.testJoinRemoveWidget("logic_type");
     }
@@ -172,7 +178,8 @@ public class TestPageConfigAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testTrashWidget() throws Throwable {
+    @Test
+	void testTrashWidget() throws Throwable {
         String pageCode = "contentview";
         int frame = 1;
         IPage contentview = this._pageManager.getDraftPage(pageCode);
@@ -195,7 +202,8 @@ public class TestPageConfigAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testDeleteWidget() throws Throwable {
+    @Test
+	void testDeleteWidget() throws Throwable {
         String pageCode = "contentview";
         int frame = 1;
         IPage contentview = this._pageManager.getDraftPage(pageCode);
@@ -244,6 +252,7 @@ public class TestPageConfigAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
+    @BeforeEach
     private void init() throws Exception {
         try {
             this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);

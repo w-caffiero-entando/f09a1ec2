@@ -13,78 +13,95 @@
  */
 package com.agiletec.apsadmin;
 
-public class TestAdminConsoleLabelsProperties extends TestLabelsProperties {
+import org.junit.jupiter.api.Test;
+
+class TestAdminConsoleLabelsProperties extends TestLabelsProperties {
 
     private static String APSADMIN1_PATH = "com/agiletec/apsadmin/";
     private static String APSADMIN2_PATH = "org/entando/entando/apsadmin/";
 
-
-    public void testGlobalAdminProperties1() throws Throwable {
+    @Test
+    void testGlobalAdminProperties1() throws Throwable {
         super.testGlobalMessagesLabelsTranslations(APSADMIN1_PATH);
     }
-
-
-    public void testGlobalAdminProperties2() throws Throwable {
+    
+    @Test
+    void testGlobalAdminProperties2() throws Throwable {
         super.testGlobalMessagesLabelsTranslations(APSADMIN2_PATH);
     }
 
-    public void testLangProperties() throws Throwable {
+    @Test
+    void testLangProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "admin/lang/");
     }
 
-    public void testCategoryProperties() throws Throwable {
+    @Test
+    void testCategoryProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "category/");
     }
 
-    public void testCommonProperties() throws Throwable {
+    @Test
+    void testCommonProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "common/");
     }
 
-    public void testSystemEntityProperties() throws Throwable {
+    @Test
+    void testSystemEntityProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "system/entity/");
     }
 
-    public void testSystemEntityTypeProperties() throws Throwable {
+    @Test
+    void testSystemEntityTypeProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "system/entity/type/");
     }
 
-    public void testUserGroupProperties() throws Throwable {
+    @Test
+    void testUserGroupProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "user/group/");
     }
 
-    public void testUserRoleProperties() throws Throwable {
+    @Test
+    void testUserRoleProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN1_PATH + "user/role/");
     }
 
-    public void testAdminProperties() throws Throwable {
+    @Test
+    void testAdminProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "admin/");
     }
 
-    public void testApiProperties() throws Throwable {
+    @Test
+    void testApiProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "api/");
     }
 
-    public void testCommonCurrebtUserProperties() throws Throwable {
+    @Test
+    void testCommonCurrebtUserProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "common/currentuser/");
     }
 
-    public void testDataObjectModelProperties() throws Throwable {
+    @Test
+    void testDataObjectModelProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "dataobject/model/");
     }
 
-    public void testFileBrowserProperties() throws Throwable {
+    @Test
+    void testFileBrowserProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "filebrowser/");
     }
 
-    public void testPortalGuiFragmentProperties() throws Throwable {
+    @Test
+    void testPortalGuiFragmentProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "portal/guifragment/");
     }
 
-    public void testPortalModelProperties() throws Throwable {
+    @Test
+    void testPortalModelProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "portal/model/");
     }
 
-    public void testUserProperties() throws Throwable {
+    @Test
+    void testUserProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "user/");
     }
 }

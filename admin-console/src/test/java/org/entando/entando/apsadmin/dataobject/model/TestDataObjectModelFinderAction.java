@@ -13,25 +13,25 @@
  */
 package org.entando.entando.apsadmin.dataobject.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import org.entando.entando.aps.system.services.dataobjectmodel.DataObjectModel;
 import org.entando.entando.aps.system.services.dataobjectmodel.IDataObjectModelManager;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
+class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-
-    public void testList() throws Throwable {
+    @Test
+    void testList() throws Throwable {
         this.initAction("/do/dataobject/model", "list");
         this.setUserOnSession("admin");
         String result = this.executeAction();
@@ -41,7 +41,8 @@ public class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
         assertEquals(4, dataObjectModels.size());
     }
 
-    public void testSearch_1() throws Throwable {
+    @Test
+    void testSearch_1() throws Throwable {
         String result = this.executeSearch("ART");
         assertEquals(Action.SUCCESS, result);
         DataObjectModelFinderAction dataObjectModelFinderAction = (DataObjectModelFinderAction) this.getAction();
@@ -55,7 +56,8 @@ public class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
         assertEquals(0, dataObjectModels.size());
     }
 
-    public void testSearch_2() throws Throwable {
+    @Test
+    void testSearch_2() throws Throwable {
         DataObjectModel dataObjectModel = this.createDataObjectModel(MODEL_ID, "EVN");
         this._dataObjectModelManager.addDataObjectModel(dataObjectModel);
 
@@ -88,13 +90,13 @@ public class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
         return model;
     }
 
+    @BeforeEach
     private void init() {
         this._dataObjectModelManager = (IDataObjectModelManager) this.getService("DataObjectModelManager");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    protected void destroy() throws Exception {
         DataObjectModel model = this._dataObjectModelManager.getDataObjectModel(MODEL_ID);
         if (null != model) {
             this._dataObjectModelManager.removeDataObjectModel(model);

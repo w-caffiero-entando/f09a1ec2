@@ -13,6 +13,10 @@
  */
 package com.agiletec.apsadmin.portal.specialwidget;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
@@ -20,20 +24,17 @@ import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
  * @author E.Santoboni
  */
-public class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
+class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-	}
-
-	public void testInitConfigSimpleParameter_1() throws Throwable {
+	@Test
+	void testInitConfigSimpleParameter_1() throws Throwable {
 		String result = this.executeConfigSimpleParameter("admin", "homepage", "1", "formAction");
 		assertEquals(Action.SUCCESS, result);
 		SimpleWidgetConfigAction action = (SimpleWidgetConfigAction) this.getAction();
@@ -42,13 +43,15 @@ public class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
 		assertEquals(0, widget.getConfig().size());
 	}
 
-	public void testInitConfigSimpleParameter_withNoShowletCode() throws Throwable {
+	@Test
+	void testInitConfigSimpleParameter_withNoShowletCode() throws Throwable {
 		String result = this.executeConfigSimpleParameter("admin", "homepage", "1", null);
 		assertEquals("pageTree", result);
 		assertEquals(1, this.getAction().getActionErrors().size());
 	}
 
-	public void testInitConfigSimpleParameter_2() throws Throwable {
+	@Test
+	void testInitConfigSimpleParameter_2() throws Throwable {
 		String result = this.executeConfigSimpleParameter("admin", "pagina_2", "2", null);
 		assertEquals(Action.SUCCESS, result);
 		SimpleWidgetConfigAction action = (SimpleWidgetConfigAction) this.getAction();
@@ -72,7 +75,8 @@ public class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
 		return this.executeAction();
 	}
 
-	public void testSave() throws Throwable {
+	@Test
+	void testSave() throws Throwable {
 		String pageCode = "pagina_2";
 		int frame = 3;
 		IPage page = this._pageManager.getDraftPage(pageCode);
@@ -102,6 +106,7 @@ public class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
 		}
 	}
 
+    @BeforeEach
 	private void init() throws Exception {
 		try {
 			_pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);

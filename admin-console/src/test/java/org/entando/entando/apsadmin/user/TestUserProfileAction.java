@@ -13,6 +13,10 @@
  */
 package org.entando.entando.apsadmin.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 import java.util.Map;
 
@@ -26,19 +30,17 @@ import com.agiletec.aps.system.services.user.User;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestUserProfileAction extends ApsAdminBaseTestCase {
+class TestUserProfileAction extends ApsAdminBaseTestCase {
     
-	@Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-    
-    public void testEditProfile_1() throws Throwable {
+    @Test
+	void testEditProfile_1() throws Throwable {
     	this.setUserOnSession("admin");
         this.initAction("/do/userprofile", "edit");
 		this.addParameter("username", USERNAME_FOR_TEST);
@@ -48,7 +50,8 @@ public class TestUserProfileAction extends ApsAdminBaseTestCase {
         assertNull(currentUserProfile);
     }
     
-    public void testEditProfile_2() throws Throwable {
+    @Test
+	void testEditProfile_2() throws Throwable {
     	this.setUserOnSession("admin");
         this.initAction("/do/userprofile", "edit");
 		this.addParameter("username", "editorCustomers");
@@ -59,7 +62,8 @@ public class TestUserProfileAction extends ApsAdminBaseTestCase {
         assertEquals("editorCustomers", currentUserProfile.getUsername());
     }
 	
-    public void testEditProfile_3() throws Throwable {
+    @Test
+	void testEditProfile_3() throws Throwable {
 		IUserProfile prototype = this._profileManager.getDefaultProfileType();
 		prototype.setTypeCode("XXX");
 		((IEntityTypesConfigurer) this._profileManager).addEntityPrototype(prototype);
@@ -78,7 +82,8 @@ public class TestUserProfileAction extends ApsAdminBaseTestCase {
 		}
     }
     
-    public void testSaveNewEmptyProfile() throws Throwable {
+    @Test
+	void testSaveNewEmptyProfile() throws Throwable {
     	this.setUserOnSession("admin");
 		try {
 			this.initAction("/do/userprofile", "saveEmpty");
@@ -96,7 +101,8 @@ public class TestUserProfileAction extends ApsAdminBaseTestCase {
 		}
     }
     
-    public void testNewProfile() throws Throwable {
+    @Test
+	void testNewProfile() throws Throwable {
     	this.setUserOnSession("admin");
 		try {
 			this.initAction("/do/userprofile", "saveAndContinue");
@@ -115,7 +121,8 @@ public class TestUserProfileAction extends ApsAdminBaseTestCase {
 		}
     }
     
-    public void testValidateNewProfile() throws Throwable {
+    @Test
+	void testValidateNewProfile() throws Throwable {
     	this.setUserOnSession("admin");
         this.initAction("/do/userprofile", "saveAndContinue");
 		this.addParameter("username", USERNAME_FOR_TEST);
@@ -127,7 +134,8 @@ public class TestUserProfileAction extends ApsAdminBaseTestCase {
         assertEquals(1, fieldErrors.get("profileTypeCode").size());
     }
     
-    public void testValidateProfile() throws Throwable {
+    @Test
+	void testValidateProfile() throws Throwable {
     	this.setUserOnSession("admin");
         this.initAction("/do/userprofile", "edit");
 		this.addParameter("username", "editorCustomers");
@@ -160,7 +168,8 @@ public class TestUserProfileAction extends ApsAdminBaseTestCase {
         assertEquals("Ronald Rossi", currentUserProfile.getValue("fullname"));
     }
 	
-    public void testSaveProfile() throws Throwable {
+    @Test
+	void testSaveProfile() throws Throwable {
     	this.setUserOnSession("admin");
     	this.initAction("/do/userprofile", "saveAndContinue");
 		this.addParameter("username", USERNAME_FOR_TEST);
@@ -188,21 +197,22 @@ public class TestUserProfileAction extends ApsAdminBaseTestCase {
         }
     }
 	
+    @BeforeEach
     private void init() throws Exception {
         try {
             this._profileManager = (IUserProfileManager) this.getService(SystemConstants.USER_PROFILE_MANAGER);
             this._userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);
             User user = this.createUserForTest(USERNAME_FOR_TEST);
             this._userManager.addUser(user);
+            this.getRequest().getSession().removeAttribute(UserProfileAction.USERPROFILE_ON_SESSION);
         } catch (Throwable e) {
             throw new Exception(e);
         }
     }
     
-	@Override
-    protected void tearDown() throws Exception {
+	@AfterEach
+    protected void destroy() throws Exception {
         this._userManager.removeUser(USERNAME_FOR_TEST);
-        super.tearDown();
     }
     
     protected User createUserForTest(String username) {

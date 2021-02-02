@@ -13,17 +13,22 @@
  */
 package org.entando.entando.apsadmin.portal.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.opensymphony.xwork2.Action;
 
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestPageModelFinderAction extends AbstractTestPageModelAction {
+class TestPageModelFinderAction extends AbstractTestPageModelAction {
 	
-	public void testGetPageModels_1() throws Throwable {
+	@Test
+    void testGetPageModels_1() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		PageModelFinderAction pageModelFinderAction = (PageModelFinderAction) this.getAction();
@@ -34,7 +39,8 @@ public class TestPageModelFinderAction extends AbstractTestPageModelAction {
 		assertEquals("service", models.get(2).getCode());
 	}
 	
-	public void testGetPageModels_2() throws Throwable {
+	@Test
+    void testGetPageModels_2() throws Throwable {
 		String testPageModelCode = "test_pagemodel";
 		assertNull(this._pageModelManager.getPageModel(testPageModelCode));
 		try {

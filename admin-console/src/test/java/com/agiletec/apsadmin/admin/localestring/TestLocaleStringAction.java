@@ -13,8 +13,11 @@
  */
 package com.agiletec.apsadmin.admin.localestring;
 
-import java.util.List;
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.i18n.II18nManager;
@@ -22,19 +25,18 @@ import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Mezzano
  */
-public class TestLocaleStringAction extends ApsAdminBaseTestCase {
+class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-	}
-	
-	public void testNew() throws Throwable {
+	@Test
+	void testNew() throws Throwable {
 		String result = this.executeNew("admin");
 		assertEquals(Action.SUCCESS, result);
 		LocaleStringAction localeStringAction = (LocaleStringAction) this.getAction();
@@ -42,14 +44,16 @@ public class TestLocaleStringAction extends ApsAdminBaseTestCase {
 		assertEquals(0, localeStringAction.getLabels().size());
 	}
 	
-	public void testEdit() throws Throwable {
+	@Test
+	void testEdit() throws Throwable {
 		assertEquals(Action.SUCCESS, this.executeEdit("admin", "PAGE"));
 		LocaleStringAction localeStringAction = (LocaleStringAction) this.getAction();
 		assertEquals(2, localeStringAction.getLangs().size());
 		assertEquals(2, localeStringAction.getLabels().size());
 	}
 	
-	public void testFailureSaveNew_1() throws Throwable {
+	@Test
+	void testFailureSaveNew_1() throws Throwable {
 		// Chiave label duplicata
 		String duplicatedKey = "PAGE";
 		String result = this.executeSaveNew("admin", duplicatedKey, "newKeyIt", "newKeyEn");
@@ -81,7 +85,8 @@ public class TestLocaleStringAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testFailureSaveNew_2() throws Throwable {
+	@Test
+	void testFailureSaveNew_2() throws Throwable {
 		//key length exceed max
 		String longKey = "veryLongCategoryCode_veryLongCategoryCode_veryLongCategoryCode";
 		assertNull(this._i18nManager.getLabelGroup(longKey));
@@ -98,7 +103,8 @@ public class TestLocaleStringAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testFailureSaveNew_3() throws Throwable {
+	@Test
+	void testFailureSaveNew_3() throws Throwable {
 		//key with special characters
 		String wrongKey = "test_&HF";
 		assertNull(this._i18nManager.getLabelGroup(wrongKey));
@@ -115,7 +121,8 @@ public class TestLocaleStringAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testSaveNew() throws Throwable {
+	@Test
+	void testSaveNew() throws Throwable {
 		String key = "NEW_KEY_12";
 		assertFalse(this._i18nManager.getLabelGroups().containsKey(key));
 		try {
@@ -135,7 +142,8 @@ public class TestLocaleStringAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testFailureSaveEdit() throws Throwable {
+	@Test
+	void testFailureSaveEdit() throws Throwable {
         String key = "NEW_KEY_X";
 		assertFalse(this._i18nManager.getLabelGroups().containsKey(key));
 		try {
@@ -165,7 +173,8 @@ public class TestLocaleStringAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testSaveEdit() throws Throwable {
+	@Test
+	void testSaveEdit() throws Throwable {
 		String key = "NEW_KEY";
 		assertFalse(this._i18nManager.getLabelGroups().containsKey(key));
 		try {
@@ -175,8 +184,8 @@ public class TestLocaleStringAction extends ApsAdminBaseTestCase {
 			String result = this.executeSaveEdit("admin", key, "updatedKeyIt", "updatedKeyEn");
 			assertEquals(Action.SUCCESS, result);
 			assertTrue(this._i18nManager.getLabelGroups().containsKey(key));
-			assertEquals(this._i18nManager.getLabel(key, "it"), "updatedKeyIt");
-			assertEquals(this._i18nManager.getLabel(key, "en"), "updatedKeyEn");
+			assertEquals("updatedKeyIt", this._i18nManager.getLabel(key, "it"));
+			assertEquals("updatedKeyEn", this._i18nManager.getLabel(key, "en"));
 		} catch(Throwable t) {
 			throw t;
 		} finally {
@@ -185,7 +194,8 @@ public class TestLocaleStringAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testSaveDelete() throws Throwable {
+	@Test
+	void testSaveDelete() throws Throwable {
 		String key = "NEW_KEY";
 		try {
 			ApsProperties labels = this.prepareLabelProperties("itLabel", "enLabel");
@@ -246,6 +256,7 @@ public class TestLocaleStringAction extends ApsAdminBaseTestCase {
 		return this.executeAction();
 	}
 	
+    @BeforeEach
 	private void init() throws Exception {
 		try {
 			this._i18nManager = (II18nManager) this.getService(SystemConstants.I18N_MANAGER);

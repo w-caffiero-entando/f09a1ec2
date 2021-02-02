@@ -13,6 +13,11 @@
  */
 package com.agiletec.apsadmin.portal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,19 +43,16 @@ import java.util.Arrays;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
+class TestWidgetTypeAction extends ApsAdminBaseTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-    
-    public void testFailureUpdateTitles() throws Throwable {
+    @Test
+	void testFailureUpdateTitles() throws Throwable {
         String result = this.executeUpdate("content_viewer", "italian title", "english title", "editorCustomers", "*GUI*");
         assertEquals("userNotAllowed", result);
 
@@ -71,7 +73,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         assertEquals(1, this.getAction().getFieldErrors().size());
     }
 
-    public void testUpdate_1() throws Throwable {
+    @Test
+	void testUpdate_1() throws Throwable {
         String widgetTypeCode = "test_widgetType_Upd1";
         assertNull(this._widgetTypeManager.getWidgetType(widgetTypeCode));
         List<String> fragmentCodes = this._guiFragmentManager.getGuiFragmentCodesByWidgetType(widgetTypeCode);
@@ -100,7 +103,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testUpdate_2() throws Throwable {
+    @Test
+	void testUpdate_2() throws Throwable {
         String widgetTypeCode = "test_widgetType_Upd2";
         assertNull(this._widgetTypeManager.getWidgetType(widgetTypeCode));
         List<String> fragmentCodes = this._guiFragmentManager.getGuiFragmentCodesByWidgetType(widgetTypeCode);
@@ -130,7 +134,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testUpdate_3() throws Throwable {
+    @Test
+	void testUpdate_3() throws Throwable {
         String widgetTypeCode = "test_widgetType_Upd3";
         assertNull(this._widgetTypeManager.getWidgetType(widgetTypeCode));
         try {
@@ -175,7 +180,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         assertNull(this._widgetTypeManager.getWidgetType(widgetTypeCode));
     }
 
-    public void testFailureTrashType_1() throws Throwable {
+    @Test
+	void testFailureTrashType_1() throws Throwable {
         String result = this.executeTrash("content_viewer", "editorCustomers");
         assertEquals("userNotAllowed", result);
 
@@ -188,7 +194,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         assertEquals(1, this.getAction().getActionErrors().size());
     }
 
-    public void testFailureTrashType_2() throws Throwable {
+    @Test
+	void testFailureTrashType_2() throws Throwable {
         String widgetTypeCode = "test_widgetType_trash2";
         assertNull(this._widgetTypeManager.getWidgetType(widgetTypeCode));
         try {
@@ -212,7 +219,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         }
     }
     
-    public void testTrashType() throws Throwable {
+    @Test
+	void testTrashType() throws Throwable {
         String pageCode = "pagina_1";
         int frame = 1;
         String widgetTypeCode = "test_widgetType_trash3";
@@ -335,7 +343,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         return type;
     }
 
-    public void testCopyWidgetType() throws Throwable {
+    @Test
+	void testCopyWidgetType() throws Throwable {
         String result = this.executeCopyWidgetType("editorCustomers", "customers_page", "2");
         assertEquals("userNotAllowed", result);
 
@@ -361,7 +370,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
-    public void testNewWidgetType() throws Throwable {
+    @Test
+	void testNewWidgetType() throws Throwable {
         String result = this.executeNewUserWidgetType("editorCustomers", "content_viewer_list");
         assertEquals("userNotAllowed", result);
 
@@ -386,7 +396,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
-    public void testFailurePasteWidgetType() throws Throwable {
+    @Test
+	void testFailurePasteWidgetType() throws Throwable {
         String widgetTypeCode = "randomWidgetCode";
         try {
             String result = this.executePasteUserWidgetType("editorCustomers", widgetTypeCode, "en", "it", "customers_page", "2");
@@ -406,7 +417,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testFailureAddNewWidgetType() throws Throwable {
+    @Test
+	void testFailureAddNewWidgetType() throws Throwable {
         String widgetTypeCode = "randomWidgetCode";
         try {
             String result = this.executeAddUserWidgetType("editorCustomers", widgetTypeCode, "en", "it", "leftmenu");
@@ -423,7 +435,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testValidatePasteUserWidgetType() throws Throwable {
+    @Test
+	void testValidatePasteUserWidgetType() throws Throwable {
         String widgetTypeCode = "randomWidgetCode";
         try {
             String result = this.executePasteUserWidgetType("admin", widgetTypeCode, "en", null, "customers_page", "2");
@@ -444,7 +457,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testValidateAddNewUserWidgetType() throws Throwable {
+    @Test
+	void testValidateAddNewUserWidgetType() throws Throwable {
         String widgetTypeCode = "randomWidgetCode";
         try {
             String result = this.executeAddUserWidgetType("admin", widgetTypeCode, "enTitle", "", "leftmenu");
@@ -478,7 +492,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testPasteNewUserWidgetType_1() throws Throwable {
+    @Test
+	void testPasteNewUserWidgetType_1() throws Throwable {
         String widgetTypeCode = "randomShowletCode_1";
         try {
             assertNull(this._widgetTypeManager.getWidgetType(widgetTypeCode));
@@ -503,7 +518,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testPasteNewWidgetType_2() throws Throwable {
+    @Test
+	void testPasteNewWidgetType_2() throws Throwable {
         String widgetTypeCode = "randomWidgetCode-2";
         String pageDest = "pagina_1";
         int frameDest = 1;
@@ -549,7 +565,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         }
     }
 
-    public void testAddNewUserWidgetType() throws Throwable {
+    @Test
+	void testAddNewUserWidgetType() throws Throwable {
         String widgetTypeCode = "randomWidgetCode_3";
         try {
             this.setUserOnSession("admin");
@@ -576,7 +593,8 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
     }
 
     //TODO ADD MORE TESTS for add new widget
-    public void testAddNewWidgetType() throws Throwable {
+    @Test
+	void testAddNewWidgetType() throws Throwable {
         String widgetTypeCode = "randomWidgetCode_4";
         List<String> fragmantCodes = null;
         try {
@@ -647,6 +665,7 @@ public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
+    @BeforeEach
     private void init() throws Exception {
         try {
             this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);

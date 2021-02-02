@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class UserAuthorizationAction extends BaseAction {
 
-	private static final String CURRENT_FORM_USER_AUTHS_PARAM_NAME = "currentUserAuthoritiesOnForm";
+	public static final String CURRENT_FORM_USER_AUTHS_PARAM_NAME = "currentUserAuthoritiesOnForm";
 	private static final String USER_LIST = "userList";
 
 

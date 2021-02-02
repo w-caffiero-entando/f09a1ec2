@@ -13,6 +13,10 @@
  */
 package com.agiletec.apsadmin.admin;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,19 +24,16 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestSystemParamsUtils extends ApsAdminBaseTestCase {
+class TestSystemParamsUtils extends ApsAdminBaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-    }
-	
-	public void testUpdateXmlItemParams() throws Throwable {
+	@Test
+	void testUpdateXmlItemParams() throws Throwable {
 		String xmlParams = this._configManager.getConfigItem(SystemConstants.CONFIG_ITEM_PARAMS);
 		assertNotNull(xmlParams);
 		Map<String, String> params = SystemParamsUtils.getParams(xmlParams);
@@ -51,6 +52,7 @@ public class TestSystemParamsUtils extends ApsAdminBaseTestCase {
 		assertNotNull(newExtractedParams.get("wrongNewParam"));
 	}
 	
+    @BeforeEach
 	private void init() {
 		this._configManager = (ConfigInterface) this.getService(SystemConstants.BASE_CONFIG_MANAGER);
 	}

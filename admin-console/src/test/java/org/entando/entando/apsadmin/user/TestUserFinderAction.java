@@ -13,23 +13,30 @@
  */
 package org.entando.entando.apsadmin.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version 1.0
  * @author E.Santoboni
  */
-public class TestUserFinderAction extends ApsAdminBaseTestCase {
+class TestUserFinderAction extends ApsAdminBaseTestCase {
 	
-	public void testListWithUserNotAllowed() throws Throwable {
+    @Test
+	void testListWithUserNotAllowed() throws Throwable {
 		String result = this.executeList("developersConf");
 		assertEquals("apslogin", result);
 	}
 	
-	public void testList() throws Throwable {
+	@Test
+	void testList() throws Throwable {
 		String result = this.executeList("admin");
 		assertEquals(Action.SUCCESS, result);
 		UserProfileFinderAction userFinderAction = (UserProfileFinderAction) this.getAction();
@@ -38,7 +45,8 @@ public class TestUserFinderAction extends ApsAdminBaseTestCase {
 		assertTrue(users.size()>=8);
 	}
 	
-    public void testSearchUsers() throws Throwable {
+    @Test
+	void testSearchUsers() throws Throwable {
     	String result = this.executeSearch("admin", "ustomer");
     	assertEquals(Action.SUCCESS, result);
     	UserProfileFinderAction userFinderAction = (UserProfileFinderAction) this.getAction();

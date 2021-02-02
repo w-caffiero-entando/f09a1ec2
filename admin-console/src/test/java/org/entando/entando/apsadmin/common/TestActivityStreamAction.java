@@ -13,6 +13,8 @@
  */
 package org.entando.entando.apsadmin.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.entando.entando.aps.system.services.actionlog.ActionLoggerTestHelper;
 import org.entando.entando.aps.system.services.actionlog.IActionLogManager;
 
@@ -21,21 +23,18 @@ import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestActivityStreamAction extends ApsAdminBaseTestCase {
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-        this._helper.cleanRecords();
-    }
+class TestActivityStreamAction extends ApsAdminBaseTestCase {
 
     /*
-	public void testActivityStreamSearchBean() throws Throwable {
+	@Test
+    void testActivityStreamSearchBean() throws Throwable {
 		Content content = this._contentManager.loadContent("EVN41", false);//"coach" group
 		String contentOnSessionMarker = AbstractContentAction.buildContentOnSessionMarker(content, ApsAdminSystemConstants.ADD);
 		content.setId(null);
@@ -106,7 +105,8 @@ public class TestActivityStreamAction extends ApsAdminBaseTestCase {
 		}
 	}
      */
-    public void testCallAction() throws Throwable {
+    @Test
+    void testCallAction() throws Throwable {
         this.initActivityStreamAction("/do/ActivityStream", "update", "2012-12-12 12:12:12|121");
         this.setUserOnSession("admin");
         String result = this.executeAction();
@@ -123,18 +123,19 @@ public class TestActivityStreamAction extends ApsAdminBaseTestCase {
         this.addParameter("timestamp", timestamp);
     }
 
+    @BeforeEach
     private void init() {
         this._actionLoggerManager = (IActionLogManager) this.getService(SystemConstants.ACTION_LOGGER_MANAGER);
         this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
         this._langManager = (ILangManager) this.getService(SystemConstants.LANGUAGE_MANAGER);
         //this._contentManager = (IContentManager) this.getService(JacmsSystemConstants.CONTENT_MANAGER);
         this._helper = new ActionLoggerTestHelper(this.getApplicationContext());
+        this._helper.cleanRecords();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void destroy() throws Exception {
         this._helper.cleanRecords();
-        super.tearDown();
     }
 
     private IActionLogManager _actionLoggerManager;

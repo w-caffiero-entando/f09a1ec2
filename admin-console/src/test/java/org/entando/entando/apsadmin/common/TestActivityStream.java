@@ -13,6 +13,10 @@
  */
 package org.entando.entando.apsadmin.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.lang.ILangManager;
@@ -34,22 +38,19 @@ import org.entando.entando.aps.system.services.actionlog.ActionLoggerTestHelper;
 import org.entando.entando.aps.system.services.actionlog.IActionLogManager;
 import org.entando.entando.aps.system.services.actionlog.model.ActionLogRecord;
 import org.entando.entando.aps.system.services.actionlog.model.ActionLogRecordSearchBean;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestActivityStream extends ApsAdminBaseTestCase {
+class TestActivityStream extends ApsAdminBaseTestCase {
 
     private IActionLogManager actionLoggerManager;
     private IPageManager pageManager = null;
     private ILangManager langManager = null;
     private ActionLoggerTestHelper helper;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.init();
-        this.helper.cleanRecords();
-    }
-
-    public void testLogAddPage() throws Throwable {
+    @Test
+    void testLogAddPage() throws Throwable {
         String pageCode = "act_stream_test";
         try {
             this.addPage(pageCode);
@@ -108,17 +109,18 @@ public class TestActivityStream extends ApsAdminBaseTestCase {
         return this.executeAction();
     }
 
+    @BeforeEach
     private void init() {
         this.actionLoggerManager = (IActionLogManager) this.getService(SystemConstants.ACTION_LOGGER_MANAGER);
         this.pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
         this.langManager = (ILangManager) this.getService(SystemConstants.LANGUAGE_MANAGER);
         this.helper = new ActionLoggerTestHelper(this.getApplicationContext());
+        this.helper.cleanRecords();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void destroy() throws Exception {
         this.helper.cleanRecords();
-        super.tearDown();
     }
 
 }

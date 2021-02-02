@@ -13,6 +13,11 @@
  */
 package org.entando.entando.apsadmin.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import com.agiletec.aps.system.SystemConstants;
 
 import com.agiletec.aps.system.services.authorization.Authorization;
@@ -25,31 +30,21 @@ import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
-import org.entando.entando.ent.exception.EntException;
 
 import java.util.Collection;
 import java.util.List;
 import org.entando.entando.ent.exception.EntException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
+class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
-		this.addTestUserAndAuthorities();
-	}
-	
-	@Override
-	protected void tearDown() throws Exception {
-		this.removeTestUserAndAuthorities();
-		super.tearDown();
-	}
-	
-	public void testFailureEdit() throws Throwable {
+	@Test
+    void testFailureEdit() throws Throwable {
 		// Utente non abilitato
 		String result = this.executeEdit("developersConf", "developersConf");
 		assertEquals("apslogin", result);
@@ -61,7 +56,8 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		assertEquals(1, actionErrors.size());
 	}
 	
-	public void testEdit() throws Throwable {
+	@Test
+    void testEdit() throws Throwable {
 		String result = this.executeEdit("admin", "mainEditor");
 		assertEquals(Action.SUCCESS, result);
 		UserAuthorizationAction action = (UserAuthorizationAction) this.getAction();
@@ -81,7 +77,8 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		assertEquals(2, authbean.getAuthorizations().size());
 	}
 	
-	public void testAddAuthorization_1() throws Throwable {
+	@Test
+    void testAddAuthorization_1() throws Throwable {
 		try {
 			this.executeEdit("admin", TEST_USER_NAME);
 			// New Authorization
@@ -110,7 +107,8 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testAddAuthorization_2() throws Throwable {
+	@Test
+    void testAddAuthorization_2() throws Throwable {
 		try {
 			String result = this.executeAddAuthorization("admin", TEST_USER_NAME, Group.ADMINS_GROUP_NAME, TEST_ROLE_NAME);
 			assertEquals("userList", result);
@@ -160,7 +158,8 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testRemoveAuthorization_1() throws Throwable {
+	@Test
+    void testRemoveAuthorization_1() throws Throwable {
 		try {
 			this.executeEdit("admin", TEST_USER_NAME);
 			
@@ -180,7 +179,8 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testRemoveAuthorization_2() throws Throwable {
+	@Test
+    void testRemoveAuthorization_2() throws Throwable {
 		try {
 			this.executeEdit("admin", TEST_USER_NAME);
 			
@@ -200,7 +200,8 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testSave_1() throws Throwable {
+	@Test
+    void testSave_1() throws Throwable {
 		List<Authorization> authorizations = this._authorizationManager.getUserAuthorizations(TEST_USER_NAME);
 		assertEquals(2, authorizations.size());
 		try {
@@ -218,7 +219,8 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		}
 	}
 	
-	public void testSave_2() throws Throwable {
+	@Test
+    void testSave_2() throws Throwable {
 		List<Authorization> authorizations = this._authorizationManager.getUserAuthorizations(TEST_USER_NAME);
 		assertEquals(2, authorizations.size());
 		try {
@@ -294,19 +296,23 @@ public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 		this._authorizationManager.addUserAuthorization(TEST_USER_NAME, TEST_GROUP_NAME, "admin");
 	}
 	
+    @BeforeEach
+	private void init() throws EntException {
+		this._userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);
+		this._roleManager = (IRoleManager) this.getService(SystemConstants.ROLE_MANAGER);
+		this._groupManager = (IGroupManager) this.getService(SystemConstants.GROUP_MANAGER);
+		this._authorizationManager = (IAuthorizationManager) this.getService(SystemConstants.AUTHORIZATION_SERVICE);
+        this.addTestUserAndAuthorities();
+        super.getRequest().getSession().removeAttribute(UserAuthorizationAction.CURRENT_FORM_USER_AUTHS_PARAM_NAME);
+	}
+	
+    @AfterEach
 	private void removeTestUserAndAuthorities() throws EntException {
 		this._userManager.removeUser(TEST_USER_NAME);
 		Group groupForTest = this._groupManager.getGroup(TEST_GROUP_NAME);
 		this._groupManager.removeGroup(groupForTest);
 		Role roleForTest = this._roleManager.getRole(TEST_ROLE_NAME);
 		this._roleManager.removeRole(roleForTest);
-	}
-	
-	private void init() {
-		this._userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);
-		this._roleManager = (IRoleManager) this.getService(SystemConstants.ROLE_MANAGER);
-		this._groupManager = (IGroupManager) this.getService(SystemConstants.GROUP_MANAGER);
-		this._authorizationManager = (IAuthorizationManager) this.getService(SystemConstants.AUTHORIZATION_SERVICE);
 	}
 	
 	private IUserManager _userManager;
