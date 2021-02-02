@@ -8,13 +8,12 @@ import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.conten
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
-public class TestContentScheduler extends BaseTestCase {
+class TestContentScheduler extends BaseTestCase {
 
 	private IContentSchedulerManager contentScheduler;
     
     @Test
-    public void testConfig() throws Exception {
+    void testConfig() throws Exception {
 		assertTrue(null != contentScheduler);
 		ContentThreadConfig config = contentScheduler.getConfig();
 		ContentThreadConfigDOM dd = new ContentThreadConfigDOM();

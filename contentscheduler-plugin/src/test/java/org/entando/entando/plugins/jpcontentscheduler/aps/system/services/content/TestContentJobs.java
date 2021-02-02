@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestContentJobs extends BaseTestCase {
+class TestContentJobs extends BaseTestCase {
 
 	private ContentJobs _contentJobs;
     
@@ -62,7 +62,7 @@ public class TestContentJobs extends BaseTestCase {
 	}
 
     @Test
-	public void testExecuteJob() {
+	void testExecuteJob() {
 		try {
 			this._contentJobs.executeJob(super.getApplicationContext());
 		} catch (JobExecutionException ex) {
