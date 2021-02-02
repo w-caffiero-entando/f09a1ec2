@@ -61,7 +61,7 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 		IPage page = this.pageManager.getDraftPage(selectedPageCode);
         assertTrue(page.getMetadata() instanceof SeoPageMetadata);
 		PageAction action = (PageAction) this.getAction();
-		assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.EDIT);
+		assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
 		assertEquals(page.getCode(), action.getPageCode());
 		assertEquals(page.getParentCode(), action.getParentPageCode());
 		assertEquals(page.getModel().getCode(), action.getModel());
@@ -78,7 +78,7 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 		assertEquals(Action.SUCCESS, result);
 		IPage page = this.pageManager.getDraftPage(selectedPageCode);
 		PageAction action = (PageAction) this.getAction();
-		assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.EDIT);
+		assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
 		assertEquals(page.getCode(), action.getPageCode());
 		assertEquals(page.getParentCode(), action.getParentPageCode());
 		assertEquals(page.getModel().getCode(), action.getModel());
