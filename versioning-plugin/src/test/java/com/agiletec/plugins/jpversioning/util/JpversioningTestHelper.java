@@ -42,6 +42,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentRecordVO;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
 import com.agiletec.plugins.jpversioning.aps.system.services.versioning.ContentVersion;
+import java.util.Collections;
 
 public class JpversioningTestHelper extends AbstractDAO {
 
@@ -50,6 +51,11 @@ public class JpversioningTestHelper extends AbstractDAO {
 	public JpversioningTestHelper(DataSource dataSource, ApplicationContext context) {
 		this.setDataSource(dataSource);
 		this._contentManager = (IContentManager) context.getBean(JacmsSystemConstants.CONTENT_MANAGER);
+	}
+	
+	public JpversioningTestHelper(DataSource dataSource, IContentManager contentManager) {
+		this.setDataSource(dataSource);
+		this._contentManager = contentManager;
 	}
 	
 	public void initContentVersions() throws EntException {
@@ -90,6 +96,24 @@ public class JpversioningTestHelper extends AbstractDAO {
 			conn = this.getConnection();
 			stat = conn.createStatement();
 			stat.executeUpdate(DELETE_TRASHED_RESOURCES);
+		} catch (Throwable t) {
+			throw new EntException("Error cleaning trashed resources", t);
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+	}
+	
+	public void cleanTrashedResources(String... idToMaintains) throws EntException {
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			conn = this.getConnection();
+            String[] copies = Collections.nCopies(idToMaintains.length, "?").toArray(new String[idToMaintains.length]);
+            stat = conn.prepareStatement(DELETE_TRASHED_RESOURCES + " WHERE resid NOT IN ("+ String.join(",", copies) +")");
+            for (int i = 0; i < idToMaintains.length; i++) {
+                stat.setString(i+1, idToMaintains[i]);
+            }
+			stat.executeUpdate();
 		} catch (Throwable t) {
 			throw new EntException("Error cleaning trashed resources", t);
 		} finally {
