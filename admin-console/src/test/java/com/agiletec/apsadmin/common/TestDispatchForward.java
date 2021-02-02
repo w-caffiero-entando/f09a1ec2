@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  * @version 1.0
  * @author E.Santoboni
  */
-public class TestDispatchForward extends ApsAdminBaseTestCase {
+class TestDispatchForward extends ApsAdminBaseTestCase {
 	
 	@Test
 	public void testGoOnMainPage() throws Throwable {

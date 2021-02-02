@@ -38,7 +38,7 @@ import com.agiletec.apsadmin.system.entity.type.IEntityTypesAction;
 import com.opensymphony.xwork2.Action;
 import org.junit.jupiter.api.Test;
 
-public class TestEntityManagersAction extends ApsAdminBaseTestCase {
+class TestEntityManagersAction extends ApsAdminBaseTestCase {
 
 	@Test
 	public void testExecuteViewServices() throws Throwable {

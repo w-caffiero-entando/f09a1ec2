@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  * @version 1.0
  * @author E.Mezzano
  */
-public class TestLangFinderAction extends ApsAdminBaseTestCase {
+class TestLangFinderAction extends ApsAdminBaseTestCase {
 	
 	@Test
 	public void testList() throws Throwable {

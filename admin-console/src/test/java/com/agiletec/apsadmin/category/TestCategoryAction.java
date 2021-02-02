@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni - G.Cocco
  */
-public class TestCategoryAction extends ApsAdminBaseTestCase {
+class TestCategoryAction extends ApsAdminBaseTestCase {
 
     @Test
 	public void testNewCategory() throws Throwable {

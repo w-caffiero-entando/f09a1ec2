@@ -35,7 +35,7 @@ import org.entando.entando.ent.exception.EntException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestConsumerAction extends ApsAdminBaseTestCase {
+class TestConsumerAction extends ApsAdminBaseTestCase {
 
     private IOAuthConsumerManager consumerManager;
 

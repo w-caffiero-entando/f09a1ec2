@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestApiServiceFinderAction extends ApsAdminBaseTestCase {
+class TestApiServiceFinderAction extends ApsAdminBaseTestCase {
 	
 	@Test
 	public void testServiceList() throws Throwable {

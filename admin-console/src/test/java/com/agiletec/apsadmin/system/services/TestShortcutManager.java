@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestShortcutManager extends BaseTestCase {
+class TestShortcutManager extends BaseTestCase {
 	
     @Test
 	public void testGetAllowedShortcuts() throws Throwable {

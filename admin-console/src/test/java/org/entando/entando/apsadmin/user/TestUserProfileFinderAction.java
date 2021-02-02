@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author f.deidda
  */
-public class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
+class TestUserProfileFinderAction extends ApsAdminBaseTestCase {
 	
     @Test
 	public void testSearchSuperUser() throws Throwable {

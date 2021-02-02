@@ -32,7 +32,7 @@ import org.entando.entando.ent.exception.EntException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestGroupAction extends ApsAdminBaseTestCase {
+class TestGroupAction extends ApsAdminBaseTestCase {
 
     @Test
     public void testNew() throws Throwable {

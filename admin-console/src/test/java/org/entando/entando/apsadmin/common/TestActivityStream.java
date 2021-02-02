@@ -42,7 +42,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestActivityStream extends ApsAdminBaseTestCase {
+class TestActivityStream extends ApsAdminBaseTestCase {
 
     private IActionLogManager actionLoggerManager;
     private IPageManager pageManager = null;

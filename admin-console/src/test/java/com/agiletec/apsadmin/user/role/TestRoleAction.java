@@ -36,7 +36,7 @@ import org.entando.entando.ent.exception.EntException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestRoleAction extends ApsAdminBaseTestCase {
+class TestRoleAction extends ApsAdminBaseTestCase {
 	
 	@Test
     public void testNew() throws Throwable {

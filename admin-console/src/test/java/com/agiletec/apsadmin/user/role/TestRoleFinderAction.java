@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  * @version 1.0
  * @author E.Mezzano
  */
-public class TestRoleFinderAction extends ApsAdminBaseTestCase {
+class TestRoleFinderAction extends ApsAdminBaseTestCase {
 	
 	@Test
     public void testListWithUserNotAllowed() throws Throwable {

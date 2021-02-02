@@ -54,7 +54,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestPageAction extends ApsAdminBaseTestCase {
+class TestPageAction extends ApsAdminBaseTestCase {
 
     @Test
 	public void testNewPage_1() throws Throwable {

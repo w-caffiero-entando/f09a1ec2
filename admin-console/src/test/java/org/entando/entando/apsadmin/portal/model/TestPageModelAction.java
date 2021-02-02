@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestPageModelAction extends AbstractTestPageModelAction {
+class TestPageModelAction extends AbstractTestPageModelAction {
 
     @Test
     public void testEditPageModels() throws Throwable {

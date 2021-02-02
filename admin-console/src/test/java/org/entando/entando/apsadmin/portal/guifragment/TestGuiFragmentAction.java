@@ -25,7 +25,7 @@ import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import org.junit.jupiter.api.Test;
 
-public class TestGuiFragmentAction extends ApsAdminBaseTestCase {
+class TestGuiFragmentAction extends ApsAdminBaseTestCase {
 
     @Test
     public void testList() throws Throwable {

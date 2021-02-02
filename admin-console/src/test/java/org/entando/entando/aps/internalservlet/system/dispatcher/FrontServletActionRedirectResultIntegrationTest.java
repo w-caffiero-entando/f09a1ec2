@@ -35,7 +35,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 /**
  * @author E.Santoboni
  */
-public class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBaseTestCase {
+class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBaseTestCase {
 
     private ConfigInterface configManager;
 

@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
+class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 
 	@Test
 	public void testInitConfigNavigator_1() throws Throwable {

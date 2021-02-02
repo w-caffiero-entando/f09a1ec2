@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestCustomTokenInterceptor extends ApsAdminBaseTestCase {
+class TestCustomTokenInterceptor extends ApsAdminBaseTestCase {
 
     @Test
 	public void testExecuteValidation_1() throws Exception {

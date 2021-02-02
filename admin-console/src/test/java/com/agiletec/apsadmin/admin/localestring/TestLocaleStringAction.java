@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Mezzano
  */
-public class TestLocaleStringAction extends ApsAdminBaseTestCase {
+class TestLocaleStringAction extends ApsAdminBaseTestCase {
 	
 	@Test
 	public void testNew() throws Throwable {

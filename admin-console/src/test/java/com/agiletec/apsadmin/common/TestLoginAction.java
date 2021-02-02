@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * @version 1.0
  * @author E.Santoboni
  */
-public class TestLoginAction extends ApsAdminBaseTestCase {
+class TestLoginAction extends ApsAdminBaseTestCase {
 	
     @BeforeEach
 	protected void init() throws Exception {

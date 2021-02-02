@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @version 1.0
  * @author E.Mezzano
  */
-public class TestLangAction extends ApsAdminBaseTestCase {
+class TestLangAction extends ApsAdminBaseTestCase {
 
     public void testAddNewLang() throws Throwable {
         String langCode = "fr";

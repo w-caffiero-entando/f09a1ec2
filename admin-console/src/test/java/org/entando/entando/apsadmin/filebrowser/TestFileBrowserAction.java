@@ -33,7 +33,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestFileBrowserAction extends ApsAdminBaseTestCase {
+class TestFileBrowserAction extends ApsAdminBaseTestCase {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(TestFileBrowserAction.class);
 

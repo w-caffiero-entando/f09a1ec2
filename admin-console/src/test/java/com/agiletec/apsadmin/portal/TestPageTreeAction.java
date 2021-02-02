@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestPageTreeAction extends ApsAdminBaseTestCase {
+class TestPageTreeAction extends ApsAdminBaseTestCase {
 
     @Test
 	public void testViewTree_1() throws Throwable {

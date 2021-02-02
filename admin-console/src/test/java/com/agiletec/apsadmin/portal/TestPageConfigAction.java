@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestPageConfigAction extends ApsAdminBaseTestCase {
+class TestPageConfigAction extends ApsAdminBaseTestCase {
 
     @Test
 	public void testConfigPage() throws Throwable {

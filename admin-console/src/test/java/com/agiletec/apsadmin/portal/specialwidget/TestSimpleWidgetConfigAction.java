@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * @version 1.0
  * @author E.Santoboni
  */
-public class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
+class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
 
 	@Test
 	public void testInitConfigSimpleParameter_1() throws Throwable {

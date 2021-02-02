@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
+class TestCurrentUserProfileAction extends ApsAdminBaseTestCase {
     
 	@Test
 	public void testEditProfile_1() throws Throwable {

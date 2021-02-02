@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
+class TestUserAuthorizationAction extends ApsAdminBaseTestCase {
 	
 	@Test
     public void testFailureEdit() throws Throwable {

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestBaseAdminAction extends ApsAdminBaseTestCase {
+class TestBaseAdminAction extends ApsAdminBaseTestCase {
 
     private ConfigInterface configManager;
     private String oldConfigParam;

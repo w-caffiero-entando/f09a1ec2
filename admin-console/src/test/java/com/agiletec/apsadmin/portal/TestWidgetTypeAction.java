@@ -49,7 +49,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestWidgetTypeAction extends ApsAdminBaseTestCase {
+class TestWidgetTypeAction extends ApsAdminBaseTestCase {
 
     @Test
 	public void testFailureUpdateTitles() throws Throwable {

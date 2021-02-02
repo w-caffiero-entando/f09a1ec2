@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
+class TestDataObjectModelFinderAction extends ApsAdminBaseTestCase {
 
     @Test
     public void testList() throws Throwable {

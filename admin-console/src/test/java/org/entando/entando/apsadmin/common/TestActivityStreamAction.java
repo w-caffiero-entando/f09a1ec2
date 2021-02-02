@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestActivityStreamAction extends ApsAdminBaseTestCase {
+class TestActivityStreamAction extends ApsAdminBaseTestCase {
 
     /*
 	@Test

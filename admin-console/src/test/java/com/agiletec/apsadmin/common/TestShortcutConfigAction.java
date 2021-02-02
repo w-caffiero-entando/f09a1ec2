@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestShortcutConfigAction extends ApsAdminBaseTestCase {
+class TestShortcutConfigAction extends ApsAdminBaseTestCase {
     
 	@Test
 	public void testInit() throws Throwable {

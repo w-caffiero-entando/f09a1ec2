@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestSystemParamsUtils extends ApsAdminBaseTestCase {
+class TestSystemParamsUtils extends ApsAdminBaseTestCase {
 	
 	@Test
 	public void testUpdateXmlItemParams() throws Throwable {

@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * @version 1.0
  * @author E.Santoboni, E.Mezzano
  */
-public class TestUserAction extends ApsAdminBaseTestCase {
+class TestUserAction extends ApsAdminBaseTestCase {
 
     @Test
 	public void testNew() throws Throwable {

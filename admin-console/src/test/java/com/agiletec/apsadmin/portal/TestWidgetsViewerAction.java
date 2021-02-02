@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
+class TestWidgetsViewerAction extends ApsAdminBaseTestCase {
 
     @Test
 	public void testViewWidgets() throws Throwable {

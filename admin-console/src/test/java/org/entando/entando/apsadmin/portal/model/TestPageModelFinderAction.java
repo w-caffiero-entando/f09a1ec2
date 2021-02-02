@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author E.Santoboni
  */
-public class TestPageModelFinderAction extends AbstractTestPageModelAction {
+class TestPageModelFinderAction extends AbstractTestPageModelAction {
 	
 	@Test
     public void testGetPageModels_1() throws Throwable {

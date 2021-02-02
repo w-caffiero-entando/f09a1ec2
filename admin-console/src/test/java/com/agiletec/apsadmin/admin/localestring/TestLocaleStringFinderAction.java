@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * @version 1.0
  * @author E.Mezzano
  */
-public class TestLocaleStringFinderAction extends ApsAdminBaseTestCase {
+class TestLocaleStringFinderAction extends ApsAdminBaseTestCase {
 	
 	@Test
 	public void testList() throws Throwable {

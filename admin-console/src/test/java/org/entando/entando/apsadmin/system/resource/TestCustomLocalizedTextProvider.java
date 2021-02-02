@@ -21,7 +21,7 @@ import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import org.junit.jupiter.api.Test;
 
-public class TestCustomLocalizedTextProvider extends ApsAdminBaseTestCase {
+class TestCustomLocalizedTextProvider extends ApsAdminBaseTestCase {
 
     @Test
     public void testExtractGlobalLabels_1() throws Throwable {

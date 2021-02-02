@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * @version 1.0
  * @author E.Santoboni
  */
-public class TestBaseCommonAction extends ApsAdminBaseTestCase {
+class TestBaseCommonAction extends ApsAdminBaseTestCase {
 
     @Test
 	public void testGoChangePasswordPage() throws Throwable {
