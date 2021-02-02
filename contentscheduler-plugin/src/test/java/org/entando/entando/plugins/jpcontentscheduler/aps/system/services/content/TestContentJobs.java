@@ -21,7 +21,9 @@
  */
 package org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content;
 
-import org.entando.entando.plugins.jpcontentscheduler.aps.ApsPluginBaseTestCase;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import com.agiletec.aps.BaseTestCase;
 import org.quartz.JobExecutionException;
 import org.springframework.context.ApplicationContext;
 
@@ -31,17 +33,18 @@ import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.IContentModelManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author E.Santoboni
  */
-public class TestContentJobs extends ApsPluginBaseTestCase {
+class TestContentJobs extends BaseTestCase {
 
 	private ContentJobs _contentJobs;
-
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+    
+    @BeforeEach
+	protected void init() throws Exception {
 		ApplicationContext apx = super.getApplicationContext();
 		IContentSchedulerManager contentSchedulerManager = (IContentSchedulerManager) apx
 				.getBean("jpcontentschedulerContentSchedulerManager");
@@ -58,7 +61,8 @@ public class TestContentJobs extends ApsPluginBaseTestCase {
 		this._contentJobs.setPageManager(pageManager);
 	}
 
-	public void testExecuteJob() {
+    @Test
+	void testExecuteJob() {
 		try {
 			this._contentJobs.executeJob(super.getApplicationContext());
 		} catch (JobExecutionException ex) {
