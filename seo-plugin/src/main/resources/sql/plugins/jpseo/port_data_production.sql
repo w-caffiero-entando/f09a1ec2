@@ -1,4 +1,4 @@
-INSERT INTO widgetcatalog ( code, titles, parameters, plugincode, locked, readonlypagewidgetconfig, widgetcategory) VALUES ( 'jpseo_content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO widgetcatalog ( code, titles, parameters, plugincode, locked, readonlypagewidgetconfig, widgetcategory, icon) VALUES ( 'jpseo_content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Content SEO Meta-description</property>
 <property key="it">Content SEO Meta-description</property>
@@ -6,7 +6,7 @@ INSERT INTO widgetcatalog ( code, titles, parameters, plugincode, locked, readon
 	<parameter name="contentId">Content ID</parameter>
 	<parameter name="modelId">Content Model ID</parameter>
 	<action name="viewerConfig"/>
-</config>', 'jpseo', 1 , 0, 'seo');
+</config>', 'jpseo', 1 , 0, 'seo', 'asset:en-jpseo-content-viewer');
 
 INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, locked) VALUES ('jpseo_content_viewer', 'jpseo_content_viewer', 'jpseo', NULL, '<#assign jacms=JspTaglibs["/jacms-aps-core"]>
 <#assign c=JspTaglibs["http://java.sun.com/jsp/jstl/core"]>
