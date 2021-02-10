@@ -78,9 +78,7 @@ public class SeoPageExtraConfigDOM extends PageExtraConfigDOM {
         Element keywordsElement = root.getChild(KEYWORDS_ELEMENT_NAME);
         this.extractMultilangProperty(keywordsElement, seoPage.getKeywords(), "keywords");
         Element friendlyCodeElement = root.getChild(FRIENDLY_CODE_ELEMENT_NAME);
-        if (null != friendlyCodeElement) {
-            seoPage.setFriendlyCode(friendlyCodeElement.getText());
-        }
+        this.extractMultilangProperty(friendlyCodeElement, seoPage.getFriendlyCodes(), "friendlyCode");
         Element xmlConfigElement = root.getChild(XML_CONFIG_ELEMENT_NAME);
         if (null != xmlConfigElement) {
             //Used to guarantee porting with previous versions of the plugin
@@ -241,12 +239,9 @@ public class SeoPageExtraConfigDOM extends PageExtraConfigDOM {
         this.fillMultilangProperty(descriptions, doc.getRootElement(), DESCRIPTIONS_ELEMENT_NAME);
         ApsProperties keywords = seoPageMetadata.getKeywords();
         this.fillMultilangProperty(keywords, doc.getRootElement(), KEYWORDS_ELEMENT_NAME);
+        ApsProperties friendlyCode = seoPageMetadata.getKeywords();
+        this.fillMultilangProperty(friendlyCode, doc.getRootElement(), FRIENDLY_CODE_ELEMENT_NAME);
 
-        if (null != seoPageMetadata.getFriendlyCode() && seoPageMetadata.getFriendlyCode().trim().length() > 0) {
-            Element friendlyCodeElement = new Element(FRIENDLY_CODE_ELEMENT_NAME);
-            friendlyCodeElement.setText(seoPageMetadata.getFriendlyCode().trim());
-            doc.getRootElement().addContent(friendlyCodeElement);
-        }
         if (null != seoPageMetadata.getComplexParameters()) {
             Element complexConfigElement = new Element(COMPLEX_PARAMS_ELEMENT_NAME);
             this.addComplexParameters(complexConfigElement, seoPageMetadata.getComplexParameters());

@@ -29,14 +29,12 @@ import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.apsadmin.portal.PageAction;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.opensymphony.xwork2.Action;
-
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.struts2.ServletActionContext;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -44,21 +42,23 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.metatag.Metatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageExtraConfigDOM;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 @Aspect
 public class PageActionAspect {
 
     private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(PageActionAspect.class);
 
-    public static final String PARAM_FRIENDLY_CODE = "friendlyCode";
+    public static final String PARAM_FRIENDLY_CODES = "friendlyCode";
+    public static final String PARAM_FRIENDLY_CODES_PREFIX = "friendlyCode_lang_";
+    public static final String PARAM_FRIENDLY_CODES_USE_DEFAULT_PREFIX = "friendlyCode_useDefaultLang_";
     public static final String PARAM_METATAGS = "pageMetatags";
     public static final String PARAM_METATAG_ATTRIBUTE_NAMES = "pageMetatagAttributeName";
     public static final String PARAM_DESCRIPTION_PREFIX = "description_lang_";
@@ -101,8 +101,17 @@ public class PageActionAspect {
         IPage page = action.getPage(pageCode);
         if (null != page && page.getMetadata() instanceof SeoPageMetadata) {
             SeoPageMetadata pageMetadata = (SeoPageMetadata) page.getMetadata();
-            request.setAttribute(PARAM_FRIENDLY_CODE, pageMetadata.getFriendlyCode());
             request.setAttribute(PARAM_USE_EXTRA_DESCRIPTIONS, pageMetadata.isUseExtraDescriptions());
+            ApsProperties friendlyCodes = pageMetadata.getFriendlyCodes();
+            if (null != friendlyCodes) {
+                Iterator<Object> iter = friendlyCodes.keySet().iterator();
+                while (iter.hasNext()) {
+                    String key = (String) iter.next();
+                    PageMetatag metatag = (PageMetatag) friendlyCodes.get(key);
+                    request.setAttribute(PARAM_FRIENDLY_CODES_PREFIX + key, metatag.getValue());
+                    request.setAttribute(PARAM_FRIENDLY_CODES_USE_DEFAULT_PREFIX + key, metatag.isUseDefaultLangValue());
+                }
+            }
             ApsProperties props = pageMetadata.getDescriptions();
             if (null != props) {
                 Iterator<Object> iter = props.keySet().iterator();
@@ -144,31 +153,38 @@ public class PageActionAspect {
 
     private void checkFriendlyCode(PageAction action) {
         HttpServletRequest request = ServletActionContext.getRequest();
-        String code = request.getParameter(PARAM_FRIENDLY_CODE);
-        if (null != code && code.trim().length() > 100) {
-            String[] args = {"100"};
-            action.addFieldError(PARAM_FRIENDLY_CODE, action.getText("jpseo.error.friendlyCode.stringlength", args));
-        }
-        if (null != code && code.trim().length() > 0) {
-            Pattern pattern = Pattern.compile("([a-z0-9_])+");
-            Matcher matcher = pattern.matcher(code);
-            if (!matcher.matches()) {
-                action.addFieldError(PARAM_FRIENDLY_CODE, action.getText("jpseo.error.friendlyCode.wrongCharacters"));
+        Iterator<Lang> langsIter = this.getLangManager().getLangs().iterator();
+        while (langsIter.hasNext()) {
+            Lang lang = (Lang) langsIter.next();
+            String code = request.getParameter(PARAM_FRIENDLY_CODES_PREFIX + lang.getCode());
+            if (null != code && code.trim().length() > 100) {
+                String[] args = {"100"};
+                action.addFieldError(PARAM_FRIENDLY_CODES,
+                        action.getText("jpseo.error.friendlyCode.stringlength", args));
             }
-        }
-        if (null != code && code.trim().length() > 0) {
-            FriendlyCodeVO vo = this.getSeoMappingManager().getReference(code);
-            if (null != vo && (vo.getPageCode() == null || !vo.getPageCode().equals(action.getPageCode()))) {
-                action.addFieldError(PARAM_FRIENDLY_CODE, action.getText("jpseo.error.page.duplicateFriendlyCode", new String[]{code}));
-            } else {
-                String pageCode = action.getPageCode();
-                String draftPageReference = this.seoMappingManager.getDraftPageReference(code);
-                if (null != draftPageReference && !pageCode.equals(draftPageReference)) {
-                    action.addFieldError(PARAM_FRIENDLY_CODE, action.getText("jpseo.error.page.duplicateFriendlyCode", new String[]{code}));
+            if (null != code && code.trim().length() > 0) {
+                Pattern pattern = Pattern.compile("([a-z0-9_])+");
+                Matcher matcher = pattern.matcher(code);
+                if (!matcher.matches()) {
+                    action.addFieldError(PARAM_FRIENDLY_CODES,
+                            action.getText("jpseo.error.friendlyCode.wrongCharacters"));
+                }
+            }
+            if (null != code && code.trim().length() > 0) {
+                FriendlyCodeVO vo = this.getSeoMappingManager().getReference(code);
+                if (null != vo && (vo.getPageCode() == null || !vo.getPageCode().equals(action.getPageCode()))) {
+                    action.addFieldError(PARAM_FRIENDLY_CODES,
+                            action.getText("jpseo.error.page.duplicateFriendlyCode", new String[]{code}));
+                } else {
+                    String pageCode = action.getPageCode();
+                    String draftPageReference = this.seoMappingManager.getDraftPageReference(code);
+                    if (null != draftPageReference && !pageCode.equals(draftPageReference)) {
+                        action.addFieldError(PARAM_FRIENDLY_CODES,
+                                action.getText("jpseo.error.page.duplicateFriendlyCode", new String[]{code}));
+                    }
                 }
             }
         }
-        request.setAttribute(PARAM_FRIENDLY_CODE, code);
     }
 
     @Around("execution(* com.agiletec.apsadmin.portal.PageAction.saveAndConfigure())")
@@ -209,7 +225,7 @@ public class PageActionAspect {
         String pagecode = action.getPageCode();
         ApsProperties descriptions = new ApsProperties();
         ApsProperties langKeywordsKey = new ApsProperties();
-        String friendlyCode = request.getParameter(PARAM_FRIENDLY_CODE);
+        ApsProperties friendlyCodes = new ApsProperties();
         Iterator<Lang> langsIter = this.getLangManager().getLangs().iterator();
         while (langsIter.hasNext()) {
             Lang lang = (Lang) langsIter.next();
@@ -231,6 +247,15 @@ public class PageActionAspect {
                 meta.setUseDefaultLangValue(!lang.isDefault() && Boolean.parseBoolean(useDefaultLang));
                 langKeywordsKey.put(lang.getCode(), meta);
             }
+            String friendlyCodesKey = PARAM_FRIENDLY_CODES_PREFIX + lang.getCode();
+            String friendlyCode = request.getParameter(friendlyCodesKey);
+            if (null != friendlyCode) {
+                PageMetatag meta = new PageMetatag(lang.getCode(), "friendlyCode", friendlyCode.trim());
+                String useDefaultLangKey = PARAM_FRIENDLY_CODES_USE_DEFAULT_PREFIX + lang.getCode();
+                String useDefaultLang = request.getParameter(useDefaultLangKey);
+                meta.setUseDefaultLangValue(!lang.isDefault() && Boolean.parseBoolean(useDefaultLang));
+                friendlyCodes.put(lang.getCode(), meta);
+            }
         }
         IPage page = this.getPageManager().getDraftPage(pagecode);
         if (null != page) {
@@ -241,7 +266,7 @@ public class PageActionAspect {
                 pageMetadata = new SeoPageMetadata(page.getMetadata());
             }
             seoPage = page;
-            pageMetadata.setFriendlyCode(friendlyCode);
+            pageMetadata.setFriendlyCodes(friendlyCodes);
             pageMetadata.setDescriptions(descriptions);
             pageMetadata.setKeywords(langKeywordsKey);
             pageMetadata.setComplexParameters(SeoPageActionUtils.extractSeoParameters(request));

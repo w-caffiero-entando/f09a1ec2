@@ -65,6 +65,9 @@ public class SeoMetatagTag extends ExtendedTagSupport {
             } else if (CurrentPageTag.KEYWORDS_INFO.equals(this.getKey())) {
                 ApsProperties keywords = ((SeoPageMetadata) pageMetadata).getKeywords();
                 this.setSeoValue(keywords, currentLang);
+            } else if (CurrentPageTag.FRIENDLY_CODE_INFO.equals(this.getKey())) {
+                ApsProperties friendlyCodes = ((SeoPageMetadata) pageMetadata).getFriendlyCodes();
+                this.setSeoValue(friendlyCodes, currentLang);
             } else {
                 Map<String, Map<String, PageMetatag>> complexParameters = ((SeoPageMetadata) pageMetadata).getComplexParameters();
                 if (null != complexParameters) {

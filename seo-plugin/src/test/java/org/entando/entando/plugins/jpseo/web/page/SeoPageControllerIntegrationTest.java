@@ -13,6 +13,12 @@
  */
 package org.entando.entando.plugins.jpseo.web.page;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,6 +47,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -85,10 +92,10 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seo", is(true)))
                     .andExpect(jsonPath("$.payload.titles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
-                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("test_page_1")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.description", is("test")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.keywords", is("keyword1, keyword 2")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is("test_page_1_en")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags.size()", is(3)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].key", is("copyright")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].type", is("name")))
@@ -107,6 +114,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_1_it")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags.size()", is(3)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].key", is("copyright")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].type", is("name")))
@@ -152,7 +160,6 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seo", is(false)))
                     .andExpect(jsonPath("$.payload.titles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
-                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
 
         } finally {
@@ -182,7 +189,6 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seo", is(false)))
                     .andExpect(jsonPath("$.payload.titles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
-                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
         } finally {
             PageDto page = this.pageService.getPage(SEO_TEST_1, IPageService.STATUS_DRAFT);
@@ -210,7 +216,6 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seo", is(false)))
                     .andExpect(jsonPath("$.payload.titles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
-                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
         } finally {
             this.pageManager.deletePage(SEO_TEST_1);
@@ -225,7 +230,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
             result1.andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2)))
-                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("test_page_2")));
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is("test_page_2_en")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_2_it")));
             
             ResultActions result2 = this.executePostSeoPage("3_POST_invalid.json", accessToken, status().isConflict());
             Assertions.assertNull(this.pageManager.getDraftPage(SEO_TEST_3));
@@ -256,10 +262,10 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seo", is(true)))
                     .andExpect(jsonPath("$.payload.titles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
-                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("test_page_2")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.description", is("test")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.keywords", is("keyword1, keyword 2")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is("test_page_2_en")))
                     .andExpect(
                             jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
@@ -277,6 +283,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].value", is("test page")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].useDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_2_it")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags.size()", is(3)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].key", is("copyright")))
@@ -292,11 +299,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value", is("metatag di prova")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].useDefaultLang", is(false)));
 
-            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
-            FriendlyCodeVO vo = this.seoMappingManager.getReference("test_page_2");
-            Assertions.assertNull(vo);
-            String reference = this.seoMappingManager.getDraftPageReference("test_page_2");
-            Assertions.assertEquals(SEO_TEST_2, reference);
+            assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
+            FriendlyCodeVO vo = this.seoMappingManager.getReference("test_page_2_it");
+            assertNull(vo);
+            String reference = this.seoMappingManager.getDraftPageReference("test_page_2_it");
+            assertEquals(SEO_TEST_2, reference);
 
             final ResultActions resultPut = this
                     .executePutSeoPage("2_PUT_valid.json", accessToken, status().isOk());
@@ -315,9 +322,9 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seo", is(true)))
                     .andExpect(jsonPath("$.payload.titles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
-                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("test_page_2_friendly_url")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.description", is("test page")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is("test_page_2_friendly_url_en")))
                     .andExpect(
                             jsonPath("$.payload.seoData.seoDataByLang.en.keywords",
                                     is("keyword number 1, keyword number 2")))
@@ -336,6 +343,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                             jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_2_friendly_url_it")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].key", is("author")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].type", is("name")))
@@ -348,11 +356,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     is("descrizione meta test")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang", is(false)));
             
-            Assertions.assertNull(this.seoMappingManager.getReference("test_page_2_friendly_url"));
-            Assertions.assertNull(this.seoMappingManager.getDraftPageReference("test_page_2"));
-            reference = this.seoMappingManager.getDraftPageReference("test_page_2_friendly_url");
-            Assertions.assertEquals(SEO_TEST_2, reference);
-            
+            assertNull(this.seoMappingManager.getReference("test_page_2_friendly_url_it"));
+            assertNull(this.seoMappingManager.getDraftPageReference("test_page_2_it"));
+            reference = this.seoMappingManager.getDraftPageReference("test_page_2_friendly_url_it");
+            assertEquals(SEO_TEST_2, reference);
+
             final ResultActions resultPutMetaDefaultLangTrue = this
                     .executePutSeoPage("2_PUT_valid_meta_default_lang_true.json", accessToken, status().isOk());
             this.waitNotifyingThread();
@@ -370,9 +378,10 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seo", is(true)))
                     .andExpect(jsonPath("$.payload.titles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
-                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("test_page_2_friendly_url")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.description", is("test page")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is(
+                            "test_page_2_friendly_url_en")))
                     .andExpect(
                             jsonPath("$.payload.seoData.seoDataByLang.en.keywords",
                                     is("keyword number 1, keyword number 2")))
@@ -389,6 +398,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                             jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_2_friendly_url_it")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].key", is("author")))
@@ -417,9 +427,9 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seo", is(true)))
                     .andExpect(jsonPath("$.payload.titles.size()", is(2)))
                     .andExpect(jsonPath("$.payload.fullTitles.size()", is(2)))
-                    .andExpect(jsonPath("$.payload.seoData.friendlyCode", is("test_page_2_friendly_url")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.description", is("test page")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is("test_page_2_friendly_url_en")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.keywords",
                             is("keyword number 1, keyword number 2")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags.size()", is(0)))
@@ -428,6 +438,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_2_friendly_url_it")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags.size()", is(0)));
             
             final ResultActions resultCheckFriendlyCode1 = this.executePostSeoPage("2_POST_valid_friendly_code.json", accessToken, status().isOk());
@@ -435,17 +446,16 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2_FC)));
             this.waitNotifyingThread();
             
-            Assertions.assertNull(this.seoMappingManager.getReference("test_page_2_fc"));
-            reference = this.seoMappingManager.getDraftPageReference("test_page_2_fc");
-            Assertions.assertEquals(SEO_TEST_2_FC, reference);
-            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_2_FC, IPageService.STATUS_DRAFT));
-            
+            assertNull(this.seoMappingManager.getReference("test_page_2_fc_it"));
+            reference = this.seoMappingManager.getDraftPageReference("test_page_2_fc_it");
+            assertEquals(SEO_TEST_2_FC, reference);
+            assertNotNull(this.pageService.getPage(SEO_TEST_2_FC, IPageService.STATUS_DRAFT));
+
             this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
-            
+
             this.pageManager.setPageOnline(SEO_TEST_2_FC);
             this.waitNotifyingThread();
             this.executePutSeoPage("2_PUT_invalid_friendly_code.json", accessToken, status().isConflict());
-            
         } finally {
             IPage page1 = this.pageManager.getDraftPage(SEO_TEST_2);
             IPage page2 = this.pageManager.getDraftPage(SEO_TEST_2_FC);

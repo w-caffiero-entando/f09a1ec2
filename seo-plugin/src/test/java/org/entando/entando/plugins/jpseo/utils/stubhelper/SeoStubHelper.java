@@ -19,6 +19,7 @@ public class SeoStubHelper {
     public static final String SEO_DATA_DESCRIPTION = "wonderful image";
     public static final boolean SEO_DATA_INHERIT_DESCR_FROM_DEFAULT_LANG = true;
     public static final boolean SEO_DATA_INHERIT_KEYWORDS_FROM_DEFAULT_LANG = true;
+    public static final boolean SEO_DATA_INHERIT_FRIENDLY_CODE_FROM_DEFAULT_LANG = true;
     public static final String SEO_DATA_KEYWORDS = "entando";
     public static final String SEO_DATA_LANG = "ITA";
 
@@ -36,7 +37,6 @@ public class SeoStubHelper {
     public static SeoData getSeoDataStub() {
 
         SeoData seoData = new SeoData();
-        seoData.setFriendlyCode(FRIENDLY_CODE);
         seoData.setUseExtraTitles(EXTRA_TITLES);
         seoData.setUseExtraDescriptions(USE_EXTRA_DESCRIPTIONS);
         seoData.setSeoDataByLang(getSeoDataByLangStub());
@@ -54,6 +54,7 @@ public class SeoStubHelper {
         seoDataByLangIta.setDescription(SEO_DATA_DESCRIPTION);
         seoDataByLangIta.setInheritDescriptionFromDefaultLang(SEO_DATA_INHERIT_DESCR_FROM_DEFAULT_LANG);
         seoDataByLangIta.setInheritKeywordsFromDefaultLang(SEO_DATA_INHERIT_KEYWORDS_FROM_DEFAULT_LANG);
+        seoDataByLangIta.setInheritFriendlyCodeFromDefaultLang(SEO_DATA_INHERIT_FRIENDLY_CODE_FROM_DEFAULT_LANG);
         seoDataByLangIta.setKeywords(SEO_DATA_KEYWORDS);
         seoDataByLangIta.setMetaTags(getSeoMetaTagListStub());
 

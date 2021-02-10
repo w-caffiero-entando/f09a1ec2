@@ -21,7 +21,6 @@
  */
 package org.entando.entando.plugins.jpseo.aps.system.services.page;
 
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.page.IPage;
@@ -38,6 +37,9 @@ import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.page.PageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoData;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoDataByLang;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoMetaTag;
@@ -45,8 +47,6 @@ import org.entando.entando.plugins.jpseo.web.page.model.SeoPageRequest;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.page.model.PagePositionRequest;
 import org.entando.entando.web.page.model.PageRequest;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -120,21 +120,23 @@ public class SeoPageService extends PageService {
         seoPageDto.setOwnerGroup(pageDto.getOwnerGroup());
         seoPageDto.setOnlineInstance(pageDto.isOnlineInstance());
         SeoData seoData = new SeoData();
-        seoData.setFriendlyCode(seoMetadata.getFriendlyCode());
         seoData.setUseExtraDescriptions(seoMetadata.isUseExtraDescriptions());
         seoData.setUseExtraTitles(seoMetadata.isUseExtraTitles());
 
         Map<String, SeoDataByLang> seoDataByLangMap = new HashMap<>();
         ApsProperties descriptions = seoMetadata.getDescriptions();
         ApsProperties keywords = seoMetadata.getKeywords();
+        ApsProperties friendlyCodes = seoMetadata.getFriendlyCodes();
 
         langManager.getLangs()
                 .forEach(e -> {
                     String lang = e.getCode();
                     boolean inheritDescriptionFromDefaultLang = false;
                     boolean inheritKeywordsFromDefaultLang = false;
+                    boolean inheritFriendlyCodeFromDefaultLang = false;
                     String seoMetadataDescription = "";
                     String seoMetadataKeyword = "";
+                    String seoMetadataFriendlyCode = "";
                     if (null != descriptions) {
                         PageMetatag descriptionMetaTag = (PageMetatag) descriptions.get(lang);
                         if (null != descriptionMetaTag) {
@@ -149,13 +151,22 @@ public class SeoPageService extends PageService {
                             inheritKeywordsFromDefaultLang = keywordsMetaTag.isUseDefaultLangValue();
                         }
                     }
+                    if (null != friendlyCodes) {
+                        PageMetatag friendlyCodeMetaTag = (PageMetatag) friendlyCodes.get(lang);
+                        if (null != friendlyCodeMetaTag) {
+                            seoMetadataFriendlyCode = friendlyCodeMetaTag.getValue();
+                            inheritFriendlyCodeFromDefaultLang = friendlyCodeMetaTag.isUseDefaultLangValue();
+                        }
+                    }
 
                     SeoDataByLang seoDataByLang = new SeoDataByLang(
                             seoMetadataDescription,
                             seoMetadataKeyword,
+                            seoMetadataFriendlyCode,
                             pageMetaTagList(lang, seoMetadata.getComplexParameters()),
                             inheritDescriptionFromDefaultLang,
-                            inheritKeywordsFromDefaultLang);
+                            inheritKeywordsFromDefaultLang,
+                            inheritFriendlyCodeFromDefaultLang);
                     seoDataByLangMap.put(lang, seoDataByLang);
                 });
         seoData.setSeoDataByLang(seoDataByLangMap);
@@ -246,11 +257,6 @@ public class SeoPageService extends PageService {
         seoPageMetadata.setModel(getPageModelManager().getPageModel(pageRequest.getPageModel()));
         seoPageMetadata.setGroup(pageRequest.getOwnerGroup());
         final Map<String, String> titles = pageRequest.getTitles();
-        if (null != seoData.getFriendlyCode()) {
-            seoPageMetadata.setFriendlyCode(seoData.getFriendlyCode());
-        } else {
-            seoPageMetadata.setFriendlyCode("");
-        }
         if (null != seoData.getUseExtraDescriptions()) {
             seoPageMetadata.setUseExtraDescriptions(seoData.getUseExtraDescriptions());
         }
@@ -265,6 +271,7 @@ public class SeoPageService extends PageService {
         seoPageMetadata.setExtraGroups(extraGroups);
         ApsProperties keywordsAps = new ApsProperties();
         ApsProperties descriptionsAps = new ApsProperties();
+        ApsProperties friendlyCodesAps = new ApsProperties();
         ApsProperties titlesAps = new ApsProperties();
 
         Map<String, Map<String, PageMetatag>> langMetaTags = new HashMap();
@@ -276,10 +283,12 @@ public class SeoPageService extends PageService {
             seoData.getSeoDataByLang().forEach((lang, seoDataByLang) -> {
                 Boolean inheritKeywords = false;
                 Boolean inheritDescription = false;
+                Boolean inheritFriendlyCode = false;
                 if (systemLangsString.contains(lang)) {
                     if (!lang.equals(defaultLang)) {
                         inheritKeywords = seoDataByLang.isInheritKeywordsFromDefaultLang();
                         inheritDescription = seoDataByLang.isInheritDescriptionFromDefaultLang();
+                        inheritFriendlyCode = seoDataByLang.isInheritFriendlyCodeFromDefaultLang();
                     }
                     if (null != seoDataByLang.getKeywords()) {
                         PageMetatag keywordsPageMetaTag = new PageMetatag(lang, "keywords",
@@ -292,6 +301,12 @@ public class SeoPageService extends PageService {
                                 seoDataByLang.getDescription().trim(), inheritDescription);
                         descriptionsAps.put(lang, descriptionPageMetaTag);
                     }
+                    if (null != seoDataByLang.getFriendlyCode()) {
+                        PageMetatag friendlyCodePageMetaTag = new PageMetatag(lang, "friendlyCode",
+                                seoDataByLang.getFriendlyCode().trim(),
+                                inheritFriendlyCode);
+                        friendlyCodesAps.put(lang, friendlyCodePageMetaTag);
+                    }
                     if (null != seoDataByLang.getMetaTags()) {
                         langMetaTags.put(lang, mapLangMetaTags(seoDataByLang.getMetaTags()));
                     }
@@ -303,6 +318,7 @@ public class SeoPageService extends PageService {
 
         seoPageMetadata.setKeywords(keywordsAps);
         seoPageMetadata.setDescriptions(descriptionsAps);
+        seoPageMetadata.setFriendlyCodes(friendlyCodesAps);
 
         titles.forEach((key, value) ->
         {

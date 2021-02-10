@@ -9,11 +9,11 @@
     "seo": true,
     "joinGroups":["administrators"],
     "seoData": {
-        "friendlyCode": "test_page_1",
         "seoDataByLang": {
             "en": {
                 "description": "test",
                 "keywords": "keyword1, keyword 2",
+                "friendlyCode": "test_page_1_en",
                 "metaTags": [
                     {
                         "key": "copyright",
@@ -40,6 +40,7 @@
             "it": {
                 "description": "",
                 "keywords": "",
+                "friendlyCode": "test_page_1_it",
                 "metaTags": [
                     {
                         "key": "copyright",

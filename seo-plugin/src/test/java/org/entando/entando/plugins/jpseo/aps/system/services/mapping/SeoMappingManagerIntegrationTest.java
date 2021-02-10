@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.Set;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
+import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -193,7 +194,8 @@ class SeoMappingManagerIntegrationTest extends BaseTestCase {
             assertEquals(code2, friendlyCodeVO2.getPageCode());
             
             IPage page = this.pageManager.getOnlinePage(code1);
-            ((SeoPageMetadata) page.getMetadata()).setFriendlyCode("friendly2_bis");
+            PageMetatag pageMetatag = new PageMetatag("it", "it", "friendly2_bis");
+            ((SeoPageMetadata) page.getMetadata()).getFriendlyCodes().put("it", pageMetatag);
             this.pageManager.updatePage(page);
             this.pageManager.setPageOnline(code1);
             synchronized (this) {
@@ -234,7 +236,8 @@ class SeoMappingManagerIntegrationTest extends BaseTestCase {
 			String charset, boolean useExtraTitles, Set<String> extraGroups, Date updatedAt, String friendlyCode) {
         SeoPageMetadata metadata = new SeoPageMetadata();
 		metadata.setModel(pageModel);
-        metadata.setFriendlyCode(friendlyCode);
+        PageMetatag pageMetatag = new PageMetatag("it", "it", friendlyCode);
+        metadata.getFriendlyCodes().put("it", pageMetatag);
 		metadata.setShowable(showable);
 		metadata.setTitle("it", defaultTitle);
 		if (extraGroups != null) {

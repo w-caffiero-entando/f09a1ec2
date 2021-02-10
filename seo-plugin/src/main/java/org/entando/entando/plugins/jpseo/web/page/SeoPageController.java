@@ -1,14 +1,18 @@
 package org.entando.entando.plugins.jpseo.web.page;
 
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.PageAuthorizationService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageDto;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageService;
+import org.entando.entando.plugins.jpseo.web.page.model.SeoDataByLang;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoPageRequest;
 import org.entando.entando.plugins.jpseo.web.page.validator.SeoPageValidator;
 import org.entando.entando.web.common.exceptions.ResourcePermissionsException;
@@ -17,8 +21,6 @@ import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.RestResponse;
 import org.entando.entando.web.common.model.SimpleRestResponse;
 import org.entando.entando.web.page.model.PagePositionRequest;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -91,13 +93,14 @@ public class SeoPageController implements ISeoPageController {
             throw new ValidationGenericException(bindingResult);
         }
         getSeoPageValidator().validate(pageRequest, bindingResult);
-        if ((null!=pageRequest.getSeoData()) && (null!=pageRequest.getSeoData().getFriendlyCode())) {
-            String friendlyCode = pageRequest.getSeoData().getFriendlyCode();
-            if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), friendlyCode)) {
-                DataBinder binder = new DataBinder(friendlyCode);
-                bindingResult = binder.getBindingResult();
-                bindingResult.reject("10",  "Invalid friendly code");
-                throw new ValidationConflictException(bindingResult);
+        if ((null!=pageRequest.getSeoData()) && (null!=pageRequest.getSeoData().getSeoDataByLang())) {
+            for (Entry<String, SeoDataByLang> entry : pageRequest.getSeoData().getSeoDataByLang().entrySet()) {
+                if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), entry.getValue().getFriendlyCode())) {
+                    DataBinder binder = new DataBinder(entry.getValue());
+                    bindingResult = binder.getBindingResult();
+                    bindingResult.reject("10",  "Invalid friendly code");
+                    throw new ValidationConflictException(bindingResult);
+                }
             }
         }
         if (bindingResult.hasErrors()) {
@@ -123,13 +126,14 @@ public class SeoPageController implements ISeoPageController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        if ((null!=pageRequest.getSeoData()) && (null!=pageRequest.getSeoData().getFriendlyCode())) {
-            String friendlyCode = pageRequest.getSeoData().getFriendlyCode();
-            if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), friendlyCode)) {
-                DataBinder binder = new DataBinder(friendlyCode);
-                bindingResult = binder.getBindingResult();
-                bindingResult.reject("10",  "Invalid friendly code");
-                throw new ValidationConflictException(bindingResult);
+        if ((null!=pageRequest.getSeoData()) && (null!=pageRequest.getSeoData().getSeoDataByLang())) {
+            for (Entry<String, SeoDataByLang> entry : pageRequest.getSeoData().getSeoDataByLang().entrySet()) {
+                if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), entry.getValue().getFriendlyCode())) {
+                    DataBinder binder = new DataBinder(entry.getValue());
+                    bindingResult = binder.getBindingResult();
+                    bindingResult.reject("10",  "Invalid friendly code");
+                    throw new ValidationConflictException(bindingResult);
+                }
             }
         }
         PagePositionRequest pagePositionRequest = new PagePositionRequest();
