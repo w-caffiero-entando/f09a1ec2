@@ -250,7 +250,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 		return friendlyCode;
 	}
 	
-	protected ISeoMappingDAO getSeoMappingDAO() {
+	public ISeoMappingDAO getSeoMappingDAO() {
 		return seoMappingDAO;
 	}
 	public void setSeoMappingDAO(ISeoMappingDAO seoMappingDAO) {
@@ -270,7 +270,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     public void setPageManager(IPageManager pageManager) {
         this.pageManager = pageManager;
     }
-    
+
     protected ISeoMappingCacheWrapper getCacheWrapper() {
         return cacheWrapper;
     }

@@ -35,7 +35,8 @@
                     }
                 ],
                 "inheritDescriptionFromDefaultLang": false,
-                "inheritKeywordsFromDefaultLang": false
+                "inheritKeywordsFromDefaultLang": false,
+                "inheritFriendlyCodeFromDefaultLang": true
             },
             "it": {
                 "description": "",
@@ -62,7 +63,8 @@
                     }
                 ],
                 "inheritDescriptionFromDefaultLang": false,
-                "inheritKeywordsFromDefaultLang": false
+                "inheritKeywordsFromDefaultLang": false,
+                "inheritFriendlyCodeFromDefaultLang": false
             }
         },
         "useExtraDescriptions": true,

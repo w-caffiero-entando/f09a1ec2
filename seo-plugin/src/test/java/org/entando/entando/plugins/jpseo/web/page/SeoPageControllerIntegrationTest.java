@@ -38,6 +38,7 @@ import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
+import org.entando.entando.plugins.jpseo.aps.system.services.mapping.SeoMappingManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.jupiter.api.Assertions;
@@ -59,7 +60,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     private IPageManager pageManager;
     
     @Autowired
-    private ISeoMappingManager seoMappingManager;
+    private SeoMappingManager seoMappingManager;
 
     private static String SEO_TEST_1 = "seoTest1";
     private static String SEO_TEST_2 = "seoTest2";
@@ -112,6 +113,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(
                             jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang",
+                            is(true)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_1_it")))
@@ -127,7 +130,9 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].key", is("description")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value", is("metatag di prova")))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].useDefaultLang", is(false)));
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].useDefaultLang", is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritFriendlyCodeFromDefaultLang",
+                            is(false)));
 
             // result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",is(false)));
             // result.andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",is(false)));
@@ -219,6 +224,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
         } finally {
             this.pageManager.deletePage(SEO_TEST_1);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_1);
         }
     }
     
@@ -239,6 +245,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
         } finally {
             this.pageManager.deletePage(SEO_TEST_2);
             this.pageManager.deletePage(SEO_TEST_3);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_2);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_3);
         }
     }
     
@@ -269,6 +277,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(
                             jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang", is(true)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags.size()", is(3)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].key", is("copyright")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].type", is("name")))
@@ -341,6 +350,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                             jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang", is(false)))
                     .andExpect(
                             jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_2_friendly_url_it")))
@@ -397,6 +407,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(
                             jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_2_friendly_url_it")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
@@ -436,6 +447,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
 
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang", is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang", is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang", is(true)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", is("")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_2_friendly_url_it")))
@@ -467,6 +479,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                 this.pageManager.setPageOffline(SEO_TEST_2_FC);
                 this.pageManager.deletePage(SEO_TEST_2_FC);
             }
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_2);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_2_FC);
         }
     }
     

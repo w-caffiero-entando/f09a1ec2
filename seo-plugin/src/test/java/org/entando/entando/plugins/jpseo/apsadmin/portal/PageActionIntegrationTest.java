@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
+import org.entando.entando.plugins.jpseo.aps.system.services.mapping.SeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +51,7 @@ import org.junit.jupiter.api.Test;
 class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 
 	private IPageManager pageManager = null;
-    private ISeoMappingManager seoMappingManager;
+    private SeoMappingManager seoMappingManager;
 
 	@Test
     void testEditPage_1() throws Throwable {
@@ -190,6 +191,8 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 		} catch (Throwable t) {
 			this.pageManager.deletePage(pageCode);
 			this.pageManager.deletePage(longPageCode);
+			seoMappingManager.getSeoMappingDAO().deleteMappingForPage(pageCode);
+			seoMappingManager.getSeoMappingDAO().deleteMappingForPage(longPageCode);
 			throw t;
 		}
 	}
@@ -234,13 +237,16 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 			throw t;
 		} finally {
 			this.pageManager.deletePage(pageCode);
+			seoMappingManager.getSeoMappingDAO().deleteMappingForPage(pageCode);
 		}
 	}
     
 	@Test
     void testSavePage_2() throws Throwable {
+		setUp();
 		String pageCode = "seo_test_2";
 		String pageCode_bis = "seo_test_2_bis";
+
 		assertNull(this.pageManager.getDraftPage(pageCode));
 		try {
 			Map<String, String> params = this.createParamForTest(pageCode);
@@ -304,6 +310,8 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 		} finally {
 			this.pageManager.deletePage(pageCode);
 			this.pageManager.deletePage(pageCode_bis);
+			seoMappingManager.getSeoMappingDAO().deleteMappingForPage(pageCode);
+			seoMappingManager.getSeoMappingDAO().deleteMappingForPage(pageCode_bis);
 		}
 	}
     
@@ -403,6 +411,7 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
             throw t;
         } finally {
             this.pageManager.deletePage(pageCode);
+			seoMappingManager.getSeoMappingDAO().deleteMappingForPage(pageCode);
         }
     }
     
@@ -455,6 +464,7 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
             throw t;
         } finally {
             this.pageManager.deletePage(pageCode);
+			seoMappingManager.getSeoMappingDAO().deleteMappingForPage(pageCode);
         }
     }
     
@@ -490,7 +500,7 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 	private void init() throws Exception {
 		try {
 			this.pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
-			this.seoMappingManager = (ISeoMappingManager) this.getService(JpseoSystemConstants.SEO_MAPPING_MANAGER);
+			this.seoMappingManager = (SeoMappingManager) this.getService(JpseoSystemConstants.SEO_MAPPING_MANAGER);
 		} catch (Throwable t) {
 			throw new Exception(t);
 		}

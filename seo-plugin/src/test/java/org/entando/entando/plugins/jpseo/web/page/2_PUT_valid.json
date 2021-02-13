@@ -31,7 +31,8 @@
                     }
                 ],
                 "inheritDescriptionFromDefaultLang": false,
-                "inheritKeywordsFromDefaultLang": false
+                "inheritKeywordsFromDefaultLang": false,
+                "inheritFriendlyCodeFromDefaultLang": false
             },
             "it": {
                 "description": "",
