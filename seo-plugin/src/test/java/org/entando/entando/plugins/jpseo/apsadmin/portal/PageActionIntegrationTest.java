@@ -467,6 +467,10 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
 			action = super.getAction();
 			assertEquals(1, action.getFieldErrors().size());
 			assertEquals(2, action.getFieldErrors().get(PageActionAspect.PARAM_FRIENDLY_CODES).size());
+
+			result = this.executeActionOnPage(pageCode, "admin", "edit", params);
+			assertEquals(Action.SUCCESS, result);
+
 		} catch (Throwable t) {
 			throw t;
 		} finally {
