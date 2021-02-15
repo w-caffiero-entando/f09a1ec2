@@ -31,24 +31,25 @@ import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.events.PageChangedEvent;
 import com.agiletec.aps.system.services.page.events.PageChangedObserver;
+import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.event.PublicContentChangedEvent;
 import com.agiletec.plugins.jacms.aps.system.services.content.event.PublicContentChangedObserver;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import java.util.ArrayList;
-
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
-
 import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.cache.ISeoMappingCacheWrapper;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.event.SeoChangedEvent;
+import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.entando.entando.plugins.jpseo.aps.util.FriendlyCodeGenerator;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni, E.Mezzano
@@ -85,18 +86,31 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
             return;
         }
         SeoPageMetadata seoMetadata = (SeoPageMetadata) page.getMetadata();
-        String friendlyCode = (event.getOperationCode() == PageChangedEvent.REMOVE_OPERATION_CODE)
-                ? null : seoMetadata.getFriendlyCode();
-        this.getCacheWrapper().updateDraftPageReference(friendlyCode, page.getCode());
+        ApsProperties friendlyCodes = (event.getOperationCode() == PageChangedEvent.REMOVE_OPERATION_CODE)
+                ? null : seoMetadata.getFriendlyCodes();
+        if (friendlyCodes != null) {
+            for (Entry<Object, Object> entry : friendlyCodes.entrySet()) {
+                if (entry.getValue() instanceof PageMetatag) {
+                    PageMetatag pageMetatag = (PageMetatag) entry.getValue();
+                    this.getCacheWrapper().updateDraftPageReference(pageMetatag.getValue(), page.getCode());
+                }
+            }
+        }
         if (!PageChangedEvent.EVENT_TYPE_SET_PAGE_OFFLINE.equals(event.getEventType())
                 && !PageChangedEvent.EVENT_TYPE_SET_PAGE_ONLINE.equals(event.getEventType())) {
             return;
         }
         try {
             this.getSeoMappingDAO().deleteMappingForPage(page.getCode());
-            if (PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode() && !StringUtils.isEmpty(friendlyCode)) {
-                FriendlyCodeVO vo = new FriendlyCodeVO(seoMetadata.getFriendlyCode(), page.getCode());
-                this.getSeoMappingDAO().updateMapping(vo);
+            if (PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode() && friendlyCodes != null) {
+                for (Entry<Object, Object> entry : seoMetadata.getFriendlyCodes().entrySet()) {
+                    if (entry.getValue() instanceof PageMetatag) {
+                        PageMetatag pageMetatag = (PageMetatag) entry.getValue();
+                        FriendlyCodeVO vo = new FriendlyCodeVO(pageMetatag.getValue(), page.getCode());
+                        vo.setLangCode(pageMetatag.getLangCode());
+                        this.getSeoMappingDAO().updateMapping(vo);
+                    }
+                }
             }
 			SeoChangedEvent seoEvent = new SeoChangedEvent();
 			seoEvent.setOperationCode(SeoChangedEvent.PAGE_CHANGED_EVENT);
@@ -236,7 +250,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 		return friendlyCode;
 	}
 	
-	protected ISeoMappingDAO getSeoMappingDAO() {
+	public ISeoMappingDAO getSeoMappingDAO() {
 		return seoMappingDAO;
 	}
 	public void setSeoMappingDAO(ISeoMappingDAO seoMappingDAO) {
@@ -256,7 +270,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     public void setPageManager(IPageManager pageManager) {
         this.pageManager = pageManager;
     }
-    
+
     protected ISeoMappingCacheWrapper getCacheWrapper() {
         return cacheWrapper;
     }

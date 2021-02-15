@@ -94,8 +94,8 @@ public class SeoPageActionUtils {
     }
     
     protected static void extractAndSetFriendlyCode(HttpServletRequest request) {
-        String code = request.getParameter(PageActionAspect.PARAM_FRIENDLY_CODE);
-        request.setAttribute(PageActionAspect.PARAM_FRIENDLY_CODE, code);
+        String code = request.getParameter(PageActionAspect.PARAM_FRIENDLY_CODES);
+        request.setAttribute(PageActionAspect.PARAM_FRIENDLY_CODES, code);
     }
 
     private static ILangManager getLangManager(HttpServletRequest request) {

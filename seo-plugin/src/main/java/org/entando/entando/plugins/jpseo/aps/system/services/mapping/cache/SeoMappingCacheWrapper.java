@@ -25,6 +25,7 @@ import com.agiletec.aps.system.common.AbstractCacheWrapper;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.PageMetadata;
+import com.agiletec.aps.util.ApsProperties;
 import org.entando.entando.ent.exception.EntException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,9 +104,10 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
             return;
         }
         PageMetadata metadata = current.getMetadata();
-        String friendlyCode = (metadata instanceof SeoPageMetadata) ? ((SeoPageMetadata) metadata).getFriendlyCode() : null;
-        if (!StringUtils.isBlank(friendlyCode)) {
-            mapping.put(friendlyCode, current.getCode());
+        ApsProperties friendlyCodes = (metadata instanceof SeoPageMetadata) ?
+                ((SeoPageMetadata) metadata).getFriendlyCodes() : null;
+        if (friendlyCodes != null) {
+            mapping.put((String)friendlyCodes.get(0), current.getCode());
         }
         String[] children = current.getChildrenCodes();
         if (null != children) {

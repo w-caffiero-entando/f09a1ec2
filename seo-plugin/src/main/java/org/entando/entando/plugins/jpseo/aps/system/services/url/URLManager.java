@@ -127,7 +127,7 @@ public class URLManager extends com.agiletec.aps.system.services.url.URLManager 
 			}
 		}
 		if (friendlyCode==null && destPage.getMetadata() instanceof SeoPageMetadata) {
-			friendlyCode = ((SeoPageMetadata) destPage.getMetadata()).getFriendlyCode();
+			friendlyCode = ((SeoPageMetadata) destPage.getMetadata()).getFriendlyCode(lang.getCode());
 		}
 		return friendlyCode;
 	}

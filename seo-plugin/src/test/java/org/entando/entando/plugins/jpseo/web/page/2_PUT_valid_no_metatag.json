@@ -11,18 +11,20 @@
     "administrators"
   ],
   "seoData": {
-    "friendlyCode": "test_page_2_friendly_url",
     "seoDataByLang": {
       "en": {
         "description": "test page",
         "keywords": "keyword number 1, keyword number 2",
+        "friendlyCode": "test_page_2_friendly_url_en",
         "metaTags": [],
         "inheritDescriptionFromDefaultLang": false,
-        "inheritKeywordsFromDefaultLang": false
+        "inheritKeywordsFromDefaultLang": false,
+        "inheritFriendlyCodeFromDefaultLang": true
       },
       "it": {
         "description": "",
         "keywords": "",
+        "friendlyCode": "test_page_2_friendly_url_it",
         "metaTags": [],
         "inheritDescriptionFromDefaultLang": true,
         "inheritKeywordsFromDefaultLang": true

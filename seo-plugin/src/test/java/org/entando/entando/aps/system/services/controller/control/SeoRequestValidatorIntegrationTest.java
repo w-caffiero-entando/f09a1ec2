@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.springframework.mock.web.MockHttpServletRequest;
-
 import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
@@ -27,14 +25,17 @@ import com.agiletec.aps.system.services.controller.control.ControlServiceInterfa
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.controller.control.RequestValidator;
+import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 class SeoRequestValidatorIntegrationTest extends BaseTestCase {
 
@@ -48,7 +49,8 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
         RequestContext reqCtx = this.getRequestContext();
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
         IPage root = this.pageManager.getDraftRoot();
-        ((SeoPageMetadata) root.getMetadata()).setFriendlyCode("root_fiendly_code");
+        PageMetatag pageMetatag = new PageMetatag("it", "it", "root_fiendly_code");
+        ((SeoPageMetadata) root.getMetadata()).getFriendlyCodes().put("it", pageMetatag);
         this.pageManager.updatePage(root);
         try {
             super.waitNotifyingThread();
@@ -76,7 +78,10 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
         } catch (Exception e) {
             throw e;
         } finally {
-            ((SeoPageMetadata) root.getMetadata()).setFriendlyCode(null);
+            ApsProperties friendlyCode = ((SeoPageMetadata) root.getMetadata()).getFriendlyCodes();
+            if (friendlyCode != null) {
+                friendlyCode.clear();
+            }
             this.pageManager.updatePage(root);
             this.pageManager.setPageOnline(root.getCode());
         }

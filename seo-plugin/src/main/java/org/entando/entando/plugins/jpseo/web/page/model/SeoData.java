@@ -6,9 +6,8 @@ import java.util.Objects;
 public class SeoData {
 
     private Map<String, SeoDataByLang> SeoDataByLang;
-    private String friendlyCode;
     private Boolean useExtraDescriptions = false;
-    private Boolean useExtraTitles = false;;
+    private Boolean useExtraTitles = false;
 
     public Map<String, SeoDataByLang> getSeoDataByLang() {
         return SeoDataByLang;
@@ -20,14 +19,6 @@ public class SeoData {
     public void setSeoDataByLang(
             Map<String, SeoDataByLang> SeoDataByLang) {
         this.SeoDataByLang = SeoDataByLang;
-    }
-
-    public String getFriendlyCode() {
-        return friendlyCode;
-    }
-
-    public void setFriendlyCode(String friendlyCode) {
-        this.friendlyCode = friendlyCode;
     }
 
     public Boolean getUseExtraDescriptions() {
@@ -56,21 +47,19 @@ public class SeoData {
         }
         SeoData that = (SeoData) o;
         return Objects.equals(SeoDataByLang, that.SeoDataByLang) &&
-                Objects.equals(friendlyCode, that.friendlyCode) &&
                 Objects.equals(useExtraDescriptions, that.useExtraDescriptions) &&
                 Objects.equals(useExtraTitles, that.useExtraTitles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(SeoDataByLang, friendlyCode, useExtraDescriptions, useExtraTitles);
+        return Objects.hash(SeoDataByLang, useExtraDescriptions, useExtraTitles);
     }
 
     @Override
     public String toString() {
         return "SeoData{" +
                 "SeoDataByLang=" + SeoDataByLang +
-                ", friendlyCode='" + friendlyCode + '\'' +
                 ", useExtraDescription=" + useExtraDescriptions +
                 ", useExtraTitles=" + useExtraTitles +
                 '}';

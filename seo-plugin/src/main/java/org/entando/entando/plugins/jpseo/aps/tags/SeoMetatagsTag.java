@@ -93,6 +93,11 @@ public class SeoMetatagsTag extends ExtendedTagSupport {
                 keywords = ((SeoPageMetadata) pageMetadata).getKeywords().getProperty(defaultLang.getCode());
             }
             this.appendMetadata(output, Metatag.ATTRIBUTE_NAME_NAME, "keywords", keywords);
+            String friendlyCodes = ((SeoPageMetadata) pageMetadata).getFriendlyCodes().getProperty(defaultLang.getCode());
+            if (StringUtils.isBlank(friendlyCodes)) {
+                friendlyCodes = ((SeoPageMetadata) pageMetadata).getFriendlyCodes().getProperty(defaultLang.getCode());
+            }
+            this.appendMetadata(output, Metatag.ATTRIBUTE_NAME_NAME, "friendlyCode", friendlyCodes);
             Map<String, Map<String, PageMetatag>> complexParameters = ((SeoPageMetadata) pageMetadata).getComplexParameters();
             if (null != complexParameters) {
                 Map<String, Map<String, PageMetatag>> metas = SeoPageExtraConfigDOM.extractRightParams(complexParameters, defaultLang);
