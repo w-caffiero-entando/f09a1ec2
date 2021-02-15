@@ -95,7 +95,8 @@ public class SeoPageService extends PageService {
         } else {
             seoMetadata = new SeoPageMetadata();
         }
-        return mapPageDtoToSeoPageDto(pageDto, seoMetadata);
+        SeoPageDto seoPageDto = mapPageDtoToSeoPageDto(pageDto, seoMetadata);
+        return seoPageDto;
     }
 
     private SeoPageDto mapPageDtoToSeoPageDto(PageDto pageDto, SeoPageMetadata seoMetadata) {
@@ -273,7 +274,7 @@ public class SeoPageService extends PageService {
         ApsProperties friendlyCodesAps = new ApsProperties();
         ApsProperties titlesAps = new ApsProperties();
 
-        Map<String, Map<String, PageMetatag>> langMetaTags = new HashMap<>();
+        Map<String, Map<String, PageMetatag>> langMetaTags = new HashMap();
         String defaultLang = langManager.getDefaultLang().getCode();
         List<Lang> systemLangs = langManager.getLangs();
         List<String> systemLangsString = systemLangs.stream().map(f -> f.getCode()).collect(Collectors.toList());
@@ -335,14 +336,17 @@ public class SeoPageService extends PageService {
     }
 
     private Map<String, PageMetatag> mapLangMetaTags(List<SeoMetaTag> metaTags) {
-        final List<PageMetatag> pageMetatagList = metaTags.stream()
-                .map(metaTag -> new PageMetatag(metaTag.getType(), metaTag.getKey(),
-                        metaTag.getValue(), metaTag.getType(), metaTag.getUseDefaultLang()))
-                .collect(Collectors.toList());
+        final List<PageMetatag> pageMetatagList = metaTags.stream().map(metaTag -> {
+            PageMetatag pageMetatag = new PageMetatag(metaTag.getType(), metaTag.getKey(),
+                    metaTag.getValue(), metaTag.getType(), metaTag.getUseDefaultLang());
+            return pageMetatag;
+        }).collect(Collectors.toList());
+
         return convertPageMetatagListToMap(pageMetatagList);
     }
 
     public Map<String, PageMetatag> convertPageMetatagListToMap(List<PageMetatag> list) {
-        return list.stream().collect(Collectors.toMap(PageMetatag::getKey, meta -> meta));
+        Map<String, PageMetatag> map = list.stream().collect(Collectors.toMap(PageMetatag::getKey, meta -> meta));
+        return map;
     }
 }

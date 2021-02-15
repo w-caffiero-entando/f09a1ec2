@@ -25,6 +25,6 @@ import com.agiletec.aps.system.common.notify.ObserverService;
 
 public interface SeoChangedObserver extends ObserverService {
 	
-	void updateFromSeoChanged(SeoChangedEvent event);
+	public void updateFromSeoChanged(SeoChangedEvent event);
 	
 }

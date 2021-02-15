@@ -57,11 +57,11 @@ import org.entando.entando.plugins.jpseo.aps.util.FriendlyCodeGenerator;
 public class SeoMappingManager extends AbstractService implements ISeoMappingManager, PageChangedObserver, PublicContentChangedObserver {
 
 	private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoMappingManager.class);
-
-    private transient ISeoMappingDAO seoMappingDAO;
-    private transient ILangManager langManager;
-    private transient IPageManager pageManager;
-    private transient ISeoMappingCacheWrapper cacheWrapper;
+	
+	private ISeoMappingDAO seoMappingDAO;
+	private ILangManager langManager;
+	private IPageManager pageManager;
+    private ISeoMappingCacheWrapper cacheWrapper;
 
 	@Override
 	public void init() throws Exception {
@@ -138,10 +138,10 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
                     return;
                 }
                 AttributeInterface attribute = content.getAttributeByRole(JpseoSystemConstants.ATTRIBUTE_ROLE_FRIENDLY_CODE);
-                if (attribute instanceof ITextAttribute) {
+                if (null == attribute || !(attribute instanceof ITextAttribute)) {
                     attribute = content.getAttributeByRole(JacmsSystemConstants.ATTRIBUTE_ROLE_TITLE);
                 }
-                if (attribute instanceof ITextAttribute) {
+                if (null != attribute && attribute instanceof ITextAttribute) {
                     ContentFriendlyCode contentFriendlyCode = this.prepareContentFriendlyCode(content.getId(), (ITextAttribute) attribute);
                     this.getSeoMappingDAO().updateMapping(contentFriendlyCode);
                 }
