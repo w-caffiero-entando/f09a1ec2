@@ -57,11 +57,11 @@ import org.entando.entando.plugins.jpseo.aps.util.FriendlyCodeGenerator;
 public class SeoMappingManager extends AbstractService implements ISeoMappingManager, PageChangedObserver, PublicContentChangedObserver {
 
 	private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoMappingManager.class);
-	
-	private ISeoMappingDAO seoMappingDAO;
-	private ILangManager langManager;
-	private IPageManager pageManager;
-    private ISeoMappingCacheWrapper cacheWrapper;
+
+    private transient ISeoMappingDAO seoMappingDAO;
+    private transient ILangManager langManager;
+    private transient IPageManager pageManager;
+    private transient ISeoMappingCacheWrapper cacheWrapper;
 
 	@Override
 	public void init() throws Exception {

@@ -26,27 +26,27 @@ import com.agiletec.aps.system.common.notify.ApsEvent;
 
 
 public class SeoChangedEvent extends ApsEvent {
-	
+
 	@Override
 	public void notify(IManager srv) {
 		((SeoChangedObserver) srv).updateFromSeoChanged(this);
 	}
-	
+
 	@Override
 	public Class getObserverInterface() {
 		return SeoChangedObserver.class;
 	}
-	
+
 	public int getOperationCode() {
-		return _operationCode;
+		return operationCode;
 	}
 
 	public void setOperationCode(int operationCode) {
-		this._operationCode = operationCode;
+		this.operationCode = operationCode;
 	}
 
-	private int _operationCode;
-	
-	public final static int PAGE_CHANGED_EVENT = 1;
-	public final static int CONTENT_CHANGED_EVENT = 2;
+	private int operationCode;
+
+	public static final int PAGE_CHANGED_EVENT = 1;
+	public static final int CONTENT_CHANGED_EVENT = 2;
 }
