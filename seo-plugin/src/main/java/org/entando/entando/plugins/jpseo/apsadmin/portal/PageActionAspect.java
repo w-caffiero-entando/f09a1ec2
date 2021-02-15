@@ -155,7 +155,7 @@ public class PageActionAspect {
         HttpServletRequest request = ServletActionContext.getRequest();
         Iterator<Lang> langsIter = this.getLangManager().getLangs().iterator();
         while (langsIter.hasNext()) {
-            Lang lang = (Lang) langsIter.next();
+            Lang lang = langsIter.next();
             String code = request.getParameter(PARAM_FRIENDLY_CODES_PREFIX + lang.getCode());
             if (null != code && code.trim().length() > 100) {
                 String[] args = {"100"};
@@ -203,7 +203,7 @@ public class PageActionAspect {
         }
         try {
             //se il salvataggio va a buon fine, aggiorna l'oggetto
-            if (null != result && result instanceof String) {
+            if (result instanceof String) {
                 String resultStr = (String) result;
                 if (resultStr.equalsIgnoreCase(Action.SUCCESS)) {
                     PageAction action = (PageAction) joinPoint.getTarget();
@@ -228,7 +228,7 @@ public class PageActionAspect {
         ApsProperties friendlyCodes = new ApsProperties();
         Iterator<Lang> langsIter = this.getLangManager().getLangs().iterator();
         while (langsIter.hasNext()) {
-            Lang lang = (Lang) langsIter.next();
+            Lang lang = langsIter.next();
             String titleKey = PARAM_DESCRIPTION_PREFIX + lang.getCode();
             String title = request.getParameter(titleKey);
             if (null != title) {
@@ -250,7 +250,7 @@ public class PageActionAspect {
             String friendlyCodesKey = PARAM_FRIENDLY_CODES_PREFIX + lang.getCode();
             String friendlyCode = request.getParameter(friendlyCodesKey);
             if (null != friendlyCode) {
-                PageMetatag meta = new PageMetatag(lang.getCode(), "friendlyCode", friendlyCode.trim());
+                PageMetatag meta = new PageMetatag(lang.getCode(), PARAM_FRIENDLY_CODES, friendlyCode.trim());
                 String useDefaultLangKey = PARAM_FRIENDLY_CODES_USE_DEFAULT_PREFIX + lang.getCode();
                 String useDefaultLang = request.getParameter(useDefaultLangKey);
                 meta.setUseDefaultLangValue(!lang.isDefault() && Boolean.parseBoolean(useDefaultLang));
