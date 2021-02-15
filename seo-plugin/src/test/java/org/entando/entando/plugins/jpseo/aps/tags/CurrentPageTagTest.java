@@ -5,8 +5,10 @@ import static org.mockito.Mockito.when;
 
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
+import java.util.HashMap;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
+import org.entando.entando.plugins.jpseo.web.page.model.SeoData;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoDataByLang;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,16 +32,21 @@ public class CurrentPageTagTest {
 
         currentPageTag.extractPageFriendlyCodes(currentPage, currentLang);
 
-        SeoDataByLang seoData = new SeoDataByLang();
-        SeoDataByLang seoData2 = new SeoDataByLang();
-        seoData.setInheritFriendlyCodeFromDefaultLang(true);
-        seoData2.setInheritFriendlyCodeFromDefaultLang(true);
-        seoData.setFriendlyCode("friendly_code_en");
-        seoData2.setFriendlyCode("friendly_code_en");
+        SeoDataByLang seoDataByLang = new SeoDataByLang();
+        SeoDataByLang seoDataByLang2 = new SeoDataByLang();
+        seoDataByLang.setInheritFriendlyCodeFromDefaultLang(true);
+        seoDataByLang2.setInheritFriendlyCodeFromDefaultLang(true);
+        seoDataByLang.setFriendlyCode("friendly_code_en");
+        seoDataByLang2.setFriendlyCode("friendly_code_en");
 
-        assertEquals(seoData.hashCode(), seoData2.hashCode());
-        assertEquals(seoData.toString(), seoData2.toString());
-        assertEquals(seoData, seoData2);
+        assertEquals(seoDataByLang.hashCode(), seoDataByLang2.hashCode());
+        assertEquals(seoDataByLang.toString(), seoDataByLang2.toString());
+        assertEquals(seoDataByLang, seoDataByLang2);
+
+        SeoData seoData = new SeoData();
+        seoData.setSeoDataByLang(new HashMap<>());
+        seoData.getSeoDataByLang().put("en", seoDataByLang);
+        assertEquals(seoData.hashCode(), seoData.hashCode());
 
         assertEquals("friendly_code_en", currentPageTag.getValue());
     }
