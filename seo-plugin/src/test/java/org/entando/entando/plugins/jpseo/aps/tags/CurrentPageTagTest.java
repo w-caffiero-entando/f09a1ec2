@@ -7,12 +7,13 @@ import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
+import org.entando.entando.plugins.jpseo.web.page.model.SeoDataByLang;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class CurrentPageTagTest {
 
-    CurrentPageTag currentPageTag = new CurrentPageTag();
+    private CurrentPageTag currentPageTag = new CurrentPageTag();
 
     @Test
     public void extractPageFriendlyCodesTest() {
@@ -29,8 +30,18 @@ public class CurrentPageTagTest {
 
         currentPageTag.extractPageFriendlyCodes(currentPage, currentLang);
 
-        assertEquals("friendly_code_en", currentPageTag.getValue());
+        SeoDataByLang seoData = new SeoDataByLang();
+        SeoDataByLang seoData2 = new SeoDataByLang();
+        seoData.setInheritFriendlyCodeFromDefaultLang(true);
+        seoData2.setInheritFriendlyCodeFromDefaultLang(true);
+        seoData.setFriendlyCode("friendly_code_en");
+        seoData2.setFriendlyCode("friendly_code_en");
 
+        assertEquals(seoData.hashCode(), seoData2.hashCode());
+        assertEquals(seoData.toString(), seoData2.toString());
+        assertEquals(seoData, seoData2);
+
+        assertEquals("friendly_code_en", currentPageTag.getValue());
     }
 
 }
