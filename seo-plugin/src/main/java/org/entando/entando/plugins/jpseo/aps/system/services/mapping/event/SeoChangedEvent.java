@@ -38,14 +38,14 @@ public class SeoChangedEvent extends ApsEvent {
 	}
 
 	public int getOperationCode() {
-		return _operationCode;
+		return operationCode;
 	}
 
 	public void setOperationCode(int operationCode) {
-		this._operationCode = operationCode;
+		this.operationCode = operationCode;
 	}
 
-	private int _operationCode;
+	private int operationCode;
 
 	public static final int PAGE_CHANGED_EVENT = 1;
 	public static final int CONTENT_CHANGED_EVENT = 2;

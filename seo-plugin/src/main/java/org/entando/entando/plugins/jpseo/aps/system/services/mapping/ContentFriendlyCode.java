@@ -28,7 +28,7 @@ import java.util.Map;
 public class ContentFriendlyCode implements Serializable {
 
     private String contentId;
-    private Map<String, String> friendlyCodes = new HashMap<String, String>();
+    private Map<String, String> friendlyCodes = new HashMap<>();
 
     public String getContentId() {
         return contentId;
