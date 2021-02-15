@@ -118,7 +118,7 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
     }
     
     protected void releaseCachedObjects(Cache cache, String listKey, String prefixKey) {
-		List<String> codes = (List<String>) this.get(cache, listKey, List.class);
+		List<String> codes = this.get(cache, listKey, List.class);
 		if (null != codes) {
 			for (String code : codes) {
 				cache.evict(prefixKey + code);
@@ -128,7 +128,7 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
 	}
     
     protected void insertAndCleanVoObjectsOnCache(Cache cache, Map<String, ?> objects, String listKey, String cacheKeyPrefix) {
-        List<String> oldCodes = (List<String>) this.get(cache, listKey, List.class);
+        List<String> oldCodes = this.get(cache, listKey, List.class);
         List<String> oldCodesClone = (null != oldCodes) ? new ArrayList<>(oldCodes) : null;
         List<String> codes = new ArrayList<>();
         Iterator<String> iter = objects.keySet().iterator();
