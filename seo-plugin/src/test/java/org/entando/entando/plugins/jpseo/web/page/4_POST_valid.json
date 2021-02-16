@@ -1,0 +1,39 @@
+{
+    "seo":false,
+    "displayedInMenu":true,
+    "charset":"utf-8",
+    "contentType":"text/html",
+    "seoData":{
+        "friendlyCode":"",
+        "useExtraDescriptions":false,
+        "seoDataByLang":{
+            "en":{
+                "description":"",
+                "keywords":"",
+                "metaTags":[
+
+                ],
+                "inheritDescriptionFromDefaultLang":false,
+                "inheritKeywordsFromDefaultLang":false
+            },
+            "it":{
+                "description":"",
+                "keywords":"",
+                "metaTags":[
+
+                ],
+                "inheritDescriptionFromDefaultLang":false,
+                "inheritKeywordsFromDefaultLang":false
+            }
+        },
+        "useExtraTitles":false
+    },
+    "ownerGroup":"administrators",
+    "joinGroups":null,
+    "code":"seoTest4",
+    "titles":{
+        "en":"Page_test2"
+    },
+    "parentCode":"homepage",
+    "pageModel":"home"
+}

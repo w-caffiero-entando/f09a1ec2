@@ -65,7 +65,9 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     private static String SEO_TEST_1 = "seoTest1";
     private static String SEO_TEST_2 = "seoTest2";
     private static String SEO_TEST_3 = "seoTest3";
+    private static String SEO_TEST_4 = "seoTest4";
     private static String SEO_TEST_2_FC = "seoTest2fc";
+
 
     @Test
     void testGetBuiltInSeoPage() throws Exception {
@@ -225,6 +227,32 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
         } finally {
             this.pageManager.deletePage(SEO_TEST_1);
             seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_1);
+        }
+    }
+
+    @Test
+    void testPostSeoPageNullPointer() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+            Assertions.assertNull(this.pageManager.getDraftPage(SEO_TEST_4));
+            final ResultActions result = this.executePostSeoPage("4_POST_valid.json", accessToken, status().isOk());
+            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_4, IPageService.STATUS_DRAFT));
+            result.andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_4)))
+                    .andExpect(jsonPath("$.payload.status", is("unpublished")))
+                    .andExpect(jsonPath("$.payload.onlineInstance", is(false)))
+                    .andExpect(jsonPath("$.payload.displayedInMenu", is(true)))
+                    .andExpect(jsonPath("$.payload.pageModel", is("home")))
+                    .andExpect(jsonPath("$.payload.charset", is("utf-8")))
+                    .andExpect(jsonPath("$.payload.contentType", is("text/html")))
+                    .andExpect(jsonPath("$.payload.parentCode", is("homepage")))
+                    .andExpect(jsonPath("$.payload.seo", is(false)))
+                    .andExpect(jsonPath("$.payload.titles.size()", is(1)))
+                    .andExpect(jsonPath("$.payload.fullTitles.size()", is(1)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.size()", is(2)));
+        } finally {
+            this.pageManager.deletePage(SEO_TEST_4);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_4);
         }
     }
     
