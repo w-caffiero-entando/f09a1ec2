@@ -266,9 +266,11 @@ public class SeoPageService extends PageService {
         seoPageMetadata.setCharset(pageRequest.getCharset());
         seoPageMetadata.setMimeType(pageRequest.getContentType());
         seoPageMetadata.setShowable(pageRequest.isDisplayedInMenu());
-        Set<String> extraGroups = pageRequest.getJoinGroups().stream().collect(Collectors.toSet());
+        if (pageRequest.getJoinGroups() != null) {
+            Set<String> extraGroups = pageRequest.getJoinGroups().stream().collect(Collectors.toSet());
+            seoPageMetadata.setExtraGroups(extraGroups);
+        }
 
-        seoPageMetadata.setExtraGroups(extraGroups);
         ApsProperties keywordsAps = new ApsProperties();
         ApsProperties descriptionsAps = new ApsProperties();
         ApsProperties friendlyCodesAps = new ApsProperties();
