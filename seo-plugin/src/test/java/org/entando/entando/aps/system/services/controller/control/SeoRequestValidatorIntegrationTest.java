@@ -54,7 +54,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
         this.pageManager.updatePage(root);
         try {
             super.waitNotifyingThread();
-            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/root_fiendly_code");
+            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("root_fiendly_code");
             int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.REDIRECT, status);
             Lang lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
@@ -67,7 +67,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             this.pageManager.setPageOnline(root.getCode());
             super.waitNotifyingThread();
             
-            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/root_fiendly_code");
+            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/root_fiendly_code");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.CONTINUE, status);
             lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
@@ -97,7 +97,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
         String newId = content.getId();
         try {
             super.waitNotifyingThread();
-            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/sagra_della_ciliegia");
+            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/sagra_della_ciliegia");
             int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.CONTINUE, status);
             Lang lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
@@ -109,7 +109,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             
             this.resetRequestContext(reqCtx);
             
-            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/en/cherry_festival");
+            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/cherry_festival");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.CONTINUE, status);
             lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
