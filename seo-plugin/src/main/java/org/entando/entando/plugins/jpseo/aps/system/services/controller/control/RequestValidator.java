@@ -188,7 +188,7 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
 		this._contentManager = contentManager;
 	}
 	
-	protected Pattern _patternSeoPath = Pattern.compile("^/page/((\\w+)*)");
+	protected Pattern _patternSeoPath = Pattern.compile("^/page/(\\w+)");
 	
 	private ISeoMappingManager _seoMappingManager;
 	private IContentManager _contentManager;
