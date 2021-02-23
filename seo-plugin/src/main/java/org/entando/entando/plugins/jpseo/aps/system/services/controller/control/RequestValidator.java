@@ -87,13 +87,14 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
             matcher = this._patternSeoPath.matcher(resourcePath);
             if (matcher.lookingAt()) {
                 ok = true;
-                String friendlyCode = matcher.group(1);
+                String sect1 = matcher.group(1);
+                lang = getLangManager().getLang(sect1);
+                String friendlyCode = matcher.group(2).substring(1);
                 FriendlyCodeVO vo = this.getSeoMappingManager().getReference(friendlyCode);
-                if (null != vo) {
-                	lang = getLangManager().getLang(vo.getLangCode());
-                	if (null != vo.getPageCode()) {
+                if (null != vo && null != lang && lang.getCode().equals(vo.getLangCode())) {
+                    if (null != vo.getPageCode()) {
                         page = this.getPageManager().getOnlinePage(vo.getPageCode());
-                	} else if (null != vo.getContentId()) {
+					} else if (null != vo.getContentId()) {
                         String contentId = vo.getContentId();
                         String viewPageCode = this.getContentManager().getViewPage(contentId);
                         page = this.getPageManager().getOnlinePage(viewPageCode);
@@ -188,7 +189,7 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
 		this._contentManager = contentManager;
 	}
 	
-	protected Pattern _patternSeoPath = Pattern.compile("^/page/(\\w+)");
+	protected Pattern _patternSeoPath = Pattern.compile("^/page/(\\w+)((/\\w+)*)");
 	
 	private ISeoMappingManager _seoMappingManager;
 	private IContentManager _contentManager;
