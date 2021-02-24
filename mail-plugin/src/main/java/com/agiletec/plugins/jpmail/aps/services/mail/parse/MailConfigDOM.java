@@ -21,18 +21,21 @@
  */
 package com.agiletec.plugins.jpmail.aps.services.mail.parse;
 
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
-import java.io.StringReader;
-import java.util.Iterator;
-import java.util.List;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.exception.EntRuntimeException;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Iterator;
+import java.util.List;
 
 /*
 <mailConfig>
@@ -62,9 +65,9 @@ public class MailConfigDOM {
 	 * Extract the jpmail configuration from an xml.
 	 * @param xml The xml containing the configuration.
 	 * @return The jpmail configuration.
-	 * @throws ApsSystemException In case of parsing errors.
+	 * @throws EntException In case of parsing errors.
 	 */
-	public MailConfig extractConfig(String xml) throws ApsSystemException {
+	public MailConfig extractConfig(String xml) throws EntException {
 		MailConfig config = new MailConfig();
 		Element root = this.getRootElement(xml);
 		Element activeElem = root.getChild(ACTIVE_ELEM);
@@ -81,9 +84,9 @@ public class MailConfigDOM {
 	 * Create an xml containing the jpmail configuration.
 	 * @param config The jpmail configuration.
 	 * @return The xml containing the configuration.
-	 * @throws ApsSystemException In case of errors.
+	 * @throws EntException In case of errors.
 	 */
-	public String createConfigXml(MailConfig config) throws ApsSystemException {
+	public String createConfigXml(MailConfig config) {
 		Element root = this.createConfigElement(config);
 		Document doc = new Document(root);
 		XMLOutputter out = new XMLOutputter();
@@ -151,7 +154,6 @@ public class MailConfigDOM {
 	
 	/**
 	 * Extract the smtp configuration from the xml element and save it into the MailConfig object.
-	 * @param root The xml root element containing the smtp configuration.
 	 * @param config The configuration.
 	 */
 	private Element createConfigElement(MailConfig config) {
@@ -243,9 +245,9 @@ public class MailConfigDOM {
 	 * Returns the Xml element from a given text.
 	 * @param xmlText The text containing an Xml.
 	 * @return The Xml element from a given text.
-	 * @throws ApsSystemException In case of parsing exceptions.
+	 * @throws EntException In case of parsing exceptions.
 	 */
-	private Element getRootElement(String xmlText) throws ApsSystemException {
+	private Element getRootElement(String xmlText) throws EntException {
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		StringReader reader = new StringReader(xmlText);
@@ -253,9 +255,8 @@ public class MailConfigDOM {
 		try {
 			Document doc = builder.build(reader);
 			root = doc.getRootElement();
-		} catch (Throwable t) {
-			ApsSystemUtils.getLogger().error("Error parsing xml: " + t.getMessage());
-			throw new ApsSystemException("Error parsing xml", t);
+		} catch (EntRuntimeException | JDOMException | IOException t) {
+			throw new EntException("Error parsing xml", t);
 		}
 		return root;
 	}
