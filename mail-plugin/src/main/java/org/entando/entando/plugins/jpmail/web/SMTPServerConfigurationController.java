@@ -41,6 +41,7 @@ import java.util.Map;
 @RestController
 @Api(tags = {"smtp-server-configuration-controller"})
 @RequestMapping(value = "/plugins/emailSettings/SMTPServer")
+@SessionAttributes({"user"})
 public class SMTPServerConfigurationController {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
@@ -133,7 +134,7 @@ public class SMTPServerConfigurationController {
     })
     @PostMapping(value = "/testConfiguration", produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.SUPERUSER)
-    public ResponseEntity<SimpleRestResponse<Map<String,String>>> testSMTPConfiguration(@Valid @RequestBody SMTPServerConfigurationDto smtpServerConfiguration,
+    public ResponseEntity<SimpleRestResponse<Map<String,String>>> testSMTPServerConfiguration(@Valid @RequestBody SMTPServerConfigurationDto smtpServerConfiguration,
                                                                          BindingResult bindingResult) {
         logger.debug("Test SMTP Server Configuration");
         Map<String, String> response = new HashMap<>();

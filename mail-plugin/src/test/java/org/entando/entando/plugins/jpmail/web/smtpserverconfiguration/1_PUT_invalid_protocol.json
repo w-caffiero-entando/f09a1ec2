@@ -1,0 +1,11 @@
+{
+  "active" : false,
+  "debugMode" : false,
+  "host" : "local",
+  "port": 25010,
+  "protocol" : "ABC",
+  "checkServerIdentity" : false,
+  "timeout" : 10000,
+  "username" : "",
+  "password" : ""
+}

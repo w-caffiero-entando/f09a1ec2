@@ -83,7 +83,7 @@ public class EmailSenderService {
         List<EmailSenderDto> senderList = new ArrayList<>();
         PagedMetadata<EmailSenderDto> pagedMetadata;
         try {
-            MailConfig config = emailManager.getMailConfig();;
+            MailConfig config = emailManager.getMailConfig();
             final Map<String, String> senders = config.getSenders();
             senders.forEach( (senderCode,senderEmail) -> senderList.add(new EmailSenderDto(senderCode,senderEmail)));
 

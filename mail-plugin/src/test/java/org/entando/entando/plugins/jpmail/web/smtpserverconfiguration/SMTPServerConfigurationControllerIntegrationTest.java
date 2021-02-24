@@ -134,10 +134,17 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
         executePutSMTPServerConfiguration("1_PUT_valid.json", accessToken, status().isForbidden());
     }
 
+    @Test
+    void testUpdateSMTPServerConfigurationInvalidProtocol() throws Exception {
+        UserDetails user = createAdmin();
+        String accessToken = mockOAuthInterceptor(user);
+
+        executePutSMTPServerConfiguration("1_PUT_invalid_protocol.json", accessToken, status().isBadRequest());
+    }
+
     private ResultActions executeGetSMTPServerConfiguration(String accessToken, ResultMatcher expected) throws Exception {
         ResultActions result = mockMvc
                 .perform(get(BASE_URL)
-                        //.sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(expected).andDo(print());
         return result;
@@ -151,7 +158,7 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(expected);
+        result.andDo(print()).andExpect(expected);
         return result;
     }
 
