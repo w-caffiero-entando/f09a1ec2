@@ -139,7 +139,7 @@ public class SMTPServerConfigurationService {
         try {
             config = emailManager.getMailConfig();
         } catch (EntException e) {
-            e.printStackTrace();
+            throw new RestServerError("Error reading the configuration ", e);
         }
 
         if (null == config) {
@@ -181,9 +181,8 @@ public class SMTPServerConfigurationService {
             emailManager.updateMailConfig(config);
             return getSMTPServerConfiguration();
         } catch (EntException | EntRuntimeException e) {
-            e.printStackTrace();
+            throw new RestServerError("Error reading the configuration ", e);
         }
-        return null;
     }
 
     /**

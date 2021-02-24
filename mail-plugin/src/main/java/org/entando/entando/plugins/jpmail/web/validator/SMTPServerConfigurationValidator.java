@@ -15,7 +15,6 @@ package org.entando.entando.plugins.jpmail.web.validator;
 
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
-import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.userprofile.UserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
 import org.entando.entando.ent.exception.EntException;
@@ -38,6 +37,8 @@ public class SMTPServerConfigurationValidator extends AbstractPaginationValidato
     private static final String ERRCODE_INVALID_EMAIL = "2";
     private static final String ERRCODE_INVALID_SENDER_LIST = "3";
     private static final String ERRCODE_EMPTY_SENDER_LIST = "4";
+    private static final String ERRCODE_READING_CONFIG = "5";
+    private static final String ERRCODE_READING_USER_PROFILE = "6";
 
     @Autowired
     private SMTPServerConfigurationService smtpServerConfigurationService;
@@ -64,17 +65,17 @@ public class SMTPServerConfigurationValidator extends AbstractPaginationValidato
         validProtocols.add("SSL");
         validProtocols.add("STD");
         if ((null == protocol) || (!validProtocols.contains(protocol))) {
-            errors.rejectValue("protocol", ERRCODE_INVALID_PROTOCOL, new String[]{protocol}, "error.smtpProtocol.invalidValue");
+            errors.rejectValue("protocol", ERRCODE_INVALID_PROTOCOL, new String[]{protocol}, "error.smtpServerConfig.protocol.invalid");
         }
     }
 
     public void validateUserEmail(UserDetails user, Errors errors) {
-        UserProfile userProfile;
+        UserProfile userProfile = null;
         try {
             userProfile = (UserProfile) userProfileManager.getProfile(user.getUsername());
 
         } catch (EntException | EntRuntimeException e) {
-            throw new RestServerError("Error reading the user Profile ", e);
+            errors.rejectValue("username", ERRCODE_READING_USER_PROFILE, new String[]{}, "error.smtpServerConfig.readingProfile");
         }
 
         if (!smtpServerConfigurationService.hasEmailCurrentUser(userProfile)) {
@@ -90,7 +91,7 @@ public class SMTPServerConfigurationValidator extends AbstractPaginationValidato
                 errors.rejectValue("name", ERRCODE_EMPTY_SENDER_LIST, new String[]{}, "error.smtpServerConfig.emptySenderList");
             }
         } catch (EntException e) {
-            errors.rejectValue("name", ERRCODE_INVALID_SENDER_LIST, new String[]{}, "error.smtpServerConfig.invalidSenderList");
+            errors.rejectValue("code", ERRCODE_READING_CONFIG, new String[]{}, "error.smtpServerConfig.readingConfig");
         }
 
     }

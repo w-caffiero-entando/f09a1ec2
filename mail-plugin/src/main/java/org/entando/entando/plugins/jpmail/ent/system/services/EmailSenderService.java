@@ -39,12 +39,7 @@ public class EmailSenderService {
 	public EmailSenderDto updateEmailSender(EmailSenderDto emailSenderDto ) {
 		try {
 			MailConfig config = emailManager.getMailConfig();
-			/*
-			if (mail==null || mail.length()==0) {
-				this.addActionError(this.getText("error.config.sender.notExists"));
-			}
-			*/
-            if (config.getSenders().containsKey(emailSenderDto.getCode())) {
+	        if (config.getSenders().containsKey(emailSenderDto.getCode())) {
                 String code = emailSenderDto.getCode();
                 config.getSenders().replace(code,emailSenderDto.getEmail());
                 emailManager.updateMailConfig(config);
@@ -83,30 +78,7 @@ public class EmailSenderService {
             throw new RestServerError("Error deleting the email sender", t);
 		}
 	}
-/*
-    @Override
-    public PagedMetadata<GroupDto> getGroups(RestListRequest restListReq) {
-        try {
-            //transforms the filters by overriding the key specified in the request with the correct one known by the dto
-            List<FieldSearchFilter> filters = new ArrayList<FieldSearchFilter>(restListReq.buildFieldSearchFilters());
-            filters
-                    .stream()
-                    .filter(i -> i.getKey() != null)
-                    .forEach(i -> i.setKey(GroupDto.getEntityFieldName(i.getKey())));
 
-            SearcherDaoPaginatedResult<Group> groups = this.getGroupManager().getGroups(filters);
-            List<GroupDto> dtoList = dtoBuilder.convert(groups.getList());
-
-            PagedMetadata<GroupDto> pagedMetadata = new PagedMetadata<>(restListReq, groups);
-            pagedMetadata.setBody(dtoList);
-
-            return pagedMetadata;
-        } catch (Throwable t) {
-            logger.error("error in search groups", t);
-            throw new RestServerError("error in search groups", t);
-        }
-    }
-    */
     public PagedMetadata<EmailSenderDto> getEmailSenders(RestListRequest restListReq) {
         List<EmailSenderDto> senderList = new ArrayList<>();
         PagedMetadata<EmailSenderDto> pagedMetadata;

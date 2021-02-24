@@ -28,6 +28,7 @@ public class EmailSenderValidator extends AbstractPaginationValidator {
     public static final String ERRCODE_SENDER_NOT_FOUND = "1";
     private static final String ERRCODE_SENDER_NOT_VALID = "2";
     private static final String ERRCODE_SENDER_ALREADY_EXIST = "3";
+    private static final String ERRCODE_READING_CONFIG = "4";
 
     @Autowired
     private IMailManager emailConfigManager;
@@ -43,18 +44,13 @@ public class EmailSenderValidator extends AbstractPaginationValidator {
 
     public void validateSenderExists(final String senderCode, Errors errors) {
         try {
-            System.out.println("validateSenderExists");
             final MailConfig config = emailConfigManager.getMailConfig();
-            System.out.println("config: "+config);
-            System.out.println("senderCode: "+senderCode);
-            System.out.println("config.getSender(senderCode): "+config.getSender(senderCode));
 
             if (null == senderCode || null == config.getSender(senderCode)) {
-                System.out.println("ERRCODE_SENDER_NOT_FOUND: "+ERRCODE_SENDER_NOT_FOUND);
                 errors.rejectValue("code", ERRCODE_SENDER_NOT_FOUND, new String[]{senderCode}, "error.config.sender.notExists");
             }
         } catch (EntException e) {
-            e.printStackTrace();
+            errors.rejectValue("code", ERRCODE_READING_CONFIG, new String[]{senderCode}, "error.config.readingConfig");
         }
     }
 
@@ -62,16 +58,15 @@ public class EmailSenderValidator extends AbstractPaginationValidator {
         try {
             final MailConfig config = emailConfigManager.getMailConfig();
             if (null == senderCode || null != config.getSender(senderCode))  {
-                System.out.println("ERRCODE_SENDER_ALREADY_EXIST: "+ERRCODE_SENDER_ALREADY_EXIST);
-                errors.rejectValue("code", ERRCODE_SENDER_ALREADY_EXIST, new String[]{senderCode}, "error.config.sender.alreadyExists");
+                errors.rejectValue("code", ERRCODE_SENDER_ALREADY_EXIST, new String[]{senderCode}, "error.emailSender.sender.alreadyExists");
             }
         } catch (EntException e) {
-            e.printStackTrace();
+            errors.rejectValue("code", ERRCODE_READING_CONFIG, new String[]{senderCode}, "error.smtpServerConfig.readingConfig");
         }
     }
     public void validateSenderCode(String senderCode, String senderCodePayload, Errors errors) {
         if (!senderCode.equals(senderCodePayload)) {
-            errors.rejectValue("code", ERRCODE_SENDER_NOT_VALID, new String[]{senderCode}, "error.config.sender.invalid");
+            errors.rejectValue("code", ERRCODE_SENDER_NOT_VALID, new String[]{senderCode}, "error.smtpServerConfig.sender.invalid");
         }
     }
 }
