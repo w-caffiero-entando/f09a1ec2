@@ -61,9 +61,8 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
             assertNull(page);
             assertNotNull(lang);
-            
+
             this.resetRequestContext(reqCtx);
-            
             this.pageManager.setPageOnline(root.getCode());
             super.waitNotifyingThread();
             
@@ -75,6 +74,16 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             assertNotNull(page);
             assertNotNull(lang);
             assertEquals(root.getCode(), page.getCode());
+
+            //this.resetRequestContext(reqCtx);
+            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/en/root_fiendly_code");
+            status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+            assertEquals(ControllerManager.REDIRECT, status);
+            lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+            page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+            assertNull(page);
+            assertNotNull(lang);
+
         } catch (Exception e) {
             throw e;
         } finally {
@@ -124,6 +133,10 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/cherry_festival");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.REDIRECT, status);
+            lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+            page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+            assertNull(page);
+            assertNotNull(lang);
             
         } catch (Exception e) {
             throw e;

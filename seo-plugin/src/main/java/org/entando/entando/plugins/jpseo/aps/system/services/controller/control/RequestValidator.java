@@ -91,15 +91,14 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
                 lang = getLangManager().getLang(sect1);
                 String friendlyCode = matcher.group(2).substring(1);
                 FriendlyCodeVO vo = this.getSeoMappingManager().getReference(friendlyCode);
-                if (null != vo) {
+                if (null != vo && null != lang && lang.getCode().equals(vo.getLangCode())) {
                     if (null != vo.getPageCode()) {
                         page = this.getPageManager().getOnlinePage(vo.getPageCode());
-					} else if (null != vo.getContentId() && null != lang && lang.getCode().equals(vo.getLangCode())) {
+					} else if (null != vo.getContentId()) {
                         String contentId = vo.getContentId();
                         String viewPageCode = this.getContentManager().getViewPage(contentId);
                         page = this.getPageManager().getOnlinePage(viewPageCode);
                         reqCtx.addExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID, contentId);
-
                     }
                 }
             }
@@ -147,7 +146,7 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
 	 * in cui il path completo della pagina risulti corretto.
 	 * Qualora il path sia di lunghezza pari a zero
 	 * verrà restituita l'homepage.
-	 * @param Matcher il matcher valorizzato come segue<br>
+	 * @param matcher il matcher valorizzato come segue<br>
 	 * matcher.group(1) -> lang_code<br>
 	 * matcher.group(2) -> /paginaX/paginaY<br>
 	 * matcher.group(3) -> /paginaY<br>
