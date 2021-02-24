@@ -78,8 +78,9 @@ class SMTPServerConfigurationServiceTest {
     private SMTPServerConfigurationService smtpServerConfigurationService;
 
     private MailConfig mailconfig;
+
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         mailconfig = new MailConfig();
         Map<String, String> senderMap = new HashMap<>();
         senderMap.put(SENDER_CODE, SENDER_EMAIL);
@@ -87,7 +88,7 @@ class SMTPServerConfigurationServiceTest {
 
     }
     @Test
-    public void testSendEmailTest() throws Exception {
+    void testSendEmailTest() throws Exception {
         when(userDetails.getUsername()).thenReturn(USERNAME);
         when(userProfileManager.getProfile(USERNAME)).thenReturn(userProfile);
         when(userProfile.getValue(ATTR_EMAIL)).thenReturn(USER_EMAIL);
@@ -99,16 +100,16 @@ class SMTPServerConfigurationServiceTest {
     }
 
     @Test
-    public void testSMTPServerConfiguration() throws Exception {
+    void testSMTPServerConfiguration() throws Exception {
         when(emailManager.getMailConfig()).thenReturn(mailconfig);
         SMTPServerConfigurationDto configuration = this.getSmtpServerConfiguration();
         smtpServerConfigurationService.testSMTPConfiguration(configuration);
         MailConfig emailConfigTest = smtpServerConfigurationService.getMailConfigFromDto(configuration);
-        Mockito.verify(this.emailManager, times(1)).smtpServerTest(eq(emailConfigTest));
+        Mockito.verify(this.emailManager, times(1)).smtpServerTest(emailConfigTest);
     }
 
     @Test
-    public void testGetMailConfigFromDtoSTD() throws Exception {
+    void testGetMailConfigFromDtoSTD() throws Exception {
         testGetMailConfigFromDto(PROTOCOL_STD);
         testGetMailConfigFromDto(PROTOCOL_SSL);
         testGetMailConfigFromDto(PROTOCOL_TLS);
@@ -131,7 +132,7 @@ class SMTPServerConfigurationServiceTest {
     }
 
     @Test
-    public void testHasEmailCurrentUserTrue() throws EntException {
+    void testHasEmailCurrentUserTrue() throws EntException {
         when(userProfile.getValue(ATTR_EMAIL)).thenReturn(USER_EMAIL);
         when(userProfile.getMailAttributeName()).thenReturn(ATTR_EMAIL);
         final boolean result = smtpServerConfigurationService.hasEmailCurrentUser(userProfile);
@@ -139,14 +140,14 @@ class SMTPServerConfigurationServiceTest {
     }
 
     @Test
-    public void testHasEmailCurrentUserFalse() throws EntException {
+    void testHasEmailCurrentUserFalse() throws EntException {
         final boolean result = smtpServerConfigurationService.hasEmailCurrentUser(userProfile);
         assertEquals(false, result);
     }
 
 
     @Test
-    public void testHasEmailCurrentUserNullUserProfile() throws EntException {
+    void testHasEmailCurrentUserNullUserProfile() throws EntException {
         final boolean result = smtpServerConfigurationService.hasEmailCurrentUser(null);
         assertEquals(false, result);
     }

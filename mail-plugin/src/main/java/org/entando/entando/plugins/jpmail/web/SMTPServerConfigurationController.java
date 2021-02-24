@@ -44,12 +44,14 @@ import java.util.Map;
 public class SMTPServerConfigurationController {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
+    private static final String STATUS = "status";
 
     @Autowired
     private SMTPServerConfigurationService smtpServerConfigurationService;
 
     @Autowired
     private SMTPServerConfigurationValidator smtpServerConfigurationValidator;
+
 
     @ApiOperation("Get the SMTP Server Configuration")
     @ApiResponses({
@@ -96,7 +98,7 @@ public class SMTPServerConfigurationController {
     })
     @PostMapping(value = "/sendTestEmail", produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.SUPERUSER)
-    public ResponseEntity<SimpleRestResponse<Map>> sendTestEmail(@ModelAttribute("user") UserDetails user,
+    public ResponseEntity<SimpleRestResponse<Map<String,String>>> sendTestEmail(@ModelAttribute("user") UserDetails user,
                                                                  BindingResult bindingResult) {
         logger.debug("Send Test Email");
         HttpStatus status;
@@ -112,10 +114,10 @@ public class SMTPServerConfigurationController {
         final boolean emailTestSent = smtpServerConfigurationService.sendEmailTest(user);
 
         if (emailTestSent) {
-            response.put("status", "OK");
+            response.put(STATUS, HttpStatus.OK.toString());
             status = HttpStatus.OK;
         } else {
-            response.put("status", "Conflict");
+            response.put(STATUS, HttpStatus.CONFLICT.toString());
             status = HttpStatus.CONFLICT;
         }
 
@@ -131,7 +133,7 @@ public class SMTPServerConfigurationController {
     })
     @PostMapping(value = "/testConfiguration", produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.SUPERUSER)
-    public ResponseEntity<SimpleRestResponse<Map>> testSMTPConfiguration(@Valid @RequestBody SMTPServerConfigurationDto smtpServerConfiguration,
+    public ResponseEntity<SimpleRestResponse<Map<String,String>>> testSMTPConfiguration(@Valid @RequestBody SMTPServerConfigurationDto smtpServerConfiguration,
                                                                          BindingResult bindingResult) {
         logger.debug("Test SMTP Server Configuration");
         Map<String, String> response = new HashMap<>();
@@ -146,10 +148,10 @@ public class SMTPServerConfigurationController {
         final boolean emailTestSent = smtpServerConfigurationService.testSMTPConfiguration(smtpServerConfiguration);
 
         if (emailTestSent) {
-            response.put("status", "OK");
+            response.put(STATUS, HttpStatus.OK.toString());
             status = HttpStatus.OK;
         } else {
-            response.put("status", "Conflict");
+            response.put(STATUS, HttpStatus.CONFLICT.toString());
             status = HttpStatus.CONFLICT;
         }
         return new ResponseEntity<>(new SimpleRestResponse<>(response), status);

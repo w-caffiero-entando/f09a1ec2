@@ -83,7 +83,7 @@ public class SMTPServerConfigurationService {
                 String sender = null;
                 Map<String, String> senders = emailManager.getMailConfig().getSenders();
                 if (null != senders && !senders.isEmpty()) {
-                    List<String> codes = new ArrayList<String>();
+                    List<String> codes = new ArrayList<>();
                     codes.addAll(senders.keySet());
                     sender = codes.get(0);
                 }

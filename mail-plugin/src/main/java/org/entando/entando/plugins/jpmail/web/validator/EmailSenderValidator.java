@@ -40,6 +40,7 @@ public class EmailSenderValidator extends AbstractPaginationValidator {
 
     @Override
     public void validate(Object target, Errors errors) {
+        // Do nothing
     }
 
     public void validateSenderExists(final String senderCode, Errors errors) {

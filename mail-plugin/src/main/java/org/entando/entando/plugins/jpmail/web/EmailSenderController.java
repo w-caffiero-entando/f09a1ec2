@@ -136,7 +136,7 @@ public class EmailSenderController {
 
     @DeleteMapping(value = "/senders/{senderCode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.SUPERUSER)
-    public ResponseEntity<SimpleRestResponse<Map>> deleteEmailSender(@PathVariable String senderCode) {
+    public ResponseEntity<SimpleRestResponse<Map<String,String>>> deleteEmailSender(@PathVariable String senderCode) {
         logger.info("deleting email sender {}", senderCode);
 
         final EmailSenderDto emailSender = emailSenderService.getEmailSender(senderCode);

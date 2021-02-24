@@ -35,10 +35,9 @@ public class SMTPServerConfigurationValidator extends AbstractPaginationValidato
 
     public static final String ERRCODE_INVALID_PROTOCOL = "1";
     private static final String ERRCODE_INVALID_EMAIL = "2";
-    private static final String ERRCODE_INVALID_SENDER_LIST = "3";
-    private static final String ERRCODE_EMPTY_SENDER_LIST = "4";
-    private static final String ERRCODE_READING_CONFIG = "5";
-    private static final String ERRCODE_READING_USER_PROFILE = "6";
+    private static final String ERRCODE_EMPTY_SENDER_LIST = "3";
+    private static final String ERRCODE_READING_CONFIG = "4";
+    private static final String ERRCODE_READING_USER_PROFILE = "5";
 
     @Autowired
     private SMTPServerConfigurationService smtpServerConfigurationService;
@@ -56,7 +55,7 @@ public class SMTPServerConfigurationValidator extends AbstractPaginationValidato
 
     @Override
     public void validate(Object target, Errors errors) {
-
+        // Do nothing
     }
 
     public void validateProtocol(final String protocol, Errors errors) {

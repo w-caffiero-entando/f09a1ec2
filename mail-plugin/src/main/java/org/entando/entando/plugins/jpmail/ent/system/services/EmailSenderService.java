@@ -85,11 +85,9 @@ public class EmailSenderService {
         try {
             MailConfig config = emailManager.getMailConfig();;
             final Map<String, String> senders = config.getSenders();
-            senders.forEach( (senderCode,senderEmail) -> {
-                senderList.add(new EmailSenderDto(senderCode,senderEmail));
-            });
+            senders.forEach( (senderCode,senderEmail) -> senderList.add(new EmailSenderDto(senderCode,senderEmail)));
 
-        List<FieldSearchFilter> filters = new ArrayList<FieldSearchFilter>(restListReq.buildFieldSearchFilters());
+        List<FieldSearchFilter> filters = new ArrayList<>(restListReq.buildFieldSearchFilters());
 
         SearcherDaoPaginatedResult<EmailSenderDto> senderListPaginatedResult = this.getEmailSenders(filters);
         pagedMetadata = new PagedMetadata<>(restListReq, senderListPaginatedResult);
@@ -117,9 +115,7 @@ public class EmailSenderService {
 
             List<EmailSenderDto> senderList = new ArrayList<>();
 
-            sendersMap.forEach( (senderCode,senderEmail) -> {
-                senderList.add(new EmailSenderDto(senderCode,senderEmail));
-            });
+            sendersMap.forEach( (senderCode,senderEmail) -> senderList.add(new EmailSenderDto(senderCode,senderEmail)));
 
             pagedResult = new SearcherDaoPaginatedResult<>(count, senderList);
         } catch (EntException | EntRuntimeException t) {
