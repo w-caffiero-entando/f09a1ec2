@@ -22,17 +22,17 @@
 package com.agiletec.plugins.jpmail.aps.system.services.mail.parse;
 
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import com.agiletec.plugins.jpmail.aps.system.services.mail.AbstractMailConfigTestCase;
-
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
 import com.agiletec.plugins.jpmail.aps.services.mail.parse.MailConfigDOM;
+import com.agiletec.plugins.jpmail.aps.system.services.mail.AbstractMailConfigTestCase;
+import org.entando.entando.ent.exception.EntException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Testing class for XML configuration DOM.
@@ -52,7 +52,16 @@ class TestMailConfigDOM extends AbstractMailConfigTestCase {
 		MailConfig mailConfig = new MailConfigDOM().extractConfig(xml);
 		this.checkOriginaryConfig(mailConfig);
 	}
-	
+    @Test
+    void testExtractConfigThrowsEntException() {
+        Exception exception = assertThrows(EntException.class, () -> {
+            new MailConfigDOM().extractConfig("");
+        });
+        String actualMessage = exception.getMessage();
+        String expectedMessage = "Error parsing xml";
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
 	/**
 	 * Tests the updating of the configuration.
 	 * @throws Throwable
