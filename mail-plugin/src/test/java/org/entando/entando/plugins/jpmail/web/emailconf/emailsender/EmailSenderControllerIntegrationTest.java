@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.plugins.jpmail.web.emailsender;
+package org.entando.entando.plugins.jpmail.web.emailconf.emailsender;
 
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.FileTextReader;
@@ -188,6 +188,20 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
 
         executePostSender("1_POST_invalid_code_empty.json", accessToken, status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].code", is("52")));
+    }
+
+    @Test
+    void testUpdateInvalidSenderReturnBadRequest() throws Exception {
+        Assertions.assertNull(this.emailSenderService.getEmailSender(SENDER_CODE_TEST));
+        UserDetails user = createAdmin();
+        String accessToken = mockOAuthInterceptor(user);
+
+        executePutSender("NOT_FOUND","1_PUT_invalid_code_not_found.json", accessToken, status().isBadRequest())
+                .andDo(print()).andExpect(jsonPath("$.errors[0].code", is("1")));
+
+        executePutSender("NOT_FOUND_1","1_PUT_invalid_code_not_found.json", accessToken, status().isBadRequest())
+                .andDo(print()).andExpect(jsonPath("$.errors[1].code", is("2")));
+
     }
 
     @Test
