@@ -48,10 +48,10 @@ public class EmailSenderValidator extends AbstractPaginationValidator {
             final MailConfig config = emailConfigManager.getMailConfig();
 
             if (null == senderCode || null == config.getSender(senderCode)) {
-                errors.rejectValue("code", ERRCODE_SENDER_NOT_FOUND, new String[]{senderCode}, "error.config.sender.notExists");
+                errors.reject(ERRCODE_SENDER_NOT_FOUND, new String[]{senderCode}, "error.config.sender.notExists");
             }
         } catch (EntException e) {
-            errors.rejectValue("code", ERRCODE_READING_CONFIG, new String[]{senderCode}, "error.config.readingConfig");
+            errors.reject(ERRCODE_READING_CONFIG, new Object[0], "error.config.readingConfig");
         }
     }
 
@@ -59,15 +59,15 @@ public class EmailSenderValidator extends AbstractPaginationValidator {
         try {
             final MailConfig config = emailConfigManager.getMailConfig();
             if (null == senderCode || null != config.getSender(senderCode))  {
-                errors.rejectValue("code", ERRCODE_SENDER_ALREADY_EXIST, new String[]{senderCode}, "error.emailSender.sender.alreadyExists");
+                errors.reject( ERRCODE_SENDER_ALREADY_EXIST, new Object[0], "error.emailSender.sender.alreadyExists");
             }
         } catch (EntException e) {
-            errors.rejectValue("code", ERRCODE_READING_CONFIG, new String[]{senderCode}, "error.smtpServerConfig.readingConfig");
+            errors.reject(ERRCODE_READING_CONFIG, new Object[0], "error.smtpServerConfig.readingConfig");
         }
     }
     public void validateSenderCode(String senderCode, String senderCodePayload, Errors errors) {
         if (!senderCode.equals(senderCodePayload)) {
-            errors.rejectValue("code", ERRCODE_SENDER_NOT_VALID, new String[]{senderCode}, "error.smtpServerConfig.sender.invalid");
+            errors.reject(ERRCODE_SENDER_NOT_VALID, new Object[0], "error.smtpServerConfig.sender.invalid");
         }
     }
 }

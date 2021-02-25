@@ -52,7 +52,7 @@ public class SMTPServerConfigurationValidator {
         validProtocols.add("SSL");
         validProtocols.add("STD");
         if ((null == protocol) || (!validProtocols.contains(protocol))) {
-            errors.rejectValue("protocol", ERRCODE_INVALID_PROTOCOL, new String[]{protocol}, "error.smtpServerConfig.protocol.invalid");
+            errors.reject(ERRCODE_INVALID_PROTOCOL, new Object[0], "error.smtpServerConfig.protocol.invalid");
         }
     }
 
