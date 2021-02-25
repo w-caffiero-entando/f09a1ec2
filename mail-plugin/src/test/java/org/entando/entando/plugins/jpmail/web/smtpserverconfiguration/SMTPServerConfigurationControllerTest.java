@@ -46,7 +46,7 @@ class SMTPServerConfigurationControllerTest extends AbstractControllerTest {
     private static String PASSWORD = "0x24";
 
     @Mock
-    SMTPServerConfigurationValidator validator;
+    private SMTPServerConfigurationValidator validator;
 
     @Mock
     private SMTPServerConfigurationService contentService;

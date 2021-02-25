@@ -31,10 +31,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.io.InputStream;
+import java.util.HashMap;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,7 +56,7 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
     private static String SMTP_CONF_PASSWORD_1 = "";
     private static String SMTP_CONF_HOST_1 = "localhost";
     private static Integer SMTP_CONF_PORT_1 = 25000;
-    private static String SMTP_CONF_PROTOCOL_1 = "STD" ;
+    private static String SMTP_CONF_PROTOCOL_1 = "STD";
     private static Boolean SMTP_CONF_IS_DEBUG_MODE_1 = true;
     private static Boolean SMTP_CONF_IS_ACTIVE_1 = true;
     private static Boolean SMTP_CONF_IS_CHECK_IDENTITY_1 = false;
@@ -72,7 +73,7 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
     private static Integer SMTP_CONF_TIMEOUT_2 = 10000;
 
     @Autowired
-    private  MailManager emailManager;
+    private MailManager emailManager;
 
     @BeforeEach
     void beforeEach() throws EntException {
@@ -108,14 +109,32 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
     }
 
     @Test
-    void testUpdateSMTPServerConfiguration() throws Exception {
-            Assertions.assertNotNull(smtpServerConfigurationService.getSMTPServerConfiguration());
-            UserDetails user = createAdmin();
-            String accessToken = mockOAuthInterceptor(user);
+    void testPostSendTestEmailValidationsNotValidUserEmail() throws Exception {
+        UserDetails user = createAdmin();
+        String accessToken = mockOAuthInterceptor(user);
+        executePostSendTestEmail(user, accessToken, status().isBadRequest());
+    }
 
-            executePutSMTPServerConfiguration("1_PUT_valid.json", accessToken, status().isOk())
-                    .andDo(print())
-                          .andExpect(jsonPath("$.payload.username", is(SMTP_CONF_USERNAME_2)))
+    @Test
+    void testPostSendTestEmailValidationsEmptySenderList() throws Exception {
+        UserDetails user = createAdmin();
+        String accessToken = mockOAuthInterceptor(user);
+        MailConfig mailConf = emailManager.getMailConfig();
+        mailConf.setSenders(new HashMap<>());
+        emailManager.updateMailConfig(mailConf);
+        executePostSendTestEmail(user, accessToken, status().isBadRequest())
+                .andExpect(jsonPath("$.errors", hasSize(2)));
+    }
+
+    @Test
+    void testUpdateSMTPServerConfiguration() throws Exception {
+        Assertions.assertNotNull(smtpServerConfigurationService.getSMTPServerConfiguration());
+        UserDetails user = createAdmin();
+        String accessToken = mockOAuthInterceptor(user);
+
+        executePutSMTPServerConfiguration("1_PUT_valid.json", accessToken, status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.payload.username", is(SMTP_CONF_USERNAME_2)))
                 .andExpect(jsonPath("$.payload.password", is(SMTP_CONF_PASSWORD_2)))
                 .andExpect(jsonPath("$.payload.host", is(SMTP_CONF_HOST_2)))
                 .andExpect(jsonPath("$.payload.port", is(SMTP_CONF_PORT_2)))
@@ -156,6 +175,16 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
         ResultActions result = mockMvc
                 .perform(put(BASE_URL)
                         .content(json)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken));
+        result.andDo(print()).andExpect(expected);
+        return result;
+    }
+
+    private ResultActions executePostSendTestEmail(UserDetails user, String accessToken, ResultMatcher expected) throws Exception {
+        ResultActions result = mockMvc
+                .perform(post(BASE_URL + "/sendTestEmail")
+                        .sessionAttr("user", user)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result.andDo(print()).andExpect(expected);

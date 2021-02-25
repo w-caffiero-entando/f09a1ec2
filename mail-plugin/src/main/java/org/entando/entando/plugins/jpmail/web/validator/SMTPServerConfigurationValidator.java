@@ -20,8 +20,6 @@ import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.plugins.jpmail.ent.system.services.SMTPServerConfigurationService;
-import org.entando.entando.plugins.jpmail.ent.system.services.model.SMTPServerConfigurationDto;
-import org.entando.entando.web.common.validator.AbstractPaginationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -31,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class SMTPServerConfigurationValidator extends AbstractPaginationValidator {
+public class SMTPServerConfigurationValidator {
 
     public static final String ERRCODE_INVALID_PROTOCOL = "1";
     private static final String ERRCODE_INVALID_EMAIL = "2";
@@ -47,16 +45,6 @@ public class SMTPServerConfigurationValidator extends AbstractPaginationValidato
 
     @Autowired
     private IMailManager emailSenderManager;
-
-    @Override
-    public boolean supports(Class<?> paramClass) {
-        return SMTPServerConfigurationDto.class.equals(paramClass);
-    }
-
-    @Override
-    public void validate(Object target, Errors errors) {
-        // Do nothing
-    }
 
     public void validateProtocol(final String protocol, Errors errors) {
         List<String> validProtocols = new ArrayList<>();
@@ -74,11 +62,11 @@ public class SMTPServerConfigurationValidator extends AbstractPaginationValidato
             userProfile = (UserProfile) userProfileManager.getProfile(user.getUsername());
 
         } catch (EntException | EntRuntimeException e) {
-            errors.rejectValue("username", ERRCODE_READING_USER_PROFILE, new String[]{}, "error.smtpServerConfig.readingProfile");
+            errors.reject(ERRCODE_READING_USER_PROFILE, new Object[0], "error.smtpServerConfig.readingProfile");
         }
 
         if (!smtpServerConfigurationService.hasEmailCurrentUser(userProfile)) {
-            errors.rejectValue("username", ERRCODE_INVALID_EMAIL, new String[]{user.getUsername()}, "error.smtpServerConfig.invalidEmail");
+            errors.reject(ERRCODE_INVALID_EMAIL, new Object[0], "error.smtpServerConfig.invalidEmail");
         }
     }
 
@@ -87,10 +75,10 @@ public class SMTPServerConfigurationValidator extends AbstractPaginationValidato
             Map<String, String> senders = emailSenderManager.getMailConfig().getSenders();
 
             if ((senders==null) || (senders.size()==0)){
-                errors.rejectValue("name", ERRCODE_EMPTY_SENDER_LIST, new String[]{}, "error.smtpServerConfig.emptySenderList");
+                errors.reject(ERRCODE_EMPTY_SENDER_LIST, new Object[0], "error.smtpServerConfig.emptySenderList");
             }
         } catch (EntException e) {
-            errors.rejectValue("code", ERRCODE_READING_CONFIG, new String[]{}, "error.smtpServerConfig.readingConfig");
+            errors.reject(ERRCODE_READING_CONFIG, new Object[0], "error.smtpServerConfig.readingConfig");
         }
 
     }

@@ -104,8 +104,8 @@ public class SMTPServerConfigurationController {
         logger.debug("Send Test Email");
         HttpStatus status;
 
-        smtpServerConfigurationValidator.validateUserEmail(user, bindingResult);
         smtpServerConfigurationValidator.validateSenderList(bindingResult);
+        smtpServerConfigurationValidator.validateUserEmail(user, bindingResult);
 
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
