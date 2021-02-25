@@ -131,7 +131,7 @@ public class SMTPServerConfigurationDto {
                 ", debugMode=" + debugMode +
                 ", host='" + host + '\'' +
                 ", port=" + port +
-                ", protocol=" + protocol +
+                ", protocol='" + protocol +'\'' +
                 ", checkServerIdentity=" + checkServerIdentity +
                 ", timeout=" + timeout +
                 ", username='" + username + '\'' +

@@ -68,9 +68,9 @@ public class EmailSenderDto {
 
     @Override
     public String toString() {
-        return "SenderRequest{" +
+        return "EmailSenderDto{" +
                 "code='" + code + '\'' +
-                ", name='" + email + '\'' +
+                ", email='" + email + '\'' +
                 '}';
     }
 }
