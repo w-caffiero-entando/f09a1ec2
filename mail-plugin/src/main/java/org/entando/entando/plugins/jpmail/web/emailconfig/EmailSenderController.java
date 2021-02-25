@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.plugins.jpmail.web;
+package org.entando.entando.plugins.jpmail.web.emailconfig;
 
 import com.agiletec.aps.system.services.role.Permission;
 import io.swagger.annotations.Api;
@@ -22,7 +22,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpmail.ent.system.services.EmailSenderService;
 import org.entando.entando.plugins.jpmail.ent.system.services.model.EmailSenderDto;
-import org.entando.entando.plugins.jpmail.web.validator.EmailSenderValidator;
+import org.entando.entando.plugins.jpmail.web.emailconfig.validator.EmailSenderValidator;
 import org.entando.entando.web.common.annotation.RestAccessControl;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;

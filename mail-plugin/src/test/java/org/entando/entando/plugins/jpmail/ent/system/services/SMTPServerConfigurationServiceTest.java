@@ -52,11 +52,17 @@ class SMTPServerConfigurationServiceTest {
     private static String SMTP_CONF_PASSWORD = "password";
     private static String SMTP_CONF_HOST = "localhost";
     private static Integer SMTP_CONF_PORT = 25000;
-    private static String SMTP_CONF_PROTOCOL = "SSL";
+
     private static Boolean SMTP_CONF_IS_DEBUG_MODE = false;
     private static Boolean SMTP_CONF_IS_ACTIVE = false;
     private static Boolean SMTP_CONF_IS_CHECK_IDENTITY = false;
     private static Integer SMTP_CONF_TIMEOUT = 1000;
+
+
+
+    private static String PROTOCOL_STD_STRING = "STD";
+    private static String PROTOCOL_SSL_STRING = "SSL";
+    private static String PROTOCOL_TLS_STRING = "TLS";
 
     private static Integer PROTOCOL_STD = 0;
     private static Integer PROTOCOL_SSL = 1;
@@ -102,7 +108,7 @@ class SMTPServerConfigurationServiceTest {
     @Test
     void testSMTPServerConfiguration() throws Exception {
         when(emailManager.getMailConfig()).thenReturn(mailconfig);
-        SMTPServerConfigurationDto configuration = this.getSmtpServerConfiguration();
+        SMTPServerConfigurationDto configuration = this.getSmtpServerConfiguration(PROTOCOL_SSL_STRING);
         smtpServerConfigurationService.testSMTPConfiguration(configuration);
         MailConfig emailConfigTest = smtpServerConfigurationService.getMailConfigFromDto(configuration);
         Mockito.verify(this.emailManager, times(1)).smtpServerTest(emailConfigTest);
@@ -110,21 +116,21 @@ class SMTPServerConfigurationServiceTest {
 
     @Test
     void testGetMailConfigFromDtoSTD() throws Exception {
-        testGetMailConfigFromDto(PROTOCOL_STD);
-        testGetMailConfigFromDto(PROTOCOL_SSL);
-        testGetMailConfigFromDto(PROTOCOL_TLS);
+        testGetMailConfigFromDto(PROTOCOL_STD_STRING, PROTOCOL_STD);
+        testGetMailConfigFromDto(PROTOCOL_SSL_STRING, PROTOCOL_SSL);
+        testGetMailConfigFromDto(PROTOCOL_TLS_STRING, PROTOCOL_TLS);
     }
 
-    private void testGetMailConfigFromDto(Integer protocol) throws Exception {
+    private void testGetMailConfigFromDto(String protocolString, Integer protocol) throws Exception {
         when(emailManager.getMailConfig()).thenReturn(mailconfig);
-        SMTPServerConfigurationDto configuration = this.getSmtpServerConfiguration();
+        SMTPServerConfigurationDto configuration = this.getSmtpServerConfiguration(protocolString);
         smtpServerConfigurationService.testSMTPConfiguration(configuration);
         MailConfig emailConfig = smtpServerConfigurationService.getMailConfigFromDto(configuration);
         assertEquals(SMTP_CONF_HOST, emailConfig.getSmtpHost());
         assertEquals(SMTP_CONF_USERNAME, emailConfig.getSmtpUserName());
         assertEquals(SMTP_CONF_PASSWORD, emailConfig.getSmtpPassword());
         assertEquals(SMTP_CONF_PORT, emailConfig.getSmtpPort());
-        assertEquals(PROTOCOL_SSL, emailConfig.getSmtpProtocol());
+        assertEquals(protocol, emailConfig.getSmtpProtocol());
         assertEquals(SMTP_CONF_IS_DEBUG_MODE, emailConfig.isDebug());
         assertEquals(SMTP_CONF_IS_ACTIVE, emailConfig.isActive());
         assertEquals(SMTP_CONF_IS_CHECK_IDENTITY, emailConfig.isCheckServerIdentity());
@@ -152,13 +158,13 @@ class SMTPServerConfigurationServiceTest {
         assertEquals(false, result);
     }
 
-   private SMTPServerConfigurationDto getSmtpServerConfiguration() {
+   private SMTPServerConfigurationDto getSmtpServerConfiguration(String protocol) {
         SMTPServerConfigurationDto smtpServerConfiguration = new SMTPServerConfigurationDto();
         smtpServerConfiguration.setUsername(SMTP_CONF_USERNAME);
         smtpServerConfiguration.setPassword(SMTP_CONF_PASSWORD);
         smtpServerConfiguration.setHost(SMTP_CONF_HOST);
         smtpServerConfiguration.setPort(SMTP_CONF_PORT);
-        smtpServerConfiguration.setProtocol(SMTP_CONF_PROTOCOL);
+        smtpServerConfiguration.setProtocol(protocol);
         smtpServerConfiguration.setDebugMode(SMTP_CONF_IS_DEBUG_MODE);
         smtpServerConfiguration.setActive(SMTP_CONF_IS_ACTIVE);
         smtpServerConfiguration.setCheckServerIdentity(SMTP_CONF_IS_CHECK_IDENTITY);

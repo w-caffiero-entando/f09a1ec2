@@ -29,14 +29,16 @@ class TestEmailSenderDto extends BaseTestCase {
 
     @Test
     void testEqualsAndHashcode()  {
-
+        SMTPServerConfigurationDto smtpServerConfigurationDto = new SMTPServerConfigurationDto();
         EmailSenderDto sender1 = createEmailSenderDto(SENDER_CODE_1, SENDER_EMAIL_1);
         EmailSenderDto sender2 = createEmailSenderDto(SENDER_CODE_1, SENDER_EMAIL_1);
         EmailSenderDto sender3 = createEmailSenderDto(SENDER_CODE_2, SENDER_EMAIL_2);
+        assertThat(sender1.equals(sender1), is(true));
         assertThat(sender1.equals(sender2), is(true));
         assertThat(sender2.equals(sender1), is(true));
         assertThat(sender1.equals(sender3), is(false));
         assertThat(sender3.equals(sender1), is(false));
+        assertThat(sender3.equals(smtpServerConfigurationDto), is(false));
         assertThat(sender1.hashCode(), is(not(sender3.hashCode())));
         assertThat(sender1.hashCode(), is(sender2.hashCode()));
     }

@@ -16,8 +16,8 @@ package org.entando.entando.plugins.jpmail.web.smtpserverconfiguration;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.FileTextReader;
 import org.entando.entando.plugins.jpmail.ent.system.services.SMTPServerConfigurationService;
-import org.entando.entando.plugins.jpmail.web.SMTPServerConfigurationController;
-import org.entando.entando.plugins.jpmail.web.validator.SMTPServerConfigurationValidator;
+import org.entando.entando.plugins.jpmail.web.emailconfig.SMTPServerConfigurationController;
+import org.entando.entando.plugins.jpmail.web.emailconfig.validator.SMTPServerConfigurationValidator;
 import org.entando.entando.web.AbstractControllerTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,9 +83,23 @@ class SMTPServerConfigurationControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testSendTestEmailConflict() throws Exception {
+        UserDetails user = this.createAdmin();
+        when(contentService.sendEmailTest(user)).thenReturn(false);
+        performPostSendTestEmail(user).andExpect(status().isConflict());
+    }
+
+    @Test
     void testSendTestEmailForbidden() throws Exception {
         UserDetails user = this.createUser();
         performPostSendTestEmail(user).andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testTestSMTPConfigurationConflict() throws Exception {
+        UserDetails user = this.createAdmin();
+        when(contentService.testSMTPConfiguration(any())).thenReturn(false);
+        performPostTestSMTPConfiguration("1_POST_valid.json", user).andExpect(status().isConflict());
     }
 
     private ResultActions performPostTestSMTPConfiguration(String fileName, UserDetails user) throws Exception {

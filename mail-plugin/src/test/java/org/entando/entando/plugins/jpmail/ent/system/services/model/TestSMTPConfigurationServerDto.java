@@ -38,13 +38,16 @@ class TestSMTPConfigurationServerDto extends BaseTestCase {
 
     @Test
     void testEqualsAndHashcode()  {
+        EmailSenderDto emailSenderDto= new EmailSenderDto();
         SMTPServerConfigurationDto server1 = createSMTPServerConfigurationDto(HOST_1, PROTOCOL_1, PORT_1);
         SMTPServerConfigurationDto server2 = createSMTPServerConfigurationDto(HOST_1, PROTOCOL_1, PORT_1);
         SMTPServerConfigurationDto server3 = createSMTPServerConfigurationDto(HOST_2, PROTOCOL_2, PORT_2);
+        assertThat(server1.equals(server1), is(true));
         assertThat(server1.equals(server2), is(true));
         assertThat(server2.equals(server1), is(true));
         assertThat(server1.equals(server3), is(false));
         assertThat(server3.equals(server1), is(false));
+        assertThat(server3.equals(emailSenderDto), is(false));
         assertThat(server1.hashCode(), is(not(server3.hashCode())));
         assertThat(server1.hashCode(), is(server2.hashCode()));
     }

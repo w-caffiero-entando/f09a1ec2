@@ -52,6 +52,7 @@ class TestMailConfigDOM extends AbstractMailConfigTestCase {
 		MailConfig mailConfig = new MailConfigDOM().extractConfig(xml);
 		this.checkOriginaryConfig(mailConfig);
 	}
+
     @Test
     void testExtractConfigThrowsEntException() {
         Exception exception = assertThrows(EntException.class, () -> {
