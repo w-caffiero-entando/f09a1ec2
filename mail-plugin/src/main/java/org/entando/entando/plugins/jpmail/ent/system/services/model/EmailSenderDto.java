@@ -29,11 +29,11 @@ public class EmailSenderDto {
         this.email = email;
     }
 
-    @NotBlank(message = "emailSender.code.notBlank")
+    @NotBlank(message = "error.emailSender.code.notBlank")
     private String code;
 
-    @NotBlank(message = "emailSender.email.notBlank")
-    @Email(message = "emailSender.email.notValid")
+    @NotBlank(message = "error.emailSender.email.notBlank")
+    @Email(message = "error.emailSender.email.notValid")
     private String email;
 
     public String getCode() {
