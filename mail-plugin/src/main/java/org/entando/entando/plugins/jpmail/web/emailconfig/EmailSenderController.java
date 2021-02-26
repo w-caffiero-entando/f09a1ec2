@@ -62,6 +62,7 @@ public class EmailSenderController {
     @GetMapping(value = "/senders",produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.SUPERUSER)
     public ResponseEntity<PagedRestResponse<EmailSenderDto>> getEmailSenders(RestListRequest requestList) {
+        logger.debug("Get email sender list");
         emailSenderValidator.validateRestListRequest(requestList, EmailSenderDto.class);
         PagedMetadata<EmailSenderDto> result = emailSenderService.getEmailSenders(requestList);
         return new ResponseEntity<>(new PagedRestResponse<>(result), HttpStatus.OK);
@@ -77,6 +78,7 @@ public class EmailSenderController {
     @GetMapping(value = "/senders/{senderCode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.SUPERUSER)
     public ResponseEntity<SimpleRestResponse<EmailSenderDto>> getSender(@PathVariable String senderCode) {
+        logger.debug("Get email sender by code {}", senderCode);
         EmailSenderDto response = emailSenderService.getEmailSender(senderCode);
         return new ResponseEntity<>(new SimpleRestResponse<>(response), HttpStatus.OK);
     }
@@ -93,6 +95,7 @@ public class EmailSenderController {
     public ResponseEntity<SimpleRestResponse<EmailSenderDto>> updateEmailSender(@PathVariable String senderCode,
                                                                                 @Valid @RequestBody EmailSenderDto emailSender,
                                                                                 BindingResult bindingResult) {
+        logger.debug("Update email sender {}", senderCode);
 
         emailSenderValidator.validateSenderExists(senderCode, bindingResult);
         emailSenderValidator.validateSenderCode(senderCode, emailSender.getCode(), bindingResult);
@@ -116,7 +119,7 @@ public class EmailSenderController {
     public ResponseEntity<SimpleRestResponse<EmailSenderDto>> addEmailSender(
             @Valid @RequestBody EmailSenderDto emailSender,
             BindingResult bindingResult) {
-
+        logger.debug("Add email sender");
         emailSenderValidator.validateSenderNotExists(emailSender.getCode(), bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -137,7 +140,7 @@ public class EmailSenderController {
     @DeleteMapping(value = "/senders/{senderCode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.SUPERUSER)
     public ResponseEntity<SimpleRestResponse<Map<String,String>>> deleteEmailSender(@PathVariable String senderCode) {
-        logger.info("deleting email sender {}", senderCode);
+        logger.debug("Deleting email sender {}", senderCode);
 
         final EmailSenderDto emailSender = emailSenderService.getEmailSender(senderCode);
 
