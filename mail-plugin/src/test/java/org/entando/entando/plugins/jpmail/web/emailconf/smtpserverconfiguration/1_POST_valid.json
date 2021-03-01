@@ -1,0 +1,11 @@
+{
+  "active" : false,
+  "debugMode" : false,
+  "host" : "localhost",
+  "port": 25000,
+  "protocol" : "SSL",
+  "checkServerIdentity" : false,
+  "timeout" : 10000,
+  "username" : "",
+  "password" : ""
+}

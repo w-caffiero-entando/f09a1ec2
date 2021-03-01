@@ -22,18 +22,17 @@
 package com.agiletec.plugins.jpmail.apsadmin.mail;
 
 import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
+import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
+import org.entando.entando.ent.exception.EntException;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 
 public class SmtpConfigAction extends BaseAction {
 
@@ -131,9 +130,9 @@ public class SmtpConfigAction extends BaseAction {
 	/**
 	 * Prepares a MailConfig starting from the action form fields.
 	 * @return a MailConfig starting from the action form fields.
-	 * @throws ApsSystemException In case of errors.
+	 * @throws EntException In case of errors.
 	 */
-	protected MailConfig prepareConfig() throws ApsSystemException {
+	protected MailConfig prepareConfig() throws EntException {
 		MailConfig config = this.getMailManager().getMailConfig();
 		config.setActive(this.isActive());
 		config.setDebug(this.isDebug());

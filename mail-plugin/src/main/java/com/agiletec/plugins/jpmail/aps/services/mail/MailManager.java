@@ -21,36 +21,25 @@
  */
 package com.agiletec.plugins.jpmail.aps.services.mail;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Properties;
+import com.agiletec.aps.system.common.AbstractService;
+import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
+import com.agiletec.plugins.jpmail.aps.services.mail.parse.MailConfigDOM;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.exception.EntRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.Address;
-import javax.mail.Authenticator;
-import javax.mail.Message;
+import javax.mail.*;
 import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.agiletec.aps.system.common.AbstractService;
-import com.agiletec.aps.system.exception.ApsSystemException;
-import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
-import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
-import com.agiletec.plugins.jpmail.aps.services.mail.parse.MailConfigDOM;
+import javax.mail.internet.*;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Implementation for the manager providing email sending functions.
@@ -61,62 +50,59 @@ public class MailManager extends AbstractService implements IMailManager {
 	private static final Logger _logger = LoggerFactory.getLogger(MailManager.class);
 	
 	@Override
-	public void init() throws Exception {
+	public void init() {
 		try {
 			this.loadConfigs();
 			_logger.debug("{} ready: active {}", this.getClass().getName(), this.isActive());
-		} catch (Throwable t) {
+		} catch (EntException | EntRuntimeException t) {
 			_logger.error("{} Manager: Error on initialization", this.getClass().getName(), t);
 			this.setActive(false);
 		}
 	}
 	
-	private void loadConfigs() throws ApsSystemException {
+	private void loadConfigs() throws EntException {
 		try {
 			ConfigInterface configManager = this.getConfigManager();
 			String xml = configManager.getConfigItem(JpmailSystemConstants.MAIL_CONFIG_ITEM);
 			if (xml == null) {
-				throw new ApsSystemException("Configuration item not present: " + JpmailSystemConstants.MAIL_CONFIG_ITEM);
+				throw new EntException("Configuration item not present: " + JpmailSystemConstants.MAIL_CONFIG_ITEM);
 			}
 			MailConfigDOM configDOM = new MailConfigDOM();
 			this.setConfig(configDOM.extractConfig(xml));
-		} catch (Throwable t) {
-			_logger.error("Error in loadConfigs", t);
-			throw new ApsSystemException("Error in loadConfigs", t);
+		} catch (EntException | EntRuntimeException t) {
+			throw new EntException("Error in loadConfigs", t);
 		}
 	}
 	
 	@Override
-	public MailConfig getMailConfig() throws ApsSystemException {
+	public MailConfig getMailConfig() throws EntException {
 		try {
 			return (MailConfig) this._config.clone();
 		} catch (Throwable t) {
-			_logger.error("Error loading mail service configuration", t);
-			throw new ApsSystemException("Error loading mail service configuration", t);
+			throw new EntException("Error loading mail service configuration", t);
 		}
 	}
 	
 	@Override
-	public void updateMailConfig(MailConfig config) throws ApsSystemException {
+	public void updateMailConfig(MailConfig config) throws EntException {
 		try {
 			String xml = new MailConfigDOM().createConfigXml(config);
 			this.getConfigManager().updateConfigItem(JpmailSystemConstants.MAIL_CONFIG_ITEM, xml);
 			this.setConfig(config);
 		} catch (Throwable t) {
-			_logger.error("Error updating configs", t);
-			throw new ApsSystemException("Error updating configs", t);
+			throw new EntException("Error updating configs", t);
 		}
 	}
 	
 	@Override
 	public boolean sendMail(String text, String subject, String[] recipientsTo,
-			String[] recipientsCc, String[] recipientsBcc, String senderCode) throws ApsSystemException {
+			String[] recipientsCc, String[] recipientsBcc, String senderCode) throws EntException {
 		return this.sendMail(text, subject, CONTENTTYPE_TEXT_PLAIN, null, recipientsTo, recipientsCc, recipientsBcc, senderCode);
 	}
 	
 	@Override
 	public boolean sendMail(String text, String subject, String[] recipientsTo,
-			String[] recipientsCc, String[] recipientsBcc, String senderCode, String contentType) throws ApsSystemException {
+			String[] recipientsCc, String[] recipientsBcc, String senderCode, String contentType) throws EntException {
 		return this.sendMail(text, subject, contentType, null, recipientsTo, recipientsCc, recipientsBcc, senderCode);
 	}
 	
@@ -140,7 +126,7 @@ public class MailManager extends AbstractService implements IMailManager {
 	
 	@Override
 	public boolean sendMail(String text, String subject, String contentType, Properties attachmentFiles, String[] recipientsTo,
-			String[] recipientsCc, String[] recipientsBcc, String senderCode) throws ApsSystemException {
+			String[] recipientsCc, String[] recipientsBcc, String senderCode) throws EntException {
 		if (!isActive()) {
 			_logger.info("Sender function disabled : mail Subject {}", subject);
 			return true;
@@ -149,11 +135,11 @@ public class MailManager extends AbstractService implements IMailManager {
 	}
 	
 	@Override
-	public boolean sendMailForTest(String text, String subject, String[] recipientsTo, String senderCode) throws ApsSystemException {
+	public boolean sendMailForTest(String text, String subject, String[] recipientsTo, String senderCode) throws EntException {
 		return this.send(text, subject, recipientsTo, null, null, senderCode,null, CONTENTTYPE_TEXT_PLAIN);
 	}
 	
-	private boolean send(String text, String subject, String[] recipientsTo, String[] recipientsCc, String[] recipientsBcc, String senderCode, Properties attachmentFiles, String contentType) throws ApsSystemException {
+	private boolean send(String text, String subject, String[] recipientsTo, String[] recipientsCc, String[] recipientsBcc, String senderCode, Properties attachmentFiles, String contentType) throws EntException {
 		Transport bus = null;
 		try {
 			Session session = this.prepareSession(this.getConfig());
@@ -170,7 +156,7 @@ public class MailManager extends AbstractService implements IMailManager {
 			msg.saveChanges();
 			bus.send(msg);
 		} catch (Throwable t) {
-			throw new ApsSystemException("Error sending mail", t);
+			throw new EntException("Error sending mail", t);
 		} finally {
 			closeTransport(bus);
 		}
@@ -179,7 +165,7 @@ public class MailManager extends AbstractService implements IMailManager {
 	
 	@Override
 	public boolean sendMixedMail(String simpleText, String htmlText, String subject, Properties attachmentFiles,
-			String[] recipientsTo, String[] recipientsCc, String[] recipientsBcc, String senderCode) throws ApsSystemException {
+			String[] recipientsTo, String[] recipientsCc, String[] recipientsBcc, String senderCode) throws EntException {
 		if (!isActive()) {
 			_logger.info("Sender function disabled : mail Subject " + subject);
 			return true;
@@ -201,7 +187,7 @@ public class MailManager extends AbstractService implements IMailManager {
 			msg.saveChanges();
 			bus.send(msg);
 		} catch (Throwable t) {
-			throw new ApsSystemException("Error sending mail", t);
+			throw new EntException("Error sending mail", t);
 		} finally {
 			closeTransport(bus);
 		}
@@ -358,14 +344,14 @@ public class MailManager extends AbstractService implements IMailManager {
 	/**
 	 * Close the transport.
 	 * @param transport The transport.
-	 * @throws ApsSystemException In case of errors closing the transport.
+	 * @throws EntException In case of errors closing the transport.
 	 */
-	protected void closeTransport(Transport transport) throws ApsSystemException {
+	protected void closeTransport(Transport transport) throws EntException {
 		if (transport != null) {
 			try {
 				transport.close();
 			} catch (MessagingException e) {
-				throw new ApsSystemException("Error closing connection", e);
+				throw new EntException("Error closing connection", e);
 			}
 		}
 	}

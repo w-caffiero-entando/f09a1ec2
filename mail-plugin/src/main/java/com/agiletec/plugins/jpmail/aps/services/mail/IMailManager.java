@@ -21,9 +21,9 @@
  */
 package com.agiletec.plugins.jpmail.aps.services.mail;
 
-import java.util.Properties;
+import org.entando.entando.ent.exception.EntException;
 
-import com.agiletec.aps.system.exception.ApsSystemException;
+import java.util.Properties;
 
 /**
  * Basic interface for the manager providing email sending functions.
@@ -37,16 +37,16 @@ public interface IMailManager {
 	/**
 	 * Returns the configuration of the mail service.
 	 * @return The configuration of the mail service.
-	 * @throws ApsSystemException In case of exception reading the configuration.
+	 * @throws EntException In case of exception reading the configuration.
 	 */
-	public MailConfig getMailConfig() throws ApsSystemException;
+	public MailConfig getMailConfig() throws EntException;
 	
 	/**
 	 * Updates the configuration of the mail service.
 	 * @param config The configuration of the mail service.
-	 * @throws ApsSystemException In case of exception updating the configuration.
+	 * @throws EntException In case of exception updating the configuration.
 	 */
-	public void updateMailConfig(MailConfig config) throws ApsSystemException;
+	public void updateMailConfig(MailConfig config) throws EntException;
 	
 	/**
 	 * Send an e-mail with 'text/plain' contentType and 'charset=utf-8' encoding.
@@ -57,10 +57,10 @@ public interface IMailManager {
 	 * @param recipientsBcc The e-mail 'blind carbon-copy' destination addresses.
 	 * @param senderCode The sender code, as configured in the service configuration.
 	 * @return The send result.
-	 * @throws ApsSystemException In case of errors.
+	 * @throws EntException In case of errors.
 	 */
 	public boolean sendMail(String text, String subject, String[] recipientsTo, 
-			String[] recipientsCc, String[] recipientsBcc, String senderCode) throws ApsSystemException;
+			String[] recipientsCc, String[] recipientsBcc, String senderCode) throws EntException;
 	
 	/**
 	 * Send an e-mail with the given contentType and 'charset=utf-8' encoding.
@@ -72,10 +72,10 @@ public interface IMailManager {
 	 * @param senderCode The sender code, as configured in the service configuration.
 	 * @param contentType The mail content type, usually one between {@link #CONTENTTYPE_TEXT_PLAIN} and {@link #CONTENTTYPE_TEXT_HTML}.
 	 * @return The send result.
-	 * @throws ApsSystemException In case of errors.
+	 * @throws EntException In case of errors.
 	 */
 	public boolean sendMail(String text, String subject, String[] recipientsTo, String[] recipientsCc, 
-			String[] recipientsBcc, String senderCode, String contentType) throws ApsSystemException;
+			String[] recipientsBcc, String senderCode, String contentType) throws EntException;
 	
 	/**
 	 * Send an e-mail with attachments with the given contentType and 'charset=utf-8' encoding.
@@ -88,10 +88,10 @@ public interface IMailManager {
 	 * @param recipientsBcc The e-mail 'blind carbon-copy' destination addresses.
 	 * @param senderCode The sender code, as configured in the service configuration.
 	 * @return The send result.
-	 * @throws ApsSystemException In case of errors.
+	 * @throws EntException In case of errors.
 	 */
 	public boolean sendMail(String text, String subject, String contentType, Properties attachmentFiles, String[] recipientsTo, 
-			String[] recipientsCc, String[] recipientsBcc, String senderCode) throws ApsSystemException;
+			String[] recipientsCc, String[] recipientsBcc, String senderCode) throws EntException;
 	
 	/**
 	 * Send a e-mail with both simple and html text and, if necessary, attachments.
@@ -104,16 +104,16 @@ public interface IMailManager {
 	 * @param recipientsBcc The e-mail 'blind carbon-copy' destination addresses.
 	 * @param senderCode The sender code, as configured in the service configuration.
 	 * @return The send result.
-	 * @throws ApsSystemException In case of errors.
+	 * @throws EntException In case of errors.
 	 */
 	public boolean sendMixedMail(String simpleText, String htmlText, String subject, Properties attachmentFiles, 
-			String[] recipientsTo, String[] recipientsCc, String[] recipientsBcc, String senderCode) throws ApsSystemException;
+			String[] recipientsTo, String[] recipientsCc, String[] recipientsBcc, String senderCode) throws EntException;
 	
 	/**
 	 *
 	 * @param mailConfig
 	 * @return True if smtp server is working
-	 * @throws ApsSystemException
+	 * @throws EntException
 	 */
 	public boolean smtpServerTest(MailConfig mailConfig);
 
@@ -124,9 +124,9 @@ public interface IMailManager {
 	 * @param recipientsTo The e-mail main destination addresses.
 	 * @param senderCode
 	 * @return
-	 * @throws ApsSystemException 
+	 * @throws EntException
 	 */
-	public boolean sendMailForTest(String text, String subject, String[] recipientsTo, String senderCode) throws ApsSystemException;
+	public boolean sendMailForTest(String text, String subject, String[] recipientsTo, String senderCode) throws EntException;
 	/**
 	 * The text/plain contentType.
 	 */
