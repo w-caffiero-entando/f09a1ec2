@@ -267,36 +267,6 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	void testDeleteCategory_2() throws Throwable {
-        this.setUserOnSession("admin");
-        String categoryCode = "general_cat1";
-        assertNotNull(this._categoryManager.getCategory(categoryCode));
-        try {
-            this.initAction("/do/Category", "trash");
-            this.addParameter("selectedNode", categoryCode);
-            String result = this.executeAction();
-            assertEquals("references", result);
-            Category category = this._categoryManager.getCategory(categoryCode);
-            assertNotNull(category);
-            Map<String, Object> references = ((CategoryAction) this.getAction()).getReferences();
-            assertNotNull(references);
-            assertEquals(1, references.size());
-
-            this.initAction("/do/Category", "delete");
-            this.addParameter("selectedNode", categoryCode);
-            result = this.executeAction();
-            assertEquals("references", result);
-            category = this._categoryManager.getCategory(categoryCode);
-            assertNotNull(category);
-            references = ((CategoryAction) this.getAction()).getReferences();
-            assertNotNull(references);
-            assertEquals(1, references.size());
-        } catch (Throwable t) {
-            throw t;
-        }
-    }
-
-    @Test
 	void testCategoryDetails_1() throws Throwable {
         String categoryCode = "cat_temp";
         assertNull(this._categoryManager.getCategory(categoryCode));
@@ -338,8 +308,7 @@ class TestCategoryAction extends ApsAdminBaseTestCase {
             assertEquals(category.getCode(), action.getCategoryCode());
             assertEquals(category.getTitle("it"), action.getTitles().get("it"));
             assertEquals(category.getTitle("en"), action.getTitles().get("en"));
-            assertNotNull(action.getReferences());
-            assertEquals(1, action.getReferences().size());
+            assertNull(action.getReferences());
         } catch (Throwable t) {
             throw t;
         }
