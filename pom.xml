@@ -91,7 +91,7 @@
         <commons-dbcp2.version>2.5.0</commons-dbcp2.version>
         <freemarker.version>2.3.28</freemarker.version>
         <commons-validator.version>1.3.1</commons-validator.version>
-        <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
+        <taglibs-standard-impl.version>1.2.6-RC1</taglibs-standard-impl.version>
         <assertj-core.version>3.11.1</assertj-core.version>
         <commons-digester.version>1.8</commons-digester.version>
         <log4j-core.version>2.13.3</log4j-core.version>
