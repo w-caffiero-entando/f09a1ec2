@@ -75,7 +75,7 @@
         <springsecurityoauth2.version>2.3.6.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.26</struts2.version>
         <cxf.version>3.3.10</cxf.version>
-        <jackson.version>2.10.1</jackson.version>
+        <jackson.version>2.12.3</jackson.version>
         <hibernate-validator-version>6.0.20.Final</hibernate-validator-version>
         <lucene-core.version>7.2.0</lucene-core.version>
         <argon2-jvm.version>2.2</argon2-jvm.version>
@@ -1097,6 +1097,11 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-xml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jdk8</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
 
