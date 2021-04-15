@@ -26,6 +26,11 @@
         <cve>CVE-2020-1954</cve>
     </suppress>
     <suppress>
+        <notes>Velocity 2 is available but this requires a major upgrade</notes>
+        <cpe>cpe:2.3:a:apache:velocity_engine:1.7:*:*:*:*:*:*:*</cpe>
+        <cve>CVE-2020-13936</cve>
+    </suppress>
+    <suppress>
         <notes><![CDATA[
         Struts is also  pivotal and can only be upgraded with a lot of testing.
       ]]></notes>
