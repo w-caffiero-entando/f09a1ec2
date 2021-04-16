@@ -106,7 +106,7 @@ public class PageFinderAction extends AbstractPortalAction {
         List<IPage> result = null;
         try {
             List<String> allowedGroupCodes = this.getAllowedGroupCodes();
-            result = this.getPageManager().searchPages(this.getPageCodeToken(), allowedGroupCodes);
+            result = this.getPageManager().searchPages(this.getPageCodeToken(), null, allowedGroupCodes);
         } catch (Throwable t) {
             _logger.error("Error on searching pages", t);
             throw new RuntimeException("Error on searching pages", t);
