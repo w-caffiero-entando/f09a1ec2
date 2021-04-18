@@ -135,7 +135,7 @@
         <oro.version>2.0.8</oro.version>
         <xom.version>1.2.5</xom.version>
         <esapi.version>2.1.0.1</esapi.version>
-        <tika-version>1.24.1</tika-version>
+        <tika-version>1.26</tika-version>
         <c3p0.version>0.9.5.4</c3p0.version>
         <vorbis-java-tika.version>0.8</vorbis-java-tika.version>
         <metadata-extractor.version>2.11.0</metadata-extractor.version>
@@ -1008,6 +1008,11 @@
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb-impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
                 <version>${jaxb-impl.version}</version>
             </dependency>
             <dependency>
