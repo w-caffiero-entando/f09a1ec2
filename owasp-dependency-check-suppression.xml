@@ -68,4 +68,25 @@
         <cve>CVE-2019-15052</cve>
         <cve>CVE-2019-16370</cve>
     </suppress>
+    <suppress>
+       <notes><![CDATA[
+       False positive, Entando doesn't use vorbis
+       ]]></notes>
+       <packageUrl regex="true">^pkg:maven/org\.gagravarr/vorbis\-java\-tika@.*$</packageUrl>
+       <cve>CVE-2017-6888</cve>
+    </suppress>
+    <suppress>
+       <notes><![CDATA[
+       False positive, Entando doesn't handle tars with tika
+       ]]></notes>
+       <packageUrl regex="true">^pkg:maven/org\.apache\.sis\.storage/sis\-storage@.*$</packageUrl>
+       <cve>CVE-2021-20291</cve>
+    </suppress>
+    <suppress>
+       <notes><![CDATA[
+       False positive, Entando doesn't handle tars with tika
+       ]]></notes>
+       <packageUrl regex="true">^pkg:maven/org\.apache\.sis\.storage/sis\-netcdf@.*$</packageUrl>
+       <cve>CVE-2021-20291</cve>
+    </suppress>  
 </suppressions>
