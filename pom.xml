@@ -95,7 +95,8 @@
         <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
         <assertj-core.version>3.11.1</assertj-core.version>
         <commons-digester.version>1.8</commons-digester.version>
-        <log4j-core.version>2.13.3</log4j-core.version>
+        <logback.version>1.2.3</logback.version>
+        <logback-json.version>0.1.5</logback-json.version>
         <aspectj.version>1.8.0</aspectj.version>
         <ormlite-jdbc.version>4.40</ormlite-jdbc.version>
         <slf4j.version>1.7.26</slf4j.version>
@@ -328,6 +329,16 @@
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-rest-webmvc</artifactId>
                 <version>${spring-data-rest-webmvc.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-tx</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
             </dependency>
             <dependency>
                 <groupId>commons-beanutils</groupId>
@@ -441,20 +452,27 @@
                 
             </dependency>
             <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j-core.version}</version>
-                <type>jar</type>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
                 
             </dependency>
             <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${log4j-core.version}</version>
-                <type>jar</type>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
                 
             </dependency>
-
+            <dependency>
+                <groupId>ch.qos.logback.contrib</groupId>
+                <artifactId>logback-json-classic</artifactId>
+                <version>${logback-json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback.contrib</groupId>
+                <artifactId>logback-jackson</artifactId>
+                <version>${logback-json.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-expression</artifactId>
@@ -603,6 +621,13 @@
                 <type>jar</type>
                 
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${spring.version}</version>
+                <type>jar</type>
+                
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.security</groupId>
@@ -733,7 +758,12 @@
                 <artifactId>struts2-core</artifactId>
                 <version>${struts2.version}</version>
                 <type>jar</type>
-                
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.logging.log4j</groupId>
+                        <artifactId>log4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.struts</groupId>
