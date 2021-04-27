@@ -18,9 +18,9 @@ import com.opensymphony.xwork2.TextProvider;
 import com.opensymphony.xwork2.TextProviderFactory;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.interceptor.ValidationAware;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import static org.apache.struts2.interceptor.TokenInterceptor.INVALID_TOKEN_CODE;
+
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 /**
  * This interceptor can make sure that back buttons and double clicks don't
@@ -38,7 +38,7 @@ import static org.apache.struts2.interceptor.TokenInterceptor.INVALID_TOKEN_CODE
  */
 public class CustomTokenInterceptor extends org.apache.struts2.interceptor.TokenInterceptor {
 
-    private static final Logger LOG = LogManager.getLogger(CustomTokenInterceptor.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CustomTokenInterceptor.class);
 
     public static final String TYPE_RETURN_ACTION_ERROR_MESSAGE = "error";
     public static final String TYPE_RETURN_ACTION_MESSAGE = "message";
@@ -71,10 +71,10 @@ public class CustomTokenInterceptor extends org.apache.struts2.interceptor.Token
             } else if (this.getTypeMessages().equalsIgnoreCase(TYPE_RETURN_ACTION_MESSAGE)) {
                 ((ValidationAware) action).addActionMessage(message);
             } else {
-                LOG.warn("Invalid message type : {}", this.getTypeMessages());
+                logger.warn("Invalid message type : {}", this.getTypeMessages());
             }
         } else {
-            LOG.warn(errorMessage);
+            logger.warn(errorMessage);
         }
         return INVALID_TOKEN_CODE;
     }
