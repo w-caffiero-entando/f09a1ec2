@@ -541,7 +541,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
 
             String pageCode = "free_pg_into_admin_pg";
 
-            mockMvc.perform(post("/pages", pageCode)
+            mockMvc.perform(post("/plugins/seo/pages", pageCode)
                     .header("Authorization", "Bearer " + accessToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(
@@ -558,7 +558,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
 
             pageCode = "admin_pg_into_group1_pg";
 
-            mockMvc.perform(post("/pages", pageCode)
+            mockMvc.perform(post("/plugins/seo/pages/", pageCode)
                     .header("Authorization", "Bearer " + accessToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(
@@ -575,7 +575,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
 
             pageCode = "group1_pg_into_admin_pg";
 
-            mockMvc.perform(post("/pages", pageCode)
+            mockMvc.perform(post("/plugins/seo/pages/", pageCode)
                     .header("Authorization", "Bearer " + accessToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(
@@ -592,7 +592,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
 
             pageCode = "group1_pg_into_group2_pg";
 
-            mockMvc.perform(post("/pages", pageCode)
+            mockMvc.perform(post("/plugins/seo/pages/", pageCode)
                     .header("Authorization", "Bearer " + accessToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(
@@ -609,7 +609,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
 
             pageCode = "group2_pg_into_group1_pg";
 
-            mockMvc.perform(post("/pages", pageCode)
+            mockMvc.perform(post("/plugins/seo/pages/", pageCode)
                     .header("Authorization", "Bearer " + accessToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(
