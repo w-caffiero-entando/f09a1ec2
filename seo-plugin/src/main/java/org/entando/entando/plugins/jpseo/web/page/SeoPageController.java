@@ -1,5 +1,6 @@
 package org.entando.entando.plugins.jpseo.web.page;
 
+import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.RestResponse;
 import org.entando.entando.web.common.model.SimpleRestResponse;
 import org.entando.entando.web.page.model.PagePositionRequest;
+import org.entando.entando.web.page.model.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -106,8 +108,19 @@ public class SeoPageController implements ISeoPageController {
         if (bindingResult.hasErrors()) {
             throw new ValidationConflictException(bindingResult);
         }
+
+        validatePagePlacement(pageRequest, bindingResult);
+
         SeoPageDto dto = (SeoPageDto) this.getPageService().addPage(pageRequest);
         return new ResponseEntity<>(new SimpleRestResponse<>(dto), HttpStatus.OK);
+    }
+
+    private void validatePagePlacement(PageRequest pageRequest, BindingResult bindingResult) {
+        IPage parent = seoPageValidator.getDraftPage(pageRequest.getParentCode());
+        seoPageValidator.validateGroups(pageRequest.getOwnerGroup(), parent.getGroup(), bindingResult);
+        if (bindingResult.hasErrors()) {
+            throw new ValidationGenericException(bindingResult);
+        }
     }
 
     @Override
