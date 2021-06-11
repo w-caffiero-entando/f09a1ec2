@@ -88,5 +88,5 @@
        ]]></notes>
        <packageUrl regex="true">^pkg:maven/org\.apache\.sis\.storage/sis\-netcdf@.*$</packageUrl>
        <cve>CVE-2021-20291</cve>
-    </suppress>
+    </suppress>  
 </suppressions>
