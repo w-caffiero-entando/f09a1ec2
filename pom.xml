@@ -72,6 +72,7 @@
         <!--dependency versions-->
         <spring.version>5.1.20.RELEASE</spring.version>
         <springsecurity.version>5.1.13.RELEASE</springsecurity.version>
+        <springsecurity-core.version>5.2.10-RELEASE</springsecurity-core.version>
         <springsecurityoauth2.version>2.3.8.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.26</struts2.version>
         <cxf.version>3.3.10</cxf.version>
@@ -628,7 +629,6 @@
                 <type>jar</type>
                 
             </dependency>
-
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-web</artifactId>
@@ -737,6 +737,11 @@
                         <artifactId>jackson-mapper-asl</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${springsecurity-core.version}</version>
             </dependency>
 
             <dependency>

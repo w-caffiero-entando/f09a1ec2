@@ -89,13 +89,4 @@
        <packageUrl regex="true">^pkg:maven/org\.apache\.sis\.storage/sis\-netcdf@.*$</packageUrl>
        <cve>CVE-2021-20291</cve>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-        Possible false positive, the actual vulnerability was found in a different series but this might have been
-        flagged as vulnerable because 5.1 is not supported anymore so this might not been tested
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-core@.*$</packageUrl>
-        <cpe>cpe:/a:vmware:spring_security</cpe>
-        <cve>CVE-2021-22112</cve>
-    </suppress>
 </suppressions>
