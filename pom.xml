@@ -71,8 +71,8 @@
         </test.database.serv.url>
         <!--dependency versions-->
         <spring.version>5.3.8</spring.version>
-        <springsecurity.version>5.2.10.RELEASE</springsecurity.version>
-        <springsecurityoauth2.version>2.3.8.RELEASE</springsecurityoauth2.version>
+        <springsecurity.version>5.5.1</springsecurity.version>
+        <springsecurityoauth2.version>2.5.1.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.26</struts2.version>
         <cxf.version>3.3.10</cxf.version>
         <jackson.version>2.11.4</jackson.version>
