@@ -89,4 +89,12 @@
        <packageUrl regex="true">^pkg:maven/org\.apache\.sis\.storage/sis\-netcdf@.*$</packageUrl>
        <cve>CVE-2021-20291</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        There are currently no version available with this version fixed.
+        We might need to change jdom in the future or fork te project
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jdom/jdom@.*$</packageUrl>
+        <cve>CVE-2021-33813</cve>
+    </suppress>
 </suppressions>
