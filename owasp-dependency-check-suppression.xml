@@ -91,10 +91,11 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-        There are currently no version available with this version fixed.
-        We might need to change jdom in the future or fork te project
+        There are currently no version available with this vulnerability fixed.
+        We might need to change jdom in the future or fork the project
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.jdom/jdom@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.jdom/jdom2@.*$</packageUrl>
         <cve>CVE-2021-33813</cve>
     </suppress>
 </suppressions>
