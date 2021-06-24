@@ -80,12 +80,6 @@
        False positive, Entando doesn't handle tars with tika
        ]]></notes>
        <packageUrl regex="true">^pkg:maven/org\.apache\.sis\.storage/sis\-storage@.*$</packageUrl>
-       <cve>CVE-2021-20291</cve>
-    </suppress>
-    <suppress>
-       <notes><![CDATA[
-       False positive, Entando doesn't handle tars with tika
-       ]]></notes>
        <packageUrl regex="true">^pkg:maven/org\.apache\.sis\.storage/sis\-netcdf@.*$</packageUrl>
        <cve>CVE-2021-20291</cve>
     </suppress>
