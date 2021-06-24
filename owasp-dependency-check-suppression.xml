@@ -18,8 +18,9 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
         <notes><![CDATA[
-        There are currently no version available with this vulnerability fixed.
-        We might need to change jdom in the future or fork the project
+        False positive. Even though the vulnerability exists and we use SAXBuilder in our code, our usage is exclusively
+        against internal and static XML files that reference no external entity, making this vulnerability impossible
+        to be exploited by external sources.
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.jdom/jdom[2]?@.*$</packageUrl>
         <cve>CVE-2021-33813</cve>
