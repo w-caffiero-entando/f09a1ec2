@@ -17,8 +17,8 @@ import com.opensymphony.xwork2.validator.ValidationException;
 import com.opensymphony.xwork2.validator.validators.FieldValidatorSupport;
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 /**
  * URLValidator checks that a given field is a String and a valid URL
@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class URLValidator extends FieldValidatorSupport {
 
-    private static final Logger LOG = LogManager.getLogger(URLValidator.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(URLValidator.class);
 
     @Override
     public void validate(Object object) throws ValidationException {
@@ -59,8 +59,8 @@ public class URLValidator extends FieldValidatorSupport {
     }
 
     private boolean verifyUrl(String url) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking if url [#0] is valid", url);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Checking if url [#0] is valid", url);
         }
         if (url == null) {
             return false;
@@ -73,8 +73,8 @@ public class URLValidator extends FieldValidatorSupport {
             new URL(url);
             return true;
         } catch (MalformedURLException e) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Url [#0] is invalid: #1", e, url, e.getMessage());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Url [#0] is invalid: #1", e, url, e.getMessage());
             }
             return false;
         }

@@ -14,11 +14,11 @@
 package org.entando.entando.apsadmin.system.tiles;
 
 import javax.servlet.ServletContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.struts2.tiles.StrutsTilesInitializer;
 import org.apache.tiles.factory.AbstractTilesContainerFactory;
 import org.apache.tiles.request.ApplicationContext;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 /**
  * @see org.entando.entando.apsadmin.system.tiles.EntandoStrutsTilesListener
@@ -26,7 +26,8 @@ import org.apache.tiles.request.ApplicationContext;
  */
 public class EntandoStrutsTilesInitializer extends StrutsTilesInitializer {
 	
-	private static final Logger LOG = LogManager.getLogger(EntandoStrutsTilesInitializer.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(EntandoStrutsTilesInitializer.class);
+    
 	private ServletContext _servletContext;
 	
 	protected EntandoStrutsTilesInitializer(ServletContext servletContext) {
@@ -35,7 +36,7 @@ public class EntandoStrutsTilesInitializer extends StrutsTilesInitializer {
 	
 	@Override
     protected AbstractTilesContainerFactory createContainerFactory(ApplicationContext context) {
-        LOG.trace("Creating dedicated Struts factory to create Tiles container");
+        logger.trace("Creating dedicated Struts factory to create Tiles container");
         return new EntandoStrutsTilesContainerFactory(this.getServletContext());
     }
 	

@@ -15,10 +15,10 @@ package org.entando.entando.apsadmin.system.tiles;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.struts2.tiles.StrutsTilesListener;
 import org.apache.tiles.startup.TilesInitializer;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 /**
  * Listener for loading during init struts2 tiles configuration files.
@@ -34,7 +34,8 @@ import org.apache.tiles.startup.TilesInitializer;
  */
 public class EntandoStrutsTilesListener extends StrutsTilesListener {
 	
-    private static final Logger LOG = LogManager.getLogger(StrutsTilesListener.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(EntandoStrutsTilesListener.class);
+    
 	private ServletContext _servletContext;
 	
 	@Override
@@ -45,7 +46,7 @@ public class EntandoStrutsTilesListener extends StrutsTilesListener {
 	
     @Override
     protected TilesInitializer createTilesInitializer() {
-        LOG.info("Starting Struts Tiles 3 integration ...");
+        logger.info("Starting Struts Tiles 3 integration ...");
         return new EntandoStrutsTilesInitializer(this.getServletContext());
     }
 	
