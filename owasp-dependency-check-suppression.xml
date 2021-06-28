@@ -29,7 +29,7 @@
         <notes><![CDATA[
         False positive. This is a known false positive for logback-json-core-0.1.5.jar.
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback\.contrib/logback\-json\-classic@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback\.contrib/logback\-j.*@.*$</packageUrl>
         <cve>CVE-2017-5929</cve>
     </suppress>
 </suppressions>
