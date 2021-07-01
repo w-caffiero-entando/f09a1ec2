@@ -81,11 +81,6 @@ class TestAdminConsoleLabelsProperties extends TestLabelsProperties {
     }
 
     @Test
-    void testDataObjectModelProperties() throws Throwable {
-        super.testPackageLabelsTranslations(APSADMIN2_PATH + "dataobject/model/");
-    }
-
-    @Test
     void testFileBrowserProperties() throws Throwable {
         super.testPackageLabelsTranslations(APSADMIN2_PATH + "filebrowser/");
     }

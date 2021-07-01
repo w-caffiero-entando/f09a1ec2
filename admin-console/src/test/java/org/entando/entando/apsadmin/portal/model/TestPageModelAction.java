@@ -140,8 +140,8 @@ class TestPageModelAction extends AbstractTestPageModelAction {
         assertFalse(references.isEmpty());
         assertEquals(1, references.size());
         List<Object> referendedPages = references.get("PageManagerUtilizers");
-        assertEquals(25, referendedPages.size());
-        this.checkUtilizers(referendedPages, 13, 12);
+        assertEquals(23, referendedPages.size());
+        this.checkUtilizers(referendedPages, 12, 11);
     }
 
     @Test
@@ -177,8 +177,8 @@ class TestPageModelAction extends AbstractTestPageModelAction {
         assertFalse(references.isEmpty());
         assertEquals(1, references.size());
         List<Object> referendedPages = references.get("PageManagerUtilizers");
-        assertEquals(25, referendedPages.size());
-        this.checkUtilizers(referendedPages, 13, 12);
+        assertEquals(23, referendedPages.size());
+        this.checkUtilizers(referendedPages, 12, 11);
     }
 
     private void checkUtilizers(List<Object> pageUtilizers, int expectedDraft, int expectedOnline) {
