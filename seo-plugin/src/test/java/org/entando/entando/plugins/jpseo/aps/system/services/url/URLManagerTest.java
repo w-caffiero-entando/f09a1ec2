@@ -49,7 +49,9 @@ class URLManagerTest {
     @Mock
     private ILangManager langManager;
     
-    private MockHttpServletRequest request = new MockHttpServletRequest();;
+    private IPage page;
+    
+    private MockHttpServletRequest request = new MockHttpServletRequest();
     
     @BeforeEach
     public void setUp() throws Exception {
@@ -57,14 +59,14 @@ class URLManagerTest {
         Lang defaultLang = mock(Lang.class);
         Mockito.lenient().when(defaultLang.getCode()).thenReturn("en");
         Mockito.lenient().when(langManager.getDefaultLang()).thenReturn(defaultLang);
-        IPage page = mock(IPage.class);
+        this.page = mock(IPage.class);
         SeoPageMetadata metadata = new SeoPageMetadata();
         ApsProperties friendlyCodes = new ApsProperties();
         friendlyCodes.setProperty("it", "ita_friendly");
         friendlyCodes.setProperty("en", "en_friendly");
         metadata.setFriendlyCodes(friendlyCodes);
         Mockito.lenient().when(page.getMetadata()).thenReturn(metadata);
-        Mockito.lenient().when(pageManager.getOnlinePage(Mockito.anyString())).thenReturn(page);
+        Mockito.lenient().when(pageManager.getOnlinePage(Mockito.anyString())).thenReturn(this.page);
         Mockito.lenient().when(page.getCode()).thenReturn("homepage");
         Mockito.lenient().when(configManager.getParam(SystemConstants.PAR_APPL_BASE_URL)).thenReturn("http://www.entando.com/Entando");
     }
@@ -187,6 +189,30 @@ class URLManagerTest {
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, defaultLang);
         Mockito.lenient().when(langManager.getLang("en")).thenReturn(defaultLang);
         return reqCtx;
+    }
+    
+    @Test
+    void testGetUrl() throws Throwable {
+        String expectedUrl = "www.entando.org/page/en/en_friendly";
+        String expectedUrlWithContext = "www.entando.org/entando/page/en/en_friendly";
+        RequestContext reqCtx = this.createRequestContext();
+        Lang lang = new Lang();
+        lang.setCode("en");
+        lang.setDescr("English");
+        
+        Mockito.lenient().when(configManager.getParam(SystemConstants.CONFIG_PARAM_BASE_URL)).thenReturn(SystemConstants.CONFIG_PARAM_BASE_URL_FROM_REQUEST);
+        
+        String url = this.urlManager.createURL(this.page, lang, null, false, this.request);
+        assertEquals("http://"+expectedUrl, url);
+        
+        Mockito.lenient().when(configManager.getParam(SystemConstants.CONFIG_PARAM_BASE_URL_CONTEXT)).thenReturn("true");
+        
+        url = this.urlManager.createURL(this.page, lang, null, false, this.request);
+        assertEquals("http://"+expectedUrlWithContext, url);
+        
+        request.addHeader("X-Forwarded-Proto", "https");
+        url = this.urlManager.createURL(this.page, lang, null, false, this.request);
+        assertEquals("https://"+expectedUrlWithContext, url);
     }
     
 }
