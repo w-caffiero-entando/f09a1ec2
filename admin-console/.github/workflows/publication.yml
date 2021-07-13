@@ -1,4 +1,4 @@
-name: Internal Publication
+name: Release to internal Nexus
 
 on:
   push:
@@ -48,13 +48,13 @@ jobs:
           server-username: NEXUS_USERNAME
           server-password: NEXUS_PASSWORD
       - name: "Publish package"
-        env:
-          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: |
           ~/ppl-run mvn PUBLISH \
             --id "PUBLICATION" \
             --lcd "$REPO_FOLDER"
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       - name: "BOM Update"
         run: |
           ~/ppl-run bom update-bom \

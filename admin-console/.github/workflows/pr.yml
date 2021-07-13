@@ -1,4 +1,3 @@
-# This workflow will prepare every thing required to proceed with a PR For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
 name: PR-CYCLE
 
@@ -15,8 +14,7 @@ env:
   ENTANDO_OPT_FEATURES: ${{ secrets.ENTANDO_OPT_FEATURES }}
   GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
   GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
-  #ENTANDO_OPT_USE_PPL_TAG: ${{ secrets.ENTANDO_OPT_USE_PPL_TAG }}
-  ENTANDO_OPT_USE_PPL_TAG: "engine-exp"
+  ENTANDO_OPT_USE_PPL_TAG: ${{ secrets.ENTANDO_OPT_USE_PPL_TAG }}
   ENTANDO_OPT_REPO_BOM_URL: ${{ secrets.ENTANDO_OPT_REPO_BOM_URL }}
   PPL_CONTEXT: ${{ toJson(github) }}
   REPO_FOLDER: "local-checkout"
@@ -128,8 +126,10 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
       - name: "Build and analyze"
         if: steps.GATE.outputs.ENABLED == 'true'
-      run: |
+        run: |
           ~/ppl-run mvn SONAR --lcd "$REPO_FOLDER"
+      - name: "Clean SKIP-SONAR"
+        if: steps.GATE.outputs.ENABLED != 'true'
         run: |
           ~/ppl-run @pr-labels remove "skip-sonar" --id "CLEAN-SKIP-SONAR"
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -153,12 +153,7 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-nnaannoo  nano .github/workflows/pp             llss
-
-
-nano .github/workflows/pr.yml
-
-yy      - name: "Set up JDK 11"
+      - name: "Set up JDK 11"
         if: steps.GATE.outputs.ENABLED == 'true'
         uses: actions/setup-java@v1
         with:
