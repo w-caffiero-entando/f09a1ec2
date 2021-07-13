@@ -1,18 +1,3 @@
-# This workflow will prepare every thing required to proceed with a PR For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-
->>nano .github/workflows/pr.yml
-
-
-
-nano .github/workflows/pr.ymlrrmm  nn   llss
-
-
-nano .github/workflows/pr.yml
-
-nnaannooccdd  ....
-
-
 name: PR-CYCLE
 
 on:
@@ -40,12 +25,16 @@ jobs:
   # PREPARE
   prepare:
     runs-on: ubuntu-latest
-    eps:
+    steps:
       - name: "PR PIPELINE START"
+        run: |
+          ${{ secrets.ENTANDO_OPT_PPL_INSTALL_CMD }}
           ~/ppl-run \
             pr-status-report .. \
-          @pr-labels remove "prepared" --id "REMOVE-LABEL-PREPARED"
+            @pr-labels remove "prepared" --id "REMOVE-LABEL-PREPARED"
       - name: "Checkout"
+        run: |
+          ~/ppl-run checkout-branch pr --id "CHECKOUT-PREPARE" --lcd "$REPO_FOLDER"
       # PR FORMAT CHECK
       - name: "PR format check"
         id: pr-format-check
