@@ -3,7 +3,10 @@
 
 >>nano .github/workflows/pr.yml
 
+
+
 nano .github/workflows/pr.ymlrrmm  nn   llss
+
 
 nano .github/workflows/pr.yml
 
@@ -37,10 +40,8 @@ jobs:
   # PREPARE
   prepare:
     runs-on: ubuntu-latest
-    steps:
+    eps:
       - name: "PR PIPELINE START"
-        run: |
-          ${{ secrets.ENTANDO_OPT_PPL_INSTALL_CMD }}
           ~/ppl-run \
             pr-status-report .. \
           @pr-labels remove "prepared" --id "REMOVE-LABEL-PREPARED"
