@@ -78,7 +78,6 @@
         <jackson.version>2.11.4</jackson.version>
         <hibernate-validator-version>6.0.20.Final</hibernate-validator-version>
         <lucene-core.version>7.2.0</lucene-core.version>
-        <argon2-jvm.version>2.2</argon2-jvm.version>
         <json-path-assert.version>2.2.0</json-path-assert.version>
         <springfox-swagger2.version>2.10.5</springfox-swagger2.version>
         <byte-buddy.version>1.9.10</byte-buddy.version>
@@ -267,13 +266,6 @@
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-analyzers-common</artifactId>
                 <version>${lucene-core.version}</version>
-                <type>jar</type>
-            </dependency>
-
-            <dependency>
-                <groupId>de.mkammerer</groupId>
-                <artifactId>argon2-jvm</artifactId>
-                <version>${argon2-jvm.version}</version>
                 <type>jar</type>
             </dependency>
 
