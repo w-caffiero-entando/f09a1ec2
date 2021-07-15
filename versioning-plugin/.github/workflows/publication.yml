@@ -9,8 +9,7 @@ on:
 env:
   ENTANDO_OPT_USE_PPL_TAG: "v1.0.1"
   ENTANDO_OPT_FEATURES: ${{ secrets.ENTANDO_OPT_FEATURES }}
-  #ENTANDO_OPT_LOG_LEVEL: ${{ secrets.ENTANDO_OPT_LOG_LEVEL }}
-  ENTANDO_OPT_LOG_LEVEL: "###TRACE"
+  ENTANDO_OPT_LOG_LEVEL: ${{ secrets.ENTANDO_OPT_LOG_LEVEL }}
   ENTANDO_OPT_REPO_BOM_URL: ${{ secrets.ENTANDO_OPT_REPO_BOM_URL }}
   GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
   GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
@@ -29,10 +28,7 @@ jobs:
       - name: "PR PIPELINE START"
         run: |
           ${{ secrets.ENTANDO_OPT_PPL_INSTALL_CMD }}
-          echo "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW $LINENO"
-          set -x
           ~/ppl-run status-report
-          echo "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW $LINENO"
       - name: "Checkout"
         run: |
           ~/ppl-run checkout-branch base \
