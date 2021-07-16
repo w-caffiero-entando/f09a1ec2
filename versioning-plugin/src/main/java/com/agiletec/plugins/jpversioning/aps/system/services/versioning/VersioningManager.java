@@ -230,7 +230,7 @@ public class VersioningManager extends AbstractService implements IVersioningMan
             SAXParser parser = EntSafeXmlUtils.newSafeSAXParser();
             InputSource is = new InputSource(new StringReader(xml));
             EntityHandler handler = this.getEntityHandler();
-            handler.initHandler(entityPrototype, this.getXmlAttributeRootElementName(), this.getCategoryManager());
+            handler.initHandler(entityPrototype, this.getXmlAttributeRootElementName());
             parser.parse(is, handler);
             return entityPrototype;
         } catch (ParserConfigurationException | SAXException | IOException e) {
