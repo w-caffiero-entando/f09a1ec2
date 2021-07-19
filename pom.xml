@@ -48,9 +48,9 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
-        <allTestsSuiteClass></allTestsSuiteClass>
-        <preDeploymentTestGroups></preDeploymentTestGroups>
-        <postDeploymentTestGroups></postDeploymentTestGroups>
+        <allTestsSuiteClass/>
+        <preDeploymentTestGroups/>
+        <postDeploymentTestGroups/>
         <checkstyleConfigLocation>
             https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/checkstyle.xml
         </checkstyleConfigLocation>
@@ -81,7 +81,7 @@
         <json-path-assert.version>2.2.0</json-path-assert.version>
         <springfox-swagger2.version>2.10.5</springfox-swagger2.version>
         <byte-buddy.version>1.9.10</byte-buddy.version>
-        <guava.version>30.0-jre</guava.version>
+        <guava.version>30.1.1-jre</guava.version>
         <spring-data-rest-webmvc.version>3.1.3.RELEASE</spring-data-rest-webmvc.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-chain.version>1.2</commons-chain.version>
