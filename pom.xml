@@ -48,9 +48,9 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
-        <allTestsSuiteClass></allTestsSuiteClass>
-        <preDeploymentTestGroups></preDeploymentTestGroups>
-        <postDeploymentTestGroups></postDeploymentTestGroups>
+        <allTestsSuiteClass/>
+        <preDeploymentTestGroups/>
+        <postDeploymentTestGroups/>
         <checkstyleConfigLocation>
             https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/checkstyle.xml
         </checkstyleConfigLocation>
@@ -135,10 +135,10 @@
         <oro.version>2.0.8</oro.version>
         <xom.version>1.2.5</xom.version>
         <esapi.version>2.2.3.1</esapi.version>
-        <tika-version>1.26</tika-version>
+        <tika-version>2.0.0</tika-version>
         <c3p0.version>0.9.5.4</c3p0.version>
         <vorbis-java-tika.version>0.8</vorbis-java-tika.version>
-        <metadata-extractor.version>2.11.0</metadata-extractor.version>
+        <metadata-extractor.version>2.13.0</metadata-extractor.version>
         <commons-collections4.version>4.1</commons-collections4.version>
         <lombok.version>1.18.2</lombok.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
