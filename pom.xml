@@ -103,7 +103,7 @@
         <json.version>20180130</json.version>
         <httpclient.version>4.5.13</httpclient.version>
         <jaxb-impl.version>2.2.11</jaxb-impl.version>
-        <jaxb-xjc.version>2.2.6</jaxb-xjc.version>
+        <jaxb-xjc.version>3.0.1</jaxb-xjc.version>
         <derby.version>10.9.1.0</derby.version>
         <javax.el.version>2.2.4</javax.el.version>
         <javax.el-api.version>3.0.0</javax.el-api.version>
