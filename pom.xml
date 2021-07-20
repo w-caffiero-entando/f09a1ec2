@@ -135,7 +135,7 @@
         <oro.version>2.0.8</oro.version>
         <xom.version>1.2.5</xom.version>
         <esapi.version>2.2.3.1</esapi.version>
-        <tika-version>2.0.0</tika-version>
+        <tika-version>1.27</tika-version>
         <c3p0.version>0.9.5.4</c3p0.version>
         <vorbis-java-tika.version>0.8</vorbis-java-tika.version>
         <metadata-extractor.version>2.13.0</metadata-extractor.version>
