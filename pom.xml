@@ -105,6 +105,7 @@
         <jaxb-impl.version>3.0.1</jaxb-impl.version>
         <jaxb-xjc.version>3.0.1</jaxb-xjc.version>
         <derby.version>10.15.2.0</derby.version>
+        <javax-validator.version>2.0.1.Final</javax-validator.version>
         <javax.el.version>2.2.6</javax.el.version>
         <javax.el-api.version>3.0.0</javax.el-api.version>
         <tomcat-servlet-api.version>10.0.8</tomcat-servlet-api.version>
@@ -453,6 +454,13 @@
                 <groupId>commons-validator</groupId>
                 <artifactId>commons-validator</artifactId>
                 <version>${commons-validator.version}</version>
+                <type>jar</type>
+                
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax-validator.version}</version>
                 <type>jar</type>
                 
             </dependency>
