@@ -76,7 +76,7 @@
         <struts2.version>2.5.26</struts2.version>
         <cxf.version>3.4.4</cxf.version>
         <jackson.version>2.11.4</jackson.version>
-        <hibernate-validator-version>6.0.20.Final</hibernate-validator-version>
+        <hibernate-validator-version>7.0.1.Final</hibernate-validator-version>
         <lucene-core.version>7.2.0</lucene-core.version>
         <json-path-assert.version>2.2.0</json-path-assert.version>
         <springfox-swagger2.version>2.10.5</springfox-swagger2.version>
