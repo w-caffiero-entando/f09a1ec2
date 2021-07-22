@@ -70,87 +70,87 @@
             jdbc:derby:${project.build.directory}/test/db/${project.artifactId}testServ;create=true
         </test.database.serv.url>
         <!--dependency versions-->
-        <spring.version>5.3.8</spring.version>
+        <spring.version>5.3.9</spring.version>
         <springsecurity.version>5.5.1</springsecurity.version>
         <springsecurityoauth2.version>2.5.1.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.26</struts2.version>
         <cxf.version>3.4.4</cxf.version>
         <jackson.version>2.11.4</jackson.version>
         <hibernate-validator-version>7.0.1.Final</hibernate-validator-version>
-        <lucene-core.version>7.2.0</lucene-core.version>
-        <json-path-assert.version>2.2.0</json-path-assert.version>
+        <lucene-core.version>8.9.0</lucene-core.version>
+        <json-path-assert.version>2.6.0</json-path-assert.version>
         <springfox-swagger2.version>2.10.5</springfox-swagger2.version>
-        <byte-buddy.version>1.11.5</byte-buddy.version>
+        <byte-buddy.version>1.11.6</byte-buddy.version>
         <guava.version>30.1.1-jre</guava.version>
-        <spring-data-rest-webmvc.version>3.1.3.RELEASE</spring-data-rest-webmvc.version>
+        <spring-data-rest-webmvc.version>3.5.3</spring-data-rest-webmvc.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-chain.version>1.2</commons-chain.version>
         <commons-text.version>1.9</commons-text.version>
         <commons-codec.version>1.15</commons-codec.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <commons-dbcp2.version>2.5.0</commons-dbcp2.version>
+        <commons-dbcp2.version>2.8.0</commons-dbcp2.version>
         <freemarker.version>2.3.31</freemarker.version>
-        <commons-validator.version>1.3.1</commons-validator.version>
+        <commons-validator.version>1.7</commons-validator.version>
         <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
-        <assertj-core.version>3.11.1</assertj-core.version>
-        <commons-digester.version>1.8</commons-digester.version>
-        <logback.version>1.2.3</logback.version>
+        <assertj-core.version>3.20.2</assertj-core.version>
+        <commons-digester.version>2.1</commons-digester.version>
+        <logback.version>1.2.4</logback.version>
         <logback-json.version>0.1.5</logback-json.version>
-        <aspectj.version>1.8.0</aspectj.version>
+        <aspectj.version>1.9.7</aspectj.version>
         <ormlite-jdbc.version>4.40</ormlite-jdbc.version>
-        <slf4j.version>1.7.26</slf4j.version>
-        <jettison.version>1.3.7</jettison.version>
-        <json.version>20180130</json.version>
+        <slf4j.version>1.7.31</slf4j.version>
+        <jettison.version>1.4.1</jettison.version>
+        <json.version>20210307</json.version>
         <httpclient.version>4.5.13</httpclient.version>
-        <jaxb-impl.version>2.2.11</jaxb-impl.version>
+        <jaxb-impl.version>3.0.1</jaxb-impl.version>
         <jaxb-xjc.version>3.0.1</jaxb-xjc.version>
-        <derby.version>10.9.1.0</derby.version>
+        <derby.version>10.15.2.0</derby.version>
         <javax-validator.version>2.0.1.Final</javax-validator.version>
-        <javax.el.version>2.2.4</javax.el.version>
+        <javax.el.version>2.2.6</javax.el.version>
         <javax.el-api.version>3.0.0</javax.el-api.version>
-        <tomcat-servlet-api.version>7.0.50</tomcat-servlet-api.version>
-        <im4java.version>1.2.0</im4java.version>
+        <tomcat-servlet-api.version>10.0.8</tomcat-servlet-api.version>
+        <im4java.version>1.4.0</im4java.version>
         <aopalliance.version>1.0</aopalliance.version>
         <joda-time.version>2.10.10</joda-time.version>
         <jsp-api.version>2.2</jsp-api.version>
         <hamcrest-all.version>1.3</hamcrest-all.version>
-        <mockito-core.version>2.28.2</mockito-core.version>
-        <junit-jupiter.version>5.7.0</junit-jupiter.version>
-        <junit-jupiter-api.version>5.7.0</junit-jupiter-api.version>
-        <mockito-junit-jupiter.version>3.7.7</mockito-junit-jupiter.version>
-        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <mockito.version>3.11.2</mockito.version>
+        <junit-jupiter.version>5.7.2</junit-jupiter.version>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <jdom.version>1.1.3</jdom.version>
-        <javassist.version>3.20.0-GA</javassist.version>
+        <javassist.version>3.28.0-GA</javassist.version>
         <velocity.version>2.3</velocity.version>
         <struts2-jquery-plugin.version>4.0.3</struts2-jquery-plugin.version>
-        <ognl.version>3.2.21</ognl.version>
+        <ognl.version>3.1.26</ognl.version>
         <tiles-core.version>3.0.8</tiles-core.version>
-        <commons-io.version>2.7</commons-io.version>
+        <commons-io.version>2.11.0</commons-io.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <commons-lang3.version>3.9</commons-lang3.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-logging.version>1.2</commons-logging.version>
         <commons-logging-api.version>1.1</commons-logging-api.version>
-        <commons-pool.version>1.3</commons-pool.version>
+        <commons-pool.version>1.6</commons-pool.version>
         <xml-apis.version>1.4.01</xml-apis.version>
         <oro.version>2.0.8</oro.version>
-        <xom.version>1.2.5</xom.version>
+        <xom.version>1.3.7</xom.version>
         <esapi.version>2.2.3.1</esapi.version>
         <tika-version>1.27</tika-version>
-        <c3p0.version>0.9.5.4</c3p0.version>
+        <c3p0.version>0.9.5.5</c3p0.version>
         <vorbis-java-tika.version>0.8</vorbis-java-tika.version>
-        <metadata-extractor.version>2.13.0</metadata-extractor.version>
-        <commons-collections4.version>4.1</commons-collections4.version>
-        <lombok.version>1.18.2</lombok.version>
+        <metadata-extractor.version>2.16.0</metadata-extractor.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <lombok.version>1.18.20</lombok.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
         <maven-resources-plugin.version>2.5</maven-resources-plugin.version>
         <maven-war-plugin.version>2.1.1</maven-war-plugin.version>
         <maven-assembly-plugin.version>2.2.1</maven-assembly-plugin.version>
-        <jna.version>5.5.0</jna.version>
-        <asm.version>8.0.1</asm.version>
+        <jna.version>5.8.0</jna.version>
+        <asm.version>9.2</asm.version>
         <sun-mail.version>2.0.1</sun-mail.version>
-        <subethasmtp.version>3.1.6</subethasmtp.version>
+        <subethasmtp.version>3.1.7</subethasmtp.version>
         <pdfbox.version>2.0.24</pdfbox.version>
+        <stax-ex.version>2.0.1</stax-ex.version>
+        <javax.mail.version>1.4.7</javax.mail.version>
     </properties>
     <issueManagement>
         <system>Github</system>
@@ -463,7 +463,7 @@
                 <artifactId>validation-api</artifactId>
                 <version>${javax-validator.version}</version>
                 <type>jar</type>
-                
+
             </dependency>
             <dependency>
                 <groupId>org.freemarker</groupId>
@@ -505,14 +505,12 @@
                 <artifactId>spring-expression</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aop</artifactId>
                 <version>${spring.version}</version>
                 <type>jar</type>
-                
             </dependency>
             <dependency>
                 <groupId>org.apache.tika</groupId>
@@ -576,7 +574,7 @@
             <dependency>
                 <groupId>org.jvnet.staxex</groupId>
                 <artifactId>stax-ex</artifactId>
-                <version>1.8.1</version>
+                <version>${stax-ex.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.gagravarr</groupId>
@@ -944,19 +942,19 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit-jupiter-api.version}</version>
+                <version>${junit-jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>${mockito-junit-jupiter.version}</version>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>${mockito-core.version}</version>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -980,6 +978,11 @@
                 <groupId>org.glassfish.web</groupId>
                 <artifactId>javax.el</artifactId>
                 <version>${javax.el.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${javax.mail.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.im4java</groupId>
