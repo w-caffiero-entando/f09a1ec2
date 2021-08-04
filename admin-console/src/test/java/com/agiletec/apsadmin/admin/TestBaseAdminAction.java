@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import org.junit.jupiter.api.AfterEach;
@@ -80,49 +81,49 @@ class TestBaseAdminAction extends ApsAdminBaseTestCase {
         BaseAdminAction action = (BaseAdminAction) this.getAction();
         Map<String, String> params = action.getSystemParams();
         assertTrue(params.size() >= 6);
-        assertEquals("homepage", params.get(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
+        assertEquals("homepage", params.get(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
     }
 
     @Test
 	void testUpdateConfigParams_1() throws Throwable {
         this.setUserOnSession("admin");
         this.initAction("/do/BaseAdmin", "updateSystemParams");
-        this.addParameter(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE, "newErrorPageCode");
-        this.addParameter(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE, "newHomepageCode");
+        this.addParameter(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE, "newErrorPageCode");
+        this.addParameter(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE, "newHomepageCode");
         String result = this.executeAction();
         assertEquals(Action.SUCCESS, result);
 
-        assertEquals("newHomepageCode", this.configManager.getParam(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
-        assertEquals("newErrorPageCode", this.configManager.getParam(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE));
+        assertEquals("newHomepageCode", this.configManager.getParam(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
+        assertEquals("newErrorPageCode", this.configManager.getParam(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE));
     }
 
     @Test
 	void testUpdateConfigParams_2() throws Throwable {
-        assertEquals("homepage", this.configManager.getParam(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
-        assertEquals("errorpage", this.configManager.getParam(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE));
+        assertEquals("homepage", this.configManager.getParam(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
+        assertEquals("errorpage", this.configManager.getParam(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE));
 
         this.setUserOnSession("admin");
         this.initAction("/do/BaseAdmin", "updateSystemParams");
         this.addParameter("newCustomParameter", "parameterValue");
-        this.addParameter(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE, "newErrorPageCode");
-        this.addParameter(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE, "newHomepageCode");
+        this.addParameter(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE, "newErrorPageCode");
+        this.addParameter(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE, "newHomepageCode");
         String result = this.executeAction();
         assertEquals(Action.SUCCESS, result);
 
-        assertEquals("newHomepageCode", this.configManager.getParam(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
-        assertEquals("newErrorPageCode", this.configManager.getParam(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE));
+        assertEquals("newHomepageCode", this.configManager.getParam(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
+        assertEquals("newErrorPageCode", this.configManager.getParam(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE));
         assertNull(this.configManager.getParam("newCustomParameter"));
 
         this.initAction("/do/BaseAdmin", "updateSystemParams");
         this.addParameter("newCustomParameter", "parameterValue");
         this.addParameter("newCustomParameter_newParamMarker", "true");
-        this.addParameter(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE, "newErrorPageCode");
-        this.addParameter(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE, "newHomepageCode");
+        this.addParameter(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE, "newErrorPageCode");
+        this.addParameter(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE, "newHomepageCode");
         result = this.executeAction();
         assertEquals(Action.SUCCESS, result);
 
-        assertEquals("newHomepageCode", this.configManager.getParam(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
-        assertEquals("newErrorPageCode", this.configManager.getParam(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE));
+        assertEquals("newHomepageCode", this.configManager.getParam(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
+        assertEquals("newErrorPageCode", this.configManager.getParam(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE));
         assertNotNull(this.configManager.getParam("newCustomParameter"));
         assertEquals("parameterValue", this.configManager.getParam("newCustomParameter"));
     }
