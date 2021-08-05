@@ -52,7 +52,7 @@ class TestPageSettingsAction extends ApsAdminBaseTestCase {
         Map<String, String> initialParameters = this.pageManager.getParams();
         try {
             this.setUserOnSession("admin");
-            this.initAction("/do/BaseAdmin", "updateSystemParams");
+            this.initAction("/do/Page", "updateSystemParams");
             this.addParameter(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE, "newErrorPageCode");
             this.addParameter(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE, "newHomepageCode");
             this.addParameter("newParam", "valueOfNewParameter");
