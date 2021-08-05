@@ -24,7 +24,7 @@ package org.entando.entando.plugins.jpseo.aps.system;
 /**
  * @author E.Santoboni
  */
-public class JpseoSystemConstants {
+public interface JpseoSystemConstants {
 	
 	public static final String ATTRIBUTE_ROLE_FRIENDLY_CODE = "jacms:friendlyCode";
 	
