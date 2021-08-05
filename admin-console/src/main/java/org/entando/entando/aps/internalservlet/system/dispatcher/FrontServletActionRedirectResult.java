@@ -15,8 +15,8 @@ package org.entando.entando.aps.internalservlet.system.dispatcher;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.lang.Lang;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.Page;
 import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.tags.InternalServletTag;
@@ -87,7 +87,7 @@ public class FrontServletActionRedirectResult extends ServletRedirectResult impl
                 this.method = this.conditionalParse(this.method, invocation);
             }
             String anchorDest = null;
-            Map<String, String> redirectParams = new HashMap<String, String>();
+            Map<String, String> redirectParams = new HashMap<>();
             ResultConfig resultConfig = invocation.getProxy().getConfig().getResults().get(invocation.getResultCode());
             if (resultConfig != null) {
                 this.extractResultParams(redirectParams, resultConfig, invocation);
@@ -99,9 +99,9 @@ public class FrontServletActionRedirectResult extends ServletRedirectResult impl
             IURLManager urlManager = (IURLManager) ApsWebApplicationUtils.getBean(SystemConstants.URL_MANAGER, request);
             Page currentPage = (Page) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
             Lang currentLang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
-            ConfigInterface configManager = (ConfigInterface) ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, request);
-            String urlType = configManager.getParam(SystemConstants.CONFIG_PARAM_BASE_URL);
-            boolean needRequest = (null != urlType && !urlType.equals(SystemConstants.CONFIG_PARAM_BASE_URL_RELATIVE));
+            IPageManager pageManager = (IPageManager) ApsWebApplicationUtils.getBean(SystemConstants.PAGE_MANAGER, request);
+            String urlType = pageManager.getConfig(IPageManager.CONFIG_PARAM_BASE_URL);
+            boolean needRequest = (null != urlType && !urlType.equals(IPageManager.CONFIG_PARAM_BASE_URL_RELATIVE));
             String url = urlManager.createURL(currentPage, currentLang, redirectParams, false, (needRequest) ? request : null);
             if (null != anchorDest) {
                 url += "#" + anchorDest;
