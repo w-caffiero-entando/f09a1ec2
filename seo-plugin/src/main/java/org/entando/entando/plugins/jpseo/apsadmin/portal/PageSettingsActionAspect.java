@@ -204,7 +204,6 @@ public class PageSettingsActionAspect {
             }
             this.getPageManager().updateParams(newParams);
         } catch (Throwable t) {
-            t.printStackTrace();
             logger.error("error updating page settings for seo", t);
             action.addActionError("error updating page settings for seo");
         }
