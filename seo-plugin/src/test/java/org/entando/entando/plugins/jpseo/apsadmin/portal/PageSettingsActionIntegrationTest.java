@@ -23,12 +23,14 @@ import java.util.Map;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.portal.PageSettingsAction;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import java.io.File;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.junit.jupiter.api.AfterEach;
@@ -54,7 +56,7 @@ class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
         PageSettingsAction action = (PageSettingsAction) this.getAction();
         Map<String, String> params = action.getSystemParams();
         assertTrue(params.size() >= 6);
-        assertEquals("homepage", params.get(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
+        assertEquals("homepage", params.get(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
     }
 
     @Test
@@ -66,14 +68,16 @@ class PageSettingsActionIntegrationTest extends ApsAdminBaseTestCase {
             String result = this.executeAction();
             assertEquals(Action.SUCCESS, result);
             assertTrue(this.storageManager.exists(PageSettingsActionAspect.ROBOT_FILENAME, false));
-            assertNull(this.configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME));
+            String newValue = this.configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME);
+            assertTrue(StringUtils.isBlank(newValue));
 
             this.initAction("/do/Page", "updateSystemParams");
             this.addParameter(PageSettingsActionAspect.PARAM_ROBOT_CONTENT_CODE, "");
             result = this.executeAction();
             assertEquals(Action.SUCCESS, result);
             assertFalse(this.storageManager.exists(PageSettingsActionAspect.ROBOT_FILENAME, false));
-            assertNull(this.configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME));
+            newValue = this.configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME);
+            assertTrue(StringUtils.isBlank(newValue));
         } catch (Exception e) {
             this.storageManager.deleteFile(PageSettingsActionAspect.ROBOT_FILENAME, false);
             throw e;

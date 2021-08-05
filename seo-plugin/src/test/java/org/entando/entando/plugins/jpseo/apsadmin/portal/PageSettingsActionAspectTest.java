@@ -46,6 +46,7 @@ import org.mockito.Mockito;
 
 import static org.mockito.Mockito.when;
 
+import com.agiletec.aps.system.services.page.IPageManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +70,7 @@ class PageSettingsActionAspectTest {
     private MockHttpServletRequest request = new MockHttpServletRequest();
 
     @Mock
-    private ConfigInterface configManager;
+    private IPageManager pageManager;
 
     @Mock
     private IStorageManager storageManager;
@@ -124,7 +125,7 @@ class PageSettingsActionAspectTest {
     @Test
     public void executeInitConfig_1() throws EntException {
         String path = System.getProperty("java.io.tmpdir") + File.separator + "robot.txt";
-        when(configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
+        when(pageManager.getConfig(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
         actionAspect.executeInitConfig(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).exists(Mockito.anyString(), Mockito.anyBoolean());
         Assertions.assertTrue(pageSettingsAction.hasFieldErrors());
@@ -134,7 +135,7 @@ class PageSettingsActionAspectTest {
     @Test
     public void executeInitConfig_2() throws EntException {
         String path = System.getProperty("java.io.tmpdir") + File.separator + "meta-inf" + File.separator + "robot.txt";
-        when(configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
+        when(pageManager.getConfig(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
         actionAspect.executeInitConfig(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).exists(Mockito.anyString(), Mockito.anyBoolean());
         Assertions.assertTrue(pageSettingsAction.hasFieldErrors());
@@ -145,7 +146,7 @@ class PageSettingsActionAspectTest {
     public void executeInitConfig_3() throws EntException {
         this.request.getSession().setAttribute(PageSettingsActionAspect.SESSION_PARAM_ROBOT_ALTERNATIVE_PATH_CODE_ERROR, "Message");
         String path = System.getProperty("java.io.tmpdir") + File.separator + "robot.txt";
-        when(configManager.getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
+        when(pageManager.getConfig(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME)).thenReturn(path);
         actionAspect.executeInitConfig(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).exists(Mockito.anyString(), Mockito.anyBoolean());
         Assertions.assertTrue(pageSettingsAction.hasFieldErrors());
@@ -155,23 +156,21 @@ class PageSettingsActionAspectTest {
 
     @Test
     public void executeUpdateSystemParams_1() throws Exception {
-        when(configManager.getConfigItem(ArgumentMatchers.anyString())).thenReturn(CONFIG_PARAMETER);
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).saveFile(Mockito.anyString(), Mockito.anyBoolean(), Mockito.any(InputStream.class));
         Mockito.verify(storageManager, Mockito.times(1)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
         Assertions.assertFalse(pageSettingsAction.hasFieldErrors());
-        Mockito.verify(configManager, Mockito.times(1)).getConfigItem(ArgumentMatchers.anyString());
+        Mockito.verify(pageManager, Mockito.times(1)).updateParams(Mockito.any());
     }
 
     @Test
     public void executeUpdateSystemParams_2() throws Exception {
         this.request.setParameter(PageSettingsActionAspect.PARAM_ROBOT_CONTENT_CODE, "Robot content");
-        when(configManager.getConfigItem(ArgumentMatchers.anyString())).thenReturn(CONFIG_PARAMETER);
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(1)).saveFile(Mockito.anyString(), Mockito.anyBoolean(), Mockito.any(InputStream.class));
         Mockito.verify(storageManager, Mockito.times(0)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
         Assertions.assertFalse(pageSettingsAction.hasFieldErrors());
-        Mockito.verify(configManager, Mockito.times(1)).getConfigItem(ArgumentMatchers.anyString());
+        Mockito.verify(pageManager, Mockito.times(1)).updateParams(Mockito.any());
     }
 
     @Test
@@ -179,13 +178,11 @@ class PageSettingsActionAspectTest {
         String path = System.getProperty("java.io.tmpdir") + File.separator + "robot.txt";
         this.request.setParameter(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE, path);
         this.request.setParameter(PageSettingsActionAspect.PARAM_ROBOT_CONTENT_CODE, "Robot content");
-        when(configManager.getConfigItem(ArgumentMatchers.anyString())).thenReturn(CONFIG_PARAMETER);
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).saveFile(Mockito.anyString(), Mockito.anyBoolean(), Mockito.any(InputStream.class));
         Mockito.verify(storageManager, Mockito.times(0)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
         Assertions.assertFalse(pageSettingsAction.hasFieldErrors());
-        Mockito.verify(configManager, Mockito.times(1)).getConfigItem(ArgumentMatchers.anyString());
-
+        Mockito.verify(pageManager, Mockito.times(1)).updateParams(Mockito.any());
     }
 
     @Test
@@ -193,19 +190,17 @@ class PageSettingsActionAspectTest {
         String path = System.getProperty("java.io.tmpdir") + File.separator + "meta-inf" + File.separator + "robot.txt";
         this.request.setParameter(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE, path);
         this.request.setParameter(PageSettingsActionAspect.PARAM_ROBOT_CONTENT_CODE, "Robot content");
-        when(configManager.getConfigItem(ArgumentMatchers.anyString())).thenReturn(CONFIG_PARAMETER);
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(0)).saveFile(Mockito.anyString(), Mockito.anyBoolean(), Mockito.any(InputStream.class));
         Mockito.verify(storageManager, Mockito.times(0)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
         Assertions.assertTrue(pageSettingsAction.hasFieldErrors());
         Assertions.assertEquals(1, pageSettingsAction.getFieldErrors().get(PageSettingsActionAspect.PARAM_ROBOT_ALTERNATIVE_PATH_CODE).size());
-        Mockito.verify(configManager, Mockito.times(1)).updateConfigItem(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+        Mockito.verify(pageManager, Mockito.times(1)).updateParams(Mockito.any());
     }
 
     @Test
     public void executeUpdateSystemParams_9() throws EntException {
-        when(configManager.getConfigItem(ArgumentMatchers.anyString())).thenReturn(CONFIG_PARAMETER);
-        Mockito.doThrow(EntException.class).when(configManager).updateConfigItem(Mockito.anyString(), Mockito.anyString());
+        Mockito.doThrow(EntException.class).when(pageManager).updateParams(Mockito.any());
         actionAspect.executeUpdateSystemParams(joinPoint);
         Mockito.verify(storageManager, Mockito.times(1)).deleteFile(Mockito.anyString(), Mockito.anyBoolean());
         Assertions.assertFalse(pageSettingsAction.hasFieldErrors());
