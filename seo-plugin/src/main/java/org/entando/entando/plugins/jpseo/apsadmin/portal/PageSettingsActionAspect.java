@@ -24,6 +24,7 @@ package org.entando.entando.plugins.jpseo.apsadmin.portal;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.apsadmin.portal.PageSettingsAction;
 import com.opensymphony.xwork2.ActionSupport;
 import java.io.ByteArrayInputStream;
@@ -32,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -60,8 +62,8 @@ public class PageSettingsActionAspect {
     public static final String SESSION_PARAM_ROBOT_ALTERNATIVE_PATH_CODE = "robotFilePath_sessionParam";
 
     public static final String SESSION_PARAM_ROBOT_ALTERNATIVE_PATH_CODE_ERROR = "robotFilePath_error_sessionParam";
-
-    private ConfigInterface configManager;
+    
+    private IPageManager pageManager;
 
     private IStorageManager storageManager;
 
@@ -77,7 +79,7 @@ public class PageSettingsActionAspect {
             String robotContent = "";
             String alternativePath = (String) session.getAttribute(SESSION_PARAM_ROBOT_ALTERNATIVE_PATH_CODE);
             if (StringUtils.isEmpty(alternativePath)) {
-                alternativePath = this.getConfigManager().getParam(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME);
+                alternativePath = this.getPageManager().getConfig(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME);
             }
             if (StringUtils.isEmpty(alternativePath)) {
                 if (this.getStorageManager().exists(ROBOT_FILENAME, false)) {
@@ -193,16 +195,16 @@ public class PageSettingsActionAspect {
                     }
                 }
             }
-            String xmlParams = this.getConfigManager().getConfigItem(SystemConstants.CONFIG_ITEM_PARAMS);
-            Map<String, String> systemParams = SystemParamsUtils.getParams(xmlParams);
+            Map<String, String> newParams = new HashMap<>();
+            newParams.put(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME, "");
             if (!StringUtils.isEmpty(alternativePath)) {
-                systemParams.put(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME, alternativePath);
+                newParams.put(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME, alternativePath);
             } else {
-                systemParams.remove(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME);
+                newParams.put(JpseoSystemConstants.ROBOT_ALTERNATIVE_PATH_PARAM_NAME, "");
             }
-            String newXmlParams = SystemParamsUtils.getNewXmlParams(xmlParams, systemParams, true);
-            this.getConfigManager().updateConfigItem(SystemConstants.CONFIG_ITEM_PARAMS, newXmlParams);
+            this.getPageManager().updateParams(newParams);
         } catch (Throwable t) {
+            t.printStackTrace();
             logger.error("error updating page settings for seo", t);
             action.addActionError("error updating page settings for seo");
         }
@@ -232,18 +234,16 @@ public class PageSettingsActionAspect {
         }
     }
 
-    protected ConfigInterface getConfigManager() {
-        return configManager;
+    protected IPageManager getPageManager() {
+        return pageManager;
     }
-
-    public void setConfigManager(ConfigInterface configManager) {
-        this.configManager = configManager;
+    public void setPageManager(IPageManager pageManager) {
+        this.pageManager = pageManager;
     }
 
     protected IStorageManager getStorageManager() {
         return storageManager;
     }
-
     public void setStorageManager(IStorageManager storageManager) {
         this.storageManager = storageManager;
     }
