@@ -61,25 +61,25 @@ class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBaseTestCa
 
     @Test
 	void testExecuteServlet_2() throws Throwable {
-        this.configManager.updateParam(SystemConstants.CONFIG_PARAM_BASE_URL, SystemConstants.CONFIG_PARAM_BASE_URL_RELATIVE);
+        this.configManager.updateParam(IPageManager.CONFIG_PARAM_BASE_URL, IPageManager.CONFIG_PARAM_BASE_URL_RELATIVE);
         try {
             this.executeServlet("http", "www.entando.com", "/Entando/it/homepage.page");
         } catch (Exception e) {
             throw e;
         } finally {
-            this.configManager.updateParam(SystemConstants.CONFIG_PARAM_BASE_URL, SystemConstants.CONFIG_PARAM_BASE_URL_FROM_REQUEST);
+            this.configManager.updateParam(IPageManager.CONFIG_PARAM_BASE_URL, IPageManager.CONFIG_PARAM_BASE_URL_FROM_REQUEST);
         }
     }
 
     @Test
 	void testExecuteServlet_3() throws Throwable {
-        this.configManager.updateParam(SystemConstants.CONFIG_PARAM_BASE_URL, SystemConstants.CONFIG_PARAM_BASE_URL_STATIC);
+        this.configManager.updateParam(IPageManager.CONFIG_PARAM_BASE_URL, IPageManager.CONFIG_PARAM_BASE_URL_STATIC);
         try {
             this.executeServlet("http", "www.entando.com", "/Entando/it/homepage.page");
         } catch (Exception e) {
             throw e;
         } finally {
-            this.configManager.updateParam(SystemConstants.CONFIG_PARAM_BASE_URL, SystemConstants.CONFIG_PARAM_BASE_URL_FROM_REQUEST);
+            this.configManager.updateParam(IPageManager.CONFIG_PARAM_BASE_URL, IPageManager.CONFIG_PARAM_BASE_URL_FROM_REQUEST);
         }
     }
 

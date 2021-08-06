@@ -23,6 +23,7 @@ import java.util.Map;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,17 +39,17 @@ class TestSystemParamsUtils extends ApsAdminBaseTestCase {
 		assertNotNull(xmlParams);
 		Map<String, String> params = SystemParamsUtils.getParams(xmlParams);
 		assertTrue(params.size()>=6);
-		assertEquals("homepage", params.get(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
-		assertEquals("errorpage", params.get(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE));
+		assertEquals("homepage", params.get(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
+		assertEquals("errorpage", params.get(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE));
 		
-		Map<String, String> newParams = new HashMap<String, String>();
-		newParams.put(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE, "home");
+		Map<String, String> newParams = new HashMap<>();
+		newParams.put(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE, "home");
 		newParams.put("wrongNewParam", "value");
 		String newXml = SystemParamsUtils.getNewXmlParams(xmlParams, newParams);
 		Map<String, String> newExtractedParams = SystemParamsUtils.getParams(newXml);
 		assertTrue(newExtractedParams.size()>=6);
-		assertEquals("home", newExtractedParams.get(SystemConstants.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
-		assertEquals("errorpage", newExtractedParams.get(SystemConstants.CONFIG_PARAM_ERROR_PAGE_CODE));
+		assertEquals("home", newExtractedParams.get(IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE));
+		assertEquals("errorpage", newExtractedParams.get(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE));
 		assertNotNull(newExtractedParams.get("wrongNewParam"));
 	}
 	
