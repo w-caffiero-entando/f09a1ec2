@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.4.6</version>
+        <version>6.4.23</version>
     </parent>
     <artifactId>entando-plugin-jpmail</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
@@ -99,7 +99,7 @@
             <dependency>
                 <groupId>org.entando</groupId>
                 <artifactId>entando-core-bom</artifactId>
-                <version>6.4.61</version>
+                <version>6.4.77</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
