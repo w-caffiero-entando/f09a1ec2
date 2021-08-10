@@ -153,7 +153,7 @@
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <activation.version>1.1.1</activation.version>
         <commons-compress.version>1.21</commons-compress.version>
-        <spring-data-redis.version>2.5.3</spring-data-redis.version>
+        <spring-data-redis.version>2.1.9.RELEASE</spring-data-redis.version>
         <lettuce-core.version>6.1.4.RELEASE</lettuce-core.version>
     </properties>
     <issueManagement>
