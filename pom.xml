@@ -155,6 +155,7 @@
         <commons-compress.version>1.21</commons-compress.version>
         <spring-data-redis.version>2.1.9.RELEASE</spring-data-redis.version>
         <lettuce-core.version>6.1.4.RELEASE</lettuce-core.version>
+        <swagger-annotations.version>1.5.20</swagger-annotations.version>
     </properties>
     <issueManagement>
         <system>Github</system>
@@ -1342,19 +1343,16 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <dependency>
                 <groupId>com.sun.mail</groupId>
                 <artifactId>mailapi</artifactId>
                 <version>${sun-mail.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.sun.mail</groupId>
                 <artifactId>smtp</artifactId>
                 <version>${sun-mail.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.subethamail</groupId>
                 <artifactId>subethasmtp</artifactId>
@@ -1406,6 +1404,11 @@
                 <groupId>io.lettuce</groupId>
                 <artifactId>lettuce-core</artifactId>
                 <version>${lettuce-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-annotations.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
