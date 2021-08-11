@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.4.23</version>
+        <version>6.4.24</version>
     </parent>
     <artifactId>entando-plugin-jpcontentscheduler</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
@@ -198,7 +198,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
