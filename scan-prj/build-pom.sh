@@ -35,3 +35,6 @@ while IFS= read -r ln; do
   fi
 
 done < "pom.xml.tpl"
+
+cp ../.snyk .
+

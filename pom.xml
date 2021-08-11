@@ -88,7 +88,7 @@
         <commons-text.version>1.9</commons-text.version>
         <commons-codec.version>1.15</commons-codec.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <commons-dbcp2.version>2.8.0</commons-dbcp2.version>
+        <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
         <freemarker.version>2.3.31</freemarker.version>
         <commons-validator.version>1.7</commons-validator.version>
         <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
@@ -137,7 +137,7 @@
         <tika-version>1.27</tika-version>
         <c3p0.version>0.9.5.5</c3p0.version>
         <vorbis-java-tika.version>0.8</vorbis-java-tika.version>
-        <metadata-extractor.version>2.16.0</metadata-extractor.version>
+        <drewnoakes-metadata-extractor.version>2.16.0</drewnoakes-metadata-extractor.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <lombok.version>1.18.20</lombok.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
@@ -153,6 +153,25 @@
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <activation.version>1.1.1</activation.version>
         <commons-compress.version>1.21</commons-compress.version>
+        <spring-data-redis.version>2.1.9.RELEASE</spring-data-redis.version>
+        <lettuce-core.version>6.1.4.RELEASE</lettuce-core.version>
+        <swagger-annotations.version>1.5.20</swagger-annotations.version>
+        <json-path.version>2.6.0</json-path.version>
+        <quartz.version>2.3.2</quartz.version>
+        <tallison-metadata-extractor.version>2.15.0.1</tallison-metadata-extractor.version>
+        <jakarta.ws.rs-api.version>2.1.6</jakarta.ws.rs-api.version>
+        <hibernate-validator.version>6.0.20.Final</hibernate-validator.version>
+        <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
+        <encoder.version>1.2.2</encoder.version>
+        <tiles-request-api.version>1.0.7</tiles-request-api.version>
+        <httpcore.version>4.4.13</httpcore.version>
+        <log4j-core.version>2.14.1</log4j-core.version>
+        <classmate.version>1.3.4</classmate.version>
+        <spring-data-commons.version>2.5.3</spring-data-commons.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <jaxb-runtime.version>2.3.4</jaxb-runtime.version>
+        <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
+        <keycloak-admin-client.version>11.0.2</keycloak-admin-client.version>
     </properties>
     <issueManagement>
         <system>Github</system>
@@ -357,6 +376,11 @@
                         <artifactId>spring-tx</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-redis</artifactId>
+                <version>${spring-data-redis.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -596,7 +620,7 @@
             <dependency>
                 <groupId>com.drewnoakes</groupId>
                 <artifactId>metadata-extractor</artifactId>
-                <version>${metadata-extractor.version}</version>
+                <version>${drewnoakes-metadata-extractor.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -1335,19 +1359,16 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <dependency>
                 <groupId>com.sun.mail</groupId>
                 <artifactId>mailapi</artifactId>
                 <version>${sun-mail.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.sun.mail</groupId>
                 <artifactId>smtp</artifactId>
                 <version>${sun-mail.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.subethamail</groupId>
                 <artifactId>subethasmtp</artifactId>
@@ -1394,6 +1415,136 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
                 <version>${commons-compress.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.lettuce</groupId>
+                <artifactId>lettuce-core</artifactId>
+                <version>${lettuce-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${json-path.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.tallison</groupId>
+                <artifactId>metadata-extractor</artifactId>
+                <version>${tallison-metadata-extractor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>${jakarta.ws.rs-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jakarta.xml.bind-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.owasp.encoder</groupId>
+                <artifactId>encoder</artifactId>
+                <version>${encoder.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tiles</groupId>
+                <artifactId>tiles-request-api</artifactId>
+                <version>${tiles-request-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpcore.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${springsecurity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml</groupId>
+                <artifactId>classmate</artifactId>
+                <version>${classmate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-commons</artifactId>
+                <version>${spring-data-commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-core</artifactId>
+                <version>${springfox-swagger2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-common</artifactId>
+                <version>${springfox-swagger2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-core</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-spi</artifactId>
+                <version>${springfox-swagger2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-crypto</artifactId>
+                <version>${springsecurity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest</artifactId>
+                <version>${hamcrest.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb-runtime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-spring-web</artifactId>
+                <version>${springfox-swagger2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-admin-client</artifactId>
+                <version>${keycloak-admin-client.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
