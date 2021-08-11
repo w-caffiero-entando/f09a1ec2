@@ -386,7 +386,7 @@
         <dependency>
             <groupId>com.drewnoakes</groupId>
             <artifactId>metadata-extractor</artifactId>
-            <version>${metadata-extractor.version}</version>
+            <version>${drewnoakes-metadata-extractor.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -923,7 +923,7 @@
         <dependency>
             <groupId>org.tallison</groupId>
             <artifactId>metadata-extractor</artifactId>
-            <version>${metadata-extractor.version}</version>
+            <version>${tallison-metadata-extractor.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
