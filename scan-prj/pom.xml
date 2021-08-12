@@ -338,7 +338,7 @@
         <dependency>
             <groupId>ch.qos.logback.contrib</groupId>
             <artifactId>logback-jackson</artifactId>
-            <version>${logback-json.version}</version>
+            <version>${logback-jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
