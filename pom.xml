@@ -96,6 +96,7 @@
         <commons-digester.version>2.1</commons-digester.version>
         <logback.version>1.2.4</logback.version>
         <logback-json.version>0.1.5</logback-json.version>
+        <logback-jackson.version>0.1.5</logback-jackson.version>
         <aspectj.version>1.9.7</aspectj.version>
         <ormlite-jdbc.version>4.40</ormlite-jdbc.version>
         <slf4j.version>1.7.31</slf4j.version>
@@ -524,7 +525,7 @@
             <dependency>
                 <groupId>ch.qos.logback.contrib</groupId>
                 <artifactId>logback-jackson</artifactId>
-                <version>${logback-json.version}</version>
+                <version>${logback-jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
