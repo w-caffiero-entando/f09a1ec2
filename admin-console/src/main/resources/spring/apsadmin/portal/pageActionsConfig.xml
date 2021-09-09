@@ -77,8 +77,7 @@
     <bean id="widgetTypeAction" scope="prototype" 
               class="com.agiletec.apsadmin.portal.WidgetTypeAction" parent="abstractPortalAction">
         <property name="guiFragmentManager" ref="GuiFragmentManager" />
-        <property name="configManager" ref="BaseConfigManager" />
-		<property name="pageActionHelper" ref="pageActionHelperDraft" />
+        <property name="pageActionHelper" ref="pageActionHelperDraft" />
     </bean>
     
     <bean id="guiFragmentFinderAction" scope="prototype" 
@@ -102,7 +101,8 @@
     </bean>
     
     <bean id="guiFragmentSettingsAction" scope="prototype" 
-                  class="org.entando.entando.apsadmin.portal.guifragment.GuiFragmentSettingAction" parent="baseAdminAction">              
+                  class="org.entando.entando.apsadmin.portal.guifragment.GuiFragmentSettingAction" parent="baseAdminAction">
+        <property name="guiFragmentManager" ref="GuiFragmentManager" />
     </bean>
     
 </beans>

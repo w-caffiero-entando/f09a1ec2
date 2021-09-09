@@ -20,7 +20,8 @@
 	</bean>
         
         <bean id="userSettingsAction" scope="prototype" 
-              class="org.entando.entando.apsadmin.user.UserSettingsAction" parent="baseAdminAction">              
+              class="org.entando.entando.apsadmin.user.UserSettingsAction" parent="baseAdminAction">
+            <property name="userManager" ref="UserManager" />
         </bean>
     	
 	<bean id="userProfileAction" scope="prototype" 

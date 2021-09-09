@@ -15,7 +15,7 @@ package org.entando.entando.apsadmin.common;
 
 import com.agiletec.aps.system.SystemConstants;
 
-import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.apsadmin.system.BaseAction;
 
 import java.io.FileNotFoundException;
@@ -115,7 +115,7 @@ public class UserAvatarAction extends BaseAction {
 	}
 	
 	protected boolean isGravatarIntegrationEnabled() {
-		String param = this.getConfigManager().getParam(SystemConstants.CONFIG_PARAM_GRAVATAR_INTEGRATION_ENABLED);
+		String param = this.getUserManager().getConfig(IUserManager.CONFIG_PARAM_GRAVATAR_INTEGRATION_ENABLED);
 		boolean enabled = false;
 		try {
 			enabled = Boolean.parseBoolean(param);
@@ -164,14 +164,14 @@ public class UserAvatarAction extends BaseAction {
 	public void setUserProfileManager(IUserProfileManager userProfileManager) {
 		this._userProfileManager = userProfileManager;
 	}
-	
-	protected ConfigInterface getConfigManager() {
-		return _configManager;
+
+	protected IUserManager getUserManager() {
+		return userManager;
 	}
-	public void setConfigManager(ConfigInterface configManager) {
-		this._configManager = configManager;
+	public void setUserManager(IUserManager userManager) {
+		this.userManager = userManager;
 	}
-	
+
 	private String _gravatarUrl;
 	
 	private String _gravatarExtension = "png";
@@ -181,6 +181,6 @@ public class UserAvatarAction extends BaseAction {
 	private InputStream _inputStream;
 	
 	private IUserProfileManager _userProfileManager;
-	private ConfigInterface _configManager;
+	private transient IUserManager userManager;
 	
 }

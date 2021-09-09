@@ -13,27 +13,28 @@
  */
 package org.entando.entando.apsadmin.portal.guifragment;
 
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import com.agiletec.aps.system.common.IParameterizableManager;
+import com.agiletec.apsadmin.admin.AbstractParameterizableManagerSettingsAction;
 
-import com.agiletec.apsadmin.admin.BaseAdminAction;
+import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
 
 /**
- *
  * @author paco
  */
-public class GuiFragmentSettingAction extends BaseAdminAction {
+public class GuiFragmentSettingAction extends AbstractParameterizableManagerSettingsAction {
 
-    private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(GuiFragmentSettingAction.class);
+    private transient IGuiFragmentManager guiFragmentManager;
 
-    /**
-     * Update the system params.
-     *
-     * @return the result code.
-     */
     @Override
-    public String updateSystemParams() {
-        return this.updateSystemParams(true);
+    protected IParameterizableManager getParameterizableManager() {
+        return this.getGuiFragmentManager();
     }
 
+    protected IGuiFragmentManager getGuiFragmentManager() {
+        return guiFragmentManager;
+    }
+    public void setGuiFragmentManager(IGuiFragmentManager guiFragmentManager) {
+        this.guiFragmentManager = guiFragmentManager;
+    }
+    
 }

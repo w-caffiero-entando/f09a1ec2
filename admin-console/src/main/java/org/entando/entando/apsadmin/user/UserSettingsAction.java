@@ -13,13 +13,23 @@
  */
 package org.entando.entando.apsadmin.user;
 
-import com.agiletec.apsadmin.admin.BaseAdminAction;
+import com.agiletec.aps.system.common.IParameterizableManager;
+import com.agiletec.aps.system.services.user.IUserManager;
+import com.agiletec.apsadmin.admin.AbstractParameterizableManagerSettingsAction;
 
-public class UserSettingsAction extends BaseAdminAction {
-
-	@Override
-	public String updateSystemParams() {
-		return this.updateSystemParams(true);
-	}
-
+public class UserSettingsAction extends AbstractParameterizableManagerSettingsAction {
+    
+    private transient IUserManager userManager;
+    
+    @Override
+    protected IParameterizableManager getParameterizableManager() {
+        return this.getUserManager();
+    }
+    protected IUserManager getUserManager() {
+        return userManager;
+    }
+    public void setUserManager(IUserManager userManager) {
+        this.userManager = userManager;
+    }
+    
 }

@@ -25,8 +25,6 @@ import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
-import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.Widget;
@@ -595,7 +593,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
     }
 
     public boolean isEditEmptyFragment() {
-        String paramValue = this.getConfigManager().getParam(SystemConstants.CONFIG_PARAM_EDIT_EMPTY_FRAGMENT_ENABLED);
+        String paramValue = this.getGuiFragmentManager().getConfig(IGuiFragmentManager.CONFIG_PARAM_EDIT_EMPTY_FRAGMENT_ENABLED);
         try {
             return Boolean.parseBoolean(paramValue);
         } catch (Exception e) {
@@ -757,14 +755,6 @@ public class WidgetTypeAction extends AbstractPortalAction {
         this._guiFragmentManager = guiFragmentManager;
     }
 
-    protected ConfigInterface getConfigManager() {
-        return _configManager;
-    }
-
-    public void setConfigManager(ConfigInterface configManager) {
-        this._configManager = configManager;
-    }
-
     protected IPageActionHelper getPageActionHelper() {
         return _pageActionHelper;
     }
@@ -806,7 +796,6 @@ public class WidgetTypeAction extends AbstractPortalAction {
     private boolean _replaceOnPage;
     private boolean readonlyPageWidgetConfig;
     private IGuiFragmentManager _guiFragmentManager;
-    private ConfigInterface _configManager;
 
     public final static int NEW_USER_WIDGET = 5;
     private IPageActionHelper _pageActionHelper;

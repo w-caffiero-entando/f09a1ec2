@@ -13,39 +13,14 @@
  */
 package com.agiletec.apsadmin.portal;
 
-import com.agiletec.apsadmin.admin.BaseAdminAction;
-import java.util.Map;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import com.agiletec.aps.system.common.IParameterizableManager;
+import com.agiletec.apsadmin.admin.AbstractParameterizableManagerSettingsAction;
 
-public class PageSettingsAction extends BaseAdminAction {
-
-private static final EntLogger logger = EntLogFactory.getSanitizedLogger(PageSettingsAction.class);
+public class PageSettingsAction extends AbstractParameterizableManagerSettingsAction {
     
     @Override
-    protected void initLocalMap() throws Throwable {
-        Map<String, String> systemParams = super.getPageManager().getParams();
-        this.setSystemParams(systemParams);
-    }
-    
-    @Override
-	public String updateSystemParams() {
-		return this.updateSystemParams(true);
-	}
-    
-    @Override
-    protected String updateSystemParams(boolean keepOldParam) {
-        try {
-            this.initLocalMap();
-            this.updateLocalParams(keepOldParam);
-            this.extractExtraParameters();
-            super.getPageManager().updateParams(super.getSystemParams());
-            this.addActionMessage(this.getText("message.configSystemParams.ok"));
-        } catch (Throwable t) {
-            logger.error("error in updateSystemParams for pages", t);
-            return FAILURE;
-        }
-        return SUCCESS;
+    protected IParameterizableManager getParameterizableManager() {
+        return this.getPageManager();
     }
 
 }
