@@ -13,44 +13,18 @@
  */
 package org.entando.entando.apsadmin.user;
 
+import com.agiletec.aps.system.common.IParameterizableManager;
 import com.agiletec.aps.system.services.user.IUserManager;
-import com.agiletec.apsadmin.admin.BaseAdminAction;
-import java.util.Map;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import com.agiletec.apsadmin.admin.AbstractParameterizableManagerSettingsAction;
 
-public class UserSettingsAction extends BaseAdminAction {
-    
-    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(UserSettingsAction.class);
+public class UserSettingsAction extends AbstractParameterizableManagerSettingsAction {
     
     private IUserManager userManager;
     
     @Override
-    protected void initLocalMap() throws Throwable {
-        Map<String, String> systemParams = this.getUserManager().getParams();
-        this.setSystemParams(systemParams);
+    protected IParameterizableManager getParameterizableManager() {
+        return this.getUserManager();
     }
-
-	@Override
-	public String updateSystemParams() {
-		return this.updateSystemParams(true);
-	}
-    
-    @Override
-    protected String updateSystemParams(boolean keepOldParam) {
-        try {
-            this.initLocalMap();
-            this.updateLocalParams(keepOldParam);
-            this.extractExtraParameters();
-            this.getUserManager().updateParams(super.getSystemParams());
-            this.addActionMessage(this.getText("message.configSystemParams.ok"));
-        } catch (Throwable t) {
-            logger.error("error in updateSystemParams for users", t);
-            return FAILURE;
-        }
-        return SUCCESS;
-    }
-
     protected IUserManager getUserManager() {
         return userManager;
     }
