@@ -19,7 +19,7 @@ import com.agiletec.apsadmin.admin.AbstractParameterizableManagerSettingsAction;
 
 public class UserSettingsAction extends AbstractParameterizableManagerSettingsAction {
     
-    private IUserManager userManager;
+    private transient IUserManager userManager;
     
     @Override
     protected IParameterizableManager getParameterizableManager() {

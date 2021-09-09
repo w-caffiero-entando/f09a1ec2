@@ -181,6 +181,6 @@ public class UserAvatarAction extends BaseAction {
 	private InputStream _inputStream;
 	
 	private IUserProfileManager _userProfileManager;
-	private IUserManager userManager;
+	private transient IUserManager userManager;
 	
 }

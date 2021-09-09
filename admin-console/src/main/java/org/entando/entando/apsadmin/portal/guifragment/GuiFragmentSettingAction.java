@@ -23,7 +23,7 @@ import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
  */
 public class GuiFragmentSettingAction extends AbstractParameterizableManagerSettingsAction {
 
-    private IGuiFragmentManager guiFragmentManager;
+    private transient IGuiFragmentManager guiFragmentManager;
 
     @Override
     protected IParameterizableManager getParameterizableManager() {
