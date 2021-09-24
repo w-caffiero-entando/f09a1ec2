@@ -60,6 +60,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.validation.BindingResult;
 
 class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -635,6 +636,268 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
             this.pageManager.deletePage("admin_pg");
             this.pageManager.deletePage("free_pg");
             this.pageManager.deletePage("page_root");
+        }
+    }
+
+    @Test
+    void testCreatePageAndClone() throws Throwable {
+        String pageCode = "seoTest1";
+        String pageCode2 = "seoTest2";
+        String pageCodeCloned = "seoTest1_clone";
+        String pageCodeCloned2 = "seoTest2_clone";
+
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
+                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                .build();
+        String accessToken = mockOAuthInterceptor(user);
+        try {
+
+            /*pageManager.addPage(createPage(pageCode,  null, Group.FREE_GROUP_NAME));
+
+            mockMvc.perform(get("/plugins/seo/pages/{pageCode}", pageCode)
+                    .header("Authorization", "Bearer " + accessToken))
+                    .andDo(resultPrint())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.code", CoreMatchers.is("free_pg")))
+                    .andExpect(jsonPath("$.payload.status", CoreMatchers.is("unpublished")))
+                    .andExpect(jsonPath("$.payload.onlineInstance", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.displayedInMenu", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.pageModel", CoreMatchers.is("service")))
+                    .andExpect(jsonPath("$.payload.charset", CoreMatchers.is("utf8")))
+                    .andExpect(jsonPath("$.payload.contentType", CoreMatchers.is("text/html")))
+                    .andExpect(jsonPath("$.payload.parentCode", CoreMatchers.is("service")))
+                    .andExpect(jsonPath("$.payload.seo", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("free_pg_title")))
+                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di servizio / free_pg_title")))
+                    .andExpect(jsonPath("$.payload.ownerGroup", CoreMatchers.is("free")))
+                    .andExpect(jsonPath("$.payload.fullPath", CoreMatchers.is("homepage/service/free_pg")))
+                    .andExpect(jsonPath("$.payload.seoData.useExtraDescriptions", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.useExtraTitles", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang",
+                            CoreMatchers.is(false)));
+
+            pageService.clonePage(pageCode, null);
+
+            mockMvc.perform(get("/plugins/seo/pages/{pageCode}", pageCodeCloned)
+                    .header("Authorization", "Bearer " + accessToken))
+                    .andDo(resultPrint())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.code", CoreMatchers.is("free_pg_clone")))
+                    .andExpect(jsonPath("$.payload.status", CoreMatchers.is("unpublished")))
+                    .andExpect(jsonPath("$.payload.onlineInstance", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.displayedInMenu", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.pageModel", CoreMatchers.is("service")))
+                    .andExpect(jsonPath("$.payload.charset", CoreMatchers.is("utf8")))
+                    .andExpect(jsonPath("$.payload.contentType", CoreMatchers.is("text/html")))
+                    .andExpect(jsonPath("$.payload.parentCode", CoreMatchers.is("service")))
+                    .andExpect(jsonPath("$.payload.seo", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("free_pg_title")))
+                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di servizio / free_pg_title")))
+                    .andExpect(jsonPath("$.payload.ownerGroup", CoreMatchers.is("free")))
+                    .andExpect(jsonPath("$.payload.fullPath", CoreMatchers.is("homepage/service/free_pg_clone")))
+                    .andExpect(jsonPath("$.payload.seoData.useExtraDescriptions", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.useExtraTitles", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang",
+                            CoreMatchers.is(false)));*/
+
+            this.executePostSeoPage("2_POST_valid.json", accessToken, status().isOk())
+                    .andDo(resultPrint())
+                    .andExpect(jsonPath("$.payload.code", CoreMatchers.is(pageCode2)))
+                    .andExpect(jsonPath("$.payload.status", CoreMatchers.is("unpublished")))
+                    .andExpect(jsonPath("$.payload.onlineInstance", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.displayedInMenu", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.pageModel", CoreMatchers.is("service")))
+                    .andExpect(jsonPath("$.payload.charset", CoreMatchers.is("utf-8")))
+                    .andExpect(jsonPath("$.payload.contentType", CoreMatchers.is("text/html")))
+                    .andExpect(jsonPath("$.payload.parentCode", CoreMatchers.is("service")))
+                    .andExpect(jsonPath("$.payload.seo", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.titles.en", CoreMatchers.is("Test Page")))
+                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("Pagina di test")))
+                    .andExpect(jsonPath("$.payload.fullTitles.en", CoreMatchers.is("Start Page / service / Test Page")))
+                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di servizio / Pagina di test")))
+                    .andExpect(jsonPath("$.payload.ownerGroup", CoreMatchers.is("free")))
+                    .andExpect(jsonPath("$.payload.fullPath", CoreMatchers.is("homepage/service/seoTest2")))
+                    .andExpect(jsonPath("$.payload.seoData.useExtraDescriptions", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.seoData.useExtraTitles", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.description", CoreMatchers.is("test")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.keywords", CoreMatchers.is("keyword1, keyword 2")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", CoreMatchers.is("test_page_2_en")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].key", CoreMatchers.is(
+                            "copyright")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].value", CoreMatchers.is(
+                            "2020")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].useDefaultLang", CoreMatchers.is(
+                            false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].key", CoreMatchers.is(
+                            "author")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].value", CoreMatchers.is(
+                            "entando")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].useDefaultLang",
+                            CoreMatchers.is(
+                            false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].key", CoreMatchers.is(
+                            "description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].value", CoreMatchers.is(
+                            "test page")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].useDefaultLang",
+                            CoreMatchers.is(
+                            false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang",
+                            CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", CoreMatchers.is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", CoreMatchers.is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", CoreMatchers.is(
+                            "test_page_2_it")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].key", CoreMatchers.is(
+                            "copyright")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].value", CoreMatchers.is(
+                            "entando")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].useDefaultLang", CoreMatchers.is(
+                            false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].key", CoreMatchers.is(
+                            "author")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value", CoreMatchers.is(
+                            "entando")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang",
+                            CoreMatchers.is(
+                                    false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].key", CoreMatchers.is(
+                            "description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value", CoreMatchers.is(
+                            "metatag di prova")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].useDefaultLang",
+                            CoreMatchers.is(
+                                    false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritFriendlyCodeFromDefaultLang",
+                            CoreMatchers.is(false)));
+
+            pageService.clonePage(pageCode2, null);
+
+            mockMvc.perform(get("/plugins/seo/pages/{pageCode}", pageCodeCloned2)
+                    .header("Authorization", "Bearer " + accessToken))
+                    .andDo(resultPrint())
+                    .andExpect(jsonPath("$.payload.code", CoreMatchers.is(pageCodeCloned2)))
+                    .andExpect(jsonPath("$.payload.status", CoreMatchers.is("unpublished")))
+                    .andExpect(jsonPath("$.payload.onlineInstance", CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.displayedInMenu", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.pageModel", CoreMatchers.is("service")))
+                    .andExpect(jsonPath("$.payload.charset", CoreMatchers.is("utf-8")))
+                    .andExpect(jsonPath("$.payload.contentType", CoreMatchers.is("text/html")))
+                    .andExpect(jsonPath("$.payload.parentCode", CoreMatchers.is("service")))
+                    .andExpect(jsonPath("$.payload.seo", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.titles.en", CoreMatchers.is("Test Page")))
+                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("Pagina di test")))
+                    .andExpect(jsonPath("$.payload.fullTitles.en", CoreMatchers.is("Start Page / service / Test Page")))
+                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di servizio / Pagina di test")))
+                    .andExpect(jsonPath("$.payload.ownerGroup", CoreMatchers.is("free")))
+                    .andExpect(jsonPath("$.payload.fullPath", CoreMatchers.is("homepage/service/seoTest2_clone")))
+                    .andExpect(jsonPath("$.payload.seoData.useExtraDescriptions", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.seoData.useExtraTitles", CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.description", CoreMatchers.is("test")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.keywords", CoreMatchers.is("keyword1, keyword 2")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", CoreMatchers.is("test_page_2_en")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].key", CoreMatchers.is(
+                            "copyright")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].value", CoreMatchers.is(
+                            "2020")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].useDefaultLang", CoreMatchers.is(
+                            false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].key", CoreMatchers.is(
+                            "author")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].value", CoreMatchers.is(
+                            "entando")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].useDefaultLang",
+                            CoreMatchers.is(
+                                    false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].key", CoreMatchers.is(
+                            "description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].value", CoreMatchers.is(
+                            "test page")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].useDefaultLang",
+                            CoreMatchers.is(
+                                    false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang",
+                            CoreMatchers.is(true)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.description", CoreMatchers.is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.keywords", CoreMatchers.is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", CoreMatchers.is(
+                            "test_page_2_it")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].key", CoreMatchers.is(
+                            "copyright")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].value", CoreMatchers.is(
+                            "entando")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].useDefaultLang", CoreMatchers.is(
+                            false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].key", CoreMatchers.is(
+                            "author")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value", CoreMatchers.is(
+                            "entando")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang",
+                            CoreMatchers.is(
+                                    false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].key", CoreMatchers.is(
+                            "description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].type", CoreMatchers.is(
+                            "name")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value", CoreMatchers.is(
+                            "metatag di prova")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].useDefaultLang",
+                            CoreMatchers.is(
+                                    false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritDescriptionFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritKeywordsFromDefaultLang",
+                            CoreMatchers.is(false)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritFriendlyCodeFromDefaultLang",
+                            CoreMatchers.is(false)));
+
+        } finally {
+            this.pageManager.deletePage(pageCode);
+            this.pageManager.deletePage(pageCodeCloned);
+            this.pageManager.deletePage(pageCode2);
+            this.pageManager.deletePage(pageCodeCloned2);
         }
     }
 
