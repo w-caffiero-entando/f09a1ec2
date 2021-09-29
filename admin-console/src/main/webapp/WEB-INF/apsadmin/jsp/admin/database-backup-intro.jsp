@@ -39,16 +39,6 @@
         <s:text name="database.management.note.backup" />
     </p>
     <dl class="dl-horizontal">
-        <dt>
-            <abbr
-                title="<s:text name="database.management.label.component" /> Core (core)">Core</abbr>
-        </dt>
-        <dd>
-            <s:set var="tableMappingVar" value="entandoTableMapping" />
-            <s:include
-                value="/WEB-INF/apsadmin/jsp/admin/inc/datasource-table-names.jsp" />
-            <hr class="visible-xs hidden-sm hidden-md hidden-lg" />
-        </dd>
         <s:set var="currentComponentsVar" value="currentComponents" />
         <s:iterator var="currentComponentVar" value="#currentComponentsVar">
             <dt class="margin-medium-top">
@@ -57,8 +47,7 @@
                         value="#currentComponentVar.description" /></abbr>
             </dt>
             <dd>
-                <s:set var="tableMappingVar"
-                       value="#currentComponentVar.tableMapping" />
+                <s:set var="tableMappingVar" value="#currentComponentVar.tableNames" />
                 <s:include
                     value="/WEB-INF/apsadmin/jsp/admin/inc/datasource-table-names.jsp" />
                 <hr class="visible-xs hidden-sm hidden-md hidden-lg" />

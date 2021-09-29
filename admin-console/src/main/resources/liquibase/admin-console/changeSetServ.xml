@@ -1,0 +1,18 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+           http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <include file="serv/schemaServ_default.xml" relativeToChangelogFile="true" />
+
+    <changeSet id="admin-console_dataServ_test" author="entando" context="test">
+        <sqlFile path="classpath:liquibase/admin-console/serv/dataServ_test.sql" />
+    </changeSet>
+
+    <changeSet id="admin-console_dataServ_production" author="entando" context="production">
+        <sqlFile path="classpath:liquibase/admin-console/serv/dataServ_production.sql" />
+    </changeSet>
+
+</databaseChangeLog>
