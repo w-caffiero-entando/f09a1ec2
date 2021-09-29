@@ -40,6 +40,7 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.aps.util.FileTextReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,7 @@ import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCod
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.SeoMappingManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
+import org.entando.entando.web.page.model.PageCloneRequest;
 import org.entando.entando.web.page.model.PageRequest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.hamcrest.CoreMatchers;
@@ -652,13 +654,13 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
         String accessToken = mockOAuthInterceptor(user);
         try {
 
-            /*pageManager.addPage(createPage(pageCode,  null, Group.FREE_GROUP_NAME));
+            pageManager.addPage(createPage(pageCode,  null, Group.FREE_GROUP_NAME));
 
             mockMvc.perform(get("/plugins/seo/pages/{pageCode}", pageCode)
                     .header("Authorization", "Bearer " + accessToken))
                     .andDo(resultPrint())
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.payload.code", CoreMatchers.is("free_pg")))
+                    .andExpect(jsonPath("$.payload.code", CoreMatchers.is(pageCode)))
                     .andExpect(jsonPath("$.payload.status", CoreMatchers.is("unpublished")))
                     .andExpect(jsonPath("$.payload.onlineInstance", CoreMatchers.is(false)))
                     .andExpect(jsonPath("$.payload.displayedInMenu", CoreMatchers.is(true)))
@@ -667,10 +669,10 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.contentType", CoreMatchers.is("text/html")))
                     .andExpect(jsonPath("$.payload.parentCode", CoreMatchers.is("service")))
                     .andExpect(jsonPath("$.payload.seo", CoreMatchers.is(false)))
-                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("free_pg_title")))
-                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di servizio / free_pg_title")))
+                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("seoTest1_title")))
+                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di servizio / seoTest1_title")))
                     .andExpect(jsonPath("$.payload.ownerGroup", CoreMatchers.is("free")))
-                    .andExpect(jsonPath("$.payload.fullPath", CoreMatchers.is("homepage/service/free_pg")))
+                    .andExpect(jsonPath("$.payload.fullPath", CoreMatchers.is("homepage/service/seoTest1")))
                     .andExpect(jsonPath("$.payload.seoData.useExtraDescriptions", CoreMatchers.is(false)))
                     .andExpect(jsonPath("$.payload.seoData.useExtraTitles", CoreMatchers.is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang",
@@ -680,13 +682,18 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang",
                             CoreMatchers.is(false)));
 
-            pageService.clonePage(pageCode, null);
+            PageCloneRequest pageCloneRequest = new PageCloneRequest();
+            pageCloneRequest.setNewPageCode(pageCodeCloned);
+            pageCloneRequest.setParentCode("service");
+            pageCloneRequest.setTitles(ImmutableMap.of("en", "free_pg_title en", "it", "free_pg_title it"));
+
+            pageService.clonePage(pageCode, pageCloneRequest, null);
 
             mockMvc.perform(get("/plugins/seo/pages/{pageCode}", pageCodeCloned)
                     .header("Authorization", "Bearer " + accessToken))
                     .andDo(resultPrint())
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.payload.code", CoreMatchers.is("free_pg_clone")))
+                    .andExpect(jsonPath("$.payload.code", CoreMatchers.is(pageCodeCloned)))
                     .andExpect(jsonPath("$.payload.status", CoreMatchers.is("unpublished")))
                     .andExpect(jsonPath("$.payload.onlineInstance", CoreMatchers.is(false)))
                     .andExpect(jsonPath("$.payload.displayedInMenu", CoreMatchers.is(true)))
@@ -695,10 +702,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.contentType", CoreMatchers.is("text/html")))
                     .andExpect(jsonPath("$.payload.parentCode", CoreMatchers.is("service")))
                     .andExpect(jsonPath("$.payload.seo", CoreMatchers.is(false)))
-                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("free_pg_title")))
-                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di servizio / free_pg_title")))
+                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("free_pg_title it")))
+                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di "
+                            + "servizio / free_pg_title it")))
                     .andExpect(jsonPath("$.payload.ownerGroup", CoreMatchers.is("free")))
-                    .andExpect(jsonPath("$.payload.fullPath", CoreMatchers.is("homepage/service/free_pg_clone")))
+                    .andExpect(jsonPath("$.payload.fullPath", CoreMatchers.is("homepage/service/seoTest1_clone")))
                     .andExpect(jsonPath("$.payload.seoData.useExtraDescriptions", CoreMatchers.is(false)))
                     .andExpect(jsonPath("$.payload.seoData.useExtraTitles", CoreMatchers.is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritDescriptionFromDefaultLang",
@@ -706,7 +714,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritKeywordsFromDefaultLang",
                             CoreMatchers.is(false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.inheritFriendlyCodeFromDefaultLang",
-                            CoreMatchers.is(false)));*/
+                            CoreMatchers.is(false)));
 
             this.executePostSeoPage("2_POST_valid.json", accessToken, status().isOk())
                     .andDo(resultPrint())
@@ -799,7 +807,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.inheritFriendlyCodeFromDefaultLang",
                             CoreMatchers.is(false)));
 
-            pageService.clonePage(pageCode2, null);
+            pageCloneRequest.setNewPageCode(pageCodeCloned2);
+            pageCloneRequest.setParentCode("service");
+            pageCloneRequest.setTitles(ImmutableMap.of("en", "Test Page en", "it", "Pagina di test it"));
+
+            pageService.clonePage(pageCode2, pageCloneRequest, null);
 
             mockMvc.perform(get("/plugins/seo/pages/{pageCode}", pageCodeCloned2)
                     .header("Authorization", "Bearer " + accessToken))
@@ -813,10 +825,12 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.contentType", CoreMatchers.is("text/html")))
                     .andExpect(jsonPath("$.payload.parentCode", CoreMatchers.is("service")))
                     .andExpect(jsonPath("$.payload.seo", CoreMatchers.is(true)))
-                    .andExpect(jsonPath("$.payload.titles.en", CoreMatchers.is("Test Page")))
-                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("Pagina di test")))
-                    .andExpect(jsonPath("$.payload.fullTitles.en", CoreMatchers.is("Start Page / service / Test Page")))
-                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di servizio / Pagina di test")))
+                    .andExpect(jsonPath("$.payload.titles.en", CoreMatchers.is("Test Page en")))
+                    .andExpect(jsonPath("$.payload.titles.it", CoreMatchers.is("Pagina di test it")))
+                    .andExpect(jsonPath("$.payload.fullTitles.en", CoreMatchers.is("Start Page / service / Test Page "
+                            + "en")))
+                    .andExpect(jsonPath("$.payload.fullTitles.it", CoreMatchers.is("Pagina iniziale / Nodo pagine di "
+                            + "servizio / Pagina di test it")))
                     .andExpect(jsonPath("$.payload.ownerGroup", CoreMatchers.is("free")))
                     .andExpect(jsonPath("$.payload.fullPath", CoreMatchers.is("homepage/service/seoTest2_clone")))
                     .andExpect(jsonPath("$.payload.seoData.useExtraDescriptions", CoreMatchers.is(true)))
