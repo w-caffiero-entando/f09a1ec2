@@ -37,7 +37,6 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import com.agiletec.aps.system.common.AbstractSearcherDAO;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import org.entando.entando.ent.exception.EntException;
-import org.entando.entando.plugins.jpseo.aps.system.init.portdb.FriendlyCode;
 
 /**
  * @author E.Santoboni
@@ -45,18 +44,20 @@ import org.entando.entando.plugins.jpseo.aps.system.init.portdb.FriendlyCode;
 public class SeoMappingDAO extends AbstractSearcherDAO implements ISeoMappingDAO {
 
 	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(SeoMappingDAO.class);
+    
+    private static final String TABLE_NAME = "jpseo_friendlycode";
 
 	private static final String ADD_MAPPING = 
-			"INSERT INTO " + FriendlyCode.TABLE_NAME + " (friendlycode, pagecode, contentid, langcode) VALUES (?, ?, ?, ?)";
+			"INSERT INTO " + TABLE_NAME + " (friendlycode, pagecode, contentid, langcode) VALUES (?, ?, ?, ?)";
 	
 	private static final String LOAD_MAPPINGS = 
-			"SELECT friendlycode, pagecode, contentid, langcode FROM " + FriendlyCode.TABLE_NAME;
+			"SELECT friendlycode, pagecode, contentid, langcode FROM " + TABLE_NAME;
     
-    private static final String DELETE_FROM_CONTENTID = "DELETE FROM " + FriendlyCode.TABLE_NAME + " WHERE contentid = ?";
+    private static final String DELETE_FROM_CONTENTID = "DELETE FROM " + TABLE_NAME + " WHERE contentid = ?";
     
-    private static final String DELETE_FROM_PAGECODE = "DELETE FROM " + FriendlyCode.TABLE_NAME + " WHERE pagecode = ?";
+    private static final String DELETE_FROM_PAGECODE = "DELETE FROM " + TABLE_NAME + " WHERE pagecode = ?";
 
-	private static final String DELETE_FROM_FRIENDLYCODE = "DELETE FROM " + FriendlyCode.TABLE_NAME + " WHERE friendlycode = ?";
+	private static final String DELETE_FROM_FRIENDLYCODE = "DELETE FROM " + TABLE_NAME + " WHERE friendlycode = ?";
 
 	@Override
 	public Map<String, FriendlyCodeVO> loadMapping() {
@@ -221,7 +222,7 @@ public class SeoMappingDAO extends AbstractSearcherDAO implements ISeoMappingDAO
 	
 	@Override
 	protected String getMasterTableName() {
-		return FriendlyCode.TABLE_NAME;
+		return TABLE_NAME;
 	}
 	
 	@Override
