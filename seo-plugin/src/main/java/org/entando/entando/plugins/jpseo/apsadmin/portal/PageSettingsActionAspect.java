@@ -21,9 +21,6 @@
  */
 package org.entando.entando.plugins.jpseo.apsadmin.portal;
 
-import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
-import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.apsadmin.portal.PageSettingsAction;
 import com.opensymphony.xwork2.ActionSupport;
@@ -153,7 +150,7 @@ public class PageSettingsActionAspect {
         return "";
     }
 
-    @Before("execution(* com.agiletec.apsadmin.portal.PageSettingsAction.updateSystemParams())")
+    @Before("execution(* com.agiletec.apsadmin.admin.AbstractParameterizableManagerSettingsAction.updateSystemParams())")
     public void executeUpdateSystemParamsForAjax(JoinPoint joinPoint) {
         this.executeUpdateSystemParams(joinPoint);
     }
