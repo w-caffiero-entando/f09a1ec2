@@ -153,7 +153,7 @@ public class PageSettingsActionAspect {
         return "";
     }
 
-    @Before("execution(* com.agiletec.apsadmin.portal.PageSettingsAction.updateSystemParams())")
+    @Before("execution(* com.agiletec.apsadmin.admin.AbstractParameterizableManagerSettingsAction.updateSystemParams())")
     public void executeUpdateSystemParamsForAjax(JoinPoint joinPoint) {
         this.executeUpdateSystemParams(joinPoint);
     }
