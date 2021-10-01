@@ -1,0 +1,66 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+           http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="jpversioning_schemaPort_v6.4.0" author="entando">
+        
+        <createTable tableName="jpversioning_trashedresources" >
+            <column name="resid" type="varchar(16)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="restype" type="varchar(30)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="descr" type="varchar(100)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="maingroup" type="varchar(20)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="resxml" type="clob" >
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createTable tableName="jpversioning_versionedcontents" >
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="contentid" type="varchar(16)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="contenttype" type="varchar(30)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="descr" type="varchar(256)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(12)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="contentxml" type="clob" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="versiondate" type="timestamp" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="versioncode" type="varchar(7)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="onlineversion" type="int" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="approved" type="smallint" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="varchar(40)" />
+        </createTable>
+        <addUniqueConstraint constraintName="jpvers_contentvers_key" 
+                             tableName="jpversioning_versionedcontents" columnNames="contentid, versioncode" />  
+        
+    </changeSet>
+
+</databaseChangeLog>
