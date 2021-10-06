@@ -99,6 +99,7 @@
         <logback-jackson.version>0.1.5</logback-jackson.version>
         <aspectj.version>1.9.7</aspectj.version>
         <ormlite-jdbc.version>4.40</ormlite-jdbc.version>
+        <liquibase-core.version>4.4.3</liquibase-core.version>
         <slf4j.version>1.7.31</slf4j.version>
         <jettison.version>1.4.1</jettison.version>
         <json.version>20210307</json.version>
@@ -1141,6 +1142,12 @@
                 <groupId>com.j256.ormlite</groupId>
                 <artifactId>ormlite-jdbc</artifactId>
                 <version>${ormlite-jdbc.version}</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase-core.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
