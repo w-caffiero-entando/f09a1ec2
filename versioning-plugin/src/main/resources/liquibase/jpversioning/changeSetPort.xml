@@ -11,8 +11,4 @@
         <sqlFile path="port/00000000000001_dataPort_test.sql" relativeToChangelogFile="true" />
     </changeSet>
 
-    <changeSet id="00000000000001_jpversioning_dataPort_production" author="entando" context="production">
-        <sqlFile path="port/00000000000001_dataPort_production.sql" relativeToChangelogFile="true" />
-    </changeSet>
-
 </databaseChangeLog>
