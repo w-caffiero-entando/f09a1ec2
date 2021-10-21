@@ -44,7 +44,7 @@
             <column name="contentxml" type="clob" >
                 <constraints nullable="false"/>
             </column>
-            <column name="versiondate" type="timestamp" >
+            <column name="versiondate" type="datetime" >
                 <constraints nullable="false"/>
             </column>
             <column name="versioncode" type="varchar(7)" >
