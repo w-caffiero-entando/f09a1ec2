@@ -239,7 +239,7 @@ public class SeoPageExtraConfigDOM extends PageExtraConfigDOM {
         this.fillMultilangProperty(descriptions, doc.getRootElement(), DESCRIPTIONS_ELEMENT_NAME);
         ApsProperties keywords = seoPageMetadata.getKeywords();
         this.fillMultilangProperty(keywords, doc.getRootElement(), KEYWORDS_ELEMENT_NAME);
-        ApsProperties friendlyCode = seoPageMetadata.getKeywords();
+        ApsProperties friendlyCode = seoPageMetadata.getFriendlyCodes();
         this.fillMultilangProperty(friendlyCode, doc.getRootElement(), FRIENDLY_CODE_ELEMENT_NAME);
 
         if (null != seoPageMetadata.getComplexParameters()) {
