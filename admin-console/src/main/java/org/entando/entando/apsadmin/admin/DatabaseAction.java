@@ -169,10 +169,6 @@ public class DatabaseAction extends BaseAction {
         return this.getDatabaseManager().getStatus();
     }
 	
-    public Map<String, List<String>> getEntandoTableMapping() {
-        return this.getDatabaseManager().getEntandoTableMapping();
-    }
-	
     public List<Component> getCurrentComponents() {
         List<Component> components = null;
         try {
@@ -182,31 +178,6 @@ public class DatabaseAction extends BaseAction {
             throw new RuntimeException("Error extracting current components", t);
         }
         return components;
-    }
-	
-    public List<String> getTableNames(List<String> tableClassNames) {
-        ClassLoader cl = ComponentManager.getComponentInstallerClassLoader();
-        if (null == tableClassNames || tableClassNames.isEmpty()) {
-            return null;
-        }
-        List<String> tableNames = new ArrayList<String>();
-        try {
-            for (int i = 0; i < tableClassNames.size(); i++) {
-                String tableClassName = tableClassNames.get(i);
-                Class tableClass = null;
-                if (cl != null) {
-                    tableClass = Class.forName(tableClassName, true, cl);
-                } else {
-                    tableClass = Class.forName(tableClassName);
-                }
-                DatabaseTable tableAnnotation = (DatabaseTable) tableClass.getAnnotation(DatabaseTable.class);
-                tableNames.add(tableAnnotation.tableName());
-            }
-        } catch (Throwable t) {
-            _logger.error("Error extracting table names", t);
-            throw new RuntimeException("Error extracting table names", t);
-        }
-        return tableNames;
     }
 	
     public boolean checkRestore(List<Component> currentComponents, DataSourceDumpReport report) {
