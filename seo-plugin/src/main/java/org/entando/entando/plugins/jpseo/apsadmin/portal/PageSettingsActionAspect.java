@@ -21,9 +21,6 @@
  */
 package org.entando.entando.plugins.jpseo.apsadmin.portal;
 
-import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
-import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.apsadmin.portal.PageSettingsAction;
 import com.opensymphony.xwork2.ActionSupport;
