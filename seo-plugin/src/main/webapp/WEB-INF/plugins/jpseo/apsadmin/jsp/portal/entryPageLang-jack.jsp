@@ -79,7 +79,46 @@
     </s:if>
 </div>
 
-<s:set var="pageMetatagsVar" value="#attr['pageMetatags']" /> 
+<s:set var="friendlyCodeKey" value="'friendlyCode_lang_'+#lang.code" />
+<s:set var="friendlyCodeUseDefault" value="'friendlyCode_useDefaultLang_'+#lang.code" />
+<s:set var="fieldErrorsVar" value="%{fieldErrors[#friendlyCodeKey]}" />
+<s:set var="hasFieldErrorVar" value="#fieldErrorsVar != null && !#fieldErrorsVar.isEmpty()" />
+<s:set var="controlGroupErrorClass" value="%{#hasFieldErrorVar ? ' has-error' : ''}" />
+
+<div class="form-group<s:property value="#controlGroupErrorClass" />">
+    <label class="col-sm-2 control-label" for="friendlyCode_lang<s:property value="#lang.code" />">
+        <s:text name="jpseo.label.pageFriendlyCode" />
+        <a role="button" tabindex="0" data-toggle="popover" data-trigger="focus" data-html="true" title=""
+           data-placement="top" data-content="<s:text name="jpseo.pageEdit.friendlyCode.help" />"
+           data-original-title="">
+            <span class="fa fa-info-circle"></span>
+        </a>
+    </label>
+    <div class="<s:if test="%{#lang.default}" >col-sm-10</s:if><s:else>col-sm-6</s:else>">
+        <wpsf:textfield name="%{'friendlyCode_lang_'+#lang.code}" id="%{'friendlyCode_lang_'+#lang.code}" value="%{#attr[#friendlyCodeKey]}" cssClass="form-control" />
+        <s:if test="#hasFieldErrorVar">
+            <span class="help-block text-danger">
+                <s:iterator value="%{#fieldErrorsVar}">
+                    <s:property />&#32;
+                </s:iterator>
+            </span>
+        </s:if>
+    </div>
+    <s:if test="%{!#lang.default}" >
+        <label class="col-sm-2 control-label" for="friendlyCode_useDefaultLang_<s:property value="#lang.code" />">
+            <s:text name="jpseo.label.inheritFromDefaultLang" />
+        </label>
+        <div class="col-sm-2">
+            <wpsf:checkbox
+                    name="%{'friendlyCode_useDefaultLang_'+#lang.code}"
+                    id="%{'friendlyCode_useDefaultLang_'+#lang.code}"
+                    value="%{#attr[#friendlyCodeUseDefault]}"
+                    cssClass="radiocheck bootstrap-switch" />
+        </div>
+    </s:if>
+</div>
+
+<s:set var="pageMetatagsVar" value="#attr['pageMetatags']" />
 <s:if test="%{null != #pageMetatagsVar}">
     <s:set var="pageMetatagsLangVar" value="#pageMetatagsVar[#lang.code]" /> 
     <s:if test="%{null != #pageMetatagsLangVar}">
