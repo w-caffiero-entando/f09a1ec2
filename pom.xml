@@ -55,7 +55,7 @@
             https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/checkstyle.xml
         </checkstyleConfigLocation>
         <owaspSuppressionFileLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
+            owasp-dependency-check-suppression.xml
         </owaspSuppressionFileLocation>
         <!--test database default settings -->
         <test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</test.database.driver>
