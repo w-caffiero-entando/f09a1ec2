@@ -60,4 +60,12 @@
         <packageUrl regex="true">^pkg:maven/org\.freemarker/freemarker@.*$</packageUrl>
         <cve>CVE-2020-10683</cve>
     </suppress>
+    <suppress>
+        <cve>CVE-2021-22096</cve>
+        <cve>CVE-2021-40690</cve>
+        <cve>CVE-2021-37714</cve>
+        <cve>CVE-2020-25633</cve>
+        <cve>CVE-2021-20289</cve>
+        <cve>CVE-2021-20293</cve>
+    </suppress>
 </suppressions>

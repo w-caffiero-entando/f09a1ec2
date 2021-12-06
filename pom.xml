@@ -1024,23 +1024,6 @@
                 <version>${spring.version}</version>
                 <scope>test</scope>
             </dependency>
-            <!-- 
-            <dependency>
-                <groupId>postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${postgresql.driver.version}</version>
-                <scope>test</scope>
-            </dependency>
-            -->
-            <!-- uncomment if you need -->
-            <!--
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>5.1.18</version>
-                <scope>test</scope>
-            </dependency>
-            -->
             <dependency>
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
@@ -2280,23 +2263,6 @@
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.driver.version}</version>
-            <scope>test</scope>
-        </dependency>
-        -->
-        <!-- uncomment if you need -->
-        <!--
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.18</version>
-            <scope>test</scope>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
