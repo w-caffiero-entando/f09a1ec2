@@ -154,6 +154,15 @@ public abstract class AbstractPortalAction extends BaseAction {
 			this.getSubBreadCrumbsTargets(pages, parent);
 		}
 	}
+    
+    public String getWidgetTypeTitle(String typeCode) {
+        WidgetType type = this.getWidgetType(typeCode);
+        return (null != type) ? super.getTitle(typeCode, type.getTitles()) : typeCode;
+    }
+
+    public WidgetType getWidgetType(String typeCode) {
+        return this.getWidgetTypeManager().getWidgetType(typeCode);
+    }
 
 	/**
 	 * Check if the current user can access the specified page.

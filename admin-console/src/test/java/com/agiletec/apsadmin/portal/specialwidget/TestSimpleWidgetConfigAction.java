@@ -94,7 +94,7 @@ class TestSimpleWidgetConfigAction extends ApsAdminBaseTestCase {
 			page = this._pageManager.getDraftPage(pageCode);
 			widget = page.getWidgets()[frame];
 			assertNotNull(widget);
-			assertEquals("formAction", widget.getType().getCode());
+			assertEquals("formAction", widget.getTypeCode());
 			assertEquals(1, widget.getConfig().size());
 			assertEquals("/WEB-INF/pippo.jsp", widget.getConfig().getProperty("actionPath"));
 		} catch (Throwable t) {

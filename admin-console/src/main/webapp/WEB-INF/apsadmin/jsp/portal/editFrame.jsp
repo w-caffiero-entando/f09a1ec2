@@ -65,7 +65,7 @@
                     </label>
                     <span class="icon fa fa-puzzle-piece" title="<s:text name="name.widget" />">
                     </span>
-                    <s:property value="%{getTitle(showlet.type.code, showlet.type.titles)}" />
+                    <s:property value="%{getWidgetTypeTitle(showlet.typeCode)}" />
                 </h3>
                 <p><s:text name="note.editFrame.noConfigNeeded" /></p>
             </s:if>

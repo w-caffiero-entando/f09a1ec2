@@ -25,6 +25,7 @@ import com.agiletec.aps.system.services.page.Page;
 import com.agiletec.aps.system.services.page.PageMetadata;
 import com.agiletec.aps.system.services.page.PageTestUtil;
 import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
@@ -55,10 +56,10 @@ class TestPageConfigAction extends ApsAdminBaseTestCase {
         assertNull(this._pageManager.getDraftPage(pageCode));
         try {
             IPage parentPage = _pageManager.getDraftRoot();
-            PageModel pageModel = parentPage.getMetadata().getModel();
+            PageModel pageModel = this._pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
             PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel,
                     true, "pagina temporanea", null, null, false, null, null);
-            Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), "free", metadata, pageModel.getDefaultWidget());
+            Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), "free", pageModel, metadata, pageModel.getDefaultWidget());
             this._pageManager.addPage(pageToAdd);
             IPage addedPage = this._pageManager.getDraftPage(pageCode);
             assertNotNull(addedPage);
@@ -159,7 +160,7 @@ class TestPageConfigAction extends ApsAdminBaseTestCase {
             assertEquals(Action.SUCCESS, result);
             pagina_1 = this._pageManager.getDraftPage(pageCode);
             assertNotNull(pagina_1.getWidgets()[frame]);
-            assertEquals(widgetTypeCode, pagina_1.getWidgets()[frame].getType().getCode());
+            assertEquals(widgetTypeCode, pagina_1.getWidgets()[frame].getTypeCode());
 
             result = this.executeTrashWidget(pageCode, frame, "admin");
             assertEquals(Action.SUCCESS, result);
@@ -256,11 +257,13 @@ class TestPageConfigAction extends ApsAdminBaseTestCase {
     private void init() throws Exception {
         try {
             this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
+            this._pageModelManager = (IPageModelManager) this.getService(SystemConstants.PAGE_MODEL_MANAGER);
         } catch (Throwable t) {
             throw new Exception(t);
         }
     }
 
     private IPageManager _pageManager = null;
+    private IPageModelManager _pageModelManager = null;
 
 }

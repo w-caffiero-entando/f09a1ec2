@@ -326,7 +326,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
             metadata = metadata.clone();
             this.setTitles(metadata.getTitles());
             this.setExtraGroups(metadata.getExtraGroups());
-            this.setModel(metadata.getModel().getCode());
+            this.setModel(metadata.getModelCode());
             this.setShowable(metadata.isShowable());
             this.setUseExtraTitles(metadata.isUseExtraTitles());
             if (StringUtils.isNotBlank(metadata.getCharset())) {
@@ -434,8 +434,9 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
                 page.setGroup(this.getGroup());
                 PageMetadata metadata = page.getMetadata();
                 this.valueMetadataFromForm(metadata);
-                if (null != metadata.getModel()) {
-                    page.setWidgets(new Widget[metadata.getModel().getFrames().length]);
+                if (null != metadata.getModelCode()) {
+                    PageModel newModel = this.getPageModelManager().getPageModel(metadata.getModelCode());
+                    page.setWidgets(new Widget[newModel.getFrames().length]);
                 }
             }
             // ricava il codice
@@ -468,11 +469,12 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
                 metadata = new PageMetadata();
                 page.setMetadata(metadata);
             }
-            PageModel oldModel = metadata.getModel();
+            PageModel oldModel = this.getPageModelManager().getPageModel(metadata.getModelCode());
             this.valueMetadataFromForm(metadata);
             if (oldModel == null || !oldModel.getCode().equals(this.getModel())) {
                 // The model is changed, so I drop all the previous widgets
-                page.setWidgets(new Widget[metadata.getModel().getFrames().length]);
+                PageModel newModel = this.getPageModelManager().getPageModel(this.getModel());
+                page.setWidgets(new Widget[newModel.getFrames().length]);
             }
         } catch (Throwable t) {
             logger.error("Error updating page", t);
@@ -482,11 +484,10 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
     }
 
     private void valueMetadataFromForm(PageMetadata metadata) {
-        if (metadata.getModel() == null || !metadata.getModel().getCode().equals(this.getModel())) {
-            // Ho cambiato modello e allora cancello tutte le showlets
-            // Precedenti
-            PageModel model = this.getPageModelManager().getPageModel(this.getModel());
-            metadata.setModel(model);
+        if (null != this.getModel() && (metadata.getModelCode() == null || !metadata.getModelCode().equals(this.getModel()))) {
+            // Ho cambiato modello e allora cancello tutti widgets precedenti
+            PageModel extractedModel = this.getPageModelManager().getPageModel(this.getModel());
+            metadata.setModelCode(extractedModel.getCode());
         }
         metadata.setShowable(this.isShowable());
         metadata.setUseExtraTitles(this.isUseExtraTitles());
@@ -503,7 +504,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
         Page page = null;
         try {
             page = (Page) this.getPage(this.getPageCode());
-            PageModel model = page.getMetadata().getModel();
+            PageModel model = this.getPageModelManager().getPageModel(page.getMetadata().getModelCode());
             Widget[] defaultWidgets = model.getDefaultWidget();
             if (null == defaultWidgets) {
                 logger.info("No default Widget found for pagemodel '{}' of page '{}'", model.getCode(), page.getCode());
@@ -513,7 +514,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
             for (int i = 0; i < defaultWidgets.length; i++) {
                 Widget defaultWidget = defaultWidgets[i];
                 if (null != defaultWidget) {
-                    if (null == defaultWidget.getType()) {
+                    if (null == defaultWidget.getTypeCode()) {
                         logger.info("Widget Type null when adding defaulWidget (of pagemodel '{}') on frame '{}' of page '{}'", model
                                 .getCode(), i, page.getCode());
                         continue;

@@ -334,7 +334,7 @@ class TestNavigatorWidgetConfigAction extends ApsAdminBaseTestCase {
 			page = this._pageManager.getDraftPage(pageCode);
 			widget = page.getWidgets()[frame];
 			assertNotNull(widget);
-			assertEquals("leftmenu", widget.getType().getCode());
+			assertEquals("leftmenu", widget.getTypeCode());
 			assertEquals(1, widget.getConfig().size());
 			assertEquals("parent.subtree(2)", widget.getConfig().getProperty("navSpec"));
 		} catch (Throwable t) {

@@ -27,7 +27,7 @@
     <s:iterator var="curr_widget" value="currentPage.draftWidgets" status="rowstatus">
         {
             index: <s:property value="#rowstatus.index" />,
-            widgetType: '<s:property value="%{#curr_widget.getType().getCode()}" />'
+            widgetType: '<s:property value="%{#curr_widget.getTypeCode()}" />'
         },
     </s:iterator>
     ];
