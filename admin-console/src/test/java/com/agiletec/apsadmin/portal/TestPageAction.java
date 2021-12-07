@@ -831,7 +831,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel, true, "pagina temporanea", null, null, false, null, null);
         ApsProperties properties = new ApsProperties();
 		properties.setProperty("actionPath", "/path");
-        Widget widgetToAdd = PageTestUtil.createWidget("formAction", properties, this._widgetTypeManager);
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", properties);
         Widget[] widgets = {widgetToAdd};
         Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), "free", pageModel, metadata, widgets);
         this._pageManager.addPage(pageToAdd);
