@@ -178,7 +178,7 @@ class TestContentCategoryBulkAction extends ApsAdminBaseTestCase {
 	}
 	
 	private Collection<String> extractCategoryCodes(Collection<Category> categories) {
-		Set<String> categoryCodes = new HashSet<String>();
+		Set<String> categoryCodes = new HashSet<>();
 		if (categories != null) {
 			for (Category category : categories) {
 				categoryCodes.add(category.getCode());
@@ -188,7 +188,7 @@ class TestContentCategoryBulkAction extends ApsAdminBaseTestCase {
 	}
 
 	private List<String> addContents(String masterContentId, int size) throws EntException {
-		List<String> contentIds = new ArrayList<String>(size);
+		List<String> contentIds = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			Content current = this._contentManager.loadContent(masterContentId, false);
 			current.setId(null);
