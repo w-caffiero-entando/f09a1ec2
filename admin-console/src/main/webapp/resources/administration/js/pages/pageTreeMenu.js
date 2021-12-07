@@ -13,7 +13,9 @@ $(function () {
             setOfflineUrl = baseUrl + 'rs/Page/setOffline',
             configureWidgetUrl = baseUrl + 'Page/editFrame.action',
             apiMappingsUrl = baseUrl + 'rs/Portal/WidgetType/apiMappings',
+            widgetTypeDetailUrl = baseUrl + 'rs/Portal/WidgetType/details',
             apiCopyFromWidgetUrl = baseUrl + 'Api/Service/copyFromWidget.action',
+            pageModelDetailUrl = baseUrl + 'rs/PageModel/details',
             PAGE_IS_SELECTED = !!PROPERTY.pagemodel,
             labels = {
                 "deleteWidget": {
@@ -119,7 +121,7 @@ $(function () {
         $('.diff-slot').removeClass('diff-slot');
         $('.grid-slot').find('.ghost').remove();
         if (pageData.online) {
-            if (pageData.draftMetadata.model.code !== pageData.draftMetadata.model.code) {
+            if (pageData.draftMetadata.modelCode !== pageData.draftMetadata.modelCode) {
                 $('.grid-slot').addClass('diff-slot');
             } else if (pageData.draftWidgets.length === pageData.onlineWidgets.length) {
                 for (var i = 0; i < pageData.draftWidgets.length; ++i) {
@@ -151,7 +153,7 @@ $(function () {
      * Initializes page detail and widget data
      * @param {Object} pageData the current pageData object
      */
-    function updatePageDetail(pageData) {
+    function updatePageDetail(pageData, pageModel) {
 
         var metadata = pageData.draftMetadata,
                 checkElems = {
@@ -164,7 +166,7 @@ $(function () {
         }).join(', ');
         $pageInfo.find('[data-info-titles]').html(titles);
         $pageInfo.find('[data-info-group]').text(pageData.group);
-        $pageInfo.find('[data-info-model]').text(metadata.model.descr);
+        $pageInfo.find('[data-info-model]').text(pageModel.descr);
         $pageInfo.find('[data-info-showmenu]').html(checkElems[_.toString(metadata.showable)]);
         $pageInfo.find('[data-info-extratitles]').html(checkElems[_.toString(metadata.useExtraTitles)]);
 
@@ -203,12 +205,12 @@ $(function () {
         return msg;
     }
 
-
+    
     function findWidgetInfo(widgetCode) {
         if (!pageData) {
             return null;
         }
-        return _.find(pageData.draftWidgets, {type: {code: widgetCode}});
+        return _.find(pageData.draftWidgets, {typeCode: widgetCode});
     }
     
     /**
@@ -247,6 +249,22 @@ $(function () {
             }
         });
     }
+    
+    function getWidgetTypeDetail(code) {
+        let returnValue;
+        $.ajax(widgetTypeDetailUrl, {
+            async: false,
+            method: 'GET',
+            dataType: 'json',
+            data: {
+                widgetTypeCode: code
+            },
+            success: function (data) {
+                returnValue = data;
+            }
+        });
+        return returnValue;
+    }
 
     /**
      * Creates a grid widget element
@@ -262,8 +280,7 @@ $(function () {
         var html = '<div>' +
                 '<div class="slot-name"></div>' +
                 '</div>';
-
-
+        
         function createMenuItem(label) {
             var $menuItem = $('<li role="presentation"><a role="menuitem" tabindex="-1" href="#"></a></li>');
             $menuItem.find('a[role="menuitem"]').text(label);
@@ -283,8 +300,9 @@ $(function () {
             window.location = PROPERTY.baseUrl +
                     'do/Portal/WidgetType/viewWidgetUtilizers.action?widgetTypeCode=' + widgetCode
         });
-
-        if (widgetInfo && widgetInfo.type && widgetInfo.type.typeParameters) {
+        
+        var widgetType = getWidgetTypeDetail(widgetInfo.typeCode);
+        if (widgetType && widgetType.typeParameters) {
             var $settingsItem = createMenuItem(TEXT['widgetActions.settings']);
             $dropDownMenu.append($settingsItem);
             $settingsItem.click(function (e) {
@@ -294,7 +312,7 @@ $(function () {
             });
         }
 
-        var apiWidgetCode = widgetInfo && widgetInfo.type.logic ? _.get(widgetInfo, 'type.parentType.code', '') : widgetCode;
+        var apiWidgetCode = widgetInfo && widgetType && widgetType.logic ? _.get(widgetType, 'parentType.code', '') : widgetCode;
         if (PERMISSION.superuser && apiMappings[apiWidgetCode]) {
             var $apiItem = createMenuItem(TEXT['widgetActions.api']);
 
@@ -308,8 +326,8 @@ $(function () {
                         '&namespace=' + apiMappings[apiWidgetCode].namespace;
             });
         }
-
-        if (widgetInfo && widgetInfo.config && widgetInfo.type.logic === false) {
+        
+        if (widgetInfo && widgetInfo.config && widgetType && widgetType.logic === false) {
             var $newWidgetItem = createMenuItem(TEXT['widgetActions.newWidget']);
             $dropDownMenu.append($newWidgetItem);
             $newWidgetItem.click(function (e) {
@@ -374,9 +392,10 @@ $(function () {
         if (!onlineWidget) {
             return $('<div />');
         }
-        var widgetInfo = pageData.onlineWidgets[framePos],
-                widgetCode = widgetInfo.type.code,
-                widgetDescr = widgetInfo.type.titles[PROPERTY.currentLang || PROPERTY.defaultLang];
+        var widgetInfo = pageData.onlineWidgets[framePos];
+        var widgetType = getWidgetTypeDetail(widgetInfo.typeCode);
+        var widgetCode = widgetInfo.typeCode;
+        var widgetDescr = widgetType.titles[PROPERTY.currentLang || PROPERTY.defaultLang];
 
         var $iconTextBlock = $('<div />')
                 .addClass('icon-text-block ghost')
@@ -442,7 +461,7 @@ $(function () {
             // populates the slots
             _.forEach(pageData.draftWidgets, function (widget, index) {
                 if (widget) {
-                    var $curWidget = createGridWidget(_.get(widget, 'type.code'));
+                    var $curWidget = createGridWidget(_.get(widget, 'typeCode'));
                     var $slot = $('.grid-slot[data-pos="' + index + '"]');
                     populateSlot($slot, $curWidget);
                 }
@@ -669,7 +688,6 @@ $(function () {
         alertService.addDismissableError('Error fetching data');
     }
 
-
     /**
      * Initializes all the page after loading all data
      */
@@ -677,11 +695,20 @@ $(function () {
         loadPageData(function () {
             loadApiMappings(function () {
                 loadPageFrames(function () {
-                    updatePageDetail(pageData);
-                    updateGridPreview(pageFrames);
-                    updatePageStatus(pageData);
-                    updateOnTheFlyDropdown();
-                    updateDefaultWidgetBtn();
+                    $.ajax(pageModelDetailUrl, {
+                        method: 'GET',
+                        dataType: 'json',
+                        data: {
+                            code: pageData.draftMetadata.modelCode
+                        },
+                        success: function (data) {
+                            updatePageDetail(pageData, data);
+                            updateGridPreview(pageFrames);
+                            updatePageStatus(pageData);
+                            updateOnTheFlyDropdown();
+                            updateDefaultWidgetBtn();
+                        }
+                    });
                 }, handleApiError);
             }, handleApiError);
         }, handleApiError);
@@ -701,12 +728,13 @@ $(function () {
      * @returns true if the page allows on-the-fly publishing
      */
     function isOnTheFly() {
-    	var mainIndex = _.findIndex(pageFrames, { mainFrame: true });
-    	if (mainIndex !== -1) {
-    		var mainWidget = pageData.draftWidgets[mainIndex];
-    		return (mainWidget && mainWidget.type.code === 'content_viewer' && !mainWidget.type.config);
-    	}
-		return false;
+        var mainIndex = _.findIndex(pageFrames, {mainFrame: true});
+        if (mainIndex !== -1) {
+            var mainWidget = pageData.draftWidgets[mainIndex];
+            var widgetType = mainWidget ? getWidgetTypeDetail(mainWidget.typeCode) : null;
+            return (mainWidget && widgetType && mainWidget.typeCode === 'content_viewer' && !widgetType.config);
+        }
+        return false;
     }
     
     /**
@@ -725,8 +753,8 @@ $(function () {
     function isDefaultWidgetApplied() {
     	var draftWidgets = pageData.draftWidgets;
     	for (var i=0; i<draftWidgets.length; ++i) {
-    		var defCode = _.get(pageFrames[i], 'defaultWidget.type.code');
-    		var curCode = _.get(draftWidgets[i], 'type.code');
+    		var defCode = _.get(pageFrames[i], 'defaultWidget.typeCode');
+    		var curCode = _.get(draftWidgets[i], 'typeCode');
     		if (defCode !== curCode) {
     			return false;
     		}
