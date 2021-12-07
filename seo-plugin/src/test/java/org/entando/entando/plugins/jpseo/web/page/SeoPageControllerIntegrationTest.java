@@ -72,6 +72,9 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     private IPageManager pageManager;
     
     @Autowired
+    private IPageModelManager pageModelManager;
+
+    @Autowired
     private SeoMappingManager seoMappingManager;
     @Autowired
     private PageDtoToRequestConverter pageDtoToRequestConverter;
@@ -1195,12 +1198,12 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
             parent = "service";
         }
         IPage parentPage = pageManager.getDraftPage(parent);
-        PageModel pageModel = parentPage.getMetadata().getModel();
+        PageModel pageModel = this.pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
         PageMetadata metadata = PageTestUtil
                 .createPageMetadata(pageModel, true, pageCode + "_title", null, null, false, null, null);
         ApsProperties config = new ApsProperties();
         config.put("actionPath", "/mypage.jsp");
-        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), group, metadata, null);
+        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), group, pageModel, metadata, null);
         return pageToAdd;
     }
     
