@@ -276,7 +276,6 @@ $(function () {
                 widgetDescr = $widget.find('.widget-name').text(),
                 $widgetIcon = $widget.find('.widget-icon').clone(),
                 widgetInfo = findWidgetInfo(widgetCode);
-
         var html = '<div>' +
                 '<div class="slot-name"></div>' +
                 '</div>';
@@ -301,7 +300,7 @@ $(function () {
                     'do/Portal/WidgetType/viewWidgetUtilizers.action?widgetTypeCode=' + widgetCode
         });
         
-        var widgetType = getWidgetTypeDetail(widgetInfo.typeCode);
+        var widgetType = getWidgetTypeDetail(widgetCode);
         if (widgetType && widgetType.typeParameters) {
             var $settingsItem = createMenuItem(TEXT['widgetActions.settings']);
             $dropDownMenu.append($settingsItem);
@@ -491,8 +490,7 @@ $(function () {
                         var html = gridSlots[+$prevSlot.attr('data-pos')];
                         $prevSlot.append(html);
                     }
-
-
+                    
                     // it's a widget square
                     if (!$curWidget.hasClass('instance')) {
                         $curWidget = createGridWidget(curWidgetType);
