@@ -70,12 +70,12 @@
             jdbc:derby:${project.build.directory}/test/db/${project.artifactId}testServ;create=true
         </test.database.serv.url>
         <!--dependency versions-->
-        <spring.version>5.3.9</spring.version>
+        <spring.version>5.3.12</spring.version>
         <springsecurity.version>5.5.1</springsecurity.version>
         <springsecurityoauth2.version>2.5.1.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.26</struts2.version>
         <cxf.version>3.4.4</cxf.version>
-        <jackson.version>2.11.4</jackson.version>
+        <jackson.version>2.12.6</jackson.version>
         <hibernate-validator-version>6.0.20.Final</hibernate-validator-version>
         <lucene-core.version>8.9.0</lucene-core.version>
         <json-path-assert.version>2.6.0</json-path-assert.version>
@@ -94,7 +94,7 @@
         <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
         <assertj-core.version>3.20.2</assertj-core.version>
         <commons-digester.version>2.1</commons-digester.version>
-        <logback.version>1.2.4</logback.version>
+        <logback.version>1.2.7</logback.version>
         <logback-json.version>0.1.5</logback-json.version>
         <logback-jackson.version>0.1.5</logback-jackson.version>
         <aspectj.version>1.9.7</aspectj.version>
@@ -136,7 +136,7 @@
         <oro.version>2.0.8</oro.version>
         <xom.version>1.3.7</xom.version>
         <esapi.version>2.2.3.1</esapi.version>
-        <tika-version>1.27</tika-version>
+        <tika-version>1.28</tika-version>
         <c3p0.version>0.9.5.5</c3p0.version>
         <vorbis-java-tika.version>0.8</vorbis-java-tika.version>
         <drewnoakes-metadata-extractor.version>2.16.0</drewnoakes-metadata-extractor.version>
@@ -167,7 +167,7 @@
         <encoder.version>1.2.2</encoder.version>
         <tiles-request-api.version>1.0.7</tiles-request-api.version>
         <httpcore.version>4.4.13</httpcore.version>
-        <log4j-core.version>2.16.0</log4j-core.version>
+        <log4j-core.version>2.17.1</log4j-core.version>
         <classmate.version>1.3.4</classmate.version>
         <spring-data-commons.version>2.5.3</spring-data-commons.version>
         <hamcrest.version>2.2</hamcrest.version>
