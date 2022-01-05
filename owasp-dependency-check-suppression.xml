@@ -67,5 +67,7 @@
         <cve>CVE-2020-25633</cve>
         <cve>CVE-2021-20289</cve>
         <cve>CVE-2021-20293</cve>
+        <cve>CVE-2021-42550</cve>
+        <cve>CVE-2021-43797</cve>
     </suppress>
 </suppressions>
