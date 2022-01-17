@@ -122,7 +122,7 @@
                 <!-- UX Patterns Secondary -->
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <a href='<s:url action="viewWidgets" namespace="/do/Portal/WidgetType" />'>
+                        <a href='<c:out value="${appBuilderBaseURL}"/>widget'>
                             <span class="list-group-item-value"><s:text name="menu.UXPattern.widget" /></span>
                         </a>
                     </li>
@@ -267,7 +267,7 @@
                         </li>
                         
                         <li class="list-group-item">
-                            <a href='<s:url action="editSmtp" namespace="/do/jpmail/MailConfig" />'>
+                            <a href='<c:out value="${appBuilderBaseURL}"/>email-config'>
                                 <span class="list-group-item-value"><s:text name="menu.settings.email" /></span>
                             </a>
                         </li>
