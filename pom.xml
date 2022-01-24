@@ -70,7 +70,7 @@
             jdbc:derby:${project.build.directory}/test/db/${project.artifactId}testServ;create=true
         </test.database.serv.url>
         <!--dependency versions-->
-        <spring.version>5.3.12</spring.version>
+        <spring.version>5.3.14</spring.version>
         <springsecurity.version>5.5.1</springsecurity.version>
         <springsecurityoauth2.version>2.5.1.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.26</struts2.version>
@@ -173,7 +173,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <jaxb-runtime.version>2.3.4</jaxb-runtime.version>
         <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
-        <keycloak-admin-client.version>15.0.2</keycloak-admin-client.version>
+        <keycloak-admin-client.version>15.1.1</keycloak-admin-client.version>
     </properties>
     <issueManagement>
         <system>Github</system>
