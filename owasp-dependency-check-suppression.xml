@@ -69,5 +69,11 @@
         <cve>CVE-2021-20293</cve>
         <cve>CVE-2021-42550</cve>
         <cve>CVE-2021-43797</cve>
+        <cve>CVE-2021-43797</cve>
+        <cve>CVE-2021-40111</cve>
+        <cve>CVE-2021-40110</cve>
+        <cve>CVE-2021-38542</cve>
+        <cve>CVE-2021-40525</cve>
+        <cve>CVE-2021-22569</cve>
     </suppress>
 </suppressions>
