@@ -34,7 +34,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.model.ContentThreadConfig;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.model.ContentTypeElem;
-import org.jdom.Attribute;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -62,10 +61,9 @@ public class ContentThreadConfigDOM {
 	 */
 	public ContentThreadConfig extractConfig(String xml) throws ApsSystemException {
 		ContentThreadConfig config = new ContentThreadConfig();
-		config.setGroupsContentType(new HashMap<String, List<String>>());
-		config.setUsersContentType(new HashMap<String, List<String>>());
+		config.setGroupsContentType(new HashMap<>());
+		config.setUsersContentType(new HashMap<>());
 		Element root = this.getRootElement(xml);
-		this.setSitecode(root, config);
 		this.extractScheduler(root, config);
 		this.extractGloabalCat(root, config);
 		this.extractContentReplace(root, config);
@@ -74,24 +72,6 @@ public class ContentThreadConfigDOM {
 		this.extractUsers(root, config);
 		this.extractMailConfig(root, config);
 		return config;
-	}
-
-	/**
-	 * Se l'elemento contentThreadConfig ha un attributo sitecode, che specifica
-	 * il codice del sito abilitato all'invio, lo setta all'interno dell'oggetto
-	 * {@link NewsletterConfig}
-	 *
-	 * @param root
-	 * l'elemento contentThreadConfig
-	 * @param contentThreadConfig
-	 * l'oggetto contenitore della configurazione
-	 */
-	private void setSitecode(Element root, ContentThreadConfig contentThreadConfig) {
-		Attribute sitecodeAttr = root.getAttribute(SITECODE);
-		if (null != sitecodeAttr && sitecodeAttr.getValue().trim().length() > 0) {
-			String sitecode = sitecodeAttr.getValue();
-			contentThreadConfig.setSitecode(sitecode);
-		}
 	}
 
 	/**
@@ -251,7 +231,6 @@ public class ContentThreadConfigDOM {
 	 */
 	private Element createConfigElement(ContentThreadConfig config) {
 		Element configElem = new Element(ROOT);
-		configElem.setAttribute(SITECODE, config.getSitecode());
 
 		Element schedulerElem = this.createSchedulerElement(config);
 		configElem.addContent(schedulerElem);
@@ -483,7 +462,6 @@ public class ContentThreadConfigDOM {
 	}
 
 	private static final String ROOT = "contentThreadconfig";
-	private static final String SITECODE = "sitecode";
 
 	private static final String SCHEDULER_ELEM = "scheduler";
 	private static final String SCHEDULER_ACTIVE_ATTR = "active";

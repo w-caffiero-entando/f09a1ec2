@@ -5,26 +5,9 @@
 	<dependencies>
 		<code>jpmail</code>
 	</dependencies>
-	<installation>
-		<environment code="production">
-			<defaultSqlResources>
-				<datasource name="portDataSource">
-classpath:sql/plugins/jpcontentscheduler/port_data_production.sql
-				</datasource>
-				<datasource name="servDataSource">
-classpath:sql/plugins/jpcontentscheduler/serv_data_production.sql
-				</datasource>
-			</defaultSqlResources>
-		</environment>
-		<environment code="test">
-			<defaultSqlResources>
-				<datasource name="portDataSource">
-classpath:sql/plugins/jpcontentscheduler/port_data_test.sql
-				</datasource>
-				<datasource name="servDataSource">
-classpath:sql/plugins/jpcontentscheduler/serv_data_test.sql
-				</datasource>
-			</defaultSqlResources>
-		</environment>
-	</installation>
+    <installation>
+        <liquibase>
+            <changeSet datasource="portDataSource" changeLogFile="classpath:liquibase/jpcontentscheduler/changeSetPort.xml" />
+        </liquibase>
+    </installation>
 </component>

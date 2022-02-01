@@ -131,27 +131,6 @@
             </div>
         </div>
 
-        <%-- siteCode --%>
-        <s:set var="fieldErrorsVar" value="%{fieldErrors['siteCode']}" />
-        <s:set var="hasFieldErrorVar" value="#fieldErrorsVar != null && !#fieldErrorsVar.isEmpty()" />
-        <s:set var="controlGroupErrorClass" value="%{#hasFieldErrorVar ? ' has-error' : ''}" />
-        <div class="form-group<s:property value="#controlGroupErrorClass" />">
-            <label class="col-sm-2 control-label" for="siteCode">
-                <s:text name="label.threadConfig.siteCode" />
-                <i class="fa fa-asterisk required-icon"></i>
-            </label>
-
-            <div class="col-sm-10">
-                <wpsf:textfield name="siteCode" id="siteCode" cssClass="form-control" />
-                <s:text name="label.threadConfig.siteCode.help" />
-                <s:if test="#hasFieldErrorVar">
-                    <span class="help-block text-danger">
-                        <s:iterator value="%{#fieldErrorsVar}"><s:property />&#32;</s:iterator>
-                        </span>
-                </s:if>
-            </div>
-        </div>
-
         <%-- globalCat --%>
         <s:set var="fieldErrorsVar" value="%{fieldErrors['globalCat']}" />
         <s:set var="hasFieldErrorVar" value="#fieldErrorsVar != null && !#fieldErrorsVar.isEmpty()" />

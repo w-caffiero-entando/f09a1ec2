@@ -4,12 +4,6 @@
 
 <validators>
 
-	<field name="siteCode">
-		<field-validator type="requiredstring" short-circuit="true">
-			<message key="jpcontentscheduler.siteCode.required"/>
-		</field-validator>
-	</field>
-
 	<field name="globalCat">
 		<field-validator type="requiredstring">
 			<message key="jpcontentscheduler.globalCat.required"/>
