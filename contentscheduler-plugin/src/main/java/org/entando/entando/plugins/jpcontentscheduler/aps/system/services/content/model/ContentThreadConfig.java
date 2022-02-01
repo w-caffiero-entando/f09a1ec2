@@ -39,8 +39,8 @@ public class ContentThreadConfig {
 		return _globalCat;
 	}
 
-	public void setGlobalCat(String _globalCat) {
-		this._globalCat = _globalCat;
+	public void setGlobalCat(String globalCat) {
+		this._globalCat = globalCat;
 	}
 
 	public String getContentIdRepl() {
@@ -119,48 +119,48 @@ public class ContentThreadConfig {
 		return _htmlHeaderMove;
 	}
 
-	public void setHtmlHeaderMove(String _htmlHeaderMove) {
-		this._htmlHeaderMove = _htmlHeaderMove;
+	public void setHtmlHeaderMove(String htmlHeaderMove) {
+		this._htmlHeaderMove = htmlHeaderMove;
 	}
 
 	public String getHtmlFooterMove() {
 		return _htmlFooterMove;
 	}
 
-	public void setHtmlFooterMove(String _htmlFooterMove) {
-		this._htmlFooterMove = _htmlFooterMove;
+	public void setHtmlFooterMove(String htmlFooterMove) {
+		this._htmlFooterMove = htmlFooterMove;
 	}
 
 	public String getHtmlSeparatorMove() {
 		return _htmlSeparatorMove;
 	}
 
-	public void setHtmlSeparatorMove(String _htmlSeparatorMove) {
-		this._htmlSeparatorMove = _htmlSeparatorMove;
+	public void setHtmlSeparatorMove(String htmlSeparatorMove) {
+		this._htmlSeparatorMove = htmlSeparatorMove;
 	}
 
 	public String getTextHeaderMove() {
 		return _textHeaderMove;
 	}
 
-	public void setTextHeaderMove(String _textHeaderMove) {
-		this._textHeaderMove = _textHeaderMove;
+	public void setTextHeaderMove(String textHeaderMove) {
+		this._textHeaderMove = textHeaderMove;
 	}
 
 	public String getTextFooterMove() {
 		return _textFooterMove;
 	}
 
-	public void setTextFooterMove(String _textFooterMove) {
-		this._textFooterMove = _textFooterMove;
+	public void setTextFooterMove(String textFooterMove) {
+		this._textFooterMove = textFooterMove;
 	}
 
 	public String getTextSeparatorMove() {
 		return _textSeparatorMove;
 	}
 
-	public void setTextSeparatorMove(String _textSeparatorMove) {
-		this._textSeparatorMove = _textSeparatorMove;
+	public void setTextSeparatorMove(String textSeparatorMove) {
+		this._textSeparatorMove = textSeparatorMove;
 	}
 
 	public String getTextHeader() {
@@ -202,26 +202,6 @@ public class ContentThreadConfig {
 
 	public void setTextSeparator(String textSeparator) {
 		this._textSeparator = textSeparator;
-	}
-
-	/**
-	 * Imposta il codice dell'istanza abilitata all'invio del job di
-	 * pubblicazione/sospensione automatica
-	 *
-	 * @param sitecode
-	 */
-	public void setSitecode(String sitecode) {
-		this._sitecode = sitecode;
-	}
-
-	/**
-	 * Restituisce il codice dell'istanza abilitata all'invio del job di
-	 * pubblicazione/sospensione automatica
-	 *
-	 * @return
-	 */
-	public String getSitecode() {
-		return _sitecode;
 	}
 
 	public Map<String, List<String>> getGroupsContentType() {
@@ -285,8 +265,6 @@ public class ContentThreadConfig {
 	private String _textHeaderMove = "";
 	private String _textFooterMove = "";
 	private String _textSeparatorMove = "";
-
-	private String _sitecode;
 
 	// tipi di contenuto da utilizzare
 	private List<ContentTypeElem> _typesList = new ArrayList<ContentTypeElem>();

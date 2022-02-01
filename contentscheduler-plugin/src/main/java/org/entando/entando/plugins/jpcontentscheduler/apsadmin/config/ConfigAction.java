@@ -51,8 +51,6 @@ public class ConfigAction extends BaseAction {
 	public String viewItem() {
 		try {
 			ContentThreadConfig threadConfig = this.getContentSchedulerManager().getConfig();
-
-			this.setSiteCode(threadConfig.getSitecode());
 			this.setActive(threadConfig.isActive());
 			this.setGlobalCat(threadConfig.getGlobalCat());
 			this.setContentIdRepl(threadConfig.getContentIdRepl());
@@ -107,17 +105,12 @@ public class ConfigAction extends BaseAction {
 
 	public String saveItem() {
 		try {
-
 			ContentThreadConfig config = this.getContentSchedulerManager().getConfig();
-
 			config.setActive(this.isActive());
 			config.setGlobalCat(this.getGlobalCat());
-			config.setSitecode(this.getSiteCode());
 			config.setContentIdRepl(this.getContentIdRepl());
 			config.setContentModelRepl(this.getContentModelRepl());
-
 			this.getContentSchedulerManager().updateConfig(config);
-
 			this.addActionMessage(this.getText("jpcontentscheduler.saveItem.success"));
 		} catch (Throwable t) {
 			_logger.error("Error saving item", t);
@@ -175,14 +168,6 @@ public class ConfigAction extends BaseAction {
 		this._contentSchedulerManager = contentSchedulerManager;
 	}
 
-	public String getSiteCode() {
-		return siteCode;
-	}
-
-	public void setSiteCode(String siteCode) {
-		this.siteCode = siteCode;
-	}
-
 	public boolean isActive() {
 		return active;
 	}
@@ -217,8 +202,7 @@ public class ConfigAction extends BaseAction {
 
 	private ConfigInterface _baseConfigManager;
 	private IContentSchedulerManager _contentSchedulerManager;
-
-	private String siteCode;
+    
 	private boolean active;
 	private String globalCat;
 	private String contentIdRepl;
