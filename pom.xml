@@ -164,7 +164,8 @@
         <jakarta.ws.rs-api.version>2.1.6</jakarta.ws.rs-api.version>
         <hibernate-validator.version>6.0.20.Final</hibernate-validator.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
-        <encoder.version>1.2.2</encoder.version>
+        <encoder.version>1.2.3</encoder.version>
+        <encoder-jsp.version>1.2.3</encoder-jsp.version>
         <tiles-request-api.version>1.0.7</tiles-request-api.version>
         <httpcore.version>4.4.13</httpcore.version>
         <log4j-core.version>2.17.1</log4j-core.version>
@@ -1452,6 +1453,11 @@
                 <version>${encoder.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.owasp.encoder</groupId>
+                <artifactId>encoder-jsp</artifactId>
+                <version>${encoder-jsp.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.tiles</groupId>
                 <artifactId>tiles-request-api</artifactId>
                 <version>${tiles-request-api.version}</version>
@@ -2700,6 +2706,11 @@
             <groupId>org.owasp.encoder</groupId>
             <artifactId>encoder</artifactId>
             <version>${encoder.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.owasp.encoder</groupId>
+            <artifactId>encoder-jsp</artifactId>
+            <version>${encoder-jsp.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tiles</groupId>
