@@ -26,7 +26,6 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.apsadmin.system.BaseAction;
-import com.j256.ormlite.table.DatabaseTable;
 import org.entando.entando.aps.system.init.ComponentManager;
 
 /**
