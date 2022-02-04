@@ -106,7 +106,7 @@
     </c:if>
 
     <!-- UX Patterns -->
-    <c:if test="${isManagePage || isSuperUser}">
+    <c:if test="${isSuperUser}">
         <li class="list-group-item secondary-nav-item-pf" data-target="#ux-pattern-secondary">
             <a>
                 <span class="fa fa-object-ungroup" data-toggle="tooltip" title="<s:text name="menu.UXPattern" />"></span>
@@ -126,13 +126,11 @@
                             <span class="list-group-item-value"><s:text name="menu.UXPattern.widget" /></span>
                         </a>
                     </li>
-                    <c:if test="${isSuperUser}">
-                        <li class="list-group-item">
-                            <a href='<c:out value="${appBuilderBaseURL}"/>fragment'>
-                                <span class="list-group-item-value"><s:text name="menu.UXPattern.fragments" /></span>
-                            </a>
-                        </li>
-                    </c:if>
+                    <li class="list-group-item">
+                        <a href='<c:out value="${appBuilderBaseURL}"/>fragment'>
+                            <span class="list-group-item-value"><s:text name="menu.UXPattern.fragments" /></span>
+                        </a>
+                    </li>
                 </ul>
                 <!--Fine UX Patterns Secondary-->
             </div>
@@ -162,7 +160,7 @@
     <wp:ifauthorized permission="viewUsers" var="isViewUsers" />
     <wp:ifauthorized permission="editUsers" var="isEditUsers" />
     <wp:ifauthorized permission="editUserProfile" var="isEditProfiles" />
-    <c:if test="${isViewUsers || isEditUsers || isEditProfiles}">
+    <c:if test="${isSuperUser || isViewUsers || isEditUsers || isEditProfiles}">
         <!--  Users Settings -->
         <li class="list-group-item secondary-nav-item-pf" data-target="#user-settings-secondary">
             <a>
@@ -204,13 +202,11 @@
                             </a>
                         </li>
 
-                        <c:if test="${isSuperUser}">
-                            <li class="list-group-item">
-                                <a href='<c:out value="${appBuilderBaseURL}"/>user/restrictions'>
-                                    <span class="list-group-item-value"><s:text name="menu.usersSettings.usersRestriction" /></span>
-                                </a>
-                            </li>
-                        </c:if>
+                        <li class="list-group-item">
+                            <a href='<c:out value="${appBuilderBaseURL}"/>user/restrictions'>
+                                <span class="list-group-item-value"><s:text name="menu.usersSettings.usersRestriction" /></span>
+                            </a>
+                        </li>
                     </c:if>
                 </ul>
                 <!--Fine Users Settings Secondary-->
@@ -228,8 +224,7 @@
 
 </ul>
 
-<wp:ifauthorized permission="manageCategories" var="isCategories" />
-<c:if test="${isCategories || isSuperUser}">
+<c:if test="${isSuperUser}">
     <ul class="list-group fixed-bottom">
 
         <li class="list-group-item secondary-nav-item-pf" data-target="#settings-secondary">
@@ -247,37 +242,35 @@
                 <!-- Settings Secondary -->
 
                 <ul class="list-group">
-                    <c:if test="${isSuperUser}">
-                        <li class="list-group-item">
-                            <a href='<c:out value="${appBuilderBaseURL}"/>database'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.database" /></span>
-                            </a>
-                        </li>
+                    <li class="list-group-item">
+                        <a href='<c:out value="${appBuilderBaseURL}"/>database'>
+                            <span class="list-group-item-value"><s:text name="menu.settings.database" /></span>
+                        </a>
+                    </li>
 
-                        <li class="list-group-item">
-                            <a href='<c:out value="${appBuilderBaseURL}"/>file-browser'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.fileBrowser" /></span>
-                            </a>
-                        </li>
+                    <li class="list-group-item">
+                        <a href='<c:out value="${appBuilderBaseURL}"/>file-browser'>
+                            <span class="list-group-item-value"><s:text name="menu.settings.fileBrowser" /></span>
+                        </a>
+                    </li>
 
-                        <li class="list-group-item">
-                            <a href='<c:out value="${appBuilderBaseURL}"/>labels-languages'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.labelsLanguages" /></span>
-                            </a>
-                        </li>
-                        
-                        <li class="list-group-item">
-                            <a href='<c:out value="${appBuilderBaseURL}"/>email-config'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.email" /></span>
-                            </a>
-                        </li>
+                    <li class="list-group-item">
+                        <a href='<c:out value="${appBuilderBaseURL}"/>labels-languages'>
+                            <span class="list-group-item-value"><s:text name="menu.settings.labelsLanguages" /></span>
+                        </a>
+                    </li>
+                    
+                    <li class="list-group-item">
+                        <a href='<c:out value="${appBuilderBaseURL}"/>email-config'>
+                            <span class="list-group-item-value"><s:text name="menu.settings.email" /></span>
+                        </a>
+                    </li>
 
-                        <li class="list-group-item">
-                            <a href='<c:out value="${appBuilderBaseURL}"/>reloadConfiguration'>
-                                <span class="list-group-item-value"><s:text name="menu.settings.reloadConfigurations" /></span>
-                            </a>
-                        </li>
-                    </c:if>
+                    <li class="list-group-item">
+                        <a href='<c:out value="${appBuilderBaseURL}"/>reloadConfiguration'>
+                            <span class="list-group-item-value"><s:text name="menu.settings.reloadConfigurations" /></span>
+                        </a>
+                    </li>
                 </ul>
                 <!--Fine Users Settings Secondary-->
             </div>
