@@ -7,8 +7,6 @@
 
     <include file="port/00000000000001_schemaPort.xml" relativeToChangelogFile="true" />
 
-    <changeSet id="00000000000001_jpversioning_dataPort_test" author="entando" context="test">
-        <sqlFile path="port/00000000000001_dataPort_test.sql" relativeToChangelogFile="true" />
-    </changeSet>
+    <include file="port/00000000000001_dataPort_test.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Image" id="70">
+    <descr>tux</descr>
+    <groups mainGroup="free" />
+    <categories />
+    <instance>
+        <size>3</size>
+        <filename>tux_d3.png</filename>
+        <mimetype>image/png</mimetype>
+        <weight>5 Kb</weight>
+    </instance>
+    <instance>
+        <size>2</size>
+        <filename>tux_d2.png</filename>
+        <mimetype>image/png</mimetype>
+        <weight>5 Kb</weight>
+    </instance>
+    <instance>
+        <size>1</size>
+        <filename>tux_d1.png</filename>
+        <mimetype>image/png</mimetype>
+        <weight>5 Kb</weight>
+    </instance>
+    <instance>
+        <size>0</size>
+        <filename>tux_d0.png</filename>
+        <mimetype>image/png</mimetype>
+        <weight>0 Kb</weight>
+    </instance>
+</resource>
