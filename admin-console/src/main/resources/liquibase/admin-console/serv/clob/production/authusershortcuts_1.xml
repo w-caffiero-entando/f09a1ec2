@@ -1,4 +1,4 @@
-INSERT INTO authusershortcuts (username, config) VALUES ('admin', '<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <shortcuts>
 	<box pos="0">core.component.user.list</box>
 	<box pos="1">core.component.categories</box>
@@ -11,4 +11,3 @@ INSERT INTO authusershortcuts (username, config) VALUES ('admin', '<?xml version
 	<box pos="8">core.tools.entities</box>
 	<box pos="9">core.tools.setting</box>
 </shortcuts>
-');
