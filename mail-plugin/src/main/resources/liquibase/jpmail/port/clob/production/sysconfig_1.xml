@@ -1,4 +1,4 @@
-INSERT INTO sysconfig (version, item, descr, config) VALUES ('production', 'jpmail_config', 'Configurazione del servizio di invio eMail', '<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <mailConfig>
 	<senders>
 		<sender code="CODE1">EMAIL1@EMAIL.COM</sender>
@@ -11,4 +11,4 @@ INSERT INTO sysconfig (version, item, descr, config) VALUES ('production', 'jpma
 		<password></password>
 		<security>std</security>
 	</smtp>
-</mailConfig>');
+</mailConfig>

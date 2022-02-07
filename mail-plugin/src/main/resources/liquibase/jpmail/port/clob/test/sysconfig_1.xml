@@ -1,4 +1,4 @@
-INSERT INTO sysconfig (version, item, descr, config) VALUES ('test', 'jpmail_config', 'Configurazione del servizio di invio eMail', '<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <mailConfig>
 	<active>true</active>
 	<senders>
@@ -13,4 +13,4 @@ INSERT INTO sysconfig (version, item, descr, config) VALUES ('test', 'jpmail_con
 		<security>std</security>
 		<checkServerIdentity>false</checkServerIdentity>
 	</smtp>
-</mailConfig>');
+</mailConfig>
