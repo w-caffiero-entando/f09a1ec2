@@ -13,20 +13,20 @@
  */
 package org.entando.entando.plugins.jpmail.ent.system.services.model;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 import javax.validation.constraints.Pattern;
 
 public class EmailSenderDto {
 
+    private static final String EMAIL_REGEXP = "^$|(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)++$)";
+
     public EmailSenderDto() {
     }
 
     public EmailSenderDto(@NotBlank(message = "error.emailSender.code.notBlank") String code,
             @NotBlank(message = "error.emailSender.email.notBlank")
-            @Pattern(regexp="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)+$",
-                    message = "error.emailSender.email.notValid") String email) {
+            @Pattern(regexp=EMAIL_REGEXP, message = "error.emailSender.email.notValid") String email) {
         this.code = code;
         this.email = email;
     }
@@ -35,8 +35,7 @@ public class EmailSenderDto {
     private String code;
 
     @NotBlank(message = "error.emailSender.email.notBlank")
-    @Pattern(regexp="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)+$",
-            message = "error.emailSender.email.notValid")
+    @Pattern(regexp=EMAIL_REGEXP, message = "error.emailSender.email.notValid")
     private String email;
 
     public String getCode() {

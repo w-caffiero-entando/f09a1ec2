@@ -184,7 +184,7 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
                 .andExpect(jsonPath("$.errors[0].code", is("58")));
 
         executePostSender("1_POST_invalid_email_empty.json", accessToken, status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].code", is("58")));
+                .andExpect(jsonPath("$.errors[0].code", is("52")));
 
         executePostSender("1_POST_invalid_email_null.json", accessToken, status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].code", is("52")));
