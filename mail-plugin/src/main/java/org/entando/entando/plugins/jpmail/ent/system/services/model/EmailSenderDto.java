@@ -28,7 +28,7 @@ public class EmailSenderDto {
             @Email(message = "error.emailSender.email.notValid")
             // the ^$| at the beginning of the regexp lets @NotBlank constraint to continue
             // handling empty values using the proper error message
-            @Pattern(regexp="^$|(.+@.+\\..+)", message = "error.emailSender.email.notValid")
+            @Pattern(regexp="^$|([^@]+@[^@]+\\.[^@.]+)", message = "error.emailSender.email.notValid")
                     String email) {
         this.code = code;
         this.email = email;
@@ -39,7 +39,7 @@ public class EmailSenderDto {
 
     @NotBlank(message = "error.emailSender.email.notBlank")
     @Email(message = "error.emailSender.email.notValid")
-    @Pattern(regexp="^$|(.+@.+\\..+)", message = "error.emailSender.email.notValid")
+    @Pattern(regexp="^$|([^@]+@[^@]+\\.[^@.]+)", message = "error.emailSender.email.notValid")
     private String email;
 
     public String getCode() {
