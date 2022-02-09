@@ -5,12 +5,11 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
            http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
-    <include file="serv/00000000000001_schemaServ.xml" relativeToChangelogFile="true" />
-
-    <include file="serv/00000000000001_dataServ_test.xml" relativeToChangelogFile="true" />
-
-    <include file="serv/00000000000001_dataServ_production.xml" relativeToChangelogFile="true" />
-
-    <changeSet id="00000000000001_adminconsole_dataServ_restore" author="entando" context="restore" />
+    <changeSet id="00000000000001_adminconsole_dataServ_test" author="entando" context="test">
+        <insert tableName="authusershortcuts">
+            <column name="username" value="admin" />
+            <column name="config" valueClobFile="clob/test/authusershortcuts_1.xml" />
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>
