@@ -1,0 +1,53 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+           http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="00000000000001_jpversioning_dataPort_test" author="entando" context="test">
+        <insert tableName="jpversioning_trashedresources">
+            <column name="resid" value="66" />
+            <column name="restype" value="Attach" />
+            <column name="descr" value="configurazione" />
+            <column name="maingroup" value="free" />
+            <column name="resxml" valueClobFile="clob/test/jpversioning_trashedresources_1.xml" />
+        </insert>
+        <insert tableName="jpversioning_trashedresources">
+            <column name="resid" value="67" />
+            <column name="restype" value="Image" />
+            <column name="descr" value="219" />
+            <column name="maingroup" value="free" />
+            <column name="resxml" valueClobFile="clob/test/jpversioning_trashedresources_2.xml" />
+        </insert>
+        <insert tableName="jpversioning_trashedresources">
+            <column name="resid" value="68" />
+            <column name="restype" value="Image" />
+            <column name="descr" value="220" />
+            <column name="maingroup" value="free" />
+            <column name="resxml" valueClobFile="clob/test/jpversioning_trashedresources_3.xml" />
+        </insert>
+        <insert tableName="jpversioning_trashedresources">
+            <column name="resid" value="69" />
+            <column name="restype" value="Image" />
+            <column name="descr" value="qqq" />
+            <column name="maingroup" value="customers" />
+            <column name="resxml" valueClobFile="clob/test/jpversioning_trashedresources_4.xml" />
+        </insert>
+        <insert tableName="jpversioning_trashedresources">
+            <column name="resid" value="70" />
+            <column name="restype" value="Image" />
+            <column name="descr" value="tux" />
+            <column name="maingroup" value="free" />
+            <column name="resxml" valueClobFile="clob/test/jpversioning_trashedresources_5.xml" />
+        </insert>
+        <insert tableName="jpversioning_trashedresources">
+            <column name="resid" value="71" />
+            <column name="restype" value="Image" />
+            <column name="descr" value="Logo jAPS" />
+            <column name="maingroup" value="free" />
+            <column name="resxml" valueClobFile="clob/test/jpversioning_trashedresources_6.xml" />
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
