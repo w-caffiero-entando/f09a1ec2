@@ -174,8 +174,14 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
         UserDetails user = createAdmin();
         String accessToken = mockOAuthInterceptor(user);
 
-        executePostSender("1_POST_invalid_email_format.json", accessToken, status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].code", is("Email")));
+        executePostSender("1_POST_invalid_email_format1.json", accessToken, status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].code", is("58")));
+
+        executePostSender("1_POST_invalid_email_format2.json", accessToken, status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].code", is("58")));
+
+        executePostSender("1_POST_invalid_email_format3.json", accessToken, status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].code", is("58")));
 
         executePostSender("1_POST_invalid_email_empty.json", accessToken, status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].code", is("52")));
