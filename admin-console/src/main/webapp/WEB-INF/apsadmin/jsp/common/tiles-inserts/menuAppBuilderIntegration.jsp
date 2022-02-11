@@ -215,12 +215,15 @@
     </c:if>
 
     <!-- ECR -->
-    <li class="list-group-item secondary-nav-item-pf">
-        <a href='<c:out value="${appBuilderBaseURL}"/>component-repository' class="no-chevron">
-            <span class="fa fa-cart-plus" data-toggle="tooltip" title="<s:text name="menu.ECR" />"></span>
-            <span class="list-group-item-value"><s:text name="menu.ECR" /></span>
-        </a>
-    </li>
+    <wp:ifauthorized permission="enterECR" var="isEnterECR" />
+    <c:if test="${isSuperUser || isEnterECR}">
+        <li class="list-group-item secondary-nav-item-pf">
+            <a href='<c:out value="${appBuilderBaseURL}"/>component-repository' class="no-chevron">
+                <span class="fa fa-cart-plus" data-toggle="tooltip" title="<s:text name="menu.ECR" />"></span>
+                <span class="list-group-item-value"><s:text name="menu.ECR" /></span>
+            </a>
+        </li>
+    </c:if>
 
 </ul>
 
