@@ -2504,6 +2504,10 @@ label .fa-folder, .fa-folder {
     margin-left: 215px;
 }
 
+.nav-pf-vertical .list-group-item>a .fa svg {
+    vertical-align: middle;
+}
+
 .btn {
     padding: 2px 12px;
     border: 0 !important;
