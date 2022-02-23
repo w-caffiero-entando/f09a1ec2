@@ -60,7 +60,7 @@
 <ul class="list-group">
     <li class="list-group-item secondary-nav-item-pf">
         <a href='<c:out value="${appBuilderBaseURL}"/>dashboard' class="no-chevron">
-            <span class="fa" data-toggle="tooltip" title="<s:text name="menu.dashboard" />"><i class="dashboard"></i></span>
+            <span class="fa" data-toggle="tooltip" title="<s:text name="menu.dashboard" />"><em class="dashboard"></em></span>
             <span class="list-group-item-value"><s:text name="menu.dashboard" /></span>
         </a>
     </li>
