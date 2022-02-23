@@ -2504,8 +2504,13 @@ label .fa-folder, .fa-folder {
     margin-left: 215px;
 }
 
-.nav-pf-vertical .list-group-item>a .fa svg {
+.nav-pf-vertical .list-group-item>a .fa .dashboard {
+    display: inline-block;
+    background-image: url("../img/dashboard.svg");
+    width: 20px;
+    height: 20px;
     vertical-align: middle;
+    fill: #72767b;
 }
 
 .btn {
