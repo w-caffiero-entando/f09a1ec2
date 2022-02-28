@@ -112,7 +112,7 @@
             <ul class="dropdown-menu" aria-labelledby="userDropdownMenu">
                 <c:if test="${sessionScope.currentUser.japsUser}">
                     <li>
-                        <a href="<s:url action="editProfile" namespace="/do/CurrentUser" />">
+                        <a href='<c:out value="${appBuilderBaseURL}"/>myProfile'>
                             <i class="fa fa-user" aria-hidden="true"></i>
                             <s:text name="note.changeYourPassword" />
                         </a>
