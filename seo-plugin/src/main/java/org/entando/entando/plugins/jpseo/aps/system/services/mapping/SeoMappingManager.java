@@ -39,6 +39,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.ent.exception.EntException;
@@ -134,18 +135,13 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
             if (event.getOperationCode() == PublicContentChangedEvent.REMOVE_OPERATION_CODE) {
                 this.getSeoMappingDAO().deleteMappingForContent(content.getId());
             } else {
-                FieldSearchFilter<String> filter = new FieldSearchFilter<>("contentid", content.getId(), false);
-                List<String> codes = this.searchFriendlyCode(new FieldSearchFilter[]{filter});
-                if (!codes.isEmpty()) {
-                    logger.info("Content {} with friendly codes {}", content.getId(), codes);
-                    return;
-                }
+                Map<String, FriendlyCodeVO> existingMapping = this.getSeoMappingDAO().loadMapping();
                 AttributeInterface attribute = content.getAttributeByRole(JpseoSystemConstants.ATTRIBUTE_ROLE_FRIENDLY_CODE);
                 if (null == attribute || !(attribute instanceof ITextAttribute)) {
                     attribute = content.getAttributeByRole(JacmsSystemConstants.ATTRIBUTE_ROLE_TITLE);
                 }
                 if (null != attribute && attribute instanceof ITextAttribute) {
-                    ContentFriendlyCode contentFriendlyCode = this.prepareContentFriendlyCode(content.getId(), (ITextAttribute) attribute);
+                    ContentFriendlyCode contentFriendlyCode = this.prepareContentFriendlyCode(content.getId(), (ITextAttribute) attribute, existingMapping);
                     this.getSeoMappingDAO().updateMapping(contentFriendlyCode);
                 }
             }
@@ -158,13 +154,13 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
         }
     }
 	
-    private ContentFriendlyCode prepareContentFriendlyCode(String contentId, ITextAttribute attribute) throws EntException {
+    private ContentFriendlyCode prepareContentFriendlyCode(String contentId, ITextAttribute attribute, Map<String, FriendlyCodeVO> existingMapping) throws EntException {
         ContentFriendlyCode contentFriendlyCode = new ContentFriendlyCode();
         contentFriendlyCode.setContentId(contentId);
         String defaultLang = this.getLangManager().getDefaultLang().getCode();
         if (((AttributeInterface) attribute).isMultilingual()) {
             String defaultFriendlyCode = this.generateUniqueFriendlyCode(attribute.getTextForLang(defaultLang), defaultLang);
-            contentFriendlyCode.addFriendlyCode(defaultLang, defaultFriendlyCode);
+            addFriendlyCode(contentFriendlyCode, existingMapping, defaultLang, defaultFriendlyCode);
             Iterator<Lang> langs = this.getLangManager().getLangs().iterator();
             while (langs.hasNext()) {
                 Lang currentLang = langs.next();
@@ -172,13 +168,13 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
                     String langCode = currentLang.getCode();
                     String friendlyCode = this.generateUniqueFriendlyCode(attribute.getTextForLang(langCode), langCode);
                     if (friendlyCode != null && !friendlyCode.equals(defaultFriendlyCode)) {
-                        contentFriendlyCode.addFriendlyCode(langCode, friendlyCode);
+                        addFriendlyCode(contentFriendlyCode, existingMapping, langCode, friendlyCode);
                     }
                 }
             }
         } else {
             String friendlyCode = this.generateUniqueFriendlyCode(attribute.getText(), null);
-            contentFriendlyCode.addFriendlyCode(defaultLang, friendlyCode);
+            addFriendlyCode(contentFriendlyCode, existingMapping, defaultLang, friendlyCode);
         }
         List<String> langs = new ArrayList<>(contentFriendlyCode.getFriendlyCodes().keySet());
         for (int i = 0; i < langs.size(); i++) {
@@ -201,7 +197,15 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
         }
         return contentFriendlyCode;
     }
-    
+
+    private void addFriendlyCode(ContentFriendlyCode contentFriendlyCode, Map<String, FriendlyCodeVO> existingMapping, String lang, String friendlyCode) {
+        String friendlyCodeToAdd = existingMapping.values().stream()
+                .filter(vo -> contentFriendlyCode.getContentId().equals(vo.getContentId()) && lang.equals(vo.getLangCode()))
+                .map(vo -> vo.getFriendlyCode())
+                .findFirst().orElse(friendlyCode);
+        contentFriendlyCode.addFriendlyCode(lang, friendlyCodeToAdd);
+    }
+
     private String generateUniqueFriendlyCode(String originalText, String langCode) {
         String friendlyCode = FriendlyCodeGenerator.generateFriendlyCode(originalText);
         if (StringUtils.isBlank(originalText)) {
