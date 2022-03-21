@@ -125,11 +125,11 @@ public class SeoPageController implements ISeoPageController {
 
     @Override
     public ResponseEntity<RestResponse<SeoPageDto, Map<String, String>>> updatePage(
-            UserDetails user,String pageCode,
+            UserDetails user, String pageCode,
            SeoPageRequest pageRequest, BindingResult bindingResult) {
         logger.debug("updating page {} with request {}", pageCode, pageRequest);
 
-        if (!this.getAuthorizationService().isAuth(user, pageCode)) {
+        if (!this.getAuthorizationService().isAuth(user, pageCode, false)) {
             throw new ResourcePermissionsException(bindingResult, user.getUsername(), pageCode);
         }
         if (bindingResult.hasErrors()) {

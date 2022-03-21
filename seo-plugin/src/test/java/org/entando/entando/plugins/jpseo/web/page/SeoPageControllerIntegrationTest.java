@@ -49,9 +49,13 @@ import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.SeoMappingManager;
+import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageDto;
+import org.entando.entando.plugins.jpseo.web.page.model.SeoPageRequest;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
+import org.entando.entando.web.page.PageDtoToRequestConverter;
 import org.entando.entando.web.page.model.PageCloneRequest;
 import org.entando.entando.web.page.model.PageRequest;
+import org.entando.entando.web.page.model.PageStatusRequest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Assertions;
@@ -75,6 +79,9 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     
     @Autowired
     private SeoMappingManager seoMappingManager;
+
+    @Autowired
+    private PageDtoToRequestConverter pageDtoToRequestConverter;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -913,6 +920,42 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
             this.pageManager.deletePage(pageCode2);
             this.pageManager.deletePage(pageCodeCloned2);
         }
+    }
+
+    @Test
+    void testRootCanBeEditedByFreeAccessManagers() throws Exception {
+
+        UserDetails freeAccessManager = new OAuth2TestUtils.UserBuilder("freeAccessManager", "0x24")
+                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        testEditRoot(freeAccessManager, status().isOk());
+    }
+
+    @Test
+    void testRootCannotBeEditedByOtherManagers() throws Exception {
+
+        UserDetails customersManager = new OAuth2TestUtils.UserBuilder("customersManager", "0x24")
+                .withAuthorization("customers", "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        testEditRoot(customersManager, status().isForbidden());
+    }
+
+    void testEditRoot(UserDetails userDetails, ResultMatcher expected) throws Exception {
+
+        String accessToken = mockOAuthInterceptor(userDetails);
+
+        String jsonContent;
+        try(InputStream isJsonPutValid = this.getClass().getResourceAsStream("5_PUT_valid_root.json")) {
+            jsonContent = FileTextReader.getText(isJsonPutValid);
+        }
+
+        mockMvc.perform(put("/plugins/seo/pages/{pageCode}", "homepage")
+                        .content(jsonContent)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(expected);
     }
 
     private PageRequest createPageRequest(String pageCode, String groupCode, String parentCode) {
