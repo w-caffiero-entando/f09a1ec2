@@ -42,8 +42,10 @@ import com.agiletec.aps.util.FileTextReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
@@ -942,7 +944,45 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
         testEditRoot(customersManager, status().isForbidden());
     }
 
-    void testEditRoot(UserDetails userDetails, ResultMatcher expected) throws Exception {
+    @Test
+    void testRootCanBeSeenAlsoByNotAdminUser() throws Exception {
+
+        UserDetails customersManager = new OAuth2TestUtils.UserBuilder("customersManager", "0x24")
+                .withAuthorization("customers", "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        String accessToken = mockOAuthInterceptor(customersManager);
+
+        mockMvc.perform(get("/plugins/seo/pages/{pageCode}", "homepage")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testCustomersManagerCannotSeeOrEditFreePage() throws Exception {
+
+        UserDetails customersManager = new OAuth2TestUtils.UserBuilder("customersManager", "0x24")
+                .withAuthorization("customers", "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        Page page = createPage("myFreePage", "homepage", Group.FREE_GROUP_NAME);
+        testPagePermissions(page, customersManager, false, false);
+    }
+
+    @Test
+    void testCustomersManagerCanSeeButNotEditPageWithCustomersJoinGroup() throws Exception {
+
+        UserDetails customersManager = new OAuth2TestUtils.UserBuilder("customersManager", "0x24")
+                .withAuthorization("customers", "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        Page page = createPage("pageWithCustomerJoinGroup", "homepage", Group.ADMINS_GROUP_NAME);
+        page.setExtraGroups(Collections.singleton("customers"));
+
+        testPagePermissions(page, customersManager, true, false);
+    }
+
+    private void testEditRoot(UserDetails userDetails, ResultMatcher expected) throws Exception {
 
         String accessToken = mockOAuthInterceptor(userDetails);
 
@@ -956,6 +996,44 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(expected);
+    }
+
+    private void testPagePermissions(IPage page, UserDetails userDetails, boolean canRead, boolean canWrite) throws Exception {
+
+        ResultMatcher expectedRead = canRead ? status().isOk() : status().isForbidden();
+        ResultMatcher expectedWrite = canWrite ? status().isOk() : status().isForbidden();
+
+        String pageCode = page.getCode();
+        String accessToken = mockOAuthInterceptor(userDetails);
+
+        try {
+            this.pageManager.addPage(page);
+
+            // read
+            mockMvc.perform(get("/plugins/seo/pages/{pageCode}", pageCode)
+                            .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(expectedRead);
+
+            PageRequest pageRequest = createPageRequest(pageCode, page.getGroup(), page.getParentCode());
+
+            // update
+            mockMvc.perform(put("/plugins/seo/pages/{pageCode}", pageCode)
+                            .content(mapper.writeValueAsString(pageRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(expectedWrite);
+
+            this.pageManager.deletePage(page.getCode());
+
+            // create
+            mockMvc.perform(post("/plugins/seo/pages")
+                            .content(mapper.writeValueAsString(pageRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(expectedWrite);
+        } finally {
+            this.pageManager.deletePage(page.getCode());
+        }
     }
 
     private PageRequest createPageRequest(String pageCode, String groupCode, String parentCode) {

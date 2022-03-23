@@ -55,7 +55,7 @@ public interface ISeoPageController {
     @GetMapping("{pageCode}")
     ResponseEntity<RestResponse<PageDto, Map<String, String>>> getSeoPage(@ModelAttribute("user") UserDetails user,
             @PathVariable String pageCode,
-            @RequestParam(value = "status", required = false, defaultValue = IPageService.STATUS_DRAFT) String status);
+            @RequestParam(value = "status", required = false, defaultValue = IPageService.STATUS_DRAFT) String status, BindingResult bindingResult);
 
     @ActivityStreamAuditable
     @RestAccessControl(permission = Permission.MANAGE_PAGES)

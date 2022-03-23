@@ -73,7 +73,7 @@ class SeoPageControllerTest extends AbstractControllerTest {
         Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
         when(this.service.getPage(Mockito.eq(PAGE_CODE),Mockito.eq(STATUS_DRAFT)))
                 .thenReturn(seoPageDto);
-        when(this.authorizationService.isAuth(user,PAGE_CODE)).thenReturn(true);
+        when(this.authorizationService.isAuth(user, PAGE_CODE, false)).thenReturn(true);
         ResultActions result = getSeoPage(PAGE_CODE, STATUS_DRAFT, user);
         result.andExpect(status().isOk());
     }
@@ -85,9 +85,9 @@ class SeoPageControllerTest extends AbstractControllerTest {
         Mockito.lenient().when(this.httpSession.getAttribute("user")).thenReturn(user);
         Mockito.lenient().when(this.service.getPage(Mockito.eq(PAGE_CODE),Mockito.eq(STATUS_DRAFT)))
                 .thenReturn(seoPageDto);
-        when(this.authorizationService.isAuth(user,PAGE_CODE)).thenReturn(false);
+        when(this.authorizationService.isAuth(user, PAGE_CODE, false)).thenReturn(false);
         ResultActions result = getSeoPage(PAGE_CODE, STATUS_DRAFT, user);
-        result.andExpect(status().isUnauthorized());
+        result.andExpect(status().isForbidden());
     }
 
     private ResultActions getSeoPage(String pageCode,String status, UserDetails user) throws Exception {
