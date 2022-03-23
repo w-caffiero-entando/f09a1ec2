@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-maven-root</artifactId>
-        <version>7.0.0-ENG-3143-PR-5</version>
+        <version>7.0.0</version>
     </parent>
     <groupId>org.entando</groupId>
 
     <artifactId>entando-core-parent</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>7.0.0</version>
     <packaging>pom</packaging>
 
     <name>Entando Core Maven Parent POM</name>
@@ -187,27 +187,6 @@
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>3.0.1</version>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                            <configuration>
-                                <gpgArguments>
-                                    <arg>--batch</arg>
-                                    <arg>--pinentry-mode</arg>
-                                    <arg>loopback</arg>
-                                </gpgArguments>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
