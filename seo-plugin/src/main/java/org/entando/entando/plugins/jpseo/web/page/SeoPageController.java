@@ -75,12 +75,11 @@ public class SeoPageController implements ISeoPageController {
     }
 
     @Override
-    public ResponseEntity<RestResponse<PageDto, Map<String, String>>> getSeoPage(UserDetails user, String pageCode,
-            String status, BindingResult bindingResult) {
+    public ResponseEntity<RestResponse<PageDto, Map<String, String>>> getSeoPage(UserDetails user, String pageCode, String status) {
         logger.debug("get seo page {}", pageCode);
         Map<String, String> metadata = new HashMap<>();
         if (!this.getAuthorizationService().isAuth(user, pageCode, false)) {
-            throw new ResourcePermissionsException(bindingResult, user.getUsername(), pageCode);
+            throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         SeoPageDto page = (SeoPageDto) this.getPageService().getPage(pageCode, status);
         metadata.put("status", status);
@@ -112,7 +111,7 @@ public class SeoPageController implements ISeoPageController {
         validatePagePlacement(pageRequest, bindingResult);
 
         if (!this.getAuthorizationService().getAuthorizationManager().isAuthOnGroup(user, pageRequest.getOwnerGroup())) {
-            throw new ResourcePermissionsException(bindingResult, user.getUsername(), pageRequest.getCode());
+            throw new ResourcePermissionsException(user.getUsername(), pageRequest.getCode());
         }
 
         SeoPageDto dto = (SeoPageDto) this.getPageService().addPage(pageRequest);
@@ -134,7 +133,7 @@ public class SeoPageController implements ISeoPageController {
         logger.debug("updating page {} with request {}", pageCode, pageRequest);
 
         if (!this.getAuthorizationService().isAuthOnGroup(user, pageCode)) {
-            throw new ResourcePermissionsException(bindingResult, user.getUsername(), pageCode);
+            throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);

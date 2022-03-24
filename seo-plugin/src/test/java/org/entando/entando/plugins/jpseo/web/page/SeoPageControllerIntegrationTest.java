@@ -1012,7 +1012,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
             // read
             mockMvc.perform(get("/plugins/seo/pages/{pageCode}", pageCode)
                             .header("Authorization", "Bearer " + accessToken))
-                    .andExpect(expectedRead);
+                    .andExpect(expectedRead)
+                    .andExpect(jsonPath("$.errors.size()", is(canRead ? 0 : 1)));
 
             PageRequest pageRequest = createPageRequest(pageCode, page.getGroup(), page.getParentCode());
 
@@ -1021,7 +1022,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                             .content(mapper.writeValueAsString(pageRequest))
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessToken))
-                    .andExpect(expectedWrite);
+                    .andExpect(expectedWrite)
+                    .andExpect(jsonPath("$.errors.size()", is(canWrite ? 0 : 1)));
 
             this.pageManager.deletePage(page.getCode());
 
@@ -1030,7 +1032,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                             .content(mapper.writeValueAsString(pageRequest))
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessToken))
-                    .andExpect(expectedWrite);
+                    .andExpect(expectedWrite)
+                    .andExpect(jsonPath("$.errors.size()", is(canWrite ? 0 : 1)));
         } finally {
             this.pageManager.deletePage(page.getCode());
         }
