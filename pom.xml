@@ -52,7 +52,7 @@
         <preDeploymentTestGroups/>
         <postDeploymentTestGroups/>
         <checkstyleConfigLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/checkstyle.xml
+            https://raw.githubusercontent.com/entando/${project.parent.artifactId}/v${project.parent.version}/checkstyle.xml
         </checkstyleConfigLocation>
         <owaspSuppressionFileLocation>
             owasp-dependency-check-suppression.xml
