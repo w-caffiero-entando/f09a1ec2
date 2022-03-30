@@ -43,6 +43,9 @@
 		<s:elseif test="#attribute.type == 'CheckBox'">
 			<s:include value="/WEB-INF/apsadmin/jsp/entity/view/checkBoxAttribute.jsp" />
 		</s:elseif>
+		<s:elseif test="#attribute.type == 'Email'">
+			<s:include value="/WEB-INF/apsadmin/jsp/entity/view/monotextAttribute.jsp" />
+		</s:elseif>
 	</p>
 </s:iterator>
 <s:set var="attributeTracer" value="#masterCompositeAttributeTracer" />

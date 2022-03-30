@@ -71,6 +71,9 @@
 				<s:elseif test="#attribute.type == 'Timestamp'">
 					<s:include value="/WEB-INF/apsadmin/jsp/entity/modules/timestampAttribute.jsp" />
 				</s:elseif>
+				<s:elseif test="#attribute.type == 'Email'">
+					<s:include value="/WEB-INF/apsadmin/jsp/entity/modules/monotextAttribute.jsp" />
+				</s:elseif>
 
 				<s:if test="#attributeHasErrorVar">
 					<p class="text-danger margin-none padding-none padding-small-top">
@@ -99,7 +102,7 @@
 			</div><%-- panel body --%>
 		</div><%-- panel panel-default --%>
 	</li>
-	</s:iterator>
+</s:iterator>
 
 <s:set var="attributeTracer" value="#masterListAttributeTracer" />
 <s:set var="attribute" value="#masterListAttribute" />

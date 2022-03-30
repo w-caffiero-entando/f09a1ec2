@@ -48,6 +48,9 @@
 		<s:elseif test="#attribute.type == 'CheckBox'">
 			<br /><s:include value="/WEB-INF/apsadmin/jsp/entity/modules/checkBoxAttribute.jsp" />
 		</s:elseif>
+		<s:elseif test="#attribute.type == 'Email'">
+			<br /><s:include value="/WEB-INF/apsadmin/jsp/entity/modules/monotextAttribute.jsp" />
+		</s:elseif>
 
 	<s:if test="#attribute.type != 'Boolean' && #attribute.type != 'ThreeState'">
 		</p>
