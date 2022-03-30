@@ -8,7 +8,7 @@
     </parent>
     <artifactId>entando-plugin-jpmail</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>7.1.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Entando Plugin: Email Sender</name>
     <description>Provides the basis for Registration Forms and Newsletter services, and all plugins that require sending email: es: User Registration forms, Web Forms, Newsletters, etc.</description>
