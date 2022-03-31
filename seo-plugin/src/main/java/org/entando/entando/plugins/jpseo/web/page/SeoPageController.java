@@ -75,12 +75,11 @@ public class SeoPageController implements ISeoPageController {
     }
 
     @Override
-    public ResponseEntity<RestResponse<PageDto, Map<String, String>>> getSeoPage(UserDetails user, String pageCode,
-            String status) {
+    public ResponseEntity<RestResponse<PageDto, Map<String, String>>> getSeoPage(UserDetails user, String pageCode, String status) {
         logger.debug("get seo page {}", pageCode);
         Map<String, String> metadata = new HashMap<>();
-        if (!this.getAuthorizationService().isAuth(user, pageCode)) {
-            return new ResponseEntity<>(new RestResponse<>(new PageDto(), metadata), HttpStatus.UNAUTHORIZED);
+        if (!this.getAuthorizationService().isAuth(user, pageCode, false)) {
+            throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         SeoPageDto page = (SeoPageDto) this.getPageService().getPage(pageCode, status);
         metadata.put("status", status);
@@ -111,6 +110,10 @@ public class SeoPageController implements ISeoPageController {
 
         validatePagePlacement(pageRequest, bindingResult);
 
+        if (!this.getAuthorizationService().getAuthorizationManager().isAuthOnGroup(user, pageRequest.getOwnerGroup())) {
+            throw new ResourcePermissionsException(user.getUsername(), pageRequest.getCode());
+        }
+
         SeoPageDto dto = (SeoPageDto) this.getPageService().addPage(pageRequest);
         return new ResponseEntity<>(new SimpleRestResponse<>(dto), HttpStatus.OK);
     }
@@ -125,12 +128,12 @@ public class SeoPageController implements ISeoPageController {
 
     @Override
     public ResponseEntity<RestResponse<SeoPageDto, Map<String, String>>> updatePage(
-            UserDetails user,String pageCode,
+            UserDetails user, String pageCode,
            SeoPageRequest pageRequest, BindingResult bindingResult) {
         logger.debug("updating page {} with request {}", pageCode, pageRequest);
 
-        if (!this.getAuthorizationService().isAuth(user, pageCode)) {
-            throw new ResourcePermissionsException(bindingResult, user.getUsername(), pageCode);
+        if (!this.getAuthorizationService().isAuthOnGroup(user, pageCode)) {
+            throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);

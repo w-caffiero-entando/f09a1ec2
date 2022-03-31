@@ -1,0 +1,40 @@
+{
+  "code": "homepage",
+  "status": "published",
+  "displayedInMenu": true,
+  "pageModel": "home",
+  "charset": "utf8",
+  "contentType": "text/html",
+  "parentCode": "homepage",
+  "seo": false,
+  "titles": {
+    "en": "Start Page",
+    "it": "Pagina iniziale"
+  },
+  "ownerGroup": "free",
+  "joinGroups": [],
+  "seoData": {
+    "useExtraDescriptions": false,
+    "useExtraTitles": false,
+    "seoDataByLang": {
+      "en": {
+        "description": "",
+        "keywords": "",
+        "friendlyCode": "",
+        "metaTags": [],
+        "inheritDescriptionFromDefaultLang": false,
+        "inheritKeywordsFromDefaultLang": false,
+        "inheritFriendlyCodeFromDefaultLang": false
+      },
+      "it": {
+        "description": "",
+        "keywords": "",
+        "friendlyCode": "",
+        "metaTags": [],
+        "inheritDescriptionFromDefaultLang": false,
+        "inheritKeywordsFromDefaultLang": false,
+        "inheritFriendlyCodeFromDefaultLang": false
+      }
+    }
+  }
+}
