@@ -16,6 +16,7 @@ package org.entando.entando.aps.system.services.controller.control;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.RequestContext;
@@ -29,6 +30,7 @@ import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
+import java.util.Collections;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.controller.control.RequestValidator;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
@@ -147,7 +149,31 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             }
         }
     }
-    
+
+    @Test
+    void testService_PathWithoutCode_ShouldRedirectToNotFound() {
+        RequestContext reqCtx = this.getRequestContext();
+        ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
+        ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/en");
+        int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+        assertEquals(ControllerManager.REDIRECT, status);
+        assertTrue(((String) reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL)).contains("notfound.page"));
+    }
+
+    @Test
+    void testService_PathWithLargeRepetition_ShouldNotCrash() { // testing regex safety (Sonar S5998)
+
+        String maliciousRequest = String.join("", Collections.nCopies(10000, "/a"));
+
+        RequestContext reqCtx = this.getRequestContext();
+        ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
+        ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo(maliciousRequest);
+
+        int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+        assertEquals(ControllerManager.REDIRECT, status);
+        assertTrue(((String) reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL)).contains("notfound.page"));
+    }
+
     private void resetRequestContext(RequestContext reqCtx) {
         //reset
         reqCtx.removeExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID);
