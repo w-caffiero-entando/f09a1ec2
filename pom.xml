@@ -70,7 +70,7 @@
             jdbc:derby:${project.build.directory}/test/db/${project.artifactId}testServ;create=true
         </test.database.serv.url>
         <!--dependency versions-->
-        <spring.version>5.3.14</spring.version>
+        <spring.version>5.3.18</spring.version>
         <springsecurity.version>5.5.1</springsecurity.version>
         <springsecurityoauth2.version>2.5.1.RELEASE</springsecurityoauth2.version>
         <struts2.version>2.5.26</struts2.version>
