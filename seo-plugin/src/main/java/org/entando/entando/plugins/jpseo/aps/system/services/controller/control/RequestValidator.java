@@ -84,23 +84,25 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
         IPage page = null;
         if (this.getResourcePath(reqCtx).equals("/page")) {
             resourcePath = this.getFullResourcePath(reqCtx);
-            matcher = this._patternSeoPath.matcher(resourcePath);
+            matcher = this.patternSeoPath.matcher(resourcePath);
             if (matcher.lookingAt()) {
                 ok = true;
                 String sect1 = matcher.group(1);
                 lang = getLangManager().getLang(sect1);
-                String friendlyCode = matcher.group(2).substring(1);
-                FriendlyCodeVO vo = this.getSeoMappingManager().getReference(friendlyCode);
-                if (null != vo && null != lang && lang.getCode().equals(vo.getLangCode())) {
-                    if (null != vo.getPageCode()) {
-                        page = this.getPageManager().getOnlinePage(vo.getPageCode());
-					} else if (null != vo.getContentId()) {
-                        String contentId = vo.getContentId();
-                        String viewPageCode = this.getContentManager().getViewPage(contentId);
-                        page = this.getPageManager().getOnlinePage(viewPageCode);
-                        reqCtx.addExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID, contentId);
-                    }
-                }
+				if (!matcher.group(2).isEmpty()) {
+					String friendlyCode = matcher.group(2).substring(1);
+					FriendlyCodeVO vo = this.getSeoMappingManager().getReference(friendlyCode);
+					if (null != vo && null != lang && lang.getCode().equals(vo.getLangCode())) {
+						if (null != vo.getPageCode()) {
+							page = this.getPageManager().getOnlinePage(vo.getPageCode());
+						} else if (null != vo.getContentId()) {
+							String contentId = vo.getContentId();
+							String viewPageCode = this.getContentManager().getViewPage(contentId);
+							page = this.getPageManager().getOnlinePage(viewPageCode);
+							reqCtx.addExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID, contentId);
+						}
+					}
+				}
             }
         } else if (this.getResourcePath(reqCtx).equals("/pages")) {
             resourcePath = getFullResourcePath(reqCtx);
@@ -189,7 +191,7 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
 		this._contentManager = contentManager;
 	}
 	
-	protected Pattern _patternSeoPath = Pattern.compile("^/page/(\\w+)((/\\w+)*)");
+	protected Pattern patternSeoPath = Pattern.compile("^/page/(\\w+)((/\\w+)*+)");
 	
 	private ISeoMappingManager _seoMappingManager;
 	private IContentManager _contentManager;
