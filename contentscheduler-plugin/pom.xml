@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>7.0.0-ENG-3504-PR-99</version>
+        <version>7.0.1-ENG-3504-PR-100</version>
     </parent>
     <artifactId>entando-plugin-jpcontentscheduler</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
     <packaging>war</packaging>
-    <version>7.0.0</version>
+    <version>7.0.1</version>
     <name>Entando Plugin: Content Scheduler</name>
     <description>CMS Content Scheduler</description>
     <developers>
