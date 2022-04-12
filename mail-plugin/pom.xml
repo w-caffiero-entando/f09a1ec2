@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>7.0.0-ENG-3504-PR-99</version>
+        <version>7.0.1-ENG-3504-PR-100</version>
     </parent>
     <artifactId>entando-plugin-jpmail</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
-    <version>7.0.0</version>
+    <version>7.0.1</version>
     <packaging>war</packaging>
     <name>Entando Plugin: Email Sender</name>
     <description>Provides the basis for Registration Forms and Newsletter services, and all plugins that require sending email: es: User Registration forms, Web Forms, Newsletters, etc.</description>
