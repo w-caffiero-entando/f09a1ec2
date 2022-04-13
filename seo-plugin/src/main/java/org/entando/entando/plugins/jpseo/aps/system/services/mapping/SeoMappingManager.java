@@ -201,7 +201,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     private void addFriendlyCode(ContentFriendlyCode contentFriendlyCode, Map<String, FriendlyCodeVO> existingMapping, String lang, String friendlyCode) {
         String friendlyCodeToAdd = existingMapping.values().stream()
                 .filter(vo -> contentFriendlyCode.getContentId().equals(vo.getContentId()) && lang.equals(vo.getLangCode()))
-                .map(vo -> vo.getFriendlyCode())
+                .map(FriendlyCodeVO::getFriendlyCode)
                 .findFirst().orElse(friendlyCode);
         contentFriendlyCode.addFriendlyCode(lang, friendlyCodeToAdd);
     }
