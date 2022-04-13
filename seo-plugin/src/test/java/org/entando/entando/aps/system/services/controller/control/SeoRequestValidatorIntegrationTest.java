@@ -68,7 +68,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             this.resetRequestContext(reqCtx);
             this.pageManager.setPageOnline(root.getCode());
             super.waitNotifyingThread();
-            
+
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/root_fiendly_code");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.CONTINUE, status);
@@ -98,7 +98,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             this.pageManager.setPageOnline(root.getCode());
         }
     }
-    
+
     @Test
     void testService_ContentOnTheFlyPublishing() throws Exception {
         RequestContext reqCtx = this.getRequestContext();
@@ -118,9 +118,9 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             assertNotNull(lang);
             assertEquals("contentview", page.getCode());
             assertEquals(newId, reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID));
-            
+
             this.resetRequestContext(reqCtx);
-            
+
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/en/cherry_festival");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.CONTINUE, status);
@@ -130,9 +130,9 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             assertNotNull(lang);
             assertEquals("contentview", page.getCode());
             assertEquals(newId, reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID));
-            
+
             this.resetRequestContext(reqCtx);
-            
+
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/cherry_festival");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.REDIRECT, status);
@@ -140,7 +140,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
             assertNull(page);
             assertNotNull(lang);
-            
+
         } catch (Exception e) {
             throw e;
         } finally {

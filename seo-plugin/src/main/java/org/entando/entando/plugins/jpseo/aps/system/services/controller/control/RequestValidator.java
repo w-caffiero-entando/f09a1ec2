@@ -45,7 +45,7 @@ import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMapping
 public class RequestValidator extends com.agiletec.aps.system.services.controller.control.RequestValidator {
 
 	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(RequestValidator.class);
-	
+
 	@Override
 	public int service(RequestContext reqCtx, int status) {
 		_logger.trace("{} ready", this.getClass().getName());
@@ -75,61 +75,61 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
 		return retStatus;
 	}
 
-    private boolean isRightPath(RequestContext reqCtx) {
-        boolean ok = false;
-        String resourcePath;
-        Matcher matcher;
-        Lang lang = null;
-        IPage page = null;
-        if (this.getResourcePath(reqCtx).equals("/page")) {
-            resourcePath = this.getFullResourcePath(reqCtx);
-            matcher = this.patternSeoPath.matcher(resourcePath);
-            if (matcher.lookingAt()) {
-                ok = true;
-                String sect1 = matcher.group(1);
-                lang = getLangManager().getLang(sect1);
+	private boolean isRightPath(RequestContext reqCtx) {
+		boolean ok = false;
+		String resourcePath;
+		Matcher matcher;
+		Lang lang = null;
+		IPage page = null;
+		if (this.getResourcePath(reqCtx).equals("/page")) {
+			resourcePath = this.getFullResourcePath(reqCtx);
+			matcher = this.patternSeoPath.matcher(resourcePath);
+			if (matcher.lookingAt()) {
+				ok = true;
+				String sect1 = matcher.group(1);
+				lang = getLangManager().getLang(sect1);
 				if (!matcher.group(2).isEmpty()) {
 					String friendlyCode = matcher.group(2).substring(1);
 					FriendlyCodeVO vo = this.getSeoMappingManager().getReference(friendlyCode);
 					page = this.getPage(vo, lang, reqCtx);
 				}
-            }
-        } else if (this.getResourcePath(reqCtx).equals("/pages")) {
-            resourcePath = getFullResourcePath(reqCtx);
-            matcher = this._patternFullPath.matcher(resourcePath);
-            if (matcher.lookingAt()) {
-                ok = true;
-                String sect1 = matcher.group(1);
-                lang = getLangManager().getLang(sect1);
-                page = this.getPage(matcher);
-            }
-        } else {
-            resourcePath = getResourcePath(reqCtx);
-            matcher = this._pattern.matcher(resourcePath);
-            if (matcher.lookingAt()) {
-                ok = true;
-                String sect1 = matcher.group(1);
-                String sect2 = matcher.group(2);
-                lang = getLangManager().getLang(sect1);
-                page = this.getPageManager().getOnlinePage(sect2);
-            } else {
-                //to preserve url with ".wp" suffix
-                matcher = this._oldPattern.matcher(resourcePath);
-                if (matcher.lookingAt()) {
-                    ok = true;
-                    String sect1 = matcher.group(1);
-                    String sect2 = matcher.group(2);
-                    lang = getLangManager().getLang(sect1);
-                    page = this.getPageManager().getOnlinePage(sect2);
-                }
-            }
-        }
-        if (!ok) {
-            return false;
-        }
-        reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, lang);
-        reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE, page);
-        return true;
+			}
+		} else if (this.getResourcePath(reqCtx).equals("/pages")) {
+			resourcePath = getFullResourcePath(reqCtx);
+			matcher = this._patternFullPath.matcher(resourcePath);
+			if (matcher.lookingAt()) {
+				ok = true;
+				String sect1 = matcher.group(1);
+				lang = getLangManager().getLang(sect1);
+				page = this.getPage(matcher);
+			}
+		} else {
+			resourcePath = getResourcePath(reqCtx);
+			matcher = this._pattern.matcher(resourcePath);
+			if (matcher.lookingAt()) {
+				ok = true;
+				String sect1 = matcher.group(1);
+				String sect2 = matcher.group(2);
+				lang = getLangManager().getLang(sect1);
+				page = this.getPageManager().getOnlinePage(sect2);
+			} else {
+				//to preserve url with ".wp" suffix
+				matcher = this._oldPattern.matcher(resourcePath);
+				if (matcher.lookingAt()) {
+					ok = true;
+					String sect1 = matcher.group(1);
+					String sect2 = matcher.group(2);
+					lang = getLangManager().getLang(sect1);
+					page = this.getPageManager().getOnlinePage(sect2);
+				}
+			}
+		}
+		if (!ok) {
+			return false;
+		}
+		reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, lang);
+		reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE, page);
+		return true;
 	}
 
 	private IPage getPage(FriendlyCodeVO vo, Lang lang, RequestContext reqCtx) {
@@ -138,7 +138,7 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
 			if (null != vo.getPageCode() && lang.getCode().equals(vo.getLangCode())) {
 				page = this.getPageManager().getOnlinePage(vo.getPageCode());
 			} else if (null != vo.getContentId() && (lang.getCode().equals(vo.getLangCode())
-								|| !isFriendlyCodeDefined(vo.getContentId(), lang.getCode()))) {
+					|| !isFriendlyCodeDefined(vo.getContentId(), lang.getCode()))) {
 				String contentId = vo.getContentId();
 				String viewPageCode = this.getContentManager().getViewPage(contentId);
 				page = this.getPageManager().getOnlinePage(viewPageCode);
@@ -194,24 +194,24 @@ public class RequestValidator extends com.agiletec.aps.system.services.controlle
 		}
 		return page;
 	}
-	
+
 	protected ISeoMappingManager getSeoMappingManager() {
 		return _seoMappingManager;
 	}
 	public void setSeoMappingManager(ISeoMappingManager seoMappingManager) {
 		this._seoMappingManager = seoMappingManager;
 	}
-	
+
 	protected IContentManager getContentManager() {
 		return _contentManager;
 	}
 	public void setContentManager(IContentManager contentManager) {
 		this._contentManager = contentManager;
 	}
-	
+
 	protected Pattern patternSeoPath = Pattern.compile("^/page/(\\w+)((/\\w+)*+)");
-	
+
 	private ISeoMappingManager _seoMappingManager;
 	private IContentManager _contentManager;
-	
+
 }
