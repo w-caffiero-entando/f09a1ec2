@@ -73,7 +73,7 @@
         <spring.version>5.3.18</spring.version>
         <springsecurity.version>5.5.1</springsecurity.version>
         <springsecurityoauth2.version>2.5.1.RELEASE</springsecurityoauth2.version>
-        <struts2.version>2.5.26</struts2.version>
+        <struts2.version>2.5.30</struts2.version>
         <cxf.version>3.4.4</cxf.version>
         <jackson.version>2.11.4</jackson.version> <!-- Jackson 2.12.* is not compatible with logback-jackson 0.1.5 -->
         <hibernate-validator-version>6.0.20.Final</hibernate-validator-version>
