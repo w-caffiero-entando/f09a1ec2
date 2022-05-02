@@ -31,11 +31,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 @RestController
 @RequestMapping(value = "/plugins/seo/pages")
-@SessionAttributes("user")
 public class SeoPageController implements ISeoPageController {
 
     private final EntLogger logger =  EntLogFactory.getSanitizedLogger(getClass());

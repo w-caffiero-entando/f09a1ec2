@@ -32,10 +32,10 @@ import org.entando.entando.web.common.model.SimpleRestResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -53,20 +53,20 @@ public interface ISeoPageController {
 
     @RestAccessControl(permission = Permission.MANAGE_PAGES)
     @GetMapping("{pageCode}")
-    ResponseEntity<RestResponse<PageDto, Map<String, String>>> getSeoPage(@ModelAttribute("user") UserDetails user,
+    ResponseEntity<RestResponse<PageDto, Map<String, String>>> getSeoPage(@RequestAttribute("user") UserDetails user,
             @PathVariable String pageCode,
             @RequestParam(value = "status", required = false, defaultValue = IPageService.STATUS_DRAFT) String status);
 
     @ActivityStreamAuditable
     @RestAccessControl(permission = Permission.MANAGE_PAGES)
     @PostMapping()
-    ResponseEntity<SimpleRestResponse<SeoPageDto>> addPage(@ModelAttribute("user") UserDetails user,
+    ResponseEntity<SimpleRestResponse<SeoPageDto>> addPage(@RequestAttribute("user") UserDetails user,
             @Valid @RequestBody SeoPageRequest pageRequest, BindingResult bindingResult) throws EntException;
 
     @ActivityStreamAuditable
     @RestAccessControl(permission = Permission.MANAGE_PAGES)
     @PutMapping("{pageCode}")
     ResponseEntity<RestResponse<SeoPageDto, Map<String, String>>> updatePage(
-            @ModelAttribute("user") UserDetails user, @PathVariable String pageCode,
+            @RequestAttribute("user") UserDetails user, @PathVariable String pageCode,
             @Valid @RequestBody SeoPageRequest pageRequest, BindingResult bindingResult);
 }
