@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>7.0.1-ENG-3504-PR-100</version>
+        <version>7.0.2</version>
     </parent>
     <artifactId>entando-plugin-jpversioning</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
     <packaging>war</packaging>
-    <version>7.0.1</version>
+    <version>7.0.2</version>
     <name>Entando Plugin: Content Versioning</name>
     <description>Manages the versioning of portal content, storing the history of performed operations</description>
     <developers>
@@ -44,7 +44,7 @@
         <owaspSuppressionFileLocation>
             https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
         </owaspSuppressionFileLocation>
-        <entando-core-bom.version>7.0.1-ENG-3504</entando-core-bom.version>
+        <entando-core-bom.version>7.0.2</entando-core-bom.version>
     </properties>
     <build>
         <resources>
