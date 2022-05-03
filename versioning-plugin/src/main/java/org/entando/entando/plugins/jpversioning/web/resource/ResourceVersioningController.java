@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,15 +41,11 @@ public class ResourceVersioningController implements IResourceVersioning {
     @Autowired
     private ResourcesVersioningService resourcesVersioningService;
 
-    @Autowired
-    private HttpSession httpSession;
-
     @Override
     public ResponseEntity<PagedRestResponse<ResourceDTO>> listTrashedResources(String resourceTypeCode,
-            RestListRequest requestList) {
+            RestListRequest requestList, UserDetails userDetails) {
         logger.debug("REST request - list trashed resources for resourceTypeCode: {} and with request: {}",
                 resourceTypeCode, requestList);
-        UserDetails userDetails = HttpSessionHelper.extractCurrentUser(httpSession);
         PagedMetadata<ResourceDTO> result = resourcesVersioningService
                 .getTrashedResources(resourceTypeCode, requestList, userDetails);
         return new ResponseEntity<>(new PagedRestResponse<>(result), HttpStatus.OK);
@@ -69,9 +66,8 @@ public class ResourceVersioningController implements IResourceVersioning {
     }
 
     @Override
-    public ResponseEntity getTrashedResource(String resourceId, Integer size) {
+    public ResponseEntity getTrashedResource(String resourceId, Integer size, UserDetails userDetails) {
         logger.debug("REST request - get trashed resource id: {} and size: {}", resourceId, size);
-        UserDetails userDetails = HttpSessionHelper.extractCurrentUser(httpSession);
         ResourceDownloadDTO result = resourcesVersioningService.getTrashedResource(resourceId, size, userDetails);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + result.getFilename());
