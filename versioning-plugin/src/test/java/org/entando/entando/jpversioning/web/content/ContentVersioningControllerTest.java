@@ -222,7 +222,6 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
         String path = "/plugins/versioning/contents/{contentId}/versions/{versionId}";
         return mockMvc.perform(
                 get(path, contentId, versionId)
-                        .sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
     }
 
@@ -231,7 +230,6 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
         String path = "/plugins/versioning/contents/{contentId}";
         return mockMvc.perform(
                 get(path, contentId)
-                        .sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
     }
 
@@ -240,7 +238,6 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
         String path = "/plugins/versioning/contents";
         return mockMvc.perform(
                 get(path)
-                        .sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
     }
 
@@ -249,7 +246,6 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
         String path = "/plugins/versioning/contents/{contentId}/versions/{versionId}";
         return mockMvc.perform(
                 get(path, contentId, versionId)
-                        .sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
     }
 
@@ -258,7 +254,6 @@ public class ContentVersioningControllerTest extends AbstractControllerTest {
         String path = "/plugins/versioning/contents/{contentId}/versions/{versionId}";
         return mockMvc.perform(
                 delete(path, contentId, versionId)
-                        .sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
     }
 

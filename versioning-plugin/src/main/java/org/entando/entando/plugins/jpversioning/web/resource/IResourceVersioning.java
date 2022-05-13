@@ -14,6 +14,7 @@
 package org.entando.entando.plugins.jpversioning.web.resource;
 
 import com.agiletec.aps.system.services.role.Permission;
+import com.agiletec.aps.system.services.user.UserDetails;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Api(tags = {"resource-versioning-controller"})
@@ -47,7 +49,7 @@ public interface IResourceVersioning {
     @GetMapping("")
     @RestAccessControl(permission = Permission.MANAGE_RESOURCES)
     ResponseEntity<PagedRestResponse<ResourceDTO>> listTrashedResources(@RequestParam(value = "resourceTypeCode") String resourceTypeCode,
-            RestListRequest requestList);
+            RestListRequest requestList, @RequestAttribute("user") UserDetails userDetails);
 
     @ApiOperation(value = "POST resource to recover", nickname = "recoverTrashedResource", tags = {
             "resource-versioning-controller"})
@@ -66,5 +68,5 @@ public interface IResourceVersioning {
     @GetMapping(value = "/{resourceId}/{size}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @RestAccessControl(permission = Permission.MANAGE_RESOURCES)
     ResponseEntity getTrashedResource(@PathVariable(value = "resourceId") String resourceId,
-            @PathVariable(value = "size") Integer size);
+            @PathVariable(value = "size") Integer size, @RequestAttribute("user") UserDetails userDetails);
 }
