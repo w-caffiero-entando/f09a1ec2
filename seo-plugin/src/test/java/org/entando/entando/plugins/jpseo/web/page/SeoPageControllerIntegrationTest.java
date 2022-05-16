@@ -13,13 +13,10 @@
  */
 package org.entando.entando.plugins.jpseo.web.page;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -33,7 +30,6 @@ import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.Page;
 import com.agiletec.aps.system.services.page.PageMetadata;
 import com.agiletec.aps.system.services.page.PageTestUtil;
-import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
@@ -45,19 +41,14 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
-import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.SeoMappingManager;
-import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageDto;
-import org.entando.entando.plugins.jpseo.web.page.model.SeoPageRequest;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.page.PageDtoToRequestConverter;
 import org.entando.entando.web.page.model.PageCloneRequest;
 import org.entando.entando.web.page.model.PageRequest;
-import org.entando.entando.web.page.model.PageStatusRequest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Assertions;
@@ -67,8 +58,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.validation.BindingResult;
 
 class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -562,11 +551,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     Group.FREE_GROUP_NAME,
                                     "admin_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Cannot move a free page under a reserved page")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
 
             pageCode = "admin_pg_into_group1_pg";
 
@@ -579,11 +568,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     Group.ADMINS_GROUP_NAME,
                                     "group1_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Can not move a page under a page owned by a different group")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
 
             pageCode = "group1_pg_into_admin_pg";
 
@@ -596,11 +585,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     "coach",
                                     "admin_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Can not move a page under a page owned by a different group")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
 
             pageCode = "group1_pg_into_group2_pg";
 
@@ -613,11 +602,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     "coach",
                                     "group2_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Can not move a page under a page owned by a different group")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
 
             pageCode = "group2_pg_into_group1_pg";
 
@@ -630,11 +619,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     "customers",
                                     "group1_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Can not move a page under a page owned by a different group")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
 
         } finally {
             this.pageManager.deletePage("group2_pg_into_group1_pg");

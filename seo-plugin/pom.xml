@@ -8,7 +8,7 @@
     </parent>
     <artifactId>entando-plugin-jpseo</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
-    <version>7.0.2</version>
+    <version>7.0.3</version>
     <packaging>war</packaging>
     <name>Entando Plugin: SEO</name>
     <description>Search Engine Optimization</description>
@@ -37,7 +37,7 @@
         <owaspSuppressionFileLocation>
             https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
         </owaspSuppressionFileLocation>
-        <entando-core-bom.version>7.0.2-ENG-3584</entando-core-bom.version>
+        <entando-core-bom.version>7.0.3-ENG-3694</entando-core-bom.version>
     </properties>
     <build>
         <resources>
