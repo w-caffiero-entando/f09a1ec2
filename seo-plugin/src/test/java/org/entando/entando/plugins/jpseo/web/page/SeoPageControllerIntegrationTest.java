@@ -61,6 +61,8 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
+    private static final String PAGE_GROUP_MISMATCH_ERROR = "A page can only be a direct child of a page with the same owner group or free access";
+
     @Autowired
     @Qualifier("SeoPageService")
     private IPageService pageService;
@@ -555,7 +557,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
             pageCode = "admin_pg_into_group1_pg";
 
@@ -572,7 +574,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
             pageCode = "group1_pg_into_admin_pg";
 
@@ -589,7 +591,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
             pageCode = "group1_pg_into_group2_pg";
 
@@ -606,7 +608,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
             pageCode = "group2_pg_into_group1_pg";
 
@@ -623,7 +625,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("A page can only be a direct child of a page with the same owner group or free access")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
         } finally {
             this.pageManager.deletePage("group2_pg_into_group1_pg");
