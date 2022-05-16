@@ -10,7 +10,7 @@
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>6.4.0-SNAPSHOT</version>
+        <version>7.1.0-SNAPSHOT</version>
     </parent>
     
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
@@ -19,13 +19,13 @@
     <groupId>org.entando.entando</groupId>
     <artifactId>entando-parent-pom-tester</artifactId>
     <packaging>jar</packaging>
-    <version>6.4.0-SNAPSHOT</version>
+    <version>7.1.0-SNAPSHOT</version>
     <name>Entando Parent Pom Tester</name>
     <description>Test project for the Entando Core</description>
     <url>http://www.entando.com/</url>
     <licenses>
         <license>
-            <name>LGPL-3.0</name>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
             <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
             <distribution>repo</distribution>
         </license>
@@ -195,10 +195,6 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
             <version>${spring-data-redis.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
@@ -598,6 +594,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
             <version>${hamcrest-all.version}</version>
@@ -632,23 +634,6 @@
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- 
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.driver.version}</version>
-            <scope>test</scope>
-        </dependency>
-        -->
-        <!-- uncomment if you need -->
-        <!--
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.18</version>
-            <scope>test</scope>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
@@ -726,17 +711,10 @@
             <artifactId>jettison</artifactId>
             <version>${jettison.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>com.j256.ormlite</groupId>
-            <artifactId>ormlite-core</artifactId>
-            <version>${ormlite-jdbc.version}</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.j256.ormlite</groupId>
-            <artifactId>ormlite-jdbc</artifactId>
-            <version>${ormlite-jdbc.version}</version>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase-core.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -946,6 +924,11 @@
             <version>${encoder.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.owasp.encoder</groupId>
+            <artifactId>encoder-jsp</artifactId>
+            <version>${encoder-jsp.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.tiles</groupId>
             <artifactId>tiles-request-api</artifactId>
             <version>${tiles-request-api.version}</version>
@@ -1029,6 +1012,21 @@
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>
             <version>${keycloak-admin-client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${protobuf-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xercesImpl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.junrar</groupId>
+            <artifactId>junrar</artifactId>
+            <version>${junrar.version}</version>
         </dependency>
 
     </dependencies>
