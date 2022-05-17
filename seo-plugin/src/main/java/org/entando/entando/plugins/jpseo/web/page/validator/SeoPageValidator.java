@@ -68,7 +68,7 @@ public class SeoPageValidator extends PageValidator {
         List friendlyCodes = new ArrayList<String>();
         seoDataByLang.forEach(
                 (key, value) -> {
-                    if (null != value.getFriendlyCode()) {
+                    if (null != value.getFriendlyCode() && !value.getFriendlyCode().isEmpty()) {
                         friendlyCodes.add(value.getFriendlyCode());
                     }
                 });

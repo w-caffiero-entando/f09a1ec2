@@ -108,11 +108,9 @@ public class SeoPageController implements ISeoPageController {
 
         if (null!=pageRequest.getSeoData()) {
             getSeoPageValidator().validateFriendlyCodeByLang(pageRequest.getSeoData().getSeoDataByLang(), bindingResult);
-
-            if (bindingResult.hasErrors()) {
-                throw new ValidationConflictException(bindingResult);
-            }
-
+        }
+        if (bindingResult.hasErrors()) {
+            throw new ValidationConflictException(bindingResult);
         }
         validatePagePlacement(pageRequest, bindingResult);
 
@@ -147,11 +145,11 @@ public class SeoPageController implements ISeoPageController {
 
         if (null!=pageRequest.getSeoData()) {
             getSeoPageValidator().validateFriendlyCodeByLang(pageRequest.getSeoData().getSeoDataByLang(), bindingResult);
-
-            if (bindingResult.hasErrors()) {
-                throw new ValidationConflictException(bindingResult);
-            }
         }
+        if (bindingResult.hasErrors()) {
+            throw new ValidationConflictException(bindingResult);
+        }
+
         if ((null != pageRequest.getSeoData()) && (null != pageRequest.getSeoData().getSeoDataByLang())) {
             for (Entry<String, SeoDataByLang> entry : pageRequest.getSeoData().getSeoDataByLang().entrySet()) {
                 if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), entry.getValue().getFriendlyCode())) {

@@ -14,10 +14,8 @@
 package org.entando.entando.plugins.jpseo.web.page;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -33,7 +31,6 @@ import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.Page;
 import com.agiletec.aps.system.services.page.PageMetadata;
 import com.agiletec.aps.system.services.page.PageTestUtil;
-import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
@@ -47,7 +44,6 @@ import java.util.Map;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
-import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.SeoMappingManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.page.model.PageCloneRequest;
@@ -61,8 +57,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.validation.BindingResult;
 
 class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -83,6 +77,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     private static String SEO_TEST_3 = "seoTest3";
     private static String SEO_TEST_4 = "seoTest4";
     private static String SEO_TEST_5 = "seoTest5";
+    private static String SEO_TEST_6 = "seoTest6";
+
     private static String SEO_TEST_2_FC = "seoTest2fc";
 
 
@@ -949,6 +945,40 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
         }
     }
 
+    @Test
+    void testPostSeoPageEmptyFriendlyCode() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+            ResultActions result1 = this.executePostSeoPage("6_POST_valid_empty_friendly_code.json", accessToken, status().isOk());
+            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_6, IPageService.STATUS_DRAFT));
+            result1.andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_6)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("")));
+
+          } finally {
+            this.pageManager.deletePage(SEO_TEST_6);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_6);
+        }
+    }
+
+    @Test
+    void testPutSeoPageEmptyFriendlyCode() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+            this.executePostSeoPage("6_POST_valid_empty_friendly_code.json", accessToken, status().isOk());
+            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_6, IPageService.STATUS_DRAFT));
+
+            this.executePutSeoPage("6_PUT_valid_empty_friendly_code.json", SEO_TEST_6, accessToken, status().isOk())
+                    .andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_6)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is("")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("")));
+        } finally {
+            this.pageManager.deletePage(SEO_TEST_6);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_6);
+        }
+    }
     private PageRequest createPageRequest(String pageCode, String groupCode, String parentCode) {
         PageRequest pageRequest = new PageRequest();
         pageRequest.setCode(pageCode);
