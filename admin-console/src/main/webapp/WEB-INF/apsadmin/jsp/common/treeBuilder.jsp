@@ -24,7 +24,7 @@
 
                <span class='class="icon fa <s:property value="treeItemIconNameVar"/>'></span> &#32;
         <span for="fagianonode_<s:property value="#currentRoot.code" />">
-            <s:property value="getTitle(#currentRoot.code, #currentRoot.titles)"/>
+            <s:property value="getTitle(#currentRoot.code, #currentRoot.titles)" escapeHtml="true" />
             <s:if test="%{#currentRoot.group != null && !#currentRoot.group.equals('free')}">&#32;
                 <span class="text-muted icon fa fa-lock"></span>
             </s:if>
