@@ -1,6 +1,9 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib uri="/aps-core" prefix="wp" %>
 <%@ taglib uri="/apsadmin-core" prefix="wpsa" %>
+<s:if test="%{null == #treeNodeExtraParamName}">
+    <s:set var="treeNodeExtraParamName" value="'treeNodeExtraParamName'" />
+</s:if>
 <s:if test="#currentRoot.isEmpty()">
     <s:set var="treeItemIconNameVar" value="'fa-folder-o'" />
 </s:if>
