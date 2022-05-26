@@ -64,10 +64,10 @@
         <test.database.username>agile</test.database.username>
         <test.database.password>agile</test.database.password>
         <test.database.port.url>
-            jdbc:derby:${project.build.directory}/test/db/${project.artifactId}testPort;create=true
+            jdbc:derby:memory:${project.build.directory}/test/db/${project.artifactId}testPort;create=true
         </test.database.port.url>
         <test.database.serv.url>
-            jdbc:derby:${project.build.directory}/test/db/${project.artifactId}testServ;create=true
+            jdbc:derby:memory:${project.build.directory}/test/db/${project.artifactId}testServ;create=true
         </test.database.serv.url>
         <!--dependency versions-->
         <spring.version>5.3.20</spring.version>
