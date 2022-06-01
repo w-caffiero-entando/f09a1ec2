@@ -19,6 +19,7 @@ import org.entando.entando.plugins.jpseo.web.page.validator.SeoPageValidator;
 import org.entando.entando.web.common.exceptions.ResourcePermissionsException;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
+import org.entando.entando.web.common.exceptions.ValidationUnprocessableEntityException;
 import org.entando.entando.web.common.model.RestResponse;
 import org.entando.entando.web.common.model.SimpleRestResponse;
 import org.entando.entando.web.page.model.PagePositionRequest;
@@ -31,11 +32,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 @RestController
 @RequestMapping(value = "/plugins/seo/pages")
-@SessionAttributes("user")
 public class SeoPageController implements ISeoPageController {
 
     private final EntLogger logger =  EntLogFactory.getSanitizedLogger(getClass());
@@ -122,7 +121,7 @@ public class SeoPageController implements ISeoPageController {
         IPage parent = seoPageValidator.getDraftPage(pageRequest.getParentCode());
         seoPageValidator.validateGroups(pageRequest.getOwnerGroup(), parent.getGroup(), bindingResult);
         if (bindingResult.hasErrors()) {
-            throw new ValidationGenericException(bindingResult);
+            throw new ValidationUnprocessableEntityException(bindingResult);
         }
     }
 
