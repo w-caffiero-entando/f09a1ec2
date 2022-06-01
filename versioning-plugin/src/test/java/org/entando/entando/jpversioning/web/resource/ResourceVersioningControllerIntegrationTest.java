@@ -660,7 +660,6 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     private ResultActions recoverResource(UserDetails user, String versionResourceId) throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = post(
                 "/plugins/versioning/resources/{resourceId}/recover", versionResourceId)
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + mockOAuthInterceptor(user));
 
         return mockMvc.perform(requestBuilder)
@@ -670,7 +669,6 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     private ResultActions deleteTrashedResource(UserDetails user, String versionResourceId) throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = delete(
                 "/plugins/versioning/resources/{resourceId}", versionResourceId)
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + mockOAuthInterceptor(user));
 
         return mockMvc.perform(requestBuilder)
@@ -704,7 +702,6 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
         String accessToken = mockOAuthInterceptor(user);
 
         final MockHttpServletRequestBuilder requestBuilder = get("/plugins/versioning/resources")
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + accessToken);
 
         for (String key : Optional.ofNullable(params).orElse(new HashMap<>()).keySet()) {
@@ -777,7 +774,6 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
     private ResultActions performDownloadResource(UserDetails user, String resourceId, Integer size) throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = get(
                 "/plugins/versioning/resources/{resourceId}/{size}", resourceId, size)
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + mockOAuthInterceptor(user));
 
         return mockMvc.perform(requestBuilder)

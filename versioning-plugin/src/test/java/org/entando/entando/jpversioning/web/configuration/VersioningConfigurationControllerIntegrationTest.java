@@ -125,7 +125,6 @@ public class VersioningConfigurationControllerIntegrationTest extends AbstractCo
         String accessToken = mockOAuthInterceptor(user);
 
         final MockHttpServletRequestBuilder requestBuilder = get("/plugins/versioning/configuration")
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + accessToken);
 
         return mockMvc.perform(requestBuilder)
