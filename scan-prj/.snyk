@@ -43,6 +43,3 @@ ignore:
   SNYK-JAVA-IONETTY-2812456:
     - '*':
         reason: '.'
-  SNYK-JAVA-ORGAPACHETIKA-2825265:
-    - '*':
-        reason: '.'
