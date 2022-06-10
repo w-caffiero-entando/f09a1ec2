@@ -174,6 +174,7 @@
         <protobuf-java.version>3.19.2</protobuf-java.version>
         <xercesImpl.version>2.12.2</xercesImpl.version>
         <junrar.version>7.4.1</junrar.version>
+        <netty-common.version>4.1.77.Final</netty-common.version>
     </properties>
     <issueManagement>
         <system>Github</system>
@@ -1545,6 +1546,11 @@
                 <groupId>com.github.junrar</groupId>
                 <artifactId>junrar</artifactId>
                 <version>${junrar.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>${netty-common.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
