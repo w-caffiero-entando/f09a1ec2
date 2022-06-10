@@ -2,6 +2,9 @@
 <%@ taglib prefix="wp" uri="/aps-core" %>
 <%@ taglib prefix="wpsa" uri="/apsadmin-core" %>
 <%@ taglib prefix="wpsf" uri="/apsadmin-form" %>
+<s:if test="%{null == #treeNodeExtraParamName}">
+    <s:set var="treeNodeExtraParamName" value="'treeNodeExtraParamName'" />
+</s:if>
 <s:if test="#currentRoot.isEmpty()">
     <s:set var="treeItemIconNameVar" value="'fa-folder-o'"/>
 </s:if>
