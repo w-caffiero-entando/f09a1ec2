@@ -10,7 +10,7 @@
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>6.4.0-SNAPSHOT</version>
+        <version>7.1.0-SNAPSHOT</version>
     </parent>
     
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
@@ -19,13 +19,13 @@
     <groupId>org.entando.entando</groupId>
     <artifactId>entando-parent-pom-tester</artifactId>
     <packaging>jar</packaging>
-    <version>6.4.0-SNAPSHOT</version>
+    <version>7.1.0-SNAPSHOT</version>
     <name>Entando Parent Pom Tester</name>
     <description>Test project for the Entando Core</description>
     <url>http://www.entando.com/</url>
     <licenses>
         <license>
-            <name>LGPL-3.0</name>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
             <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
             <distribution>repo</distribution>
         </license>
