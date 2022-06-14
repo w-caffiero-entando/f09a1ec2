@@ -40,15 +40,3 @@ ignore:
   SNYK-JAVA-ORGOWASPESAPI-2803305:
     - '*':
         reason: '.'
-  SNYK-JAVA-ORGSPRINGFRAMEWORK-2436751:
-    - '*':
-        reason: '.'
-  SNYK-JAVA-ORGSPRINGFRAMEWORK-2689634:
-    - '*':
-        reason: '.'
-  SNYK-JAVA-ORGSPRINGFRAMEWORK-2434828:
-    - '*':
-        reason: '.'
-  SNYK-JAVA-IONETTY-2812456:
-    - '*':
-        reason: '.'
