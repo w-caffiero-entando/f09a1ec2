@@ -19,6 +19,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.HashMap;
+import java.util.Map;
+import javax.validation.Valid;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpmail.ent.system.services.SMTPServerConfigurationService;
@@ -31,17 +34,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Api(tags = {"smtp-server-configuration-controller"})
 @RequestMapping(value = "/plugins/emailSettings/SMTPServer")
-@SessionAttributes({"user"})
 public class SMTPServerConfigurationController {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
@@ -99,11 +104,11 @@ public class SMTPServerConfigurationController {
     })
     @PostMapping(value = "/sendTestEmail", produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.SUPERUSER)
-    public ResponseEntity<SimpleRestResponse<Map<String,String>>> sendTestEmail(@ModelAttribute("user") UserDetails user,
-                                                                 BindingResult bindingResult) {
+    public ResponseEntity<SimpleRestResponse<Map<String,String>>> sendTestEmail(@RequestAttribute("user") UserDetails user) {
         logger.debug("Send Test Email");
         HttpStatus status;
 
+        BindingResult bindingResult = new BeanPropertyBindingResult(user, "user");
         smtpServerConfigurationValidator.validateSenderList(bindingResult);
         smtpServerConfigurationValidator.validateUserEmail(user, bindingResult);
 
