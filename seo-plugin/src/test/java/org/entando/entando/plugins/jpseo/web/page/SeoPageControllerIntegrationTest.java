@@ -13,6 +13,7 @@
  */
 package org.entando.entando.plugins.jpseo.web.page;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -39,6 +40,7 @@ import com.agiletec.aps.util.FileTextReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.entando.entando.aps.system.services.page.IPageService;
@@ -46,6 +48,7 @@ import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.SeoMappingManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
+import org.entando.entando.web.page.PageDtoToRequestConverter;
 import org.entando.entando.web.page.model.PageCloneRequest;
 import org.entando.entando.web.page.model.PageRequest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
@@ -60,6 +63,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
+    private static final String PAGE_GROUP_MISMATCH_ERROR = "A page can only be a direct child of a page with the same owner group or free access";
     @Autowired
     @Qualifier("SeoPageService")
     private IPageService pageService;
@@ -69,6 +73,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     
     @Autowired
     private SeoMappingManager seoMappingManager;
+    @Autowired
+    private PageDtoToRequestConverter pageDtoToRequestConverter;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -583,11 +589,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     Group.FREE_GROUP_NAME,
                                     "admin_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Cannot move a free page under a reserved page")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
             pageCode = "admin_pg_into_group1_pg";
 
@@ -600,11 +606,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     Group.ADMINS_GROUP_NAME,
                                     "group1_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Can not move a page under a page owned by a different group")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
             pageCode = "group1_pg_into_admin_pg";
 
@@ -617,11 +623,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     "coach",
                                     "admin_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Can not move a page under a page owned by a different group")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
             pageCode = "group1_pg_into_group2_pg";
 
@@ -634,11 +640,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     "coach",
                                     "group2_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Can not move a page under a page owned by a different group")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
             pageCode = "group2_pg_into_group1_pg";
 
@@ -651,11 +657,11 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                                     "customers",
                                     "group1_pg"))))
                     .andDo(resultPrint())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("$.payload.size()", CoreMatchers.is(0)))
                     .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(1)))
                     .andExpect(jsonPath("$.errors[0].code", CoreMatchers.is("2")))
-                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is("Can not move a page under a page owned by a different group")));
+                    .andExpect(jsonPath("$.errors[0].message", CoreMatchers.is(PAGE_GROUP_MISMATCH_ERROR)));
 
         } finally {
             this.pageManager.deletePage("group2_pg_into_group1_pg");
@@ -946,6 +952,119 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     }
 
     @Test
+    void testRootCanBeEditedByFreeAccessManagers() throws Exception {
+
+        UserDetails freeAccessManager = new OAuth2TestUtils.UserBuilder("freeAccessManager", "0x24")
+                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        testEditRoot(freeAccessManager, status().isOk());
+    }
+
+    @Test
+    void testRootCannotBeEditedByOtherManagers() throws Exception {
+
+        UserDetails customersManager = new OAuth2TestUtils.UserBuilder("customersManager", "0x24")
+                .withAuthorization("customers", "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        testEditRoot(customersManager, status().isForbidden());
+    }
+
+    @Test
+    void testRootCanBeSeenAlsoByNotAdminUser() throws Exception {
+
+        UserDetails customersManager = new OAuth2TestUtils.UserBuilder("customersManager", "0x24")
+                .withAuthorization("customers", "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        String accessToken = mockOAuthInterceptor(customersManager);
+
+        mockMvc.perform(get("/plugins/seo/pages/{pageCode}", "homepage")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testCustomersManagerCannotSeeOrEditFreePage() throws Exception {
+
+        UserDetails customersManager = new OAuth2TestUtils.UserBuilder("customersManager", "0x24")
+                .withAuthorization("customers", "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        Page page = createPage("myFreePage", "homepage", Group.FREE_GROUP_NAME);
+        testPagePermissions(page, customersManager, false, false);
+    }
+
+    @Test
+    void testCustomersManagerCanSeeButNotEditPageWithCustomersJoinGroup() throws Exception {
+
+        UserDetails customersManager = new OAuth2TestUtils.UserBuilder("customersManager", "0x24")
+                .withAuthorization("customers", "managePages", Permission.MANAGE_PAGES)
+                .build();
+
+        Page page = createPage("pageWithCustomerJoinGroup", "homepage", Group.ADMINS_GROUP_NAME);
+        page.setExtraGroups(Collections.singleton("customers"));
+
+        testPagePermissions(page, customersManager, true, false);
+    }
+
+    private void testEditRoot(UserDetails userDetails, ResultMatcher expected) throws Exception {
+
+        String accessToken = mockOAuthInterceptor(userDetails);
+
+        String jsonContent;
+        try(InputStream isJsonPutValid = this.getClass().getResourceAsStream("5_PUT_valid_root.json")) {
+            jsonContent = FileTextReader.getText(isJsonPutValid);
+        }
+
+        mockMvc.perform(put("/plugins/seo/pages/{pageCode}", "homepage")
+                        .content(jsonContent)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(expected);
+    }
+
+    private void testPagePermissions(IPage page, UserDetails userDetails, boolean canRead, boolean canWrite) throws Exception {
+
+        ResultMatcher expectedRead = canRead ? status().isOk() : status().isForbidden();
+        ResultMatcher expectedWrite = canWrite ? status().isOk() : status().isForbidden();
+
+        String pageCode = page.getCode();
+        String accessToken = mockOAuthInterceptor(userDetails);
+
+        try {
+            this.pageManager.addPage(page);
+
+            // read
+            mockMvc.perform(get("/plugins/seo/pages/{pageCode}", pageCode)
+                            .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(expectedRead)
+                    .andExpect(jsonPath("$.errors.size()", is(canRead ? 0 : 1)));
+
+            PageRequest pageRequest = createPageRequest(pageCode, page.getGroup(), page.getParentCode());
+
+            // update
+            mockMvc.perform(put("/plugins/seo/pages/{pageCode}", pageCode)
+                            .content(mapper.writeValueAsString(pageRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(expectedWrite)
+                    .andExpect(jsonPath("$.errors.size()", is(canWrite ? 0 : 1)));
+
+            this.pageManager.deletePage(page.getCode());
+
+            // create
+            mockMvc.perform(post("/plugins/seo/pages")
+                            .content(mapper.writeValueAsString(pageRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(expectedWrite)
+                    .andExpect(jsonPath("$.errors.size()", is(canWrite ? 0 : 1)));
+        } finally {
+            this.pageManager.deletePage(page.getCode());
+        }
+    }
     void testPostSeoPageEmptyFriendlyCode() throws Exception {
         try {
             String accessToken = this.createAccessToken();

@@ -16,10 +16,12 @@ package org.entando.entando.aps.system.services.controller.control;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.common.entity.model.attribute.TextAttribute;
 import com.agiletec.aps.system.services.controller.ControllerManager;
 import com.agiletec.aps.system.services.controller.control.ControlServiceInterface;
 import com.agiletec.aps.system.services.lang.Lang;
@@ -29,6 +31,7 @@ import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
+import java.util.Collections;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.controller.control.RequestValidator;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
@@ -45,7 +48,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
     private IContentManager contentManager;
 
     @Test
-    void testService_1() throws Exception {
+    void testService_PageUsingFriendlyCode() throws Exception {
         RequestContext reqCtx = this.getRequestContext();
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
         IPage root = this.pageManager.getDraftRoot();
@@ -65,7 +68,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             this.resetRequestContext(reqCtx);
             this.pageManager.setPageOnline(root.getCode());
             super.waitNotifyingThread();
-            
+
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/root_fiendly_code");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.CONTINUE, status);
@@ -95,9 +98,9 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             this.pageManager.setPageOnline(root.getCode());
         }
     }
-    
+
     @Test
-    void testService_2() throws Exception {
+    void testService_ContentOnTheFlyPublishing() throws Exception {
         RequestContext reqCtx = this.getRequestContext();
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
         Content content = this.contentManager.loadContent("EVN41", false);
@@ -115,9 +118,9 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             assertNotNull(lang);
             assertEquals("contentview", page.getCode());
             assertEquals(newId, reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID));
-            
+
             this.resetRequestContext(reqCtx);
-            
+
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/en/cherry_festival");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.CONTINUE, status);
@@ -127,9 +130,9 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             assertNotNull(lang);
             assertEquals("contentview", page.getCode());
             assertEquals(newId, reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID));
-            
+
             this.resetRequestContext(reqCtx);
-            
+
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/cherry_festival");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
             assertEquals(ControllerManager.REDIRECT, status);
@@ -137,7 +140,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
             assertNull(page);
             assertNotNull(lang);
-            
+
         } catch (Exception e) {
             throw e;
         } finally {
@@ -147,7 +150,119 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             }
         }
     }
-    
+
+    @Test
+    void testService_ContentOnTheFlyPublishingSecondaryLanguageTitleAdded() throws Exception {
+        RequestContext reqCtx = this.getRequestContext();
+        MockHttpServletRequest request = (MockHttpServletRequest) reqCtx.getRequest();
+        request.setServletPath("/page");
+
+        // create new content copying existing one
+        Content content = this.contentManager.loadContent("EVN41", false);
+        content.setId(null);
+
+        // define only the default language mapping (Italian in this case)
+        TextAttribute titleAttribute = (TextAttribute) content.getAttributeByRole(JacmsSystemConstants.ATTRIBUTE_ROLE_TITLE);
+        titleAttribute.getTextMap().clear();
+        titleAttribute.getTextMap().put("it", "titolo_in_italiano");
+
+        this.contentManager.insertOnLineContent(content);
+        String newId = content.getId();
+
+        try {
+            super.waitNotifyingThread();
+
+            request.setPathInfo("/it/titolo_in_italiano");
+            int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+            assertEquals(ControllerManager.CONTINUE, status);
+            Lang lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+            IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+            assertNotNull(page);
+            assertNotNull(lang);
+            assertEquals("contentview", page.getCode());
+            assertEquals(newId, reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID));
+
+            this.resetRequestContext(reqCtx);
+
+            // if no english title is defined, the page can still be loaded using the default friendly code
+            // this works when the contentId parameter is added to the request
+            request.setPathInfo("/en/titolo_in_italiano");
+            status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+            assertEquals(ControllerManager.CONTINUE, status);
+            lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+            page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+            assertNotNull(page);
+            assertNotNull(lang);
+            assertEquals("contentview", page.getCode());
+            assertEquals(newId, reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID));
+
+            // rename italian title (no effect on friendly code mapping)
+            titleAttribute.getTextMap().put("it", "titolo_in_italiano_renamed");
+            // add english title (expected to add new friendly code)
+            titleAttribute.getTextMap().put("en", "english_title");
+            this.contentManager.insertOnLineContent(content);
+            super.waitNotifyingThread();
+
+            this.resetRequestContext(reqCtx);
+
+            // content is still reachable using old default language title
+            request.setPathInfo("/it/titolo_in_italiano");
+            status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+            assertEquals(ControllerManager.CONTINUE, status);
+            lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+            page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+            assertNotNull(page);
+            assertNotNull(lang);
+            assertEquals("contentview", page.getCode());
+            assertEquals(newId, reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID));
+
+            this.resetRequestContext(reqCtx);
+
+            // content is now reachable also using newly added secondary language title
+            request.setPathInfo("/en/english_title");
+            status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+            assertEquals(ControllerManager.CONTINUE, status);
+            lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+            page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+            assertNotNull(page);
+            assertNotNull(lang);
+            assertEquals("contentview", page.getCode());
+            assertEquals(newId, reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID));
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (null != newId) {
+                this.contentManager.removeOnLineContent(content);
+                this.contentManager.deleteContent(content);
+            }
+        }
+    }
+
+    @Test
+    void testService_PathWithoutCode_ShouldRedirectToNotFound() {
+        RequestContext reqCtx = this.getRequestContext();
+        ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
+        ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/en");
+        int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+        assertEquals(ControllerManager.REDIRECT, status);
+        assertTrue(((String) reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL)).contains("notfound.page"));
+    }
+
+    @Test
+    void testService_PathWithLargeRepetition_ShouldNotCrash() { // testing regex safety (Sonar S5998)
+
+        String maliciousRequest = String.join("", Collections.nCopies(10000, "/a"));
+
+        RequestContext reqCtx = this.getRequestContext();
+        ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
+        ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo(maliciousRequest);
+
+        int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+        assertEquals(ControllerManager.REDIRECT, status);
+        assertTrue(((String) reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL)).contains("notfound.page"));
+    }
+
     private void resetRequestContext(RequestContext reqCtx) {
         //reset
         reqCtx.removeExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID);
