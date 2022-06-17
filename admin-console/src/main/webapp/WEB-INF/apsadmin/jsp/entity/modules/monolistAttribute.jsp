@@ -65,6 +65,9 @@
 	<s:elseif test="#attribute.type == 'CheckBox'">
 		<s:include value="/WEB-INF/apsadmin/jsp/entity/modules/checkBoxAttribute.jsp" />
 	</s:elseif>
+    <s:elseif test="#attribute.type == 'Email'">
+        <s:include value="/WEB-INF/apsadmin/jsp/entity/modules/monotextAttribute.jsp" />
+    </s:elseif>
 	&#32;
 	<s:if test="#attribute.type != 'Composite'">	
 		<s:if test="#lang.default">
