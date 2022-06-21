@@ -105,7 +105,6 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
         String path = "/plugins/versioning/configuration";
         return mockMvc.perform(
                 get(path)
-                        .sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
     }
     private ResultActions putVersioningConfiguration(UserDetails user) throws Exception {
@@ -113,7 +112,6 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
         String path = "/plugins/versioning/configuration";
         return mockMvc.perform(
                 get(path)
-                        .sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
     }
 

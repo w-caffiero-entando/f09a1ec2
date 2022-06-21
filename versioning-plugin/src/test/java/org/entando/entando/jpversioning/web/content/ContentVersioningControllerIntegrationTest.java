@@ -595,7 +595,6 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         String accessToken = mockOAuthInterceptor(user);
 
         final MockHttpServletRequestBuilder requestBuilder = get("/plugins/versioning/contents/{contentId}", contentId)
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + accessToken);
 
         for (String key : Optional.ofNullable(params).orElse(new HashMap<>()).keySet()) {
@@ -610,7 +609,6 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         String accessToken = mockOAuthInterceptor(user);
 
         final MockHttpServletRequestBuilder requestBuilder = get("/plugins/versioning/contents/{contentId}/versions/{versionId}", contentId, versionId)
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + accessToken);
         final ResultActions result = mockMvc.perform(requestBuilder)
                 .andDo(print());
@@ -623,7 +621,6 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         String accessToken = mockOAuthInterceptor(user);
 
         final MockHttpServletRequestBuilder requestBuilder = get("/plugins/versioning/contents/{contentId}/versions/{versionId}", contentId, versionId)
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + accessToken);
         final ResultActions result = mockMvc.perform(requestBuilder)
                 .andDo(print());
@@ -637,7 +634,6 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         String accessToken = mockOAuthInterceptor(user);
 
         final MockHttpServletRequestBuilder requestBuilder = get("/plugins/versioning/contents/")
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + accessToken);
 
         for (String key : Optional.ofNullable(params).orElse(new HashMap<>()).keySet()) {
@@ -699,7 +695,6 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         String accessToken = mockOAuthInterceptor(user);
 
         final MockHttpServletRequestBuilder requestBuilder = post("/plugins/versioning/contents/{contentId}/versions/{versionId}/recover", contentId, versionId)
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + accessToken);
         
         return mockMvc.perform(requestBuilder)
@@ -710,7 +705,6 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         String accessToken = mockOAuthInterceptor(user);
 
         final MockHttpServletRequestBuilder requestBuilder = delete("/plugins/versioning/contents/{contentId}/versions/{versionId}", contentId, versionId)
-                .sessionAttr("user", user)
                 .header("Authorization", "Bearer " + accessToken);
 
         return mockMvc.perform(requestBuilder)
