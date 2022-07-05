@@ -63,7 +63,8 @@
                     <legend>
                         <s:text name="title.editFrame.settings" />
                     </legend>
-                    <s:iterator value="widget.type.typeParameters" var="widgetParam">
+                    <s:set var="widgetTypeVar" value="%{getWidgetType(widget.typeCode)}" />
+                    <s:iterator value="#widgetTypeVar.typeParameters" var="widgetParam">
                         <div class="form-group">
                             <label class="col-sm-2 control-label"
                                    for="%{'config-simple-parameter-'+#widgetParam.name}"> <s:property

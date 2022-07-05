@@ -73,7 +73,7 @@
                         </div>
                         <ul class="list-group">
                             <s:iterator value="#singlePage.widgets" var="showlet" status="rowstatus">
-                                <s:if test="#showlet != null && #showlet.type != null && #showlet.type.code.equals(widgetTypeCode)">
+                                <s:if test="#showlet != null && #showlet.typeCode != null && #showlet.typeCode.equals(widgetTypeCode)">
                                     <li class="list-group-item">
                                         <div class="row">
                                             <div class="col-sm-2 col-lg-2">
