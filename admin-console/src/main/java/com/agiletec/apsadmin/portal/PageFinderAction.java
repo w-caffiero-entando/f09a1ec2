@@ -131,6 +131,11 @@ public class PageFinderAction extends AbstractPortalAction {
         return allowedGroups;
     }
     
+    public String getFullTitle(String pageCode, String langCode) {
+        IPage page = this.getPage(pageCode);
+        return this.getFullTitle(page, langCode);
+    }
+    
     public String getFullTitle(IPage page, String langCode) {
         if (null != page) {
             return page.getFullTitle(langCode, this.getPageManager());

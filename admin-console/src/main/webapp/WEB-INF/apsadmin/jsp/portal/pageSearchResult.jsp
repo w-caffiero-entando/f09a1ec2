@@ -67,7 +67,7 @@
                                 <s:iterator var="pageVar">
                                     <tr>
                                         <td><s:property value="#pageVar.code" /></td>
-                                        <td><s:property value="%{getFullTitle(#pageVar, currentLang.code)}" /></td>
+                                        <td><s:property value="%{getFullTitle(#pageVar.code, currentLang.code)}" /></td>
                                         <td class="text-center">
                                             <span class="statusField">
                                                 <s:if test="%{!#pageVar.isOnline()}">
