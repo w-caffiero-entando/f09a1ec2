@@ -231,6 +231,14 @@
         </li>
     </c:if>
 
+    <!-- EPC -->
+    <li class="list-group-item secondary-nav-item-pf menu-epc">
+        <a href='<c:out value="${appBuilderBaseURL}"/>?menu_open=epc' class="no-chevron">
+            <span class="fa menu-epc-icon" data-toggle="tooltip" title="<s:text name="menu.EPC" />"></span>
+            <span class="list-group-item-value"><s:text name="menu.EPC" /></span>
+        </a>
+    </li>
+
 </ul>
 
 <c:if test="${isSuperUser}">
