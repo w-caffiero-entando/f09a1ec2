@@ -2527,3 +2527,16 @@ label .fa-folder, .fa-folder {
 .btn-primary:hover:active {
     background-color: #032a73 !important;
 }
+
+.menu-epc-icon {
+    display: block;
+    width: 20px !important;
+    height: 18px;
+    background-image: url("../img/menu-epc.svg");
+    background-repeat: no-repeat;
+    margin: 4px 0 0 4px;
+}
+
+.menu-epc:hover .menu-epc-icon {
+    background-image: url("../img/menu-epc-hover.svg");
+}
