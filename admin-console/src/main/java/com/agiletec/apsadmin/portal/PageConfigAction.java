@@ -45,6 +45,8 @@ import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 public class PageConfigAction extends AbstractPortalAction implements ServletResponseAware {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageConfigAction.class);
+    
+    public static final String DEFAULT_CONFIG_ACTION_NAME = "configSimpleParameter";
 
 	public String configure() {
 		String pageCode = (this.getSelectedNode() != null ? this.getSelectedNode() : this.getPageCode());
@@ -68,8 +70,8 @@ public class PageConfigAction extends AbstractPortalAction implements ServletRes
 			if (widget != null) {
 				WidgetType widgetType = widget.getType();
 				_logger.debug("pageCode: {}, frame: {}, widgetType: {}", this.getPageCode(), this.getFrame(), widgetType.getCode());
-				this.setWidgetAction(widgetType.getAction());
 				if (null == widgetType.getConfig() && null != this.getWidgetAction()) {
+                    this.setWidgetAction(this.getRightActionName(widgetType));
 					return "configureSpecialWidget";
 				}
 			} else {
@@ -104,7 +106,7 @@ public class PageConfigAction extends AbstractPortalAction implements ServletRes
 				return INPUT;
 			}
 			if (null == widgetType.getConfig() && null != widgetType.getAction()) {
-				this.setWidgetAction(widgetType.getAction());
+				this.setWidgetAction(this.getRightActionName(widgetType));
 				//continue to widget configuration
 				return "configureSpecialWidget";
 			}
@@ -141,7 +143,7 @@ public class PageConfigAction extends AbstractPortalAction implements ServletRes
 				return INPUT;
 			}
 			if (null == widgetType.getConfig() && null != widgetType.getAction()) {
-				this.setWidgetAction(widgetType.getAction());
+				this.setWidgetAction(this.getRightActionName(widgetType));
 				//continue to widget configuration
 				return "configureSpecialWidget";
 			}
@@ -155,6 +157,13 @@ public class PageConfigAction extends AbstractPortalAction implements ServletRes
 		}
 		return SUCCESS;
 	}
+    
+    private String getRightActionName(WidgetType widgetType) {
+        if (null == widgetType.getConfig()) {
+            return null;
+        }
+        return (StringUtils.isBlank(widgetType.getAction()) ? DEFAULT_CONFIG_ACTION_NAME : widgetType.getAction());
+    }
 
 	public JoinWidgetResponse getJoinWidgetResponse() {
 		IPage page = null;
