@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>7.2.0-ENG-4226-PR-145</version>
+        <version>7.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>entando-plugin-jpcontentscheduler</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <version>7.2.0-SNAPSHOT</version>
     <name>Entando Plugin: Content Scheduler</name>
     <description>CMS Content Scheduler</description>
@@ -41,12 +41,9 @@
     </repositories>
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
-        <!--        <allTestsSuiteClass>org.entando.entando.plugins.jacms.apsadmin.common.TestActivityStream</allTestsSuiteClass>-->
-        <allTestsSuiteClass>org.entando.entando.plugins.jpcontentscheduler.AllTests</allTestsSuiteClass>
         <owaspSuppressionFileLocation>
             https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
         </owaspSuppressionFileLocation>
-        <entando-core-bom.version>7.2.0-ENG-4039</entando-core-bom.version>
     </properties>
     <build>
         <resources>
@@ -107,32 +104,21 @@
             </plugin>
         </plugins>
     </build>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.entando</groupId>
-                <artifactId>entando-core-bom</artifactId>
-                <version>${entando-core-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>
-            <classifier>classes</classifier>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-portal-ui</artifactId>
-            <classifier>classes</classifier>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jpmail</artifactId>
-            <classifier>classes</classifier>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -181,29 +167,11 @@
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>org.entando.entando.plugins</groupId>
-            <artifactId>entando-plugin-jacms</artifactId>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.entando.entando.plugins</groupId>
-            <artifactId>entando-plugin-jpmail</artifactId>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-engine</artifactId>
+            <version>${project.version}</version>
             <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.entando.entando</groupId>
-            <artifactId>entando-admin-console</artifactId>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.entando.entando</groupId>
-            <artifactId>entando-portal-ui</artifactId>
-            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -212,6 +180,10 @@
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
         </dependency>
     </dependencies>
 </project>
