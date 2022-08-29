@@ -19,7 +19,7 @@ variables (you can find them in the `properties` tag in the pom)
 mvn clean package jetty:run-war -Pjetty-local -Pderby -Pkeycloak
 ```
 
-You can also add the option `-Dlicense.skipDownloadLicenses` to speed up the startup process.
+You can also add the option `-DskipLicenseDownload` to speed up the startup process.
 
 To use an external DBMS you can activate the dedicated profile and pass the connection parameters
 using the properties. The following example shows how to connect to a PostgreSQL database:
