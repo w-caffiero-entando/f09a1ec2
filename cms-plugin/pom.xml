@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>7.2.0-ENG-4226-PR-145</version>
+        <version>7.2.0-SNAPSHOT</version>
     </parent>
     <groupId>org.entando.entando.plugins</groupId>
     <artifactId>entando-plugin-jacms</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <version>7.2.0-SNAPSHOT</version>
     <name>Entando Plugin: CMS</name>
     <description>Allows registered users to manage dynamic contents and digital assets</description>
@@ -38,7 +38,6 @@
         <owaspSuppressionFileLocation>
             https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
         </owaspSuppressionFileLocation>
-        <entando-core-bom.version>7.2.0-ENG-4039</entando-core-bom.version>
     </properties>
     <build>
         <resources>
@@ -119,18 +118,6 @@
             </plugins>
         </pluginManagement>
     </build>
-    <dependencyManagement>
-        <dependencies>
-            <!--CORE-BOM-->
-            <dependency>
-                <groupId>org.entando</groupId>
-                <artifactId>entando-core-bom</artifactId>
-                <version>${entando-core-bom.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <!-- OWASP -->
         <dependency>
@@ -165,7 +152,7 @@
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-portal-ui</artifactId>
-            <classifier>classes</classifier>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.im4java</groupId>
@@ -308,25 +295,20 @@
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-engine</artifactId>
+            <version>${project.version}</version>
             <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-admin-console</artifactId>
+            <version>${project.version}</version>
             <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.entando.entando</groupId>
-            <artifactId>entando-portal-ui</artifactId>
-            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
