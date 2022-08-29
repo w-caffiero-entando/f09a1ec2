@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>7.2.0-ENG-4226-PR-145</version>
+        <version>7.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>entando-plugin-jpmail</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
     <version>7.2.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>Entando Plugin: Email Sender</name>
     <description>Provides the basis for Registration Forms and Newsletter services, and all plugins that require sending email: es: User Registration forms, Web Forms, Newsletters, etc.</description>
     <developers>
@@ -44,7 +44,6 @@
         <owaspSuppressionFileLocation>
             https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
         </owaspSuppressionFileLocation>
-        <entando-core-bom.version>7.2.0-ENG-4039</entando-core-bom.version>
     </properties>
     <build>
         <resources>
@@ -105,26 +104,16 @@
             </plugin>
         </plugins>
     </build>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.entando</groupId>
-                <artifactId>entando-core-bom</artifactId>
-                <version>${entando-core-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-engine</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-admin-console</artifactId>
-            <classifier>classes</classifier>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -203,12 +192,16 @@
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-engine</artifactId>
+            <version>${project.version}</version>
             <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-admin-console</artifactId>
+            <version>${project.version}</version>
             <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
