@@ -4581,6 +4581,8 @@ a.disabled {
   right: 0;
   top: 0;
   z-index: 1030;
+  border-top: 0;
+  height: 60px;
 }
 .navbar-pf-vertical .nav.navbar-nav > li > .dropdown-menu.infotip {
   margin-top: 0;
@@ -4668,17 +4670,11 @@ a.disabled {
   margin-right: 0;
 }
 .navbar-pf-vertical .navbar-toggle {
-  border: 0;
-  display: block;
-  float: left;
-  margin: 13px 15px;
+  display: none;
 }
 .navbar-pf-vertical .navbar-toggle:hover .icon-bar,
 .navbar-pf-vertical .navbar-toggle:focus .icon-bar {
   background: #fff;
-}
-.navbar-pf-vertical .navbar-toggle + .navbar-brand {
-  margin-left: 0;
 }
 .navbar-pf-vertical .navbar-toggle .icon-bar {
   background: #d1d1d1;
