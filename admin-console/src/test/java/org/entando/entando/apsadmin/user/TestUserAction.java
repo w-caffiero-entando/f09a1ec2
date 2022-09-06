@@ -100,7 +100,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     @Test
 	void testAddNew_2() throws Throwable {
         String username = "user.name_for_test"; // the dot '.' is accepted in the username as well as the underscore '_'
-        String password = "password";
+        String password = "password.for_test"; // the dot '.' is accepted in the password as well as the underscore '_'
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "save");
