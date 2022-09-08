@@ -10,20 +10,14 @@
     </li>
     <li><s:text name="%{'title.' + entityManagerName + '.management'}" /></a>
     <li class="page-title-container">
-        <a href="<s:url action="initEditEntityType" namespace="/do/Entity"><s:param name="entityManagerName"><s:property value="entityManagerName" />
-               </s:param><s:param name="entityTypeCode"><s:property value="entityType.typeCode" /></s:param></s:url>" title="<s:text name="note.goToSomewhere" />
-           : <s:text name="title.entityTypes.editType.edit" />">
-            <s:text name="title.entityTypes.editType.edit" />
-            : <s:property value="entityType.typeCode" /> - <s:property value="entityType.typeDescr" />
-        </a>
+        <s:text name="title.entityTypes.editType.edit" />
+        : <s:property value="entityType.typeCode" /> - <s:property value="entityType.typeDescr" />
     </li>
 </ol>
 
 <h1 class="page-title-container">
-    <a href="<s:url action="initEditEntityType" namespace="/do/Entity"><s:param name="entityManagerName"><s:property value="entityManagerName" /></s:param><s:param name="entityTypeCode"><s:property value="entityType.typeCode" /></s:param></s:url>" title="<s:text name="note.goToSomewhere" />
-       : <s:text name="title.entityTypes.editType.edit" />"><s:text name="title.entityTypes.editType.edit" />
-        : <s:property value="entityType.typeCode" /> - <s:property value="entityType.typeDescr" />
-    </a>
+    <s:text name="title.entityTypes.editType.edit" />
+    : <s:property value="entityType.typeCode" /> - <s:property value="entityType.typeDescr" />
     <span class="pull-right">
         <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-html="true" title="" data-content="<s:text name="%{'page.' + entityManagerName + '.help'}"/>" data-placement="left" data-original-title=""><i class="fa fa-question-circle-o" aria-hidden="true"></i></a>
     </span>
