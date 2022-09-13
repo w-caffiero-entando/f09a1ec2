@@ -233,7 +233,7 @@
 
     <!-- EPC -->
     <li class="list-group-item secondary-nav-item-pf menu-epc">
-        <a href='<c:out value="${appBuilderBaseURL}"/>?menu_open=epc' class="no-chevron">
+        <a href='<c:out value="${appBuilderBaseURL}"/>' onclick="window.sessionStorage.setItem('menu_open', 'epc')" class="no-chevron">
             <span class="fa menu-epc-icon" data-toggle="tooltip" title="<s:text name="menu.EPCs" />"></span>
             <span class="list-group-item-value"><s:text name="menu.EPCs" /></span>
         </a>
