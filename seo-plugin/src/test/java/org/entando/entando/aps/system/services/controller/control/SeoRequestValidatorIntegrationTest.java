@@ -59,10 +59,11 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             super.waitNotifyingThread();
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/root_fiendly_code");
             int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
-            assertEquals(ControllerManager.REDIRECT, status);
+            assertEquals(ControllerManager.CONTINUE, status);
             Lang lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
             IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
-            assertNull(page);
+            assertNotNull(page);
+            assertEquals("notfound", page.getCode());
             assertNotNull(lang);
 
             this.resetRequestContext(reqCtx);
@@ -77,16 +78,15 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
             assertNotNull(page);
             assertNotNull(lang);
             assertEquals(root.getCode(), page.getCode());
-
-            //this.resetRequestContext(reqCtx);
+            
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/en/root_fiendly_code");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
-            assertEquals(ControllerManager.REDIRECT, status);
+            assertEquals(ControllerManager.CONTINUE, status);
             lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
             page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
-            assertNull(page);
+            assertNotNull(page);
+            assertEquals("notfound", page.getCode());
             assertNotNull(lang);
-
         } catch (Exception e) {
             throw e;
         } finally {
@@ -135,12 +135,13 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
 
             ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/it/cherry_festival");
             status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
-            assertEquals(ControllerManager.REDIRECT, status);
+            assertEquals(ControllerManager.CONTINUE, status);
             lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
             page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
-            assertNull(page);
+            assertNotNull(page);
+            assertEquals("notfound", page.getCode());
             assertNotNull(lang);
-
+            assertEquals("it", lang.getCode());
         } catch (Exception e) {
             throw e;
         } finally {
@@ -242,25 +243,29 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
     @Test
     void testService_PathWithoutCode_ShouldRedirectToNotFound() {
         RequestContext reqCtx = this.getRequestContext();
+        this.resetRequestContext(reqCtx);
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
         ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo("/en");
         int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
-        assertEquals(ControllerManager.REDIRECT, status);
-        assertTrue(((String) reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL)).contains("notfound.page"));
+        assertEquals(ControllerManager.CONTINUE, status);
+        assertNull(reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL));
+        Lang lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+        IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+        assertNotNull(page);
+        assertEquals("notfound", page.getCode());
+        assertNotNull(lang);
+        assertEquals("en", lang.getCode());
     }
 
     @Test
     void testService_PathWithLargeRepetition_ShouldNotCrash() { // testing regex safety (Sonar S5998)
-
         String maliciousRequest = String.join("", Collections.nCopies(10000, "/a"));
-
         RequestContext reqCtx = this.getRequestContext();
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
         ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo(maliciousRequest);
-
         int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
         assertEquals(ControllerManager.REDIRECT, status);
-        assertTrue(((String) reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL)).contains("notfound.page"));
+        assertTrue(((String) reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL)).contains("errorpage.page"));
     }
 
     private void resetRequestContext(RequestContext reqCtx) {
@@ -268,6 +273,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
         reqCtx.removeExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID);
         reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
         reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+        reqCtx.removeExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL);
     }
 
     @BeforeEach
