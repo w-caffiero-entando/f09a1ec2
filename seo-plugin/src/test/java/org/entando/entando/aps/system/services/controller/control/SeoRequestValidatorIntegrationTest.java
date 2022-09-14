@@ -32,6 +32,7 @@ import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import java.util.Collections;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
 import org.entando.entando.plugins.jpseo.aps.system.services.controller.control.RequestValidator;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
@@ -261,11 +262,27 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
     void testService_PathWithLargeRepetition_ShouldNotCrash() { // testing regex safety (Sonar S5998)
         String maliciousRequest = String.join("", Collections.nCopies(10000, "/a"));
         RequestContext reqCtx = this.getRequestContext();
+        this.resetRequestContext(reqCtx);
         ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
         ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo(maliciousRequest);
         int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
         assertEquals(ControllerManager.REDIRECT, status);
         assertTrue(((String) reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL)).contains("errorpage.page"));
+    }
+    
+    @Test
+    void testParentService() throws EntException {
+        RequestContext reqCtx = this.getRequestContext();
+        this.resetRequestContext(reqCtx);
+        ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/it/homepage.wp");
+        int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+        assertEquals(ControllerManager.CONTINUE, status);
+        Lang lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+        IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+        assertNotNull(page);
+        assertNotNull(lang);
+        assertEquals("it", lang.getCode());
+        assertEquals("homepage", page.getCode());
     }
 
     private void resetRequestContext(RequestContext reqCtx) {
