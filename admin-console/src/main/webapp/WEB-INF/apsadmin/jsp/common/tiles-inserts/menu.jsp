@@ -243,11 +243,6 @@
                         <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>
                     </s:iterator>
                 </wpsa:hookPoint>
-                <li class="list-group-item disabled">
-                    <a>
-                        <span class="ml-5"><s:text name="menu.APPS.IoT" /></span>
-                    </a>
-                </li>
             </ul>
         </div>
     </li>
