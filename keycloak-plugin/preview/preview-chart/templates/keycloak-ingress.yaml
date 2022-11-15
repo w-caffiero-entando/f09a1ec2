@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: keycloak-ingress
+spec:
+  rules:
+    - host: kc-{{ .Values.nameSuffix }}.{{ .Values.routingSuffix}}
+      http:
+        paths:
+          - backend:
+              serviceName: keycloak
+              servicePort: 8080
+            path: /auth
