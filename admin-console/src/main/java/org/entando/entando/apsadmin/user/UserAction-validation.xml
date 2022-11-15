@@ -8,50 +8,50 @@
         <field-validator type="requiredstring" short-circuit="true">
             <message key="requiredstring"/>
         </field-validator>
-		<field-validator type="stringlength" short-circuit="true">
-			<param name="minLength">4</param>
-			<param name="maxLength">20</param>
-			<param name="trim">true</param>
-           <message key="stringlength" />
-		</field-validator>
+        <field-validator type="stringlength" short-circuit="true">
+            <param name="minLength">4</param>
+            <param name="maxLength">20</param>
+            <param name="trim">true</param>
+            <message key="stringlength" />
+        </field-validator>
         <field-validator type="regex" short-circuit="true">
-           <param name="regex"><![CDATA[([a-zA-Z0-9_\.])+]]></param>
-           <message key="wrongCharacters" />
+            <param name="regex"><![CDATA[([a-zA-Z0-9_\.])+]]></param>
+            <message key="wrongCharacters" />
         </field-validator>
     </field>
     
     <field name="password" >
-    	<field-validator type="fieldexpression">
-			<param name="expression"><![CDATA[!(strutsAction == 1 && password.trim().length() == 0)]]></param><!-- IN CASO DI AGGIUNTA, LA PASSWORD é OBBLIGATORIA -->
-			<message key="requiredstring" />
+        <field-validator type="fieldexpression">
+            <param name="expression"><![CDATA[!(strutsAction == 1 && password.trim().length() == 0)]]></param><!-- IN CASO DI AGGIUNTA, LA PASSWORD é OBBLIGATORIA -->
+            <message key="requiredstring" />
         </field-validator>
-		<field-validator type="stringlength" short-circuit="true">
-			<param name="minLength">8</param>
-			<param name="maxLength">20</param>
-			<param name="trim">true</param>
-			<message key="stringlength" />
-		</field-validator>
+        <field-validator type="stringlength" short-circuit="true">
+            <param name="minLength">8</param>
+            <param name="maxLength">20</param>
+            <param name="trim">true</param>
+            <message key="stringlength" />
+        </field-validator>
         <field-validator type="fieldexpression" short-circuit="true">
             <param name="expression">(password == passwordConfirm)</param>
             <message key="error.user.wrongPasswordConfirm" />
         </field-validator>
         <field-validator type="regex" short-circuit="true">
-           <param name="regex"><![CDATA[([a-zA-Z0-9_])+]]></param>
-           <message key="wrongCharacters" />
+            <param name="regex"><![CDATA[([a-zA-Z0-9_\.])+]]></param>
+            <message key="wrongCharacters" />
         </field-validator>
     </field>
     
     <field name="active" >
-    	<field-validator type="fieldexpression">
-			<param name="expression"><![CDATA[!(strutsAction == 2 && username == 'admin' && !active)]]></param>
-			<message key="error.user.cannotDisableAdminUser"/>
+        <field-validator type="fieldexpression">
+            <param name="expression"><![CDATA[!(strutsAction == 2 && username == 'admin' && !active)]]></param>
+            <message key="error.user.cannotDisableAdminUser"/>
         </field-validator>
     </field>
 	
-	<field name="profileTypeCode" >
-    	<field-validator type="fieldexpression">
-			<param name="expression"><![CDATA[!(strutsAction == 1 && profileTypes.size() > 0 && (null == profileTypeCode || profileTypeCode.trim().length() == 0))]]></param>
-			<message key="requiredstring" />
+    <field name="profileTypeCode" >
+        <field-validator type="fieldexpression">
+            <param name="expression"><![CDATA[!(strutsAction == 1 && profileTypes.size() > 0 && (null == profileTypeCode || profileTypeCode.trim().length() == 0))]]></param>
+            <message key="requiredstring" />
         </field-validator>
     </field>
     
