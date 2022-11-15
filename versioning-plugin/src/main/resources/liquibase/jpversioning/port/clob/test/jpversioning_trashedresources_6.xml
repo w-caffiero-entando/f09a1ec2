@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Image" id="398">
+    <descr>Logo jAPS</descr>
+    <groups mainGroup="free" />
+    <categories>
+        <category id="resCat1" />
+    </categories>
+    <instance>
+        <size>3</size>
+        <filename>jAPS_logo_d3.jpg</filename>
+        <mimetype>image/jpeg</mimetype>
+        <weight>2 Kb</weight>
+    </instance>
+    <instance>
+        <size>2</size>
+        <filename>jAPS_logo_d2.jpg</filename>
+        <mimetype>image/jpeg</mimetype>
+        <weight>2 Kb</weight>
+    </instance>
+    <instance>
+        <size>1</size>
+        <filename>jAPS_logo_d1.jpg</filename>
+        <mimetype>image/jpeg</mimetype>
+        <weight>1 Kb</weight>
+    </instance>
+    <instance>
+        <size>0</size>
+        <filename>jAPS_logo_d0.jpg</filename>
+        <mimetype>image/jpeg</mimetype>
+        <weight>0 Kb</weight>
+    </instance>
+</resource>

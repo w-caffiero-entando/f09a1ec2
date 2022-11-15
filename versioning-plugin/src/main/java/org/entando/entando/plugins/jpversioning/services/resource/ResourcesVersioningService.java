@@ -1,0 +1,307 @@
+/*
+ * Copyright 2018-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+package org.entando.entando.plugins.jpversioning.services.resource;
+
+import static org.entando.entando.plugins.jacms.web.resource.ResourcesController.ERRCODE_INVALID_RESOURCE_TYPE;
+
+import org.entando.entando.ent.exception.EntException;
+import com.agiletec.aps.system.services.authorization.AuthorizationManager;
+import com.agiletec.aps.system.services.category.Category;
+import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.plugins.jacms.aps.system.services.resource.model.AbstractMonoInstanceResource;
+import com.agiletec.plugins.jacms.aps.system.services.resource.model.AbstractMultiInstanceResource;
+import com.agiletec.plugins.jacms.aps.system.services.resource.model.AbstractResource;
+import com.agiletec.plugins.jacms.aps.system.services.resource.model.AttachResource;
+import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResource;
+import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResourceDimension;
+import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInstance;
+import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
+import com.agiletec.plugins.jacms.aps.system.services.resource.model.util.IImageDimensionReader;
+import com.agiletec.plugins.jpversioning.aps.system.JpversioningSystemConstants;
+import com.agiletec.plugins.jpversioning.aps.system.services.resource.TrashedResourceManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.exception.ResourceNotFoundException;
+import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.plugins.jpversioning.web.content.validator.VersioningValidatorErrorCodes;
+import org.entando.entando.plugins.jpversioning.web.resource.model.FileResourceDTO;
+import org.entando.entando.plugins.jpversioning.web.resource.model.ImageResourceDTO;
+import org.entando.entando.plugins.jpversioning.web.resource.model.ImageVersionDTO;
+import org.entando.entando.plugins.jpversioning.web.resource.model.ResourceDTO;
+import org.entando.entando.plugins.jpversioning.web.resource.model.ResourceDownloadDTO;
+import org.entando.entando.web.common.exceptions.ValidationGenericException;
+import org.entando.entando.web.common.model.Filter;
+import org.entando.entando.web.common.model.PagedMetadata;
+import org.entando.entando.web.common.model.RestListRequest;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.BeanPropertyBindingResult;
+
+@Service
+public class ResourcesVersioningService {
+
+    private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
+
+    @Autowired
+    private TrashedResourceManager trashedResourceManager;
+
+    @Autowired
+    private AuthorizationManager authorizationManager;
+
+    @Autowired
+    private IImageDimensionReader imageDimensionManager;
+
+    public PagedMetadata<ResourceDTO> getTrashedResources(String resourceTypeCode, RestListRequest requestList, UserDetails user) {
+
+        try {
+            logger.debug("GET getTrashedResources type {} and req {}", resourceTypeCode, requestList);
+
+            String description = extractAttributeValue(requestList.getFilters(), "description");
+
+            List<String> allowedGroups = getAllowedGroups(user);
+
+            List<String> resourcesId = trashedResourceManager
+                    .searchTrashedResourceIds(resourceTypeCode, description, allowedGroups);
+
+            List<ResourceDTO> result = new ArrayList<>();
+
+            for (String id : resourcesId) {
+                try {
+                    result.add(convertResourceToDto(trashedResourceManager.loadTrashedResource(id)));
+                } catch (EntException e) {
+                    logger.error("Error loading trashedResource with id: {}", id);
+                }
+            }
+
+            final List<ResourceDTO> sublist = requestList.getSublist(result);
+
+            PagedMetadata<ResourceDTO> pagedResults = new PagedMetadata<>(requestList, resourcesId.size());
+            pagedResults.setBody(sublist);
+
+            return pagedResults;
+        } catch (EntException e) {
+            logger.error("Error while getting trashed resources with request {}", requestList, e);
+            throw new RestServerError(String.format("Error while getting trashed resources with request %s", requestList),
+                    e);
+        }
+    }
+
+    public ResourceDTO recoverResource(String resourceId) {
+
+        try {
+            logger.debug("POST recover resource {}", resourceId);
+
+            ResourceInterface resource = trashedResourceManager.loadTrashedResource(resourceId);
+
+            if (resource != null) {
+                trashedResourceManager.restoreResource(resourceId);
+                return convertResourceToDto(resource);
+            } else {
+                throw new ResourceNotFoundException(
+                        VersioningValidatorErrorCodes.ERRCODE_TRASHED_RESOURCE_DOES_NOT_EXIST.value,
+                        "Trashed resource: ", resourceId);
+            }
+        } catch (EntException e) {
+            logger.error("Error while recovering trashed resources with id {}", resourceId, e);
+            throw new RestServerError(String.format("Error while recovering trashed resources with id %s", resourceId),
+                    e);
+        }
+    }
+
+    public ResourceDTO deleteTrashedResource(String resourceId) {
+
+        try {
+            logger.debug("POST recover resource {}", resourceId);
+
+            ResourceInterface resource = trashedResourceManager.loadTrashedResource(resourceId);
+
+            if (resource != null) {
+                trashedResourceManager.removeFromTrash(resourceId);
+                return convertResourceToDto(resource);
+            } else {
+                throw new ResourceNotFoundException(
+                        VersioningValidatorErrorCodes.ERRCODE_TRASHED_RESOURCE_DOES_NOT_EXIST.value,
+                        "Trashed resource: ", resourceId);
+            }
+        } catch (EntException e) {
+            logger.error("Error while deleting trashed resources with id {}", resourceId, e);
+            throw new RestServerError(String.format("Error while deleting trashed resources with id %s", resourceId),
+                    e);
+        }
+    }
+
+    public ResourceDownloadDTO getTrashedResource(String resourceId, Integer size, UserDetails user) {
+
+        try {
+            logger.debug("GET trashed resource resourceId: {}, size: {}", resourceId, size);
+
+            ResourceInterface resource = trashedResourceManager.loadTrashedResource(resourceId);
+
+            if (resource == null) {
+                throw new ResourceNotFoundException(
+                        VersioningValidatorErrorCodes.ERRCODE_TRASHED_RESOURCE_DOES_NOT_EXIST.value,
+                        "Trashed resource: ", resourceId);
+            }
+
+            ResourceInstance instance = getResourceInstance(size, resource);
+
+            return new ResourceDownloadDTO(instance.getFileName(), instance.getMimeType(),
+                    getInputStream(size, user, resource));
+
+        } catch (EntException | IOException e) {
+            logger.error("Error while getting input stream for trashed resources with id {}", resourceId, e);
+            throw new RestServerError(
+                    String.format("Error while getting input stream for trashed resources with id %s", resourceId), e);
+        }
+    }
+
+    private byte[] getInputStream(Integer size, UserDetails user, ResourceInterface resource)
+            throws EntException, IOException {
+        String mainGroup = resource.getMainGroup();
+        if (authorizationManager.isAuthOnGroup(user, mainGroup)) {
+            InputStream is = trashedResourceManager.getTrashFileStream(resource, getResourceInstance(size, resource));
+            if (is != null) {
+                return IOUtils.toByteArray(is);
+            }
+        }
+        return new byte[0];
+    }
+
+    private ResourceInstance getResourceInstance(Integer size, ResourceInterface resource) {
+        ResourceInstance instance = null;
+        if (resource.isMultiInstance()) {
+            instance = ((AbstractMultiInstanceResource) resource).getInstance(size, null);
+        } else {
+            instance = ((AbstractMonoInstanceResource) resource).getInstance();
+        }
+        return instance;
+    }
+
+    private List<String> getAllowedGroups(UserDetails user) {
+        List<String> result = new ArrayList<>();
+        List<Group> userGroups = authorizationManager.getUserGroups(user);
+
+        for (int i = 0; i < userGroups.size(); i++) {
+            Group group = userGroups.get(i);
+            if (group.getName().equals(Group.ADMINS_GROUP_NAME)) {
+                result.clear();
+                break;
+            } else {
+                result.add(group.getName());
+            }
+        }
+
+        return result;
+    }
+
+    private String extractAttributeValue(Filter[] filters, String attributeName) {
+        if (filters != null) {
+            for (Filter filter : filters) {
+                if (filter.getAttribute().equals(attributeName)) {
+                    return filter.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    public ResourceDTO convertResourceToDto(ResourceInterface resource) {
+
+        String type = extractTypeFromResource(resource.getType());
+
+        if (FileResourceDTO.RESOURCE_TYPE.equals(type)) {
+            return convertResourceToFileResourceDto((AttachResource) resource);
+        } else if (ImageResourceDTO.RESOURCE_TYPE.equals(type)) {
+            return convertResourceToImageResourceDto((ImageResource) resource);
+        } else {
+            logger.error("Resource type not supported");
+            BeanPropertyBindingResult errors = new BeanPropertyBindingResult(type, "resources.file.type");
+            errors.reject(ERRCODE_INVALID_RESOURCE_TYPE, "plugins.jacms.resources.invalidResourceType");
+            throw new ValidationGenericException(errors);
+        }
+    }
+
+    private FileResourceDTO convertResourceToFileResourceDto(AttachResource resource) {
+        String path = buildTrashedPath(resource.getId());
+        return new FileResourceDTO(resource.getId(), resource.getMasterFileName(), resource.getDescription(),
+                resource.getCreationDate(), resource.getLastModified(), resource.getMainGroup(),
+                getCategories(resource), resource.getDefaultInstance().getFileLength(), path,
+                resource.getOwner(), resource.getFolderPath());
+    }
+
+    private ImageResourceDTO convertResourceToImageResourceDto(ImageResource resource) {
+        List<ImageVersionDTO> versions = new ArrayList<>();
+
+        for (ImageResourceDimension dimensions : getImageDimensions()) {
+            ResourceInstance instance = resource.getInstance(dimensions.getIdDim(), null);
+
+            if (instance == null) {
+                logger.warn("ResourceInstance not found for dimensions id {} and image id {}", dimensions.getIdDim(), resource.getId());
+                continue;
+            }
+
+            String dimension = String.format("%dx%d px", dimensions.getDimx(), dimensions.getDimy());
+            String path = buildTrashedPath(resource.getId(), dimensions.getIdDim());
+            String size = instance.getFileLength();
+
+            versions.add(new ImageVersionDTO(dimension, path, size));
+        }
+
+        return new ImageResourceDTO(resource.getId(), resource.getMasterFileName(), resource.getDescription(),
+                resource.getCreationDate(), resource.getLastModified(), versions, resource.getMainGroup(),
+                getCategories(resource), resource.getOwner(), resource.getFolderPath());
+    }
+
+    private String buildTrashedPath(String id) {
+        return buildTrashedPath(id, 0);
+    }
+
+    private String buildTrashedPath(String id, int idDim) {
+        return StringUtils.join(JpversioningSystemConstants.PROTECTED_TRASH_FOLDER, "/", id, "/", String.valueOf(idDim));
+    }
+
+    private List<ImageResourceDimension> getImageDimensions() {
+        Map<Integer, ImageResourceDimension> master = imageDimensionManager.getImageDimensions();
+        List<ImageResourceDimension> dimensions = new ArrayList<>(master.values());
+        BeanComparator comparator = new BeanComparator("dimx");
+        Collections.sort(dimensions, comparator);
+        return dimensions;
+    }
+
+    private List<String> getCategories(AbstractResource resource) {
+        return resource.getCategories().stream()
+                .map(Category::getCode).collect(Collectors.toList());
+    }
+
+    public String extractTypeFromResource(String resourceType) {
+        if ("Attach".equals(resourceType)) {
+            return FileResourceDTO.RESOURCE_TYPE;
+        } else if ("Image".equals(resourceType)) {
+            return ImageResourceDTO.RESOURCE_TYPE;
+        } else {
+            throw new RestServerError(String.format("Invalid resource type: %s", resourceType), null);
+        }
+    }
+}
