@@ -1,0 +1,70 @@
+/*
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+package com.agiletec.apsadmin.admin.lang;
+
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+
+import com.agiletec.aps.system.services.lang.Lang;
+import com.agiletec.apsadmin.system.BaseAction;
+
+/**
+ * This action class declares the default operations on System Languages.
+ * @author E.Santoboni
+ */
+public class LangAction extends BaseAction {
+
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(LangAction.class);
+	
+	public String add() {
+		try {
+			Lang langToAdd = this.getLangManager().getLang(this.getLangCode());
+			if (null != langToAdd) {
+				String[] args = {this.getLangCode()};
+				this.addActionError(this.getText("error.lang.alreadyPresent", args));
+				return INPUT;
+			}
+			this.getLangManager().addLang(this.getLangCode());
+		} catch (Throwable t) {
+			_logger.error("error in add", t);
+			return FAILURE;
+		}
+		return SUCCESS;
+	}
+	
+	public String remove() {
+		try {
+			Lang langToRemove = this.getLangManager().getLang(this.getLangCode());
+			if (null == langToRemove || langToRemove.isDefault()) {
+				this.addActionError(this.getText("error.lang.removeDefault"));
+				return INPUT;
+			}
+			this.getLangManager().removeLang(this.getLangCode());
+		} catch (Throwable t) {
+			_logger.error("error in remove", t);
+			return FAILURE;
+		}
+		return SUCCESS;
+	}
+	
+	public String getLangCode() {
+		return _langCode;
+	}
+	public void setLangCode(String langCode) {
+		this._langCode = langCode;
+	}
+	
+	private String _langCode;
+	
+}

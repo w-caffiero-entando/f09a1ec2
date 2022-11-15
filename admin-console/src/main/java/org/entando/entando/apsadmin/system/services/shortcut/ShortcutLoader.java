@@ -1,0 +1,111 @@
+/*
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+package org.entando.entando.apsadmin.system.services.shortcut;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.servlet.ServletContext;
+
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.springframework.core.io.Resource;
+
+
+import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.agiletec.aps.util.FileTextReader;
+
+import org.entando.entando.apsadmin.system.services.shortcut.model.MenuSection;
+import org.entando.entando.apsadmin.system.services.shortcut.model.Shortcut;
+
+/**
+ * Shortcut Loader Class.
+ * @author E.Santoboni
+ */
+public class ShortcutLoader {
+
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ShortcutLoader.class);
+	
+	protected ShortcutLoader(String locationPatterns, ServletContext servletContext) throws EntException {
+		this.setSectionMenus(new HashMap<String, MenuSection>());
+		this.setShortcuts(new HashMap<String, Shortcut>());
+		try {
+			StringTokenizer tokenizer = new StringTokenizer(locationPatterns, ",");
+			while (tokenizer.hasMoreTokens()) {
+				String locationPattern = tokenizer.nextToken().trim();
+				this.loadShortcutObjects(locationPattern, servletContext);
+			}
+			this.completeLoading();
+		} catch (Throwable t) {
+			_logger.error("Error loading Shortcut definitions", t);
+			throw new EntException("Error loading Shortcut definitions", t);
+		}
+	}
+	
+	private void loadShortcutObjects(String locationPattern, ServletContext servletContext) throws Exception {
+		Resource[] resources = ApsWebApplicationUtils.getResources(locationPattern, servletContext);
+		ShortcutDefDOM dom = null;
+		for (int i = 0; i < resources.length; i++) {
+			Resource resource = resources[i];
+			InputStream is = null;
+			try {
+				String path = resource.getFilename();
+				is = resource.getInputStream();
+				String xml = FileTextReader.getText(is);
+				dom = new ShortcutDefDOM(xml, path);
+				this.getManuSections().putAll(dom.getSectionMenus());
+				this.getShortcuts().putAll(dom.getShortcuts());
+				_logger.trace("Loaded Shortcut definition by file {}", path);
+			} catch (Throwable t) {
+				_logger.error("Error loading Shortcut definition by file {}", locationPattern, t);
+			} finally {
+				if (null != is) {
+					is.close();
+				}
+			}
+		}
+	}
+	
+	private void completeLoading() {
+		Iterator<Shortcut> shorCutIter = this.getShortcuts().values().iterator();
+		while (shorCutIter.hasNext()) {
+			Shortcut shortcut = shorCutIter.next();
+			String menuSectionCode = shortcut.getMenuSectionCode();
+			MenuSection section = this.getManuSections().get(menuSectionCode);
+			shortcut.setMenuSection(section);
+		}
+	}
+	
+	protected Map<String, Shortcut> getShortcuts() {
+		return _shortcuts;
+	}
+	private void setShortcuts(Map<String, Shortcut> shortcuts) {
+		this._shortcuts = shortcuts;
+	}
+	
+	protected Map<String, MenuSection> getManuSections() {
+		return _sectionMenus;
+	}
+	private void setSectionMenus(Map<String, MenuSection> sectionMenus) {
+		this._sectionMenus = sectionMenus;
+	}
+	
+	private Map<String, Shortcut> _shortcuts;
+	private Map<String, MenuSection> _sectionMenus;
+	
+}

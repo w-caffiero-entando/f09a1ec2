@@ -1,0 +1,74 @@
+/*
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+package com.agiletec.apsadmin.system;
+
+import java.util.Collection;
+import java.util.Set;
+
+import com.agiletec.aps.system.common.tree.ITreeNode;
+import org.entando.entando.ent.exception.EntException;
+
+
+/**
+ * Interfaccia base delle classi helper che gestiscono le operazioni su oggetti alberi.
+ * @author E.Santoboni
+ */
+public interface ITreeNodeBaseActionHelper {
+	
+	/**
+	 * Costruisce il codice univoco di un nodo in base ai parametri specificato.
+	 * Il metodo:
+	 * 1) elimina i caratteri non compresi tra "a" e "z", tra "0" e "9".
+	 * 2) taglia (se necessario) la stringa secondo la lunghezza massima immessa.
+	 * 3) verifica se esistono entità con il codice ricavato (ed in tal caso appende il suffisso "_<numero>" fino a che non trova un codice univoco).
+	 * @param title Il titolo del nuovo nodo.
+	 * @param baseDefaultCode Un codice nodo di default.
+	 * @param maxLength La lunghezza massima del codice.
+	 * @return Il codice univoco univoco ricavato.
+	 * @throws EntException In caso di errore.
+	 */
+	public String buildCode(String title, String baseDefaultCode, int maxLength) throws EntException;
+	
+	public ITreeNode getAllowedTreeRoot(Collection<String> groupCodes) throws EntException;
+	
+	/**
+	 * Check and return the nodes to use to build the showable tree.
+	 * @param nodeToOpen The selected node to open.
+	 * @param lastOpenedNodes The last opened nodes.
+	 * @param groupCodes The groups with whom check permissions.
+	 * @return The new opened tree nodes to use to build the showable tree.
+	 * @throws EntException In case of error.
+	 */
+	public Set<String> checkTargetNodes(String nodeToOpen, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws EntException;
+	
+	/**
+	 * Check and return the nodes to use to build the showable tree.
+	 * @param nodeToClose The node to close
+	 * @param lastOpenedNodes The last opened nodes.
+	 * @param groupCodes The groups with whom check permissions.
+	 * @return The new opened tree nodes to use to build the showable tree.
+	 */
+	public Set<String> checkTargetNodesOnClosing(String nodeToClose, Set<String> lastOpenedNodes, Collection<String> groupCodes) throws EntException;
+	
+	/**
+	 * Return the root node of the showable tree.
+	 * @param treeNodesToOpen The tree nodes to open
+	 * @param fullTree The root node of full tree.
+	 * @param groupCodes The groups with whom check permissions.
+	 * @return The root node to use to build the showble tree.
+	 * @throws EntException in case of error.
+	 */
+	public TreeNodeWrapper getShowableTree(Set<String> treeNodesToOpen, ITreeNode fullTree, Collection<String> groupCodes) throws EntException;
+	
+}

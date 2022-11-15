@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <bean id="abstractPageActionHelper" abstract="true" class="com.agiletec.apsadmin.portal.helper.AbstractPageActionHelper" parent="abstractBaseActionHelper">
+        <property name="pageManager" ref="PageManager" />
+        <property name="configService" ref="BaseConfigManager" />
+    </bean>
+    
+    <bean id="pageActionHelperOnline" class="org.entando.entando.apsadmin.portal.helper.PageActionHelperOnline" parent="abstractPageActionHelper" />
+    <bean id="pageActionHelperDraft" class="org.entando.entando.apsadmin.portal.helper.PageActionHelperDraft" parent="abstractPageActionHelper" />
+    
+    <bean id="abstractPortalAction" abstract="true" class="com.agiletec.apsadmin.portal.AbstractPortalAction" parent="abstractBaseAction" >
+        <property name="groupManager" ref="GroupManager" />
+        <property name="pageManager" ref="PageManager" />
+        <property name="widgetTypeManager" ref="WidgetTypeManager" />
+        <property name="apiCatalogManager" ref="ApiCatalogManager" />
+        <property name="stockWidgetCodes"><value>${widgets.stock}</value></property>
+        <property name="internalServletWidgetCode"><value>${widgets.internalServlet}</value></property>
+    </bean>
+    
+    <bean id="pageTreeAction" scope="prototype" 
+              class="com.agiletec.apsadmin.portal.PageTreeAction" parent="abstractBaseAction">
+        <property name="treeHelper" ref="pageActionHelperDraft" />
+        <property name="pageManager" ref="PageManager" />
+    </bean>
+    
+    <bean id="pageTreeMenuAction" scope="prototype" 
+              class="com.agiletec.apsadmin.portal.PageTreeMenuAction" parent="pageTreeAction">
+        <property name="pageActionHelper" ref="pageActionHelperDraft" />
+		<property name="groupManager" ref="GroupManager" />
+        <property name="widgetTypeManager" ref="WidgetTypeManager" />
+        <property name="apiCatalogManager" ref="ApiCatalogManager" />
+        <property name="stockWidgetCodes"><value>${widgets.stock}</value></property>
+        <property name="internalServletWidgetCode"><value>${widgets.internalServlet}</value></property>
+        <property name="pageTokenMager" ref="PageTokenManager" />
+    </bean>
+    
+    <bean id="pageFinderAction" scope="prototype"
+              class="com.agiletec.apsadmin.portal.PageFinderAction" parent="abstractPortalAction">
+    </bean>
+    
+    <bean id="pageAction" scope="prototype" 
+              class="com.agiletec.apsadmin.portal.PageAction" parent="abstractPortalAction">
+        <property name="pageModelManager" ref="PageModelManager" />
+        <property name="pageActionHelper" ref="pageActionHelperDraft" />
+        <property name="pageActionReferencesHelper"  ref="pageActionReferencesHelper" />
+        <property name="allowedMimeTypesCSV"><value>${page.mimeType.allowedValues}</value></property>
+        <property name="allowedCharsetsCSV"><value>${page.charset.allowedValues}</value></property>
+    </bean>
+	
+    <bean id="pageActionReferencesHelper" class="com.agiletec.apsadmin.portal.helper.PageActionReferencesHelper" />
+	
+    <bean id="pageSettingsAction" scope="prototype" 
+              class="com.agiletec.apsadmin.portal.PageSettingsAction" parent="baseAdminAction">
+    </bean>
+    
+    <bean id="pageConfigAction" scope="prototype" 
+              class="com.agiletec.apsadmin.portal.PageConfigAction" parent="abstractPortalAction">
+		<property name="pageActionHelper" ref="pageActionHelperDraft" />
+    </bean>
+    
+    <bean id="pagePreviewAction" scope="prototype" 
+              class="com.agiletec.apsadmin.portal.PagePreviewAction" parent="abstractPortalAction">
+            <property name="userManager" ref="UserManager" />
+			<property name="pageTokenMager" ref="PageTokenManager" />
+    </bean>
+    
+    
+    <bean id="widgetsViewerAction" scope="prototype" 
+              class="com.agiletec.apsadmin.portal.WidgetsViewerAction" parent="abstractPortalAction">
+    </bean>
+    
+    <bean id="widgetTypeAction" scope="prototype" 
+              class="com.agiletec.apsadmin.portal.WidgetTypeAction" parent="abstractPortalAction">
+        <property name="guiFragmentManager" ref="GuiFragmentManager" />
+        <property name="pageActionHelper" ref="pageActionHelperDraft" />
+    </bean>
+    
+    <bean id="guiFragmentFinderAction" scope="prototype" 
+              class="org.entando.entando.apsadmin.portal.guifragment.GuiFragmentFinderAction" 
+              parent="abstractPortalAction" >
+        <property name="guiFragmentManager" ref="GuiFragmentManager" />
+		<property name="pageActionHelper" ref="pageActionHelperDraft" />
+    </bean>
+    
+    <bean id="guiFragmentAction" scope="prototype" 
+              class="org.entando.entando.apsadmin.portal.guifragment.GuiFragmentAction" 
+              parent="abstractBaseAction" >
+        <property name="widgetTypeManager" ref="WidgetTypeManager" />
+        <property name="guiFragmentManager" ref="GuiFragmentManager" />
+        <property name="actionHelper" ref="guiFragmentActionHelper" />
+		<property name="pageActionHelper" ref="pageActionHelperDraft" />
+    </bean>
+    
+    <bean id="guiFragmentActionHelper" class="org.entando.entando.apsadmin.portal.guifragment.helper.GuiFragmentActionHelper" 
+              parent="abstractBaseActionHelper">
+    </bean>
+    
+    <bean id="guiFragmentSettingsAction" scope="prototype" 
+                  class="org.entando.entando.apsadmin.portal.guifragment.GuiFragmentSettingAction" parent="baseAdminAction">
+        <property name="guiFragmentManager" ref="GuiFragmentManager" />
+    </bean>
+    
+</beans>

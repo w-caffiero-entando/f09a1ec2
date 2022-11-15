@@ -1,0 +1,55 @@
+/*
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+package com.agiletec.apsadmin.system;
+
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.interceptor.FileUploadInterceptor;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.opensymphony.xwork2.ActionInvocation;
+
+/**
+ * Extension of default FileUploadInterceptor.
+ * @author E.Santoboni
+ */
+public class ApsFileUploadInterceptor extends FileUploadInterceptor {
+
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ApsFileUploadInterceptor.class);
+	
+	@Override
+	public String intercept(ActionInvocation invocation) throws Exception {
+		if (null == super.maximumSize || super.maximumSize == 0) {
+			ConfigInterface configManager = (ConfigInterface) ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, ServletActionContext.getRequest());
+			String maxSizeParam = configManager.getParam(SystemConstants.PAR_FILEUPLOAD_MAXSIZE);
+			if (null != maxSizeParam) {
+				try {
+					this.setMaximumSize(Long.parseLong(maxSizeParam));
+				} catch (Throwable t) {
+					_logger.error("Error parsing param 'maxSize' - value '{}' - message ", maxSizeParam, t);
+				}
+			}
+		}
+		if (null == super.maximumSize || super.maximumSize == 0) {
+			this.setMaximumSize(DEFAULT_MAX_SIZE);
+		}
+		return super.intercept(invocation);
+	}
+	
+	public static final Long DEFAULT_MAX_SIZE = 10485760l;
+	
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+    <code>entando-admin-console</code>
+    <description>Entando Administration Console</description>
+    <artifact>
+        <artifactId>${project.artifactId}</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <version>${project.version}</version>
+    </artifact>
+    <installation>
+        <tableMapping>
+            <datasource name="servDataSource">
+                <table>authusershortcuts</table>
+            </datasource>
+        </tableMapping>
+        <liquibase>
+            <changeSet datasource="servDataSource" changeLogFile="classpath:liquibase/admin-console/changeSetServ.xml" />
+        </liquibase>
+    </installation>
+</component>

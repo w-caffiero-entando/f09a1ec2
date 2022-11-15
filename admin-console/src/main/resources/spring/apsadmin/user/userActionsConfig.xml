@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<bean id="userFinderAction" scope="prototype" 
+			class="org.entando.entando.apsadmin.user.UserProfileFinderAction" 
+			parent="abstractBaseAction" >
+		<property name="userProfileManager" ref="UserProfileManager" />
+		<property name="userManager" ref="UserManager" />
+		<property name="entityActionHelper" ref="entityActionHelper" />
+	</bean>
+    
+	<bean id="userAction" scope="prototype" 
+			class="org.entando.entando.apsadmin.user.UserAction" parent="abstractBaseAction" >
+		<property name="userManager" ref="UserManager" />
+		<property name="userProfileManager" ref="UserProfileManager" />
+	</bean>
+        
+        <bean id="userSettingsAction" scope="prototype" 
+              class="org.entando.entando.apsadmin.user.UserSettingsAction" parent="baseAdminAction">
+            <property name="userManager" ref="UserManager" />
+        </bean>
+    	
+	<bean id="userProfileAction" scope="prototype" 
+			class="org.entando.entando.apsadmin.user.UserProfileAction" 
+			parent="abstractEntityAction" >
+		<property name="userProfileManager" ref="UserProfileManager" />
+		<property name="entityActionHelper" ref="entityActionHelper"/>
+	</bean>
+    
+	<bean id="userProfileListAttributeAction" scope="prototype" 
+			class="org.entando.entando.apsadmin.user.attribute.action.list.ListAttributeAction" 
+			parent="abstractBaseAction" >
+		<property name="entityActionHelper" ref="entityActionHelper"/>
+	</bean>
+    
+	<!-- ************* -->
+	
+	<bean id="userAuthorizationAction" scope="prototype" 
+			class="org.entando.entando.apsadmin.user.UserAuthorizationAction" 
+			parent="abstractBaseAction" >
+		<property name="userManager" ref="UserManager" />
+		<property name="roleManager" ref="RoleManager" />
+		<property name="groupManager" ref="GroupManager" />
+	</bean>
+    
+</beans>
