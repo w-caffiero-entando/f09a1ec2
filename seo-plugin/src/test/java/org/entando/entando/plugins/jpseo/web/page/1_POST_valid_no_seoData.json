@@ -1,0 +1,16 @@
+{
+  "charset": "utf-8",
+  "code": "seoTest1",
+  "contentType": "text/html",
+  "displayedInMenu": true,
+  "ownerGroup": "free",
+  "pageModel": "service",
+  "parentCode": "service",
+  "joinGroups":["administrators"],
+  "seo": false,
+  "status": "draft",
+  "titles": {
+    "en": "Test Page",
+    "it": "Pagina di test"
+  }
+}

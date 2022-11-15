@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+    <code>jpseo</code>
+    <description>SEO</description>
+    <artifact>
+        <artifactId>${project.artifactId}</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <version>${project.version}</version>
+    </artifact>
+    <dependencies>
+        <code>jacms</code>
+    </dependencies>
+    <installation>
+        <tableMapping>
+            <datasource name="portDataSource">
+                <table>jpseo_friendlycode</table>
+            </datasource>
+        </tableMapping>
+        <liquibase>
+            <changeSet datasource="portDataSource" changeLogFile="classpath:liquibase/jpseo/changeSetPort.xml" />
+        </liquibase>
+    </installation>
+</component>
