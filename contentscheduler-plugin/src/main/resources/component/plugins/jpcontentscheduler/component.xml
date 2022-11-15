@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+	<code>jpcontentscheduler</code>
+	<description>Content Scheduler</description>
+	<dependencies>
+		<code>jpmail</code>
+	</dependencies>
+    <installation>
+        <liquibase>
+            <changeSet datasource="portDataSource" changeLogFile="classpath:liquibase/jpcontentscheduler/changeSetPort.xml" />
+        </liquibase>
+    </installation>
+</component>
