@@ -1,0 +1,27 @@
+[{
+    "groups":[
+    ],
+    "mainGroup":"free",
+    "description":"ContentWithLinkToAPage",
+    "categories":[
+        "cat1"
+    ],
+    "attributes":[
+        {
+            "code": "link1",
+            "value": {
+                "symbolicDestination":"#!P;pagina_11!#",
+                "destType":2,
+                "pageDest":"pagina_11",
+                "target": "_blank",
+                "rel": "alternate",
+                "hreflang": "it"
+            },
+            "values":{
+                "it":"pagina_11"
+            }
+        }
+    ],
+    "id":"**MARKER**",
+    "typeCode":"CML"
+}]

@@ -1,0 +1,206 @@
+/*
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+package com.agiletec.plugins.jacms.aps.system.services.resource.model;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.agiletec.aps.system.services.category.Category;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Base resource data bean
+ *
+ * @author E.Santoboni
+ */
+public class BaseResourceDataBean implements ResourceDataBean {
+
+    private String resourceId;
+    private String correlationCode;
+    private String resourceType;
+    private String description;
+    private String mainGroup;
+    private File file;
+    private List<Category> categories = new ArrayList<Category>();
+    private String mimeType;
+    private String fileName;
+    private Map<String, String> metadata = new HashMap<String, String>();
+    private InputStream inputStream;
+    private int fileSize;
+    private String owner;
+    private String folderPath;
+    
+    public BaseResourceDataBean() {
+    }
+
+    public BaseResourceDataBean(File file) {
+        if (null == file) {
+            throw new RuntimeException("Null File");
+        }
+        this.setFile(file);
+    }
+
+    @Override
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    @Override
+    public String getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    @Override
+    public String getDescr() {
+        return description;
+    }
+
+    public void setDescr(String descr) {
+        this.description = descr;
+    }
+
+    @Override
+    public String getMainGroup() {
+        return mainGroup;
+    }
+
+    public void setMainGroup(String mainGroup) {
+        this.mainGroup = mainGroup;
+    }
+
+    @Override
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    @Override
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
+    @Override
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    @Override
+    public int getFileSize() {
+        if (fileSize > 0) {
+            return fileSize;
+        }
+
+        if (file != null) {
+            fileSize = (int) this.getFile().length() / 1000;
+        }
+
+        return fileSize;
+    }
+
+    public void setFileSize(int fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    @Override
+    public String getFileName() {
+        if (null != this.fileName) {
+            return fileName;
+        }
+        if (null == file) {
+            return null;
+        }
+        String fullName = this.getFile().getName();
+        return fullName.substring(fullName.lastIndexOf('/') + 1).trim();
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    @Override
+    public InputStream getInputStream() throws Throwable {
+        if (null != inputStream) {
+            return inputStream;
+        }
+
+        if (null != file) {
+            return new FileInputStream(this.file);
+        }
+
+        return null;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+
+    @Override
+    public String getOwner() {
+        return owner;
+    }
+
+    @Override
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getFolderPath() {
+        return folderPath;
+    }
+
+    public void setFolderPath(String folderPath) {
+        this.folderPath = folderPath;
+    }
+
+    @Override
+    public String getCorrelationCode() {
+        return correlationCode;
+    }
+
+    @Override
+    public void setCorrelationCode(String correlationCode) {
+        this.correlationCode = correlationCode;
+    }
+}
