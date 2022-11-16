@@ -1,4 +1,4 @@
-# entando-de-app
+# app-engine
 [![Build Status](https://jenkins.entandocloud.com/buildStatus/icon?job=de-entando-de-app-master)](https://jenkins.entandocloud.com/job/de-entando-de-app-master/)
 Application to act as the starting point for an Entando application integrated with a Digital Exchange instance
 
@@ -33,7 +33,7 @@ mvn clean package jetty:run-war -Pjetty-local -Ppostgresql -DskipDatabaseImage=t
 ## Using swagger
 
 In order to enable swagger, it's enough to pass `-Dspring.profiles.active=swagger` parameter. Swagger UI will be
-reachable [here](http://localhost:8080/entando-de-app/api/swagger-ui.html)
+reachable [here](http://localhost:8080/app-engine/api/swagger-ui.html)
 
 ## Using docker
 

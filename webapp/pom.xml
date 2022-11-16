@@ -8,10 +8,10 @@
         <version>7.2.0-SNAPSHOT</version>
     </parent>
     <groupId>org.entando.entando</groupId>
-    <artifactId>entando-de-app</artifactId>
+    <artifactId>app-engine</artifactId>
     <packaging>war</packaging>
     <version>7.2.0-SNAPSHOT</version>
-    <name>entando-de-app</name>
+    <name>Entando App Engine</name>
     <url>http://www.entando.com/</url>
     <licenses>
         <license>
@@ -730,36 +730,35 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/${project.name}</outputDirectory>
+                            <outputDirectory>${basedir}/target/${project.artifactId}</outputDirectory>
                             <resources>
                                 <!--
                                   We are copying directly from src folder, assuming that child modules
                                   don't apply resource filtering on the webapp folder
                                 -->
                                 <resource>
-                                    <directory>${basedir}/../entando-admin-console/src/main/webapp</directory>
+                                    <directory>${basedir}/../admin-console/src/main/webapp</directory>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/../entando-portal-ui/src/main/webapp</directory>
+                                    <directory>${basedir}/../portal-ui/src/main/webapp</directory>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/../entando-plugin-jacms/src/main/webapp</directory>
+                                    <directory>${basedir}/../cms-plugin/src/main/webapp</directory>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/../entando-plugin-jpmail/src/main/webapp</directory>
+                                    <directory>${basedir}/../mail-plugin/src/main/webapp</directory>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/../entando-plugin-jpseo/src/main/webapp</directory>
+                                    <directory>${basedir}/../seo-plugin/src/main/webapp</directory>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/../entando-plugin-jpredis/src/main/webapp</directory>
+                                    <directory>${basedir}/../redis-plugin/src/main/webapp</directory>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/../entando-plugin-jpversioning/src/main/webapp</directory>
+                                    <directory>${basedir}/../versioning-plugin/src/main/webapp</directory>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/../entando-plugin-jpcontentscheduler/src/main/webapp
-                                    </directory>
+                                    <directory>${basedir}/../contentscheduler-plugin/src/main/webapp</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -873,7 +872,7 @@
                         <db.environment>production</db.environment>
                         <logFilePrefix>${project.build.directory}/logs/</logFilePrefix>
                         <logFileRotatePattern>
-                            ${project.build.directory}/logs/${project.artifactId}_logs/${project.name}-%i.log.gz
+                            ${project.build.directory}/logs/${project.artifactId}_logs/${project.artifactId}-%i.log.gz
                         </logFileRotatePattern>
                         <resourceDiskRootFolder>${project.basedir}/src/main/webapp/resources/</resourceDiskRootFolder>
                         <protectedResourceDiskRootFolder>${project.basedir}/src/main/webapp/protected/
