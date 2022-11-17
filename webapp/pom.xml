@@ -373,7 +373,7 @@
         </profile>
     </profiles>
     <build>
-        <finalName>${parent.artifactId}</finalName>
+        <finalName>entando-de-app</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -730,7 +730,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/${project.artifactId}</outputDirectory>
+                            <outputDirectory>${basedir}/target/${project.build.finalName}</outputDirectory>
                             <resources>
                                 <!--
                                   We are copying directly from src folder, assuming that child modules
@@ -861,7 +861,7 @@
                     <scanIntervalSeconds>5</scanIntervalSeconds>
                     <webApp>
                         <defaultsDescriptor>${basedir}/src/main/jetty/webdefault.xml</defaultsDescriptor>
-                        <contextPath>/${project.artifactId}</contextPath>
+                        <contextPath>/${project.build.finalName}</contextPath>
                         <jettyEnvXml>${project.basedir}/src/main/jetty/jetty-env.xml</jettyEnvXml>
                     </webApp>
                     <systemProperties>

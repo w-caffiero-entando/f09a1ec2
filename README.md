@@ -6,13 +6,13 @@ To run the war file locally:
 
 ```
 mvn clean install
-cd app-engine/
-mvn package jetty:run-war -Pjetty-local -Dspring.profiles.active=swagger -DskipTests -DskipLicenseDownload -Pderby
+cd webapp/
+mvn package jetty:run-war -Pjetty-local -Dspring.profiles.active=swagger -DskipTests -DskipLicenseDownload -Pderby -Pkeycloak
 ```
 
-The application will be available at http://localhost:8080/app-engine/
+The application will be available at http://localhost:8080/entando-de-app/
 
-More information are available on [app-engine README](app-engine/README.md).
+More information are available on [webapp README](webapp/README.md).
 
 To execute all the tests:
 
