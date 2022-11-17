@@ -90,7 +90,13 @@ public abstract class AbstractGenericCacheWrapper<O> extends AbstractCacheWrappe
         List<String> codes = (List<String>) this.get(cache, this.getCodesCacheKey(), List.class);
         if (null != codes) {
             for (String code : codes) {
-                map.put(code, (O) this.get(cache, this.getCacheKeyPrefix() + code, Object.class));
+                O value = (O) this.get(cache, this.getCacheKeyPrefix() + code, Object.class);
+                // Objects in cache and their codes in cache are not properly synchronized so in case of
+                // unlucky timing it might happen that the object for a given code is null.
+                // Following check mitigates the consequences of that concurrency issue.
+                if (value != null) {
+                    map.put(code, value);
+                }
             }
         }
         return map;
