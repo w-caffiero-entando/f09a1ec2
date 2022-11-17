@@ -9,7 +9,7 @@
     </parent>
     <groupId>org.entando</groupId>
 
-    <artifactId>entando-core-parent</artifactId>
+    <artifactId>app-engine</artifactId>
     <version>7.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -24,11 +24,11 @@
         <module>seo-plugin</module>
         <module>versioning-plugin</module>
         <module>contentscheduler-plugin</module>
-        <module>app-engine</module>
+        <module>webapp</module>
     </modules>
 
-    <name>Entando Core Maven Parent POM</name>
-    <description>Entando Core Maven Parent POM</description>
+    <name>Entando App Engine Parent POM</name>
+    <description>Entando App Engine Parent POM</description>
     <inceptionYear>2019</inceptionYear>
     <url>https://central.entando.com</url>
     <licenses>
