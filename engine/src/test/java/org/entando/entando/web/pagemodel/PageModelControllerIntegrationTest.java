@@ -110,6 +110,7 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                 .build();
         return mockOAuthInterceptor(admin);
     }
+
     private String getUserAuthenticationToken() {
         User user = new OAuth2TestUtils.UserBuilder(USERNAME, PASSWORD)
                 .withAuthorization(Group.FREE_GROUP_NAME, Permission.MANAGE_PAGES, Permission.MANAGE_PAGES)
@@ -208,6 +209,7 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessTokenAdmin));
         result.andExpect(status().isOk());
     }
+
     @Test
     void addPageModelReturnForbiddenIfNonAdmin() throws Exception {
         String payload = createPageModelPayload(PAGE_MODEL_CODE);
@@ -315,6 +317,55 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
     }
 
     @Test
+    void addUpdatePageModelWithTemplate() throws Exception {
+        String accessTokenAdmin = getAdminAuthenticationToken();
+        String templateCode = "page_template_test_freemarker";
+        try {
+            PageModelRequest pageModelRequest = PageModelTestUtil.validPageModelRequest();
+            pageModelRequest.setCode(templateCode);
+            pageModelRequest.setTemplate(null);
+            ResultActions result = mockMvc.perform(
+                    post("/pageModels")
+                            .content(createJson(pageModelRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessTokenAdmin));
+            result.andDo(resultPrint())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.code", is(templateCode)))
+                    .andExpect(jsonPath("$.payload.descr", is("description")));
+            PageModel pageModel = this.pageModelManager.getPageModel(templateCode);
+            Assertions.assertNotNull(pageModel);
+            Assertions.assertEquals(3, pageModel.getFrames().length);
+            Assertions.assertEquals(3, pageModel.getFramesConfig().length);
+            Assertions.assertNull(pageModel.getTemplate());
+            pageModelRequest.setDescr("description2");
+            pageModelRequest.setTemplate("<h1>template</h1>");
+            result = mockMvc.perform(
+                    put("/pageModels/{code}", templateCode)
+                            .content(createJson(pageModelRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessTokenAdmin));
+            result.andDo(resultPrint())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.code", is(templateCode)))
+                    .andExpect(jsonPath("$.payload.descr", is("description2")));
+            pageModel = this.pageModelManager.getPageModel(templateCode);
+            Assertions.assertNotNull(pageModel);
+            Assertions.assertEquals(3, pageModel.getFrames().length);
+            Assertions.assertEquals(3, pageModel.getFramesConfig().length);
+            Assertions.assertEquals("<h1>template</h1>", pageModel.getTemplate());
+        } finally {
+            ResultActions result = mockMvc.perform(
+                    delete("/pageModels/{code}", templateCode)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessTokenAdmin));
+            result.andDo(resultPrint())
+                    .andExpect(status().isOk());
+            Assertions.assertNull(this.pageModelManager.getPageModel(templateCode));
+        }
+    }
+
+    @Test
     void addPageModelWithDotReturnOK() throws Exception {
         String accessTokenAdmin = getAdminAuthenticationToken();
 
@@ -379,7 +430,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             newSketch.setCoords(0, 3, 11, 3);
             final PageModelFrameReq newFrames = new PageModelFrameReq(3, "Position 3");
             newFrames.setSketch(newSketch);
-
 
             newFrames.getDefaultWidget().setCode("invalid_widget");
             pageModelRequest.getConfiguration().getFrames().add(newFrames);
@@ -486,7 +536,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             Assertions.assertNotNull(pageModel);
             Assertions.assertEquals(3, pageModel.getFrames().length);
 
-
             PageModelFrameReq newFrames = new PageModelFrameReq(3, "Position 3");
             newFrames.getDefaultWidget().setCode("invalid_widget");
 
@@ -589,9 +638,7 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                             .header("Authorization", "Bearer " + accessTokenAdmin));
             result.andExpect(status().isBadRequest());
 
-
             // Blank PageCode
-
             String payloadBlankCode = createPageModelPayload("");
             result = mockMvc.perform(
                     post("/pageModels")
@@ -601,7 +648,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // Null Descr
-
             String payloadNullDescr = createPageModelPayload(PAGE_MODEL_CODE, null);
             result = mockMvc.perform(
                     post("/pageModels")
@@ -611,7 +657,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // Blank Descr
-
             String payloadBlankDescr = createPageModelPayload(PAGE_MODEL_CODE, "");
             result = mockMvc.perform(
                     post("/pageModels")
@@ -621,7 +666,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // x1 with negative value
-
             result = mockMvc.perform(
                     post("/pageModels")
                             .content(getJsonRequest("invalid_Y1Y2_frames_1.json"))
@@ -630,7 +674,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // y1 with negative value
-
             result = mockMvc.perform(
                     post("/pageModels")
                             .content(getJsonRequest("invalid_Y1Y2_frames_2.json"))
@@ -639,7 +682,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // x2 with negative value
-
             result = mockMvc.perform(
                     post("/pageModels")
                             .content(getJsonRequest("invalid_Y1Y2_frames_3.json"))
@@ -648,7 +690,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // y2 with negative value
-
             result = mockMvc.perform(
                     post("/pageModels")
                             .content(getJsonRequest("invalid_Y1Y2_frames_4.json"))
@@ -657,7 +698,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // x2 < x1
-
             result = mockMvc.perform(
                     post("/pageModels")
                             .content(getJsonRequest("invalid_Y1Y2_frames_5.json"))
@@ -665,9 +705,7 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                             .header("Authorization", "Bearer " + accessTokenAdmin));
             result.andExpect(status().isBadRequest());
 
-
             // y2 < y1
-
             result = mockMvc.perform(
                     post("/pageModels")
                             .content(getJsonRequest("invalid_Y1Y2_frames_6.json"))
@@ -675,9 +713,7 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                             .header("Authorization", "Bearer " + accessTokenAdmin));
             result.andDo(print()).andExpect(status().isBadRequest());
 
-
             // overlapping frames  test 1
-
             result = mockMvc.perform(
                     post("/pageModels")
                             .content(getJsonRequest("overlapping_frames_1.json"))
@@ -685,9 +721,7 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                             .header("Authorization", "Bearer " + accessTokenAdmin));
             result.andExpect(status().isBadRequest());
 
-
             // overlapping frames test 2
-
             result = mockMvc.perform(
                     post("/pageModels")
                             .content(getJsonRequest("overlapping_frames_2.json"))
@@ -723,7 +757,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                             .header("Authorization", "Bearer " + accessTokenAdmin));
             result.andExpect(status().isOk());
 
-
             // x1 with negative value
             result = mockMvc.perform(
                     put("/pageModels/{code}", PUT_PAGE_TEMPLATE_CODE)
@@ -741,7 +774,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // x2 with negative value
-
             result = mockMvc.perform(
                     put("/pageModels/{code}", PUT_PAGE_TEMPLATE_CODE)
                             .content(getJsonRequest("invalid_Y1Y2_frames_3.json"))
@@ -750,7 +782,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // y2 with negative value
-
             result = mockMvc.perform(
                     put("/pageModels/{code}", PUT_PAGE_TEMPLATE_CODE)
                             .content(getJsonRequest("invalid_Y1Y2_frames_4.json"))
@@ -759,7 +790,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // x2 < x1
-
             result = mockMvc.perform(
                     put("/pageModels/{code}", PUT_PAGE_TEMPLATE_CODE)
                             .content(getJsonRequest("invalid_Y1Y2_frames_5.json"))
@@ -768,7 +798,6 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
             result.andExpect(status().isBadRequest());
 
             // y2 < y1
-
             result = mockMvc.perform(
                     put("/pageModels/{code}", PUT_PAGE_TEMPLATE_CODE)
                             .content(getJsonRequest("invalid_Y1Y2_frames_6.json"))
@@ -776,9 +805,7 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                             .header("Authorization", "Bearer " + accessTokenAdmin));
             result.andExpect(status().isBadRequest());
 
-
             // overlapping frames test 1
-
             result = mockMvc.perform(
                     put("/pageModels/{code}", PUT_PAGE_TEMPLATE_CODE)
                             .content(getJsonRequest("overlapping_frames_1.json"))
@@ -786,23 +813,18 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                             .header("Authorization", "Bearer " + accessTokenAdmin));
             result.andExpect(status().isBadRequest());
 
-
             // overlapping frames test 2
-
             result = mockMvc.perform(
                     put("/pageModels/{code}", PUT_PAGE_TEMPLATE_CODE)
                             .content(getJsonRequest("overlapping_frames_2.json"))
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessTokenAdmin));
             result.andExpect(status().isBadRequest());
-
-
         } catch (Exception e) {
             throw e;
         } finally {
             this.pageModelManager.deletePageModel("test-template");
         }
-
     }
 
     @Test
@@ -819,4 +841,5 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
         String result = FileTextReader.getText(isJsonPostValid);
         return result;
     }
+
 }
