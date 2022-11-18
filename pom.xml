@@ -152,6 +152,7 @@
         <drewnoakes-metadata-extractor.version>2.16.0</drewnoakes-metadata-extractor.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <lombok.version>1.18.20</lombok.version>
+        <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
         <maven-resources-plugin.version>2.5</maven-resources-plugin.version>
         <maven-assembly-plugin.version>2.2.1</maven-assembly-plugin.version>
@@ -199,6 +200,12 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven-dependency-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
@@ -211,6 +218,7 @@
                             <exclude>**/*BaseTestCase*</exclude>
                             <exclude>**/Abstract*</exclude>
                         </excludes>
+                        <rerunFailingTestsCount>1</rerunFailingTestsCount>
                     </configuration>
                 </plugin>
 
@@ -279,6 +287,10 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
