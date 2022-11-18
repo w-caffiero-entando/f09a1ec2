@@ -13,7 +13,6 @@
  */
 package org.entando.entando.plugins.jpmail.ent.system.services.model;
 
-import com.agiletec.aps.BaseTestCase;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -21,14 +20,15 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TestEmailSenderDto extends BaseTestCase {
+class TestEmailSenderDto {
+
     private static final String SENDER_CODE_1 = "CODE1";
     private static final String SENDER_CODE_2 = "CODE2";
     private static final String SENDER_EMAIL_1 = "senderTest1-email@entando.com";
     private static final String SENDER_EMAIL_2 = "senderTest2-email@entando.com";
 
     @Test
-    void testEqualsAndHashcode()  {
+    void testEqualsAndHashcode() {
         SMTPServerConfigurationDto smtpServerConfigurationDto = new SMTPServerConfigurationDto();
         EmailSenderDto sender1 = createEmailSenderDto(SENDER_CODE_1, SENDER_EMAIL_1);
         EmailSenderDto sender2 = createEmailSenderDto(SENDER_CODE_1, SENDER_EMAIL_1);
@@ -44,7 +44,7 @@ class TestEmailSenderDto extends BaseTestCase {
     }
 
     @Test
-    void testToString()  {
+    void testToString() {
         EmailSenderDto emailSenderDto = createEmailSenderDto(SENDER_CODE_1, SENDER_EMAIL_1);
         final String serverString = emailSenderDto.toString();
         assertTrue(serverString.contains("code='" + SENDER_CODE_1 + '\''));
