@@ -5,7 +5,7 @@ This multi-module Maven project contains all the Entando core modules needed to 
 To run the war file locally:
 
 ```
-mvn clean install
+mvn clean install -DskipLicenseDownload
 cd webapp/
 mvn package jetty:run-war -Pjetty-local -Dspring.profiles.active=swagger -DskipTests -DskipLicenseDownload -Pderby -Pkeycloak
 ```
