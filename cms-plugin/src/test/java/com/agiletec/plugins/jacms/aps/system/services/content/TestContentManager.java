@@ -99,7 +99,6 @@ class TestContentManager extends BaseTestCase {
         descrFilter = new EntitySearchFilter(IContentManager.CONTENT_DESCR_FILTER_KEY, false, "Cont", true, FieldSearchFilter.LikeOptionType.RIGHT);
         EntitySearchFilter[] filters3 = {creationOrder, descrFilter};
         contentIds = this._contentManager.searchId(filters3);
-        System.out.println(contentIds);
         assertNotNull(contentIds);
         String[] expected3 = expected1;
         assertEquals(expected3.length, contentIds.size());

@@ -36,7 +36,6 @@ import java.io.InputStream;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -87,7 +86,7 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
         UserDetails user = createUser();
         String accessToken = mockOAuthInterceptor(user);
         executeGetSendersList(accessToken, status().isForbidden())
-                .andExpect(status().isForbidden()).andDo(print());
+                .andExpect(status().isForbidden()).andDo(resultPrint());
     }
 
     @Test
@@ -137,7 +136,7 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
             String accessToken = mockOAuthInterceptor(user);
 
             executePutSender(SENDER_CODE_1, "1_PUT_valid.json", accessToken, status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.code", is(SENDER_CODE_1)))
                     .andExpect(jsonPath("$.payload.email", is("test-edit-email@entando.com")));
 
@@ -151,7 +150,7 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
             String accessToken = mockOAuthInterceptor(user);
             emailSenderService.addEmailSender(new EmailSenderDto(SENDER_CODE_TEST, SENDER_EMAIL_1));
             executeDeleteSender(SENDER_CODE_TEST, accessToken, status().isOk())
-                    .andDo(print());
+                    .andDo(resultPrint());
             Assertions.assertNull(emailSenderService.getEmailSender(SENDER_CODE_TEST));
     }
 
@@ -162,7 +161,7 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
         String accessToken = mockOAuthInterceptor(user);
         emailSenderService.addEmailSender(new EmailSenderDto(SENDER_CODE_TEST, SENDER_EMAIL_1));
         executeDeleteSender(SENDER_CODE_1, accessToken, status().isForbidden())
-                .andDo(print());
+                .andDo(resultPrint());
         Assertions.assertNotNull(emailSenderService.getEmailSender(SENDER_CODE_TEST));
         emailSenderService.deleteEmailSender(SENDER_CODE_TEST);
         Assertions.assertNull(emailSenderService.getEmailSender(SENDER_CODE_TEST));
@@ -203,10 +202,10 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
         String accessToken = mockOAuthInterceptor(user);
 
         executePutSender("NOT_FOUND","1_PUT_invalid_code_not_found.json", accessToken, status().isBadRequest())
-                .andDo(print()).andExpect(jsonPath("$.errors[0].code", is("1")));
+                .andDo(resultPrint()).andExpect(jsonPath("$.errors[0].code", is("1")));
 
         executePutSender("NOT_FOUND_1","1_PUT_invalid_code_not_found.json", accessToken, status().isBadRequest())
-                .andDo(print()).andExpect(jsonPath("$.errors[1].code", is("2")));
+                .andDo(resultPrint()).andExpect(jsonPath("$.errors[1].code", is("2")));
 
     }
 
@@ -225,7 +224,7 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
                 .perform(get(BASE_URL + "/{senderCode}", senderCode)
                         //                    .sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(expected).andDo(print());
+        result.andExpect(expected).andDo(resultPrint());
         return result;
     }
 
@@ -234,7 +233,7 @@ class EmailSenderControllerIntegrationTest extends AbstractControllerIntegration
                 .perform(get(BASE_URL)
                         //                    .sessionAttr("user", user)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(expected).andDo(print());
+        result.andExpect(expected).andDo(resultPrint());
         return result;
     }
 

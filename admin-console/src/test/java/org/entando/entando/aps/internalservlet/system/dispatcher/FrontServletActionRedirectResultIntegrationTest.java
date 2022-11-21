@@ -97,7 +97,6 @@ class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBaseTestCa
         assertEquals(expectedPath, aURL.getPath());
         List<NameValuePair> params = URLEncodedUtils.parse(aURL.getQuery(), Charset.forName("UTF-8"));
         for (NameValuePair param : params) {
-            System.out.println(param.getName() + " : " + param.getValue());
             if (param.getName().equals("internalServletActionPath")) {
                 assertEquals("/ExtStr2/do/Api/Service/details", param.getValue());
             } else if (param.getName().equals("internalServletFrameDest")) {

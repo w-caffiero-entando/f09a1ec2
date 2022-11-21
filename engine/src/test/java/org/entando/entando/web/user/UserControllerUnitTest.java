@@ -124,7 +124,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .param("filter[0].operator", "like")
                         .param("filter[0].value", "user")
                         .header("Authorization", "Bearer " + accessToken));
-        System.out.println("result: " + result.andReturn().getResponse().getContentAsString());
         result.andExpect(status().isOk());
 
     }
@@ -160,8 +159,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .content(mockJson)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken));
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println("users: " + response);
         result.andExpect(status().isOk());
     }
 
@@ -182,8 +179,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .content(mockJson)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken));
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println("users: " + response);
         result.andExpect(status().isConflict());
     }
 
@@ -205,8 +200,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .header("Authorization", "Bearer " + accessToken));
 
         result.andExpect(status().isBadRequest());
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
         result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_NEW_PASSWORD_EQUALS)));
     }
 
@@ -229,8 +222,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .header("Authorization", "Bearer " + accessToken));
 
         result.andExpect(status().isOk());
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
         result.andExpect(jsonPath("$.errors", hasSize(0)));
     }
 
@@ -252,8 +243,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .header("Authorization", "Bearer " + accessToken));
 
         result.andExpect(status().isBadRequest());
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
         result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_USERNAME_FORMAT_INVALID)));
     }
 
@@ -289,8 +278,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .header("Authorization", "Bearer " + accessToken));
 
         result.andExpect(status().isOk());
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
     }
 
     @Test

@@ -221,8 +221,7 @@ public class MockMvcHelper {
         MockHttpServletRequestBuilder reqBuilder = this.addStandardHeaders(httpRequestExecutor.request(url, pathParams));
         this.addBodyContent(reqBuilder, contentBody);
 
-        return this.mvc.perform(reqBuilder)
-                .andDo(MockMvcResultHandlers.print());
+        return this.mvc.perform(reqBuilder);
     }
 
     /**

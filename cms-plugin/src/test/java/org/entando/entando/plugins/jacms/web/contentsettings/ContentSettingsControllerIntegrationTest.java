@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,7 +54,7 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
     @Test
     void testGetContentSettingsUnauthorized() throws Exception {
         performGetContentSettings(null)
-            .andDo(print())
+            .andDo(resultPrint())
             .andExpect(status().isUnauthorized());
     }
 
@@ -80,7 +79,7 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                 .build();
 
         performGetContentSettings(user)
-            .andDo(print())
+            .andDo(resultPrint())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.payload.metadata.size()", is(4)))
             .andExpect(jsonPath("$.payload.metadata.legend", Matchers.anything()))
@@ -107,7 +106,7 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
         try {
 
             performCreateMetadata(user, "newkey", "newmappingvalue1,newmappingvalue2")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(5)))
                     .andExpect(jsonPath("$.payload.legend", Matchers.anything()))
@@ -119,7 +118,7 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                     .andExpect(jsonPath("$.payload.newkey[1]", Matchers.equalTo("newmappingvalue2")));
 
             performEditMetadata(user, "newkey", "newmappingvalue2")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(5)))
                     .andExpect(jsonPath("$.payload.legend", Matchers.anything()))
@@ -131,7 +130,7 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
 
 
             performRemoveMetadata(user, "newkey")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(4)));
         } finally {
@@ -150,7 +149,7 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
         try {
 
             performCreateMetadata(user, "newkey", "newmappingvalue1,newmappingvalue2")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(5)))
                     .andExpect(jsonPath("$.payload.newkey.size()", is(2)))
@@ -158,11 +157,11 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                     .andExpect(jsonPath("$.payload.newkey[1]", Matchers.equalTo("newmappingvalue2")));
 
             performCreateMetadata(user, "newkey", "newmappingvalue3")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isConflict());
 
             performRemoveMetadata(user, "newkey")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(4)));
         } finally {
@@ -179,7 +178,7 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                 .build();
 
         performEditMetadata(user, "invalid", "newmappingvalue3")
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isNotFound());
     }
 
@@ -190,7 +189,7 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                 .build();
 
         performRemoveMetadata(user, "invalid")
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isNotFound());
     }
 
@@ -201,15 +200,15 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                 .build();
 
         performCreateMetadata(user, "new-key", "newmappingvalue")
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isBadRequest());
 
         performCreateMetadata(user, "{newkey}", "newmappingvalue")
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isBadRequest());
 
         performCreateMetadata(user, "NEWKEY!", "newmappingvalue")
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isBadRequest());
     }
 
@@ -222,34 +221,34 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
         try {
 
             performCreateCropRatio(user, "4:3")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.payload[0]", Matchers.equalTo("4:3")));
 
             performEditCropRatio(user, "4:3", "8:6")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.payload[0]", Matchers.equalTo("8:6")));
 
             performCreateCropRatio(user, "16:9")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(2)))
                     .andExpect(jsonPath("$.payload[0]", Matchers.equalTo("8:6")))
                     .andExpect(jsonPath("$.payload[1]", Matchers.equalTo("16:9")));
 
             performRemoveCropRatio(user, "4:3")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isNotFound());
 
             performRemoveCropRatio(user, "8:6")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk());
 
             performRemoveCropRatio(user, "16:9")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk());
 
         } finally {
@@ -269,17 +268,17 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
         try {
 
             performCreateCropRatio(user, "4:3")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.payload[0]", Matchers.equalTo("4:3")));
 
             performCreateCropRatio(user, "4:3")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isConflict());
 
             performRemoveCropRatio(user, "4:3")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(0)));
         } finally {
@@ -294,11 +293,11 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                 .build();
 
         performCreateCropRatio(user, "alfa,3")
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isBadRequest());
 
         performCreateCropRatio(user, "alfa:3")
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isBadRequest());
     }
 
@@ -311,21 +310,21 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
         try {
 
             performCreateCropRatio(user, "4:3")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.payload[0]", Matchers.equalTo("4:3")));
 
             performEditCropRatio(user, "4:3", "alfa:6")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isBadRequest());
 
             performEditCropRatio(user, "4:3", "4-6")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isBadRequest());
 
             performRemoveCropRatio(user, "4:3")
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk());
         } finally {
             performRemoveCropRatio(user, "4:3");
@@ -341,13 +340,13 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                 .build();
 
         performSetEditor(user, "none")
-            .andDo(print())
+            .andDo(resultPrint())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.payload.key", Matchers.equalTo("none")))
             .andExpect(jsonPath("$.payload.label", Matchers.equalTo("None")));
 
         performSetEditor(user, "fckeditor")
-            .andDo(print())
+            .andDo(resultPrint())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.payload.key", Matchers.equalTo("fckeditor")))
             .andExpect(jsonPath("$.payload.label", Matchers.equalTo("CKEditor")));
@@ -360,11 +359,11 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                 .build();
 
         performReloadIndexes(user)
-            .andDo(print())
+            .andDo(resultPrint())
             .andExpect(status().isOk());
 
         performGetContentSettings(user)
-            .andDo(print())
+            .andDo(resultPrint())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.payload.indexesStatus", Matchers.equalTo(1)));
     }
@@ -375,13 +374,13 @@ class ContentSettingsControllerIntegrationTest extends AbstractControllerIntegra
                 .withAuthorization(Group.FREE_GROUP_NAME, "editor", Permission.SUPERUSER)
                 .build();
         performReloadReferences(user)
-            .andDo(print())
+            .andDo(resultPrint())
             .andExpect(status().isOk());
 		synchronized (this) {
 			this.wait(1000);
 		}
         performGetContentSettings(user)
-            .andDo(print())
+            .andDo(resultPrint())
             .andExpect(status().isOk());
     }
 
