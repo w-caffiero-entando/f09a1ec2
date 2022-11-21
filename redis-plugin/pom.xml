@@ -302,6 +302,11 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
