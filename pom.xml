@@ -209,7 +209,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <argLine>${argLine}</argLine>
+                        <argLine>${argLine} -Dliquibase.supportPropertyEscaping=true -Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener</argLine>
                         <forkCount>1</forkCount>
                         <shutdown>exit</shutdown>
                         <parallel>methods</parallel>
@@ -218,6 +218,9 @@
                             <exclude>**/*BaseTestCase*</exclude>
                             <exclude>**/Abstract*</exclude>
                         </excludes>
+                        <environmentVariables>
+                            <ROOT_LOG_LEVEL>WARN</ROOT_LOG_LEVEL>
+                        </environmentVariables>
                         <rerunFailingTestsCount>1</rerunFailingTestsCount>
                     </configuration>
                 </plugin>
@@ -1160,6 +1163,11 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             <!-- json -->
