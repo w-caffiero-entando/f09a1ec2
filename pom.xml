@@ -71,6 +71,8 @@
         <owaspSuppressionFileLocation>
             owasp-dependency-check-suppression.xml
         </owaspSuppressionFileLocation>
+        <!-- enable the printing of mocked REST call responses in tests -->
+        <org.entando.test.enableResultPrint>false</org.entando.test.enableResultPrint>
         <!--test database default settings -->
         <test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</test.database.driver>
         <test.database.hostname>localhost</test.database.hostname>
@@ -209,7 +211,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <argLine>${argLine} -Dliquibase.supportPropertyEscaping=true -Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener</argLine>
+                        <argLine>${argLine} -Dliquibase.supportPropertyEscaping=true -Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener -Dorg.entando.test.enableResultPrint=${org.entando.test.enableResultPrint}</argLine>
                         <forkCount>1</forkCount>
                         <shutdown>exit</shutdown>
                         <parallel>methods</parallel>
