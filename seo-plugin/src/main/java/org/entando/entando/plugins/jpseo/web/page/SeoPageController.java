@@ -1,5 +1,6 @@
 package org.entando.entando.plugins.jpseo.web.page;
 
+import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.user.UserDetails;
 
@@ -48,6 +49,9 @@ public class SeoPageController implements ISeoPageController {
 
     @Autowired
     private PageAuthorizationService authorizationService;
+
+    @Autowired
+    private LangManager langManager;
 
     public IPageService getPageService() {
         return pageService;
@@ -116,6 +120,8 @@ public class SeoPageController implements ISeoPageController {
             throw new ResourcePermissionsException(user.getUsername(), pageRequest.getCode());
         }
 
+        validateDefaultLangPageTitle(pageRequest, bindingResult);
+
         SeoPageDto dto = (SeoPageDto) this.getPageService().addPage(pageRequest);
         return new ResponseEntity<>(new SimpleRestResponse<>(dto), HttpStatus.OK);
     }
@@ -152,6 +158,8 @@ public class SeoPageController implements ISeoPageController {
             throw new ValidationConflictException(bindingResult);
         }
 
+        validateDefaultLangPageTitle(pageRequest, bindingResult);
+
         if ((null != pageRequest.getSeoData()) && (null != pageRequest.getSeoData().getSeoDataByLang())) {
             for (Entry<String, SeoDataByLang> entry : pageRequest.getSeoData().getSeoDataByLang().entrySet()) {
                 if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), entry.getValue().getFriendlyCode())) {
@@ -171,6 +179,20 @@ public class SeoPageController implements ISeoPageController {
         SeoPageDto page = (SeoPageDto) pageService.updatePage(pageCode, pageRequest);
         Map<String, String> metadata = new HashMap<>();
         return new ResponseEntity<>(new RestResponse<>(page, metadata), HttpStatus.OK);
+    }
+
+    private void validateDefaultLangPageTitle(PageRequest pageRequest, BindingResult bindingResult) {
+
+        String defaultLangTitle = pageRequest.getTitles().get(langManager.getDefaultLang().getCode());
+
+        if ((null == defaultLangTitle) || (defaultLangTitle.isEmpty())) {
+            String defaultLangCode = langManager.getDefaultLang().getCode().toUpperCase();
+            bindingResult.reject("12", "Invalid title for the default language " + defaultLangCode);
+        }
+
+        if (bindingResult.hasErrors()) {
+            throw new ValidationGenericException(bindingResult);
+        }
     }
 
 }
