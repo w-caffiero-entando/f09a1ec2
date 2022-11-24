@@ -50,6 +50,7 @@ class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBaseTestCa
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, 0);
         ((MockHttpServletRequest) super.getRequest()).setScheme("https");
         ((MockHttpServletRequest) super.getRequest()).setServerName("www.myproduct.com");
+        ((MockHttpServletRequest) super.getRequest()).removeHeader("Host");
         ((MockHttpServletRequest) super.getRequest()).addHeader("Host", "www.myproduct.com");
         ((MockHttpServletRequest) super.getRequest()).setContextPath("/entando");
     }
@@ -96,7 +97,6 @@ class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBaseTestCa
         assertEquals(expectedPath, aURL.getPath());
         List<NameValuePair> params = URLEncodedUtils.parse(aURL.getQuery(), Charset.forName("UTF-8"));
         for (NameValuePair param : params) {
-            System.out.println(param.getName() + " : " + param.getValue());
             if (param.getName().equals("internalServletActionPath")) {
                 assertEquals("/ExtStr2/do/Api/Service/details", param.getValue());
             } else if (param.getName().equals("internalServletFrameDest")) {

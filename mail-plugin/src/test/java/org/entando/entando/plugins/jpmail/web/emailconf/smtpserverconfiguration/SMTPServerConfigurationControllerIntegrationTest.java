@@ -36,7 +36,6 @@ import java.util.HashMap;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -133,7 +132,7 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
         String accessToken = mockOAuthInterceptor(user);
 
         executePutSMTPServerConfiguration("1_PUT_valid.json", accessToken, status().isOk())
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(jsonPath("$.payload.username", is(SMTP_CONF_USERNAME_2)))
                 .andExpect(jsonPath("$.payload.password", is(SMTP_CONF_PASSWORD_2)))
                 .andExpect(jsonPath("$.payload.host", is(SMTP_CONF_HOST_2)))
@@ -165,7 +164,7 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
         ResultActions result = mockMvc
                 .perform(get(BASE_URL)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(expected).andDo(print());
+        result.andExpect(expected).andDo(resultPrint());
         return result;
     }
 
@@ -177,7 +176,7 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print()).andExpect(expected);
+        result.andDo(resultPrint()).andExpect(expected);
         return result;
     }
 
@@ -187,7 +186,7 @@ class SMTPServerConfigurationControllerIntegrationTest extends AbstractControlle
                         .sessionAttr("user", user)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print()).andExpect(expected);
+        result.andDo(resultPrint()).andExpect(expected);
         return result;
     }
 

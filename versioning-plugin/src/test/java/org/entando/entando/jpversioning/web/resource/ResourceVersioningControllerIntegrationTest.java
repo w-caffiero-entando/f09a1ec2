@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -663,7 +662,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
                 .header("Authorization", "Bearer " + mockOAuthInterceptor(user));
 
         return mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
     }
 
     private ResultActions deleteTrashedResource(UserDetails user, String versionResourceId) throws Exception {
@@ -672,7 +671,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
                 .header("Authorization", "Bearer " + mockOAuthInterceptor(user));
 
         return mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
     }
 
     private String createAndDeleteResource(UserDetails user, String resourceTypeCode, String type, Map<String, String> params) throws Exception {
@@ -710,7 +709,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
         requestBuilder.param("sort", "id");
         requestBuilder.param("direction", "ASC");
         return mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
     }
 
     private ResultActions performDeleteResource(UserDetails user, String type, String resourceId) throws Exception {
@@ -723,7 +722,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
         String accessToken = mockOAuthInterceptor(user);
         return mockMvc.perform(
                 delete(path)
-                        .header("Authorization", "Bearer " + accessToken)).andDo(print());
+                        .header("Authorization", "Bearer " + accessToken)).andDo(resultPrint());
     }
 
     private ResultActions performCreateResource(UserDetails user, String type, String group, String mimeType) throws Exception {
@@ -751,7 +750,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
                 .param("metadata", MAPPER.writeValueAsString(resourceRequest))
                 .header("Authorization", "Bearer " + accessToken);
 
-        return mockMvc.perform(request).andDo(print());
+        return mockMvc.perform(request).andDo(resultPrint());
     }
 
     private ResultActions performGetResources(UserDetails user, String type) throws Exception {
@@ -768,7 +767,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
         String accessToken = mockOAuthInterceptor(user);
         return mockMvc.perform(
                 get(path)
-                        .header("Authorization", "Bearer " + accessToken)).andDo(print());
+                        .header("Authorization", "Bearer " + accessToken)).andDo(resultPrint());
     }
 
     private ResultActions performDownloadResource(UserDetails user, String resourceId, Integer size) throws Exception {
@@ -777,7 +776,7 @@ public class ResourceVersioningControllerIntegrationTest extends AbstractControl
                 .header("Authorization", "Bearer " + mockOAuthInterceptor(user));
 
         return mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
     }
 
 }

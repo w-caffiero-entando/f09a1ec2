@@ -1,6 +1,5 @@
 package com.agiletec.aps.system.services.widgettype;
 
-import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.util.ApsProperties;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.ent.exception.EntException;
@@ -10,7 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class TestWidgetType extends BaseTestCase {
+class TestWidgetType {
 
     @Test
     void testEqualsAndHashcode() throws EntException {

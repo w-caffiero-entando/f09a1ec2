@@ -26,7 +26,9 @@ import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.util.DateConverter;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class TestActionLogManager extends BaseTestCase {
@@ -108,14 +110,14 @@ class TestActionLogManager extends BaseTestCase {
 				DateConverter.getFormattedDate(received.getActionDate(), "ddMMyyyyHHmm"));
 	}
 	
-	@BeforeAll
+	@BeforeEach
 	private void init() {
 		this._actionLoggerManager = (IActionLogManager) this.getService(SystemConstants.ACTION_LOGGER_MANAGER);
 		this._helper = new ActionLoggerTestHelper(this.getApplicationContext());
         this._helper.cleanRecords();
 	}
 	
-	@AfterAll
+	@AfterEach
 	protected void destroy() throws Exception {
 		this._helper.cleanRecords();
 	}

@@ -61,7 +61,6 @@ class LanguageControllerIntegrationTest extends AbstractControllerIntegrationTes
                 .andExpect(status().isOk());
 
         testCors("/languages");
-        System.out.println(result.andReturn().getResponse().getContentAsString());
     }
 
     @Test
@@ -73,7 +72,6 @@ class LanguageControllerIntegrationTest extends AbstractControllerIntegrationTes
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isOk());
         testCors("/languages");
-        System.out.println(result.andReturn().getResponse().getContentAsString());
     }
 
     @Test
@@ -85,7 +83,6 @@ class LanguageControllerIntegrationTest extends AbstractControllerIntegrationTes
                         .param("filter[0].attribute", "isActive")
                         .param("filter[0].value", "true")
                         .header("Authorization", "Bearer " + accessToken));
-        System.out.println(result.andReturn().getResponse().getContentAsString());
         result.andExpect(status().isOk());
 
     }

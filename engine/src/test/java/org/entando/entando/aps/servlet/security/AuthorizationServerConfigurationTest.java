@@ -70,7 +70,6 @@ class AuthorizationServerConfigurationTest extends AbstractControllerIntegration
                     .andExpect(status().isOk())
                     .andExpect(content().contentType("application/json;charset=UTF-8"));
             String resultString = result.andReturn().getResponse().getContentAsString();
-            System.out.println(resultString);
             Assertions.assertTrue(StringUtils.isNotBlank(resultString));
             String token = JsonPath.parse(resultString).read("$.access_token");
             Assertions.assertTrue(StringUtils.isNotBlank(token));
@@ -114,7 +113,6 @@ class AuthorizationServerConfigurationTest extends AbstractControllerIntegration
                     .andExpect(status().isOk())
                     .andExpect(content().contentType("application/json;charset=UTF-8"));
             String resultString = result.andReturn().getResponse().getContentAsString();
-            System.out.println(resultString);
             Assertions.assertTrue(StringUtils.isNotBlank(resultString));
             String newAccesstoken = JsonPath.parse(resultString).read("$.access_token");
             Assertions.assertFalse(newAccesstoken.equals(accessToken.getValue()));

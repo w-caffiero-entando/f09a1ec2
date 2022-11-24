@@ -19,6 +19,7 @@ import com.agiletec.aps.system.services.lang.cache.ILangManagerCacheWrapper;
 import com.agiletec.aps.system.services.lang.events.LangsChangedEvent;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +47,7 @@ class LangManagerTest {
 	@InjectMocks
 	private LangManager langManager;
 
-	@BeforeEach
+	@BeforeAll
 	public static void setUp() throws Exception {
 		MockitoAnnotations.initMocks(LangManagerTest.class);
 	}

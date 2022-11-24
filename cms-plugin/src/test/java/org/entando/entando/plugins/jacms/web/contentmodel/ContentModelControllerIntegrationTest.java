@@ -20,7 +20,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -548,7 +547,7 @@ class ContentModelControllerIntegrationTest extends AbstractControllerIntegratio
                         .param("filters[0].value", "1")
                         .param("filters[0].operator", "like")
                         .header("Authorization", "Bearer " + accessToken))
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.length()", is(1)));
 
@@ -558,7 +557,7 @@ class ContentModelControllerIntegrationTest extends AbstractControllerIntegratio
                         .param("filters[0].value", "abc")
                         .param("filters[0].operator", "like")
                         .header("Authorization", "Bearer " + accessToken))
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.payload.length()", is(0)));
     }

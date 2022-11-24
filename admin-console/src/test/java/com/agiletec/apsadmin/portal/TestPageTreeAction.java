@@ -86,7 +86,6 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     @Test
 	void testViewTree_4() throws Throwable {
         IPage page = this._pageManager.getDraftPage("pagina_1");
-        System.out.println("CODES -> " + Arrays.asList(page.getChildrenCodes()));
         
         this.initAction("/do/Page", "viewTree");
         this.addParameter("selectedNode", "pagina_12");

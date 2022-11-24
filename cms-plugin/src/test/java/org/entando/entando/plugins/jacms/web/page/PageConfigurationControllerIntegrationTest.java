@@ -47,7 +47,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -212,7 +211,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
                             .header("Authorization", "Bearer " + accessToken));
 
             result
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(jsonPath("$.errors", hasSize(0)))
                 .andExpect(jsonPath("$.payload.code", is("content_viewer")))
                 .andExpect(jsonPath("$.payload.config.size()", is(3)))
@@ -261,7 +260,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
                             .header("Authorization", "Bearer " + accessToken));
 
             result
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.errors", hasSize(0)))
                     .andExpect(jsonPath("$.payload.code", is("content_viewer")))
                     .andExpect(jsonPath("$.payload.config.size()", is(3)))
@@ -314,7 +313,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
                             .header("Authorization", "Bearer " + accessToken));
 
             result
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.errors", hasSize(0)))
                     .andExpect(jsonPath("$.payload.code", is("content_viewer")))
                     .andExpect(jsonPath("$.payload.config.size()", is(3)))
@@ -423,7 +422,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessToken));
             result.andExpect(status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.errors", hasSize(0)))
                     .andExpect(jsonPath("$.payload.code", is("row_content_viewer_list")))
                     .andExpect(jsonPath("$.payload.config.contents[0].contentId", is("EVN21")))
@@ -466,7 +465,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessToken));
             result.andExpect(status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.errors", hasSize(0)))
                     .andExpect(jsonPath("$.payload.code", is("row_content_viewer_list")))
                     .andExpect(jsonPath("$.payload.config.contents[0].contentId", is("EVN21")))
@@ -516,7 +515,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessToken));
             result.andExpect(status().isOk())
-                    .andDo(print());
+                    .andDo(resultPrint());
 
             result = mockMvc
                     .perform(put("/pages/{pageCode}/widgets/{frame}", new Object[]{pageCode, 0})
@@ -526,7 +525,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
                             .header("Authorization", "Bearer " + accessToken));
 
             result.andExpect(status().isOk())
-                    .andDo(print());
+                    .andDo(resultPrint());
 
             result = mockMvc
                     .perform(get("/pages/{pageCode}/widgets", new Object[]{pageCode})
@@ -534,7 +533,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
                             .header("Authorization", "Bearer " + accessToken));
 
             result.andExpect(status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload[0].code", is("row_content_viewer_list")))
                     .andExpect(jsonPath("$.payload[0].config.contents[0].contentId", is("EVN21")))
                     .andExpect(jsonPath("$.payload[0].config.contents[0].modelId", is("list")))
@@ -784,7 +783,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
         ResultActions resultActions = mockMvc.perform(get("/dashboard/pageStatus")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print());
+                .andDo(resultPrint());
 
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString().replace("{\"payload\":", "").replace(",\"metaData\":{},\"errors\":[]}", "");
