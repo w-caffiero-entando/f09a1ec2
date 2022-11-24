@@ -29,5 +29,4 @@ mvn clean test -Ppre-deployment-verification -pl <module-name> -Dtest=<test-clas
 ```
 
 By default the logging output in tests is minimized.
-To enable the printing of mocked REST call responses in tests set to true the property `org.entando.test.enableResultPrint` in the pom.xml.
 The general log level is controlled by the variable `ROOT_LOG_LEVEL`, that in tests is set to `WARN` by default.
