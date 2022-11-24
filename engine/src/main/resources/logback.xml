@@ -77,4 +77,6 @@
         <appender-ref ref="JSONFILE"/>
         <appender-ref ref="FILE"/>
     </root>
+    <!-- uncomment the following line to enable printing of MockMVC responses in tests -->
+    <!--<logger name="org.entando.entando.web.AbstractControllerIntegrationTest" level="DEBUG"/>-->
 </configuration>
