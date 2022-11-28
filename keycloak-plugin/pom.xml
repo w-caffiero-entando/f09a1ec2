@@ -11,35 +11,7 @@
     <artifactId>entando-keycloak-auth</artifactId>
     <packaging>jar</packaging>
     <name>Entando Plugin: Keycloak</name>
-    <licenses>
-        <license>
-            <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
-            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <organization>
-        <name>Entando Inc.</name>
-        <url>http://www.entando.com/</url>
-    </organization>
-    <scm>
-        <connection>scm:git:git@github.com:entando/entando-keycloak-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:entando/entando-keycloak-plugin.git</developerConnection>
-        <url>https://github.com/entando/entando-keycloak-plugin</url>
-        <tag>master</tag>
-    </scm>
-    <repositories>
-        <repository>
-            <id>jx-releases</id>
-            <url>https://nexus-jx.apps.serv.run/repository/maven-releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+    <url>http://www.entando.com/</url>
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
     </properties>
