@@ -10,7 +10,6 @@
     <groupId>org.entando.entando</groupId>
     <artifactId>webapp</artifactId>
     <packaging>war</packaging>
-    <version>7.2.0-SNAPSHOT</version>
     <name>Entando App Engine Webapp</name>
     <url>http://www.entando.com/</url>
     <licenses>
