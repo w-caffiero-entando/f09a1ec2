@@ -149,7 +149,7 @@
         <tika-version>1.28.4</tika-version>
         <c3p0.version>0.9.5.5</c3p0.version>
         <vorbis-java-tika.version>0.8</vorbis-java-tika.version>
-        <drewnoakes-metadata-extractor.version>2.16.0</drewnoakes-metadata-extractor.version>
+        <drewnoakes-metadata-extractor.version>2.18.0</drewnoakes-metadata-extractor.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <lombok.version>1.18.20</lombok.version>
         <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
