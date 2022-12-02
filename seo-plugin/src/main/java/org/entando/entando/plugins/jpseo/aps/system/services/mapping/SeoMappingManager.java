@@ -67,7 +67,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     @Override
     public void init() throws Exception {
         this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), true);
-        logger.debug("{} ready. initialized",this.getClass().getName());
+        logger.debug("{} ready. initialized", this.getClass().getName());
     }
 
     @Override
@@ -101,7 +101,9 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
                 && !PageChangedEvent.EVENT_TYPE_SET_PAGE_ONLINE.equals(event.getEventType())) {
             return;
         }
-        try {
+        if (PageChangedEvent.EVENT_TYPE_SET_PAGE_OFFLINE.equals(event.getEventType())) {
+            this.getSeoMappingDAO().deleteMappingForPage(page.getCode());
+        } else {
             this.getSeoMappingDAO().deleteMappingForPage(page.getCode());
             if (PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode() && friendlyCodes != null) {
                 for (Entry<Object, Object> entry : seoMetadata.getFriendlyCodes().entrySet()) {
@@ -116,13 +118,16 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
                     }
                 }
             }
-            SeoChangedEvent seoEvent = new SeoChangedEvent();
-            seoEvent.setOperationCode(SeoChangedEvent.PAGE_CHANGED_EVENT);
-            this.notifyEvent(seoEvent);
-            this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), false);
-        } catch (Throwable t) {
-            logger.error("Error updating mapping from page changed", t);
+            try {
+                SeoChangedEvent seoEvent = new SeoChangedEvent();
+                seoEvent.setOperationCode(SeoChangedEvent.PAGE_CHANGED_EVENT);
+                this.notifyEvent(seoEvent);
+                this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), false);
+            } catch (Throwable t) {
+                logger.error("Error updating mapping from page changed", t);
+            }
         }
+
     }
 
     @Override
@@ -260,6 +265,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     public ISeoMappingDAO getSeoMappingDAO() {
         return seoMappingDAO;
     }
+
     public void setSeoMappingDAO(ISeoMappingDAO seoMappingDAO) {
         this.seoMappingDAO = seoMappingDAO;
     }
@@ -267,6 +273,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     protected ILangManager getLangManager() {
         return langManager;
     }
+
     public void setLangManager(ILangManager langManager) {
         this.langManager = langManager;
     }
@@ -274,6 +281,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     protected IPageManager getPageManager() {
         return pageManager;
     }
+
     public void setPageManager(IPageManager pageManager) {
         this.pageManager = pageManager;
     }
@@ -281,6 +289,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     protected ISeoMappingCacheWrapper getCacheWrapper() {
         return cacheWrapper;
     }
+
     public void setCacheWrapper(ISeoMappingCacheWrapper cacheWrapper) {
         this.cacheWrapper = cacheWrapper;
     }
