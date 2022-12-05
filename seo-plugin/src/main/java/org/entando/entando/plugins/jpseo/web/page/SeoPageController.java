@@ -34,6 +34,9 @@ import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.entando.entando.plugins.jpseo.web.page.validator.SeoPageValidator.ERRCODE_PAGE_INVALID_FRIENDLY_CODE;
+import static org.entando.entando.plugins.jpseo.web.page.validator.SeoPageValidator.ERRCODE_PAGE_INVALID_TITLE;
+
 @RestController
 @RequestMapping(value = "/plugins/seo/pages")
 public class SeoPageController implements ISeoPageController {
@@ -102,7 +105,7 @@ public class SeoPageController implements ISeoPageController {
                 if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), entry.getValue().getFriendlyCode())) {
                     DataBinder binder = new DataBinder(entry.getValue());
                     bindingResult = binder.getBindingResult();
-                    bindingResult.reject("10",  "Invalid friendly code");
+                    bindingResult.reject(ERRCODE_PAGE_INVALID_FRIENDLY_CODE,  "Invalid friendly code");
                     throw new ValidationConflictException(bindingResult);
                 }
             }
@@ -165,7 +168,7 @@ public class SeoPageController implements ISeoPageController {
                 if (!getSeoPageValidator().checkFriendlyCode(pageRequest.getCode(), entry.getValue().getFriendlyCode())) {
                     DataBinder binder = new DataBinder(entry.getValue());
                     bindingResult = binder.getBindingResult();
-                    bindingResult.reject("10",  "Invalid friendly code");
+                    bindingResult.reject(ERRCODE_PAGE_INVALID_FRIENDLY_CODE,  "Invalid friendly code");
                     throw new ValidationConflictException(bindingResult);
                 }
             }
@@ -187,7 +190,7 @@ public class SeoPageController implements ISeoPageController {
 
         if ((null == defaultLangTitle) || (defaultLangTitle.isEmpty())) {
             String defaultLangCode = langManager.getDefaultLang().getCode().toUpperCase();
-            bindingResult.reject("12", "Invalid title for the default language " + defaultLangCode);
+            bindingResult.reject(ERRCODE_PAGE_INVALID_TITLE, "Invalid title for the default language " + defaultLangCode);
         }
 
         if (bindingResult.hasErrors()) {
