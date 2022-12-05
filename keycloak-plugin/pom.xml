@@ -12,9 +12,6 @@
     <packaging>jar</packaging>
     <name>Entando Plugin: Keycloak</name>
     <url>http://www.entando.com/</url>
-    <properties>
-        <checkstyle.skip>true</checkstyle.skip>
-    </properties>
     <build>
         <plugins>
             <plugin>
