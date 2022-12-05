@@ -12,12 +12,6 @@
     <name>Entando Core: Engine</name>
     <description>Entando Engine: an agile, modern and user-centric open source Portal platform.</description>
     <url>http://www.entando.com/</url>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <owaspSuppressionFileLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
-    </properties>
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <extensions>

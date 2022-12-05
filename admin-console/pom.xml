@@ -19,9 +19,6 @@
         <!--        <allTestsSuiteClass>com.agiletec.apsadmin.AllTests</allTestsSuiteClass>-->
         <maven-repository-id-release>nexus</maven-repository-id-release>
         <maven-repository-url-release>http://nexus/repository/maven-releases</maven-repository-url-release>
-        <owaspSuppressionFileLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
     </properties>
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>

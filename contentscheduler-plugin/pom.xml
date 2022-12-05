@@ -19,11 +19,6 @@
         </developer>
     </developers>
     <url>http://www.entando.com/</url>
-    <properties>
-        <owaspSuppressionFileLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
-    </properties>
     <build>
         <resources>
             <resource>

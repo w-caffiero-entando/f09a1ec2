@@ -13,11 +13,6 @@
     <name>Entando Plugin: CMS</name>
     <description>Allows registered users to manage dynamic contents and digital assets</description>
     <url>http://www.entando.com/</url>
-    <properties>
-        <owaspSuppressionFileLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
-    </properties>
     <build>
         <resources>
             <resource>

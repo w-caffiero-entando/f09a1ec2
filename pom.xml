@@ -65,9 +65,6 @@
         <allTestsSuiteClass/>
         <preDeploymentTestGroups/>
         <postDeploymentTestGroups/>
-        <owaspSuppressionFileLocation>
-            owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
         <!--test database default settings -->
         <test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</test.database.driver>
         <test.database.hostname>localhost</test.database.hostname>
