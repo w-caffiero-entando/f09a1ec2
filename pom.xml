@@ -62,6 +62,7 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
+        <checkstyle.skip>true</checkstyle.skip>
         <allTestsSuiteClass/>
         <preDeploymentTestGroups/>
         <postDeploymentTestGroups/>
