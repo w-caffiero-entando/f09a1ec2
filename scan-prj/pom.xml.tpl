@@ -8,7 +8,7 @@
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <parent>
         <groupId>org.entando</groupId>
-        <artifactId>entando-core-parent</artifactId>
+        <artifactId>app-engine</artifactId>
         <relativePath>../pom.xml</relativePath>
         <version>7.2.0-SNAPSHOT</version>
     </parent>
