@@ -62,15 +62,10 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
+        <checkstyle.skip>true</checkstyle.skip>
         <allTestsSuiteClass/>
         <preDeploymentTestGroups/>
         <postDeploymentTestGroups/>
-        <checkstyleConfigLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/ACTIVE-CHECKSTYLE/checkstyle.xml
-        </checkstyleConfigLocation>
-        <owaspSuppressionFileLocation>
-            owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
         <!--test database default settings -->
         <test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</test.database.driver>
         <test.database.hostname>localhost</test.database.hostname>
@@ -294,6 +289,9 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <executeOnlyOnRootModule>false</executeOnlyOnRootModule>
+                </configuration>
             </plugin>
         </plugins>
     </build>

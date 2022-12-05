@@ -87,27 +87,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.owasp</groupId>
-                        <artifactId>dependency-check-maven</artifactId>
-                        <version>4.0.2</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>aggregate</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <!--NB!! we need to switch this back on - Ampie -->
-                            <skip>true</skip>
-                            <autoUpdate>true</autoUpdate>
-                            <format>XML</format>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
