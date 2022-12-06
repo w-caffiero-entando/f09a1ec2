@@ -132,7 +132,6 @@ class TestBulkCommandManager extends BaseTestCase {
 	private int countThreads() {
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		List<String> names = threadSet.stream().map(t -> t.getName()).collect(Collectors.toList());
-		System.out.println("---->>>>> " + names);
 		return threadSet.size();
 	}
 

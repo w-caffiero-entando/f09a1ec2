@@ -8,45 +8,17 @@
     </parent>
     <groupId>org.entando.entando</groupId>
     <artifactId>entando-admin-console</artifactId>
-    <version>7.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Entando Core: Administration Console</name>
     <description>Entando Administration Console: an agile, modern and user-centric open source Portal platform.
     </description>
     <url>http://www.entando.com/</url>
-    <licenses>
-        <license>
-            <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
-            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <organization>
-        <name>Entando Inc.</name>
-        <url>http://www.entando.com/</url>
-    </organization>
-    <repositories>
-        <repository>
-            <id>nexus-jx</id>
-            <url>https://nexus-jx.apps.serv.run/repository/maven-releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <checkstyle.skip>true</checkstyle.skip>
         <allTestsSuiteClass>com.agiletec.apsadmin.system.services.TestShortcutManager</allTestsSuiteClass>
         <!--        <allTestsSuiteClass>com.agiletec.apsadmin.AllTests</allTestsSuiteClass>-->
         <maven-repository-id-release>nexus</maven-repository-id-release>
         <maven-repository-url-release>http://nexus/repository/maven-releases</maven-repository-url-release>
-        <owaspSuppressionFileLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
     </properties>
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
@@ -143,7 +115,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M1</version>
             </plugin>
         </plugins>
         <pluginManagement>

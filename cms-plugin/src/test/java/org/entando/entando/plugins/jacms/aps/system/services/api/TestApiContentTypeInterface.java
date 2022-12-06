@@ -68,8 +68,7 @@ class TestApiContentTypeInterface extends ApiBaseTestCase {
         try {
             Object response = this.getResponseBuilder().createResponse(postMethod, jaxbContentType, properties);
             assertNotNull(response);
-            final List<ApiError> errors = ((StringApiResponse) response).getErrors();
-            errors.forEach(e -> System.out.println(e.getMessage()));
+            ((StringApiResponse) response).getErrors();
             assertEquals(IResponseBuilder.SUCCESS, ((StringApiResponse) response).getResult());
             jaxbContentType1 = this.testGetContentType(mediaType, "admin", contentTypeId, CONTENT_VIEW_TEST, "it");
         } catch (Exception e) {

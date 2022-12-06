@@ -115,9 +115,7 @@ class TestSmtpConfigAction extends ApsAdminBaseTestCase {
 		params.put("smtpPort", "invalidNumber");
 		result = this.executeSave("admin", params);
 		assertEquals(Action.INPUT, result);
-		
-		System.out.println(this.getAction().getFieldErrors());
-		
+
 		fieldErrors = this.getAction().getFieldErrors();
 		assertEquals(2, fieldErrors.size());
 		assertEquals(1, fieldErrors.get("smtpHost").size());

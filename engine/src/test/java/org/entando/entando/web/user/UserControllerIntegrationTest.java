@@ -115,7 +115,6 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                         .param("withProfile", "0")
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isOk());
-        System.out.println("with no profile: " + result.andReturn().getResponse().getContentAsString());
         result.andExpect(jsonPath("$.payload", Matchers.hasSize(0)));
         result.andExpect(jsonPath("$.metaData.additionalParams.withProfile", is("0")));
     }
@@ -519,7 +518,6 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
             String invalidBody1 = "{\"username\": \"" + validUsername + "\",\"status\": \"active\",\"password\": \"$invalid%%\"}";
             ResultActions resultInvalid1 = this.executeUserPut(invalidBody1, validUsername, accessToken, status().isBadRequest());
-            System.out.println(resultInvalid1.andReturn().getResponse().getContentAsString());
             resultInvalid1.andExpect(jsonPath("$.payload", Matchers.hasSize(0)));
             resultInvalid1.andExpect(jsonPath("$.errors", Matchers.hasSize(1)));
             resultInvalid1.andExpect(jsonPath("$.errors[0].code", is("3")));
@@ -535,16 +533,12 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
             String valid1 = "{\"username\": \"" + validUsername + "\",\"status\": \"active\",\"reset\": true}";
             ResultActions resultValid1 = this.executeUserPut(valid1, validUsername, accessToken, status().isOk());
-            String responseValid1 = resultValid1.andReturn().getResponse().getContentAsString();
-            System.out.println("resp:" + responseValid1);
             resultValid1.andExpect(jsonPath("$.payload.username", is(validUsername)));
             UserDetails authUser = this.authenticationProviderManager.getUser(validUsername, validPassword);
             Assertions.assertNotNull(authUser);
 
             String valid2 = "{\"username\": \"" + validUsername + "\",\"status\": \"active\",\"password\": \"12345678\",\"reset\": true}";
             ResultActions resultValid2 = this.executeUserPut(valid2, validUsername, accessToken, status().isOk());
-            String responseValid2 = resultValid2.andReturn().getResponse().getContentAsString();
-            System.out.println("resp:" + responseValid2);
             resultValid2.andExpect(jsonPath("$.payload.username", is(validUsername)));
             authUser = this.authenticationProviderManager.getUser(validUsername, validPassword);
             Assertions.assertNull(authUser);

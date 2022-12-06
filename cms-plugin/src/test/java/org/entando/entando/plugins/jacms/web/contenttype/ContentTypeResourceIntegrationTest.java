@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -86,7 +85,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.metaData.pageSize").value("100"))
@@ -139,7 +138,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                     .content(jsonMapper.writeValueAsString(contentTypeRequest))
                     .accept(MediaType.APPLICATION_JSON_UTF8));
 
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.payload.code", is(typeCode)))
@@ -173,7 +172,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                     .content(jsonMapper.writeValueAsString(createdContentType))
                     .accept(MediaType.APPLICATION_JSON_UTF8));
 
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.code").value(createdContentType.getCode()))
                     .andExpect(jsonPath("$.payload.name").value("MyContentType"))
@@ -202,7 +201,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                     .content(jsonMapper.writeValueAsString(createdContentType))
                     .accept(MediaType.APPLICATION_JSON_UTF8));
 
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(status().isNotFound());
         } finally {
             if (null != this.contentManager.getEntityPrototype(typeCode)) {
@@ -276,7 +275,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                     .header("Authorization", "Bearer " + accessToken)
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .accept(MediaType.APPLICATION_JSON_UTF8))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andReturn();
             ContentTypeDto contentTypeDto = stringToContentTypeDto(mvcResult);
@@ -300,12 +299,12 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
         try {
             //Create ContentType
             executeContentTypePost("1_type_valid.json", placeholders, accessToken, status().isCreated())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.code", is(typeCode)));
 
             //Same request returns 201 Created
             executeContentTypePost("1_type_valid.json", placeholders, accessToken, status().isCreated())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.code", is(typeCode)));
 
             //Same code, different object, returns 409 Conflict
@@ -329,7 +328,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath(
@@ -348,7 +347,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Attach"))
@@ -364,7 +363,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Boolean"))
@@ -380,7 +379,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("CheckBox"))
@@ -396,7 +395,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Composite"))
@@ -412,7 +411,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Date"))
@@ -428,7 +427,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Enumerator"))
@@ -444,7 +443,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("EnumeratorMap"))
@@ -460,7 +459,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Hypertext"))
@@ -476,7 +475,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Image"))
@@ -492,7 +491,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Link"))
@@ -508,7 +507,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("List"))
@@ -524,7 +523,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Longtext"))
@@ -540,7 +539,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Monolist"))
@@ -556,7 +555,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Monotext"))
@@ -572,7 +571,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Number"))
@@ -588,7 +587,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Text"))
@@ -604,7 +603,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("ThreeState"))
@@ -620,7 +619,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
-                //                .andDo(print())
+                //                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.payload.code").value("Timestamp"))
@@ -670,7 +669,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(jsonMapper.writeValueAsString(attribute))
                     .accept(MediaType.APPLICATION_JSON_UTF8))
-                    //                .andDo(print())
+                    //                .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.metaData.contentTypeCode").value(contentType.getCode()))
@@ -698,7 +697,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                     .header("Authorization", "Bearer " + accessToken)
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .accept(MediaType.APPLICATION_JSON_UTF8))
-                    //                .andDo(print())
+                    //                .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.payload.code").value("MyAttribute"))
@@ -723,7 +722,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                             .header("Authorization", "Bearer " + accessToken)
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
                             .accept(MediaType.APPLICATION_JSON_UTF8))
-                    //                .andDo(print())
+                    //                .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.payload.size()").value(2))
@@ -752,7 +751,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(jsonMapper.writeValueAsString(contentTypeAttribute))
                     .accept(MediaType.APPLICATION_JSON_UTF8))
-                    //                .andDo(print())
+                    //                .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.payload.name").value("My New Name"))
@@ -785,7 +784,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                     .header("Authorization", "Bearer " + accessToken)
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .accept(MediaType.APPLICATION_JSON_UTF8))
-                    //                .andDo(print())
+                    //                .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andReturn();
@@ -836,7 +835,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                 .content(jsonMapper.writeValueAsString(bodyRequest))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andReturn();
     }
@@ -908,7 +907,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(
                         MockMvcResultMatchers.jsonPath("$.payload.type", CoreMatchers.is(ContentTypeResourceController.COMPONENT_ID)))
@@ -952,7 +951,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
                             .content(jsonMapper.writeValueAsString(attribute))
                             .accept(MediaType.APPLICATION_JSON_UTF8))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.metaData.contentTypeCode").value(contentType.getCode()))
@@ -977,7 +976,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
                             .content(jsonMapper.writeValueAsString(attribute))
                             .accept(MediaType.APPLICATION_JSON_UTF8))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.metaData.contentTypeCode").value(contentType.getCode()))
@@ -1019,7 +1018,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
                             .content(jsonMapper.writeValueAsString(attribute))
                             .accept(MediaType.APPLICATION_JSON_UTF8))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.metaData.contentTypeCode").value(contentType.getCode()))
@@ -1044,7 +1043,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
                             .content(jsonMapper.writeValueAsString(attribute))
                             .accept(MediaType.APPLICATION_JSON_UTF8))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.metaData.contentTypeCode").value(contentType.getCode()))
@@ -1082,7 +1081,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
                             .content(jsonMapper.writeValueAsString(attribute))
                             .accept(MediaType.APPLICATION_JSON_UTF8))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.metaData.contentTypeCode").value(contentType.getCode()))
@@ -1101,7 +1100,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
                             .content(jsonMapper.writeValueAsString(attribute))
                             .accept(MediaType.APPLICATION_JSON_UTF8))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.metaData.contentTypeCode").value(contentType.getCode()))
@@ -1124,7 +1123,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
                             .content(jsonMapper.writeValueAsString(attribute))
                             .accept(MediaType.APPLICATION_JSON_UTF8))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(jsonPath("$.metaData.contentTypeCode").value(contentType.getCode()))
@@ -1176,7 +1175,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print()).andExpect(expected);
+        result.andDo(resultPrint()).andExpect(expected);
         return result;
     }
     

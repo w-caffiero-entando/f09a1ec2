@@ -1,10 +1,11 @@
 <configuration>
-    <property name="LOG_LEVEL" value="${LOG_LEVEL:-WARN}" />
-    <property name="LOG_JSON_LEVEL" value="${LOG_JSON_LEVEL:-OFF}" />
-    <property name="LOG_FILE_LEVEL" value="${LOG_FILE_LEVEL:-OFF}" />
-    <property name="LOG_FILE_JSON_LEVEL" value="${LOG_FILE_JSON_LEVEL:-OFF}" />
-    <property name="LOG_FILE_DIR" value="${LOG_FILE_DIR:-target/log}" />
-    <property name="LOG_FILE_NAME" value="${LOG_FILE_NAME:-entando-engine}" />
+    <property name="LOG_LEVEL" value="${LOG_LEVEL:-WARN}"/>
+    <property name="ROOT_LOG_LEVEL" value="${ROOT_LOG_LEVEL:-DEBUG}"/>
+    <property name="LOG_JSON_LEVEL" value="${LOG_JSON_LEVEL:-OFF}"/>
+    <property name="LOG_FILE_LEVEL" value="${LOG_FILE_LEVEL:-OFF}"/>
+    <property name="LOG_FILE_JSON_LEVEL" value="${LOG_FILE_JSON_LEVEL:-OFF}"/>
+    <property name="LOG_FILE_DIR" value="${LOG_FILE_DIR:-target/log}"/>
+    <property name="LOG_FILE_NAME" value="${LOG_FILE_NAME:-entando-engine}"/>
     <appender name="FILE" class="org.entando.entando.ent.logger.EntRollingFileAppender">
         <file>${LOG_FILE_DIR}/${LOG_FILE_NAME}.log</file>
         <filter class="org.entando.entando.ent.logger.EntThresholdFilter">
@@ -17,19 +18,21 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_FILE_DIR}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- each file should be at most 100MB, keep 10 days worth of history, but at most 2GB -->
-            <maxFileSize>100MB</maxFileSize>    
+            <maxFileSize>100MB</maxFileSize>
             <maxHistory>10</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
     </appender>
     <appender name="JSONFILE" class="org.entando.entando.ent.logger.EntRollingFileAppender">
-        <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-            <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
-                <prettyPrint>true</prettyPrint>
-            </jsonFormatter>
-            <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
-            <appendLineSeparator>true</appendLineSeparator>
-        </layout>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+                <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+                    <prettyPrint>true</prettyPrint>
+                </jsonFormatter>
+                <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
+                <appendLineSeparator>true</appendLineSeparator>
+            </layout>
+        </encoder>
         <file>${LOG_FILE_DIR}/${LOG_FILE_NAME}-json.log</file>
         <filter class="org.entando.entando.ent.logger.EntThresholdFilter">
             <level>${LOG_FILE_JSON_LEVEL}</level>
@@ -38,19 +41,21 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_FILE_DIR}/${LOG_FILE_NAME}-json.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- each file should be at most 100MB, keep 10 days worth of history, but at most 2GB -->
-            <maxFileSize>100MB</maxFileSize>    
+            <maxFileSize>100MB</maxFileSize>
             <maxHistory>10</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
     </appender>
     <appender name="JSONSTDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-            <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
-                <prettyPrint>true</prettyPrint>
-            </jsonFormatter>
-            <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
-            <appendLineSeparator>true</appendLineSeparator>
-        </layout>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+                <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+                    <prettyPrint>true</prettyPrint>
+                </jsonFormatter>
+                <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
+                <appendLineSeparator>true</appendLineSeparator>
+            </layout>
+        </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>${LOG_JSON_LEVEL}</level>
         </filter>
@@ -63,10 +68,15 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="DEBUG">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="JSONSTDOUT" />
-        <appender-ref ref="JSONFILE" />
-        <appender-ref ref="FILE" /> 
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+    <root level="${ROOT_LOG_LEVEL}">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="JSONSTDOUT"/>
+        <appender-ref ref="JSONFILE"/>
+        <appender-ref ref="FILE"/>
     </root>
+    <!-- uncomment the following line to enable printing of MockMVC responses in tests -->
+    <!--<logger name="org.entando.entando.web.AbstractControllerIntegrationTest" level="DEBUG"/>-->
 </configuration>

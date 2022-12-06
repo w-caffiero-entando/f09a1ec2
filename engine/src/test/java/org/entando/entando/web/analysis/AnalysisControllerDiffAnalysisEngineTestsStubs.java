@@ -29,7 +29,6 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -114,7 +113,7 @@ public class AnalysisControllerDiffAnalysisEngineTestsStubs {
             String code,
             String expectedValue) throws Exception {
 
-        result.andDo(print()).andExpect(status().isOk())
+        result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.errors.length()", is(0)))
                 .andExpect(jsonPath("$.payload." + componentType + ".length()", is(1)))
                 .andExpect(jsonPath("$.payload." + componentType + "." + code, equalTo(expectedValue)));

@@ -37,7 +37,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -86,7 +85,6 @@ class PageModelControllerTest extends AbstractControllerTest {
         ResultActions result = mockMvc.perform(
                 get("/pageModels")
                         .header("Authorization", "Bearer " + accessToken))
-                                      .andDo(print())
                                       .andExpect(status().isOk())
                                       .andExpect(jsonPath("$.metaData.totalItems", is(1)));
 
@@ -149,7 +147,6 @@ class PageModelControllerTest extends AbstractControllerTest {
                         .content(jsonMapper.writeValueAsString(pageModel))
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
-               .andDo(print())
                .andExpect(status().isBadRequest())
                .andExpect(jsonPath("$.errors.length()", is(1)));
     }

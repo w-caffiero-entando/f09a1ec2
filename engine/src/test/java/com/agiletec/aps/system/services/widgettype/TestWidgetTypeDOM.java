@@ -22,14 +22,13 @@ import java.util.List;
 import org.entando.entando.aps.system.services.widgettype.WidgetTypeDOM;
 import org.entando.entando.aps.system.services.widgettype.WidgetTypeParameter;
 
-import com.agiletec.aps.BaseTestCase;
 import org.entando.entando.ent.exception.EntException;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author M.Diana
  */
-class TestWidgetTypeDOM extends BaseTestCase {
+class TestWidgetTypeDOM {
 	
     @Test
     void testParseConfig() throws EntException {

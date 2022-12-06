@@ -45,7 +45,6 @@ import java.util.Date;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -69,7 +68,6 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
         ResultActions result = mockMvc
                 .perform(get("/userProfiles/{username}", new Object[]{"editorCoach"})
                         .header("Authorization", "Bearer " + accessToken));
-        System.out.println(result.andReturn().getResponse().getContentAsString());
         result.andExpect(status().isOk());
         testCors("/userProfiles/editorCoach");
     }
@@ -94,7 +92,6 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
         ResultActions result = mockMvc
                 .perform(get("/userProfiles/{username}", new Object[]{"xxxxx"})
                         .header("Authorization", "Bearer " + accessToken));
-        System.out.println(result.andReturn().getResponse().getContentAsString());
         result.andExpect(status().isNotFound());
     }
 
@@ -104,7 +101,6 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
         ResultActions result = mockMvc
                 .perform(get("/userProfiles/{username}", new Object[]{"editorCoach"})
                         .header("Authorization", "Bearer " + accessToken));
-        System.out.println(result.andReturn().getResponse().getContentAsString());
         result.andExpect(status().isOk());
     }
 
@@ -580,7 +576,7 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
                         .flashAttr("user", user)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print()).andExpect(expected);
+        result.andDo(resultPrint()).andExpect(expected);
         return result;
     }
 
@@ -593,7 +589,7 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
                         .content(jsonPostValid)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print()).andExpect(expected);
+        result.andDo(resultPrint()).andExpect(expected);
         return result;
     }
 

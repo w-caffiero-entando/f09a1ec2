@@ -20,7 +20,7 @@
 
     <body>
         <div class="LoginPage">
-            <form class="LoginPage__form" action="doLogin" id="form-login">
+            <form class="LoginPage__form" action="doLogin" id="form-login" method="post">
                 <div class="LoginPage__brand">
                     <div class="LoginPage__logo"></div>
                     <div class="LoginPage__description"></div>

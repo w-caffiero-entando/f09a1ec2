@@ -62,15 +62,10 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
+        <checkstyle.skip>true</checkstyle.skip>
         <allTestsSuiteClass/>
         <preDeploymentTestGroups/>
         <postDeploymentTestGroups/>
-        <checkstyleConfigLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/ACTIVE-CHECKSTYLE/checkstyle.xml
-        </checkstyleConfigLocation>
-        <owaspSuppressionFileLocation>
-            owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
         <!--test database default settings -->
         <test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</test.database.driver>
         <test.database.hostname>localhost</test.database.hostname>
@@ -95,7 +90,7 @@
         <spring-data-rest-webmvc.version>3.5.6</spring-data-rest-webmvc.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-chain.version>1.2</commons-chain.version>
-        <commons-text.version>1.9</commons-text.version>
+        <commons-text.version>1.10.0</commons-text.version>
         <commons-codec.version>1.15</commons-codec.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
@@ -149,7 +144,7 @@
         <tika-version>1.28.4</tika-version>
         <c3p0.version>0.9.5.5</c3p0.version>
         <vorbis-java-tika.version>0.8</vorbis-java-tika.version>
-        <drewnoakes-metadata-extractor.version>2.16.0</drewnoakes-metadata-extractor.version>
+        <drewnoakes-metadata-extractor.version>2.18.0</drewnoakes-metadata-extractor.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <lombok.version>1.18.20</lombok.version>
         <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
@@ -209,7 +204,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <argLine>${argLine}</argLine>
+                        <argLine>${argLine} -Dliquibase.supportPropertyEscaping=true -Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener</argLine>
                         <forkCount>1</forkCount>
                         <shutdown>exit</shutdown>
                         <parallel>methods</parallel>
@@ -218,6 +213,9 @@
                             <exclude>**/*BaseTestCase*</exclude>
                             <exclude>**/Abstract*</exclude>
                         </excludes>
+                        <environmentVariables>
+                            <ROOT_LOG_LEVEL>WARN</ROOT_LOG_LEVEL>
+                        </environmentVariables>
                         <rerunFailingTestsCount>1</rerunFailingTestsCount>
                     </configuration>
                 </plugin>
@@ -291,6 +289,9 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <executeOnlyOnRootModule>false</executeOnlyOnRootModule>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -1065,6 +1066,16 @@
             <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-rs-client</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-ws-policy</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-wsdl</artifactId>
                 <version>${cxf.version}</version>
             </dependency>
             <dependency>

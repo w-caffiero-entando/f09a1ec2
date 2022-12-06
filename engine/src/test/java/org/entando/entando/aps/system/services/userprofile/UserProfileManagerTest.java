@@ -13,7 +13,12 @@
  */
 package org.entando.entando.aps.system.services.userprofile;
 
-import com.agiletec.ConfigTestUtils;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
+
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoTextAttribute;
@@ -21,28 +26,18 @@ import com.agiletec.aps.system.common.entity.parse.IApsEntityDOM;
 import com.agiletec.aps.system.common.entity.parse.IEntityTypeFactory;
 import com.agiletec.aps.system.common.entity.parse.attribute.MonoTextAttributeHandler;
 import com.agiletec.aps.system.common.notify.INotifyManager;
-import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.aps.system.services.userprofile.event.ProfileChangedEvent;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
 import org.entando.entando.aps.system.services.userprofile.parse.UserProfileTypeDOM;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
-
+import org.entando.entando.ent.exception.EntException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.mock.web.MockServletContext;
 
 @ExtendWith(MockitoExtension.class)
 class UserProfileManagerTest {
@@ -73,9 +68,6 @@ class UserProfileManagerTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        MockServletContext servletContext = new MockServletContext("", new FileSystemResourceLoader());
-        new ConfigTestUtils().createApplicationContext(servletContext);
-        MockitoAnnotations.initMocks(this);
         this.userProfileManager.setEntityClassName(className);
         this.userProfileManager.setConfigItemName(configItemName);
         this.userProfileManager.setBeanName(this.beanName);

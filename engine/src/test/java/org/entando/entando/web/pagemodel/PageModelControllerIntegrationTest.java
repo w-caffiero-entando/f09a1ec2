@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -711,7 +710,7 @@ class PageModelControllerIntegrationTest extends AbstractControllerIntegrationTe
                             .content(getJsonRequest("invalid_Y1Y2_frames_6.json"))
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessTokenAdmin));
-            result.andDo(print()).andExpect(status().isBadRequest());
+            result.andExpect(status().isBadRequest());
 
             // overlapping frames  test 1
             result = mockMvc.perform(

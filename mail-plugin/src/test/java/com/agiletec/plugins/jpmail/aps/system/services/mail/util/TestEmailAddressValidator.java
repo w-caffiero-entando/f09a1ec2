@@ -24,33 +24,32 @@ package com.agiletec.plugins.jpmail.aps.system.services.mail.util;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.agiletec.aps.BaseTestCase;
 import com.agiletec.plugins.jpmail.aps.services.mail.util.EmailAddressValidator;
 import org.junit.jupiter.api.Test;
 
 /**
  * Testing class for Email Address validator
- * @version 1.0
- * @author E.Mezzano
  *
+ * @author E.Mezzano
+ * @version 1.0
  */
-class TestEmailAddressValidator extends BaseTestCase {
-	
-	/**
-	 * Tests the validation of mail addresses.
-	 */
-	@Test
-	void testMail() {
-		boolean bool1 = EmailAddressValidator.isValidEmailAddress(mail1);
-		boolean bool2 = EmailAddressValidator.isValidEmailAddress(mail2);
-		boolean bool3 = EmailAddressValidator.isValidEmailAddress(mail3);
-		assertFalse(bool1);
-		assertFalse(bool2);
-		assertTrue(bool3);
-	}
-	
-	private static final String mail1 = "dfsdfsdfs.sdfsfs.xx";
-	private static final String mail2 = "dfsdfsdfs@sdfsfs.x";
-	private static final String mail3 = "dfsdfsdfs@sdfsfs.xxx";
-	
+class TestEmailAddressValidator {
+
+    /**
+     * Tests the validation of mail addresses.
+     */
+    @Test
+    void testMail() {
+        boolean bool1 = EmailAddressValidator.isValidEmailAddress(mail1);
+        boolean bool2 = EmailAddressValidator.isValidEmailAddress(mail2);
+        boolean bool3 = EmailAddressValidator.isValidEmailAddress(mail3);
+        assertFalse(bool1);
+        assertFalse(bool2);
+        assertTrue(bool3);
+    }
+
+    private static final String mail1 = "dfsdfsdfs.sdfsfs.xx";
+    private static final String mail2 = "dfsdfsdfs@sdfsfs.x";
+    private static final String mail3 = "dfsdfsdfs@sdfsfs.xxx";
+
 }

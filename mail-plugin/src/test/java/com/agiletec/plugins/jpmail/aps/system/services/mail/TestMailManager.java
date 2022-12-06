@@ -24,22 +24,19 @@ package com.agiletec.plugins.jpmail.aps.system.services.mail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.List;
-import java.util.Properties;
-
-import org.subethamail.smtp.server.SMTPServer;
-
+import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
+import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
 import com.agiletec.plugins.jpmail.mock.authn.MockAuthenticationHandlerFactory;
 import com.agiletec.plugins.jpmail.mock.messages.MockMailMessage;
 import com.agiletec.plugins.jpmail.mock.messages.MockMessageHandler;
 import com.agiletec.plugins.jpmail.mock.messages.MockMessageHandlerFactory;
 import com.agiletec.plugins.jpmail.util.JpmailTestHelper;
-
-import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
-import com.agiletec.plugins.jpmail.aps.services.mail.MailConfig;
+import java.util.List;
+import java.util.Properties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.subethamail.smtp.server.SMTPServer;
 
 class TestMailManager extends AbstractMailConfigTestCase {
 	
@@ -70,6 +67,8 @@ class TestMailManager extends AbstractMailConfigTestCase {
 	
 	@Test
 	void testSendMail() throws Throwable {
+		this.setMailDebug(false);
+
 		String[] mailAddresses = JpmailTestHelper.MAIL_ADDRESSES;
 		this._mailManager.sendMail(MAIL_TEXT, "Mail semplice", mailAddresses, mailAddresses, mailAddresses, SENDER_CODE);
 		
@@ -78,22 +77,21 @@ class TestMailManager extends AbstractMailConfigTestCase {
 		
 		assertNotNull(messages);
 		assertEquals(1, messages.size());
-		
 	}
 	
 	@Test
 	void testSendMailWithChangedPort() throws Throwable {
-		
 		MockMessageHandlerFactory myFactory2 = new MockMessageHandlerFactory();
 		MockAuthenticationHandlerFactory myAuthFactory2 = new MockAuthenticationHandlerFactory();
 		SMTPServer smtpServer2 = new SMTPServer(myFactory2, myAuthFactory2);
         smtpServer2.setPort(25001);
         smtpServer2.start();
-		
+
 		MailConfig originaryConfig = this._mailManager.getMailConfig();
 		try {
 			MailConfig config = this._mailManager.getMailConfig();
 			config.setSmtpPort(25001);
+			config.setDebug(false);
 			this._mailManager.updateMailConfig(config);
 			String[] mailAddresses = JpmailTestHelper.MAIL_ADDRESSES;
 			this._mailManager.sendMail(MAIL_TEXT, "Mail semplice", mailAddresses, mailAddresses, mailAddresses, SENDER_CODE);
@@ -112,6 +110,8 @@ class TestMailManager extends AbstractMailConfigTestCase {
 
 	@Test
 	void testSendMailWithContentType() throws Throwable {
+		this.setMailDebug(false);
+
 		this._mailManager.sendMail(MAIL_TEXT, "Mail with contentType text/html", 
 				JpmailTestHelper.MAIL_ADDRESSES, null, null, SENDER_CODE, IMailManager.CONTENTTYPE_TEXT_HTML);
 		
@@ -120,7 +120,7 @@ class TestMailManager extends AbstractMailConfigTestCase {
 		
 		assertNotNull(messages);
 		assertEquals(1, messages.size());
-		
+
 		this._mailManager.sendMail(MAIL_TEXT, "Mail with contentType text/plain", 
 				null, JpmailTestHelper.MAIL_ADDRESSES, null, SENDER_CODE, IMailManager.CONTENTTYPE_TEXT_PLAIN);
 		
@@ -132,6 +132,8 @@ class TestMailManager extends AbstractMailConfigTestCase {
 	
 	@Test
 	void testSendMailWithAttachment() throws Throwable {
+		this.setMailDebug(false);
+
 		Properties attachments = new Properties();
 		attachments.setProperty("ALLEGATO", "target/test/entando_logo.jpg");
 		this._mailManager.sendMail(MAIL_TEXT, "Mail with attachment & text html", 
@@ -142,7 +144,7 @@ class TestMailManager extends AbstractMailConfigTestCase {
 		
 		assertNotNull(messages);
 		assertEquals(1, messages.size());
-		
+
 		this._mailManager.sendMail(MAIL_TEXT, "Mail with void attachment & text plain", 
 				IMailManager.CONTENTTYPE_TEXT_PLAIN, null, null, null, JpmailTestHelper.MAIL_ADDRESSES, SENDER_CODE);
 		
@@ -154,6 +156,8 @@ class TestMailManager extends AbstractMailConfigTestCase {
 	
 	@Test
 	void testSendMixedMail() throws Throwable {
+		this.setMailDebug(false);
+
 		Properties attachments = new Properties();
 		attachments.setProperty("ALLEGATO", "target/test/entando_logo.jpg");
 		String[] mailAddresses = JpmailTestHelper.MAIL_ADDRESSES;
@@ -176,6 +180,12 @@ class TestMailManager extends AbstractMailConfigTestCase {
 		this._smtpServer = new SMTPServer(this._myFactory, this._myAuthFactory);
 		this._smtpServer.setPort(25000);
 		this._smtpServer.start();
+	}
+
+	private void setMailDebug(boolean debug) throws Exception {
+		MailConfig config = this._mailManager.getMailConfig();
+		config.setDebug(debug);
+		this._mailManager.updateMailConfig(config);
 	}
 	
     @Override

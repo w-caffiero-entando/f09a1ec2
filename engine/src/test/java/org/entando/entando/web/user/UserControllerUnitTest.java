@@ -13,6 +13,7 @@
  */
 package org.entando.entando.web.user;
 
+import static com.agiletec.aps.system.SystemConstants.ADMIN_USER_NAME;
 import static com.agiletec.aps.system.SystemConstants.GUEST_USER_NAME;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoTextAttribute;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
@@ -124,7 +126,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .param("filter[0].operator", "like")
                         .param("filter[0].value", "user")
                         .header("Authorization", "Bearer " + accessToken));
-        System.out.println("result: " + result.andReturn().getResponse().getContentAsString());
         result.andExpect(status().isOk());
 
     }
@@ -160,8 +161,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .content(mockJson)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken));
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println("users: " + response);
         result.andExpect(status().isOk());
     }
 
@@ -182,8 +181,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .content(mockJson)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken));
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println("users: " + response);
         result.andExpect(status().isConflict());
     }
 
@@ -205,8 +202,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .header("Authorization", "Bearer " + accessToken));
 
         result.andExpect(status().isBadRequest());
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
         result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_NEW_PASSWORD_EQUALS)));
     }
 
@@ -229,8 +224,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .header("Authorization", "Bearer " + accessToken));
 
         result.andExpect(status().isOk());
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
         result.andExpect(jsonPath("$.errors", hasSize(0)));
     }
 
@@ -252,8 +245,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .header("Authorization", "Bearer " + accessToken));
 
         result.andExpect(status().isBadRequest());
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
         result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_USERNAME_FORMAT_INVALID)));
     }
 
@@ -289,8 +280,6 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .header("Authorization", "Bearer " + accessToken));
 
         result.andExpect(status().isOk());
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
     }
 
     @Test
@@ -526,5 +515,53 @@ class UserControllerUnitTest extends AbstractControllerTest {
             when(user.getUsername()).thenReturn("test");
             new UserController().deleteUser(user, "test");
         });
+    }
+
+    @Test
+    void testInitSessionLogin() throws Exception {
+        User admin = new User();
+        admin.setUsername(ADMIN_USER_NAME);
+        mockMvc.perform(get("/users/initSession")
+                        .requestAttr("user", admin)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payload", is(true)));
+    }
+
+    @Test
+    void testInitSessionAlreadyLoggedIn() throws Exception {
+        User admin = new User();
+        admin.setUsername(ADMIN_USER_NAME);
+        mockMvc.perform(get("/users/initSession")
+                        .requestAttr("user", admin)
+                        .sessionAttr(SystemConstants.SESSIONPARAM_CURRENT_USER, admin)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payload", is(false)));
+    }
+
+    @Test
+    void testInitSessionLogout() throws Exception {
+        User guest = new User();
+        guest.setUsername(GUEST_USER_NAME);
+        User admin = new User();
+        admin.setUsername(ADMIN_USER_NAME);
+        mockMvc.perform(get("/users/initSession")
+                        .requestAttr("user", guest)
+                        .sessionAttr(SystemConstants.SESSIONPARAM_CURRENT_USER, admin)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payload", is(true)));
+    }
+
+    @Test
+    void testInitGuestSession() throws Exception {
+        User guest = new User();
+        guest.setUsername(GUEST_USER_NAME);
+        mockMvc.perform(get("/users/initSession")
+                        .requestAttr("user", guest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payload", is(true)));
     }
 }
