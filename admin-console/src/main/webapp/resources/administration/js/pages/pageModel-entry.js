@@ -28,6 +28,7 @@ $(function() {
             method: 'POST',
             contentType : 'application/json',
             data: JSON.stringify(frames),
+            dataType: 'string',
             success: function(data) {
                 $('#xmlConfiguration').val(data);
             }
