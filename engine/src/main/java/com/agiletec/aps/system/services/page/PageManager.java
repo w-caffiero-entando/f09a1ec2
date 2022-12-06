@@ -38,6 +38,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import com.agiletec.aps.system.common.AbstractParameterizableService;
+import org.entando.entando.aps.system.services.widgettype.events.WidgetTypeChangedEvent;
+import org.entando.entando.aps.system.services.widgettype.events.WidgetTypeChangedObserver;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -45,14 +47,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * This is the page manager service class. Pages are held in a tree-like
- * structure, to allow a hierarchical access, and stored in a map, to allow a
- * key-value type access. In the tree, the father points the son and vice versa;
- * the order between the pages in the same level is always kept.
+ * This is the page manager service class. Pages are held in a tree-like structure, to allow a hierarchical access, and
+ * stored in a map, to allow a key-value type access. In the tree, the father points the son and vice versa; the order
+ * between the pages in the same level is always kept.
  *
  * @author M.Diana - E.Santoboni
  */
-public class PageManager extends AbstractParameterizableService implements IPageManager, GroupUtilizer, LangsChangedObserver, PageModelUtilizer, PageModelChangedObserver {
+public class PageManager extends AbstractParameterizableService implements IPageManager, GroupUtilizer<IPage>,
+        LangsChangedObserver, PageModelUtilizer, PageModelChangedObserver, WidgetTypeChangedObserver {
 
     private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageManager.class);
     public static final String ERRMSG_ERROR_WHILE_MOVING_A_PAGE = "Error while moving a page";
@@ -73,7 +75,7 @@ public class PageManager extends AbstractParameterizableService implements IPage
     private void initCache() throws EntException {
         this.getCacheWrapper().initCache(this.getPageDAO());
     }
-    
+
     @Override
     protected void release() {
         this.getCacheWrapper().release();
@@ -84,8 +86,8 @@ public class PageManager extends AbstractParameterizableService implements IPage
     public void updateFromLangsChanged(LangsChangedEvent event) {
         try {
             this.init();
-        } catch (Throwable t) {
-            _logger.error("Error on init method", t);
+        } catch (Exception e) {
+            _logger.error("Error on init method", e);
         }
     }
 
@@ -102,9 +104,9 @@ public class PageManager extends AbstractParameterizableService implements IPage
             try {
                 this.getPageDAO().deletePage(page);
                 this.getCacheWrapper().deleteDraftPage(pageCode);
-            } catch (Throwable t) {
-                _logger.error("Error detected while deleting page {}", pageCode, t);
-                throw new EntException("Error detected while deleting a page", t);
+            } catch (Exception e) {
+                _logger.error("Error detected while deleting page {}", pageCode, e);
+                throw new EntException("Error detected while deleting a page", e);
             }
         }
         this.notifyPageChangedEvent(page, PageChangedEvent.REMOVE_OPERATION_CODE, null);
@@ -134,12 +136,12 @@ public class PageManager extends AbstractParameterizableService implements IPage
                     lastPosition = (lastParentChild.getPosition() > lastPosition) ? lastParentChild.getPosition() : lastPosition;
                 }
             }
-            page.setPosition(lastPosition+1);
+            page.setPosition(lastPosition + 1);
             this.getPageDAO().addPage(page);
             this.getCacheWrapper().addDraftPage(page);
-        } catch (Throwable t) {
-            _logger.error("Error adding a page", t);
-            throw new EntException("Error adding a page", t);
+        } catch (Exception e) {
+            _logger.error("Error adding a page", e);
+            throw new EntException("Error adding a page", e);
         }
         this.notifyPageChangedEvent(this.getDraftPage(page.getCode()), PageChangedEvent.INSERT_OPERATION_CODE, null);
     }
@@ -155,9 +157,9 @@ public class PageManager extends AbstractParameterizableService implements IPage
         try {
             this.getPageDAO().updatePage(page);
             this.getCacheWrapper().updateDraftPage(page);
-        } catch (Throwable t) {
-            _logger.error("Error updating a page", t);
-            throw new EntException("Error updating a page", t);
+        } catch (Exception e) {
+            _logger.error("Error updating a page", e);
+            throw new EntException("Error updating a page", e);
         }
         this.notifyPageChangedEvent(page, PageChangedEvent.UPDATE_OPERATION_CODE, null);
     }
@@ -167,9 +169,9 @@ public class PageManager extends AbstractParameterizableService implements IPage
         try {
             this.getPageDAO().setPageOnline(pageCode);
             this.getCacheWrapper().setPageOnline(pageCode);
-        } catch (Throwable t) {
-            _logger.error("Error updating a page as online", t);
-            throw new EntException("Error updating a page as online", t);
+        } catch (Exception e) {
+            _logger.error("Error updating a page as online", e);
+            throw new EntException("Error updating a page as online", e);
         }
         this.notifyPageChangedEvent(this.getDraftPage(pageCode), PageChangedEvent.UPDATE_OPERATION_CODE, null, PageChangedEvent.EVENT_TYPE_SET_PAGE_ONLINE);
     }
@@ -179,9 +181,9 @@ public class PageManager extends AbstractParameterizableService implements IPage
         try {
             this.getPageDAO().setPageOffline(pageCode);
             this.getCacheWrapper().setPageOffline(pageCode);
-        } catch (Throwable t) {
-            _logger.error("Error updating a page as offline", t);
-            throw new EntException("Error updating a page as offline", t);
+        } catch (Exception e) {
+            _logger.error("Error updating a page as offline", e);
+            throw new EntException("Error updating a page as offline", e);
         }
         this.notifyPageChangedEvent(this.getDraftPage(pageCode), PageChangedEvent.UPDATE_OPERATION_CODE, null, null, PageChangedEvent.EVENT_TYPE_SET_PAGE_OFFLINE);
     }
@@ -227,10 +229,8 @@ public class PageManager extends AbstractParameterizableService implements IPage
      * Move a page.
      *
      * @param pageCode The code of the page to move.
-     * @param moveUp When true the page is moved to a higher level of the tree,
-     * otherwise to a lower level.
-     * @return The result of the operation: false if the move request could not
-     * be satisfied, true otherwise.
+     * @param moveUp When true the page is moved to a higher level of the tree, otherwise to a lower level.
+     * @return The result of the operation: false if the move request could not be satisfied, true otherwise.
      * @throws EntException In case of database access error.
      */
     @Override
@@ -239,7 +239,7 @@ public class PageManager extends AbstractParameterizableService implements IPage
         try {
             IPage currentPage = this.getDraftPage(pageCode);
             if (null == currentPage) {
-                throw mkException(pageCode);
+                throw new EntException(String.format("The page '%s' does not exist!", pageCode));
             }
             IPage parent = this.getDraftPage(currentPage.getParentCode());
             String[] sisterPageCodes = parent.getChildrenCodes();
@@ -257,15 +257,11 @@ public class PageManager extends AbstractParameterizableService implements IPage
                     }
                 }
             }
-        } catch (Throwable t) {
+        } catch (EntException t) {
             _logger.error(ERRMSG_ERROR_WHILE_MOVING_A_PAGE + " {}", pageCode, t);
             throw new EntException(ERRMSG_ERROR_WHILE_MOVING_A_PAGE, t);
         }
         return resultOperation;
-    }
-
-    private EntException mkException(String pageCode) {
-        return new EntException("The page '" + pageCode + "' does not exist!");
     }
 
     /**
@@ -279,16 +275,16 @@ public class PageManager extends AbstractParameterizableService implements IPage
         try {
             IPage draftToMoveDown = this.getDraftPage(pageDown);
             IPage draftToMoveUp = this.getDraftPage(pageUp);
-            if (null != draftToMoveDown && null != draftToMoveUp 
+            if (null != draftToMoveDown && null != draftToMoveUp
                     && draftToMoveDown.getParentCode().equals(draftToMoveUp.getParentCode())) {
                 this.getCacheWrapper().moveUpDown(pageDown, pageUp);
                 this.getPageDAO().updatePosition(pageDown, pageUp);
             } else {
                 _logger.error("Movement impossible - page to move up {} - page to move down {}", pageUp, pageDown);
             }
-        } catch (Throwable t) {
-            _logger.error(ERRMSG_ERROR_WHILE_MOVING_A_PAGE, t);
-            throw new EntException(ERRMSG_ERROR_WHILE_MOVING_A_PAGE, t);
+        } catch (Exception e) {
+            _logger.error(ERRMSG_ERROR_WHILE_MOVING_A_PAGE, e);
+            throw new EntException(ERRMSG_ERROR_WHILE_MOVING_A_PAGE, e);
         }
     }
 
@@ -317,9 +313,9 @@ public class PageManager extends AbstractParameterizableService implements IPage
                 this.getPageDAO().updateWidgetPosition(pageCode, frameToMove, destFrame);
             }
             this.notifyPageChangedEvent(currentPage, PageChangedEvent.EDIT_FRAME_OPERATION_CODE, frameToMove, destFrame, PageChangedEvent.EVENT_TYPE_MOVE_WIDGET);
-        } catch (Throwable t) {
-            _logger.error("Error while moving widget. page {} from position {} to position {}", pageCode, frameToMove, destFrame, t);
-            throw new EntException("Error while moving a widget", t);
+        } catch (Exception e) {
+            _logger.error("Error while moving widget. page {} from position {} to position {}", pageCode, frameToMove, destFrame, e);
+            throw new EntException("Error while moving a widget", e);
         }
         return resultOperation;
     }
@@ -401,10 +397,10 @@ public class PageManager extends AbstractParameterizableService implements IPage
             }
             this.getCacheWrapper().updateDraftPage(currentPage);
             this.notifyPageChangedEvent(currentPage, PageChangedEvent.EDIT_FRAME_OPERATION_CODE, pos, PageChangedEvent.EVENT_TYPE_REMOVE_WIDGET);
-        } catch (Throwable t) {
+        } catch (Exception e) {
             String message = "Error removing the widget from the page '" + pageCode + "' in the frame " + pos;
-            _logger.error("Error removing the widget from the page '{}' in the frame {}", pageCode, pos, t);
-            throw new EntException(message, t);
+            _logger.error("Error removing the widget from the page '{}' in the frame {}", pageCode, pos, e);
+            throw new EntException(message, e);
         }
     }
 
@@ -449,10 +445,10 @@ public class PageManager extends AbstractParameterizableService implements IPage
             this.getCacheWrapper().updateDraftPage(currentPage);
             this.notifyPageChangedEvent(currentPage, PageChangedEvent.EDIT_FRAME_OPERATION_CODE, pos,
                     PageChangedEvent.EVENT_TYPE_JOIN_WIDGET);
-        } catch (Throwable t) {
+        } catch (Exception e) {
             String message = "Error during the assignation of a widget to the frame " + pos + " in the page code " + pageCode;
-            _logger.error("Error during the assignation of a widget to the frame {} in the page code {}", pos, pageCode, t);
-            throw new EntException(message, t);
+            _logger.error("Error during the assignation of a widget to the frame {} in the page code {}", pos, pageCode, e);
+            throw new EntException(message, e);
         }
     }
 
@@ -508,26 +504,14 @@ public class PageManager extends AbstractParameterizableService implements IPage
 
     @Override
     public List<IPage> searchOnlinePages(String pageCodeToken, String title, List<String> allowedGroups) throws EntException {
-        try {
-            return this.searchPages(pageCodeToken, title, allowedGroups,
-                    () -> this.getOnlineRoot(), code -> this.getOnlinePage(code));
-        } catch (Throwable t) {
-            String message = "Error during searching pages online with token " + pageCodeToken;
-            _logger.error("Error during searching online pages with token {}", pageCodeToken, t);
-            throw new EntException(message, t);
-        }
+        return this.searchPages(pageCodeToken, title, allowedGroups,
+                () -> this.getOnlineRoot(), code -> this.getOnlinePage(code));
     }
 
     @Override
     public List<IPage> searchPages(String pageCodeToken, String title, List<String> allowedGroups) throws EntException {
-        try {
-            return this.searchPages(pageCodeToken, title, allowedGroups,
-                    () -> this.getDraftRoot(), code -> this.getDraftPage(code));
-        } catch (Throwable t) {
-            String message = "Error during searching pages with token " + pageCodeToken;
-            _logger.error("Error during searching pages with token {}", pageCodeToken, t);
-            throw new EntException(message, t);
-        }
+        return this.searchPages(pageCodeToken, title, allowedGroups,
+                () -> this.getDraftRoot(), code -> this.getDraftPage(code));
     }
 
     private List<IPage> searchPages(String pageCodeToken, String title, List<String> allowedGroups,
@@ -539,10 +523,10 @@ public class PageManager extends AbstractParameterizableService implements IPage
             }
             IPage root = rootSupplier.get();
             this.searchPages(root, pageCodeToken, title, allowedGroups, searchResult, childProvider);
-        } catch (Throwable t) {
+        } catch (Exception e) {
             String message = "Error during searching pages with token " + pageCodeToken;
-            _logger.error("Error during searching pages with token {}", pageCodeToken, t);
-            throw new EntException(message, t);
+            _logger.error("Error during searching pages with token {}", pageCodeToken, e);
+            throw new EntException(message, e);
         }
         return searchResult;
     }
@@ -605,10 +589,10 @@ public class PageManager extends AbstractParameterizableService implements IPage
                     pageUtilizers.add(page);
                 }
             }
-        } catch (Throwable t) {
+        } catch (Exception e) {
             String message = "Error during searching page utilizers of group " + groupName;
-            _logger.error("Error during searching page utilizers of group {}", groupName, t);
-            throw new EntException(message, t);
+            _logger.error("Error during searching page utilizers of group {}", groupName, e);
+            throw new EntException(message, e);
         }
 
         return pageUtilizers;
@@ -667,10 +651,10 @@ public class PageManager extends AbstractParameterizableService implements IPage
             this.getPageModelUtilizers(root, pageModelCode, pages, true);
             root = this.getOnlineRoot();
             this.getPageModelUtilizers(root, pageModelCode, pages, false);
-        } catch (Throwable t) {
+        } catch (Exception e) {
             String message = "Error during searching page utilizers of page template with code " + pageModelCode;
-            _logger.error("Error during searching page utilizers of page template with code {}", pageModelCode, t);
-            throw new EntException(message, t);
+            _logger.error("Error during searching page utilizers of page template with code {}", pageModelCode, e);
+            throw new EntException(message, e);
         }
         return pages;
     }
@@ -708,21 +692,36 @@ public class PageManager extends AbstractParameterizableService implements IPage
                     this.init();
                 }
             }
-        } catch (Throwable t) {
-            _logger.error("Error during refres pages", t);
+        } catch (Exception e) {
+            _logger.error("Error during refres pages", e);
         }
     }
-    
+
     @Override
-	public synchronized boolean movePage(IPage currentPage, IPage newParent) throws EntException {
+    public void updateFromShowletTypeChanged(WidgetTypeChangedEvent event) {
+        try {
+            if (event.getOperationCode() != WidgetTypeChangedEvent.UPDATE_OPERATION_CODE) {
+                return;
+            }
+            String typeCode = event.getWidgetTypeCode();
+            if (!this.getDraftWidgetUtilizers(typeCode).isEmpty() || !this.getOnlineWidgetUtilizers(typeCode).isEmpty()) {
+                this.init();
+            }
+        } catch (Exception e) {
+            _logger.error("Error refreshing pages", e);
+        }
+    }
+
+    @Override
+    public synchronized boolean movePage(IPage currentPage, IPage newParent) throws EntException {
         return this.movePage(currentPage.getCode(), newParent.getCode());
     }
 
-	@Override
-	public synchronized boolean movePage(String pageCode, String newParentCode) throws EntException {
+    @Override
+    public synchronized boolean movePage(String pageCode, String newParentCode) throws EntException {
         IPage pageToMove = this.getDraftPage(pageCode);
         IPage newParent = this.getDraftPage(newParentCode);
-		boolean resultOperation = false;
+        boolean resultOperation = false;
         if (null == pageToMove || null == newParent) {
             _logger.error("Page to move '{}' or new parent '{}' is null", pageCode, newParentCode);
             return resultOperation;
@@ -740,9 +739,9 @@ public class PageManager extends AbstractParameterizableService implements IPage
             this.getPageDAO().movePage(pageToMove, newParent);
             this.getCacheWrapper().movePage(pageCode, newParentCode);
             resultOperation = true;
-        } catch (Throwable t) {
-            ApsSystemUtils.logThrowable(t, this, "movePage");
-            throw new EntException("Error while moving a page under a root node", t);
+        } catch (Exception e) {
+            ApsSystemUtils.logThrowable(e, this, "movePage");
+            throw new EntException("Error while moving a page under a root node", e);
         }
         return resultOperation;
     }
@@ -759,9 +758,9 @@ public class PageManager extends AbstractParameterizableService implements IPage
                 IPage page = this.getDraftPage(pageCode);
                 pages.add(page);
             }
-        } catch (Throwable t) {
-            ApsSystemUtils.logThrowable(t, this, "loadLastUpdatedPages");
-            throw new EntException("Error loading loadLastUpdatedPages", t);
+        } catch (Exception e) {
+            ApsSystemUtils.logThrowable(e, this, "loadLastUpdatedPages");
+            throw new EntException("Error loading loadLastUpdatedPages", e);
         }
         return pages;
     }
