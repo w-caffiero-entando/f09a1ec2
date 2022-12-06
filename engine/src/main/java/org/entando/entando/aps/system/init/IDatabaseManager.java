@@ -41,7 +41,9 @@ public interface IDatabaseManager {
 	public List<DataSourceDumpReport> getBackupReports() throws EntException;
 	
 	public DatabaseType getDatabaseType(DataSource dataSource) throws EntException;
-	
+
+	public void setLockFallbackMinutes(int lockFallbackMinutes);
+
 	public enum DatabaseType {DERBY, POSTGRESQL, MYSQL, ORACLE, SQLSERVER, UNKNOWN}
 	
 	public static final String DUMP_REPORT_FILE_NAME = "dumpReport.xml";
