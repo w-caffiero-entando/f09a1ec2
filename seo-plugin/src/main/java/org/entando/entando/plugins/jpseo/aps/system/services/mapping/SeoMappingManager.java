@@ -90,22 +90,31 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
         ApsProperties friendlyCodes = (event.getOperationCode() == PageChangedEvent.REMOVE_OPERATION_CODE)
                 ? null : seoMetadata.getFriendlyCodes();
         if (friendlyCodes != null) {
+            List friendlyCodesList = new ArrayList<>();
+
             for (Entry<Object, Object> entry : friendlyCodes.entrySet()) {
                 if (entry.getValue() instanceof PageMetatag) {
                     PageMetatag pageMetatag = (PageMetatag) entry.getValue();
-                    this.getCacheWrapper().updateDraftPageReference(pageMetatag.getValue(), page.getCode());
+                    friendlyCodesList.add(pageMetatag.getValue());
                 }
             }
+            this.getCacheWrapper().updateDraftPageReferences(friendlyCodesList, page.getCode());
+
         }
         if (!PageChangedEvent.EVENT_TYPE_SET_PAGE_OFFLINE.equals(event.getEventType())
-                && !PageChangedEvent.EVENT_TYPE_SET_PAGE_ONLINE.equals(event.getEventType())) {
+                && !PageChangedEvent.EVENT_TYPE_SET_PAGE_ONLINE.equals(event.getEventType())
+                && PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode()) {
             return;
         }
         if (PageChangedEvent.EVENT_TYPE_SET_PAGE_OFFLINE.equals(event.getEventType())) {
             this.getSeoMappingDAO().deleteMappingForPage(page.getCode());
         } else {
             this.getSeoMappingDAO().deleteMappingForPage(page.getCode());
-            if (PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode() && friendlyCodes != null) {
+            if (PageChangedEvent.REMOVE_OPERATION_CODE == event.getOperationCode()){
+                // Delete draft page references if a page is deleted passing an empty ArrayList to
+                // updateDraftPageReferences of the cacheWrapper
+                this.getCacheWrapper().updateDraftPageReferences(new ArrayList<>(), page.getCode());
+            } else if (PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode() && friendlyCodes != null) {
                 for (Entry<Object, Object> entry : seoMetadata.getFriendlyCodes().entrySet()) {
                     if (entry.getValue() instanceof PageMetatag) {
                         PageMetatag pageMetatag = (PageMetatag) entry.getValue();
@@ -118,16 +127,15 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
                     }
                 }
             }
-            try {
-                SeoChangedEvent seoEvent = new SeoChangedEvent();
-                seoEvent.setOperationCode(SeoChangedEvent.PAGE_CHANGED_EVENT);
-                this.notifyEvent(seoEvent);
-                this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), false);
-            } catch (Throwable t) {
-                logger.error("Error updating mapping from page changed", t);
-            }
         }
-
+        try {
+            SeoChangedEvent seoEvent = new SeoChangedEvent();
+            seoEvent.setOperationCode(SeoChangedEvent.PAGE_CHANGED_EVENT);
+            this.notifyEvent(seoEvent);
+            this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), false);
+        } catch (Throwable t) {
+            logger.error("Error updating mapping from page changed", t);
+        }
     }
 
     @Override
