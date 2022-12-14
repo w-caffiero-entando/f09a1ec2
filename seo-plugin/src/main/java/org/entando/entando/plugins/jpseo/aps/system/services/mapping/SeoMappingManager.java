@@ -67,7 +67,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     @Override
     public void init() throws Exception {
         this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), true);
-        logger.debug("{} ready. initialized",this.getClass().getName());
+        logger.debug("{} ready. initialized", this.getClass().getName());
     }
 
     @Override
@@ -90,20 +90,31 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
         ApsProperties friendlyCodes = (event.getOperationCode() == PageChangedEvent.REMOVE_OPERATION_CODE)
                 ? null : seoMetadata.getFriendlyCodes();
         if (friendlyCodes != null) {
+            List friendlyCodesList = new ArrayList<>();
+
             for (Entry<Object, Object> entry : friendlyCodes.entrySet()) {
                 if (entry.getValue() instanceof PageMetatag) {
                     PageMetatag pageMetatag = (PageMetatag) entry.getValue();
-                    this.getCacheWrapper().updateDraftPageReference(pageMetatag.getValue(), page.getCode());
+                    friendlyCodesList.add(pageMetatag.getValue());
                 }
             }
+            this.getCacheWrapper().updateDraftPageReferences(friendlyCodesList, page.getCode());
+
         }
         if (!PageChangedEvent.EVENT_TYPE_SET_PAGE_OFFLINE.equals(event.getEventType())
-                && !PageChangedEvent.EVENT_TYPE_SET_PAGE_ONLINE.equals(event.getEventType())) {
+                && !PageChangedEvent.EVENT_TYPE_SET_PAGE_ONLINE.equals(event.getEventType())
+                && PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode()) {
             return;
         }
-        try {
+        if (PageChangedEvent.EVENT_TYPE_SET_PAGE_OFFLINE.equals(event.getEventType())) {
             this.getSeoMappingDAO().deleteMappingForPage(page.getCode());
-            if (PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode() && friendlyCodes != null) {
+        } else {
+            this.getSeoMappingDAO().deleteMappingForPage(page.getCode());
+            if (PageChangedEvent.REMOVE_OPERATION_CODE == event.getOperationCode()){
+                // Delete draft page references if a page is deleted passing an empty ArrayList to
+                // updateDraftPageReferences of the cacheWrapper
+                this.getCacheWrapper().updateDraftPageReferences(new ArrayList<>(), page.getCode());
+            } else if (PageChangedEvent.REMOVE_OPERATION_CODE != event.getOperationCode() && friendlyCodes != null) {
                 for (Entry<Object, Object> entry : seoMetadata.getFriendlyCodes().entrySet()) {
                     if (entry.getValue() instanceof PageMetatag) {
                         PageMetatag pageMetatag = (PageMetatag) entry.getValue();
@@ -116,6 +127,8 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
                     }
                 }
             }
+        }
+        try {
             SeoChangedEvent seoEvent = new SeoChangedEvent();
             seoEvent.setOperationCode(SeoChangedEvent.PAGE_CHANGED_EVENT);
             this.notifyEvent(seoEvent);
@@ -260,6 +273,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     public ISeoMappingDAO getSeoMappingDAO() {
         return seoMappingDAO;
     }
+
     public void setSeoMappingDAO(ISeoMappingDAO seoMappingDAO) {
         this.seoMappingDAO = seoMappingDAO;
     }
@@ -267,6 +281,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     protected ILangManager getLangManager() {
         return langManager;
     }
+
     public void setLangManager(ILangManager langManager) {
         this.langManager = langManager;
     }
@@ -274,6 +289,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     protected IPageManager getPageManager() {
         return pageManager;
     }
+
     public void setPageManager(IPageManager pageManager) {
         this.pageManager = pageManager;
     }
@@ -281,6 +297,7 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     protected ISeoMappingCacheWrapper getCacheWrapper() {
         return cacheWrapper;
     }
+
     public void setCacheWrapper(ISeoMappingCacheWrapper cacheWrapper) {
         this.cacheWrapper = cacheWrapper;
     }
