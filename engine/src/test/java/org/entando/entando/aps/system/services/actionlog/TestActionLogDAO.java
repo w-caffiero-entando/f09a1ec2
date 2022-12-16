@@ -27,7 +27,9 @@ import org.entando.entando.aps.system.services.actionlog.model.ActionLogRecord;
 import org.entando.entando.aps.system.services.actionlog.model.ActionLogRecordSearchBean;
 import org.entando.entando.aps.system.services.actionlog.model.IActionLogRecordSearchBean;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class TestActionLogDAO extends BaseTestCase {
@@ -130,7 +132,7 @@ class TestActionLogDAO extends BaseTestCase {
 				DateConverter.getFormattedDate(received.getActionDate(), "ddMMyyyyHHmm"));
 	}
 
-    @BeforeAll
+    @BeforeEach
 	private void init() {
 		ActionLogDAO actionLoggerDAO = new ActionLogDAO();
 		DataSource dataSource = (DataSource) this.getApplicationContext().getBean("servDataSource");
@@ -140,7 +142,7 @@ class TestActionLogDAO extends BaseTestCase {
         this._helper.cleanRecords();
 	}
     
-    @AfterAll
+    @AfterEach
 	protected void destroy() throws Exception {
 		this._helper.cleanRecords();
 	}

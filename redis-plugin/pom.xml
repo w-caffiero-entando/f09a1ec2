@@ -9,7 +9,6 @@
     </parent>
     <artifactId>entando-plugin-jpredis</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
-    <version>7.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Entando Plugin: Redis Connector</name>
     <description>Enables the use of Redis as system library</description>
@@ -21,31 +20,6 @@
         </developer>
     </developers>
     <url>http://www.entando.com/</url>
-    <licenses>
-        <license>
-            <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
-            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <repositories>
-        <repository>
-            <id>nexus-jx</id>
-            <url>https://nexus-jx.apps.serv.run/repository/maven-releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <properties>
-        <checkstyle.skip>true</checkstyle.skip>
-        <owaspSuppressionFileLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
-    </properties>
     <build>
         <resources>
             <resource>
@@ -186,10 +160,6 @@
                         <artifactId>exec-maven-plugin</artifactId>
                     </plugin>
                     <plugin>
-                        <groupId>org.owasp</groupId>
-                        <artifactId>dependency-check-maven</artifactId>
-                    </plugin>
-                    <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
                     </plugin>
@@ -204,10 +174,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -291,12 +257,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

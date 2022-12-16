@@ -86,7 +86,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     private static String SEO_TEST_6 = "seoTest6";
 
     private static String SEO_TEST_2_FC = "seoTest2fc";
-
+    private static String SEO_TEST_7 = "seoTest7";
+    private static String SEO_TEST_7_FC = "seoTest7fc";
 
     @Test
     void testGetBuiltInSeoPage() throws Exception {
@@ -1122,6 +1123,55 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
         } finally {
             this.pageManager.deletePage(SEO_TEST_2);
             seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_2);
+
+    @Test
+    void testUnpublishThenPostAlreadyUsedFriendlyCode() throws Exception {
+        try {
+            String friendlyCodeEn = "testpage7en";
+            String friendlyCodeIt = "testpage7it";
+
+            String accessToken = this.createAccessToken();
+            ResultActions result1 = this.executePostSeoPage("7_POST_valid.json", accessToken, status().isOk());
+            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_7, IPageService.STATUS_DRAFT));
+            result1.andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_7)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is(friendlyCodeEn)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is(friendlyCodeIt)));
+
+            this.pageManager.setPageOnline(SEO_TEST_7);
+            Thread.sleep(200);
+
+            Assertions.assertNotNull(seoMappingManager.getReference(friendlyCodeEn));
+            Assertions.assertNotNull(seoMappingManager.getReference(friendlyCodeIt));
+
+            this.pageManager.setPageOffline(SEO_TEST_7);
+
+            this.pageManager.deletePage(SEO_TEST_7);
+
+            Thread.sleep(200);
+
+            Assertions.assertNull(seoMappingManager.getReference(friendlyCodeEn));
+            Assertions.assertNull(seoMappingManager.getReference(friendlyCodeIt));
+
+            ResultActions result2 = this.executePostSeoPage("7_POST_valid_already_used_fc.json", accessToken, status().isOk());
+            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_7_FC, IPageService.STATUS_DRAFT));
+            result2.andExpect(jsonPath("$.errors.size()", is(0)))
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_7_FC)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is(friendlyCodeEn)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is(friendlyCodeIt)));
+
+            this.pageManager.setPageOnline(SEO_TEST_7_FC);
+
+            Thread.sleep(200);
+
+            Assertions.assertNotNull(seoMappingManager.getReference(friendlyCodeEn));
+            Assertions.assertNotNull(seoMappingManager.getReference(friendlyCodeIt));
+
+        } finally {
+            this.pageManager.deletePage(SEO_TEST_7);
+            this.pageManager.deletePage(SEO_TEST_7_FC);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_7);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_7_FC);
         }
     }
 

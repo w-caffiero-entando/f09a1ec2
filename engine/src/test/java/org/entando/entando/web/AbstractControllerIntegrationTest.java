@@ -21,6 +21,8 @@ import org.entando.entando.TestEntandoJndiUtils;
 import org.entando.entando.aps.system.services.oauth2.IApiOAuth2TokenManager;
 import org.entando.entando.web.common.interceptor.EntandoOauth2Interceptor;
 import org.entando.entando.web.utils.OAuth2TestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -61,6 +63,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 })
 @WebAppConfiguration(value = "")
 public class AbstractControllerIntegrationTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractControllerIntegrationTest.class);
 
     protected MockMvc mockMvc;
 
@@ -176,10 +180,8 @@ public class AbstractControllerIntegrationTest {
         }
     }
 
-    boolean restResultPrintIsEnabled = ("" + System.getProperty("org.entando.test.enableResultPrint")).equals("true");
-
     public ResultHandler resultPrint() {
-        return (restResultPrintIsEnabled)
+        return (logger.isDebugEnabled())
                 ? MockMvcResultHandlers.print()
                 : new NopResultHandler();
     }

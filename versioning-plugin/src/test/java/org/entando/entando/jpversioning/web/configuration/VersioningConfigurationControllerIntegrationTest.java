@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -116,7 +115,7 @@ public class VersioningConfigurationControllerIntegrationTest extends AbstractCo
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print());
+        result.andDo(resultPrint());
         result.andExpect(expected);
         return result;
     }
@@ -128,6 +127,6 @@ public class VersioningConfigurationControllerIntegrationTest extends AbstractCo
                 .header("Authorization", "Bearer " + accessToken);
 
         return mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
     }
 }

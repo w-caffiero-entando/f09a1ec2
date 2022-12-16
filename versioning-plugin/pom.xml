@@ -9,7 +9,6 @@
     <artifactId>entando-plugin-jpversioning</artifactId>
     <groupId>org.entando.entando.plugins</groupId>
     <packaging>jar</packaging>
-    <version>7.2.0-SNAPSHOT</version>
     <name>Entando Plugin: Content Versioning</name>
     <description>Manages the versioning of portal content, storing the history of performed operations</description>
     <developers>
@@ -20,31 +19,6 @@
         </developer>
     </developers>
     <url>http://www.entando.com/</url>
-    <licenses>
-        <license>
-            <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3, 29 June 2007</name>
-            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <repositories>
-        <repository>
-            <id>nexus-jx</id>
-            <url>https://nexus-jx.apps.serv.run/repository/maven-releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <properties>
-        <checkstyle.skip>true</checkstyle.skip>
-        <owaspSuppressionFileLocation>
-            https://raw.githubusercontent.com/entando/entando-core-parent/v${project.parent.version}/owasp-dependency-check-suppression.xml
-        </owaspSuppressionFileLocation>
-    </properties>
     <build>
         <resources>
             <resource>

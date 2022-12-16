@@ -40,7 +40,7 @@ import org.springframework.mock.web.MockServletConfig;
 /**
  * @author E.Santoboni
  */
-public class AbstractTestExecutorService extends BaseTestCase {
+public abstract class AbstractTestExecutorService extends BaseTestCase {
 	
 	@BeforeAll
 	public static void setUp() throws Exception {

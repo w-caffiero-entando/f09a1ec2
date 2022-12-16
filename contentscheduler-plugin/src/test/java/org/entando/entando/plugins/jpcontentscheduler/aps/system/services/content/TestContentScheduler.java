@@ -1,5 +1,6 @@
 package org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.agiletec.aps.BaseTestCase;
@@ -18,7 +19,7 @@ class TestContentScheduler extends BaseTestCase {
 		ContentThreadConfig config = contentScheduler.getConfig();
 		ContentThreadConfigDOM dd = new ContentThreadConfigDOM();
 		String xml = dd.createConfigXml(config);
-		System.out.println(xml);
+		assertNotNull(xml);
 	}
 
     @BeforeEach

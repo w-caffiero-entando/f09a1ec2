@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -179,7 +178,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
             newContentId = saveContent("json/1_POST_content_with_boolean_attribute.json", accessToken);
 
             listContentVersions(user, newContentId)
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.size()", is(0)));
 
@@ -602,7 +601,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         }
 
         return mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
     }
 
     private ResultActions getContentVersionApi(UserDetails user, String contentId, Long versionId, ResultMatcher expected ) throws Exception {
@@ -611,7 +610,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         final MockHttpServletRequestBuilder requestBuilder = get("/plugins/versioning/contents/{contentId}/versions/{versionId}", contentId, versionId)
                 .header("Authorization", "Bearer " + accessToken);
         final ResultActions result = mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
         result.andExpect(expected);
 
         return result;
@@ -623,7 +622,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         final MockHttpServletRequestBuilder requestBuilder = get("/plugins/versioning/contents/{contentId}/versions/{versionId}", contentId, versionId)
                 .header("Authorization", "Bearer " + accessToken);
         final ResultActions result = mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
         return result;
     }
     private ResultActions listLatestVersions(UserDetails user) throws Exception {
@@ -641,7 +640,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
         }
 
         return mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
     }
 
     private ResultActions postContentType(String fileName, String accessToken, ResultMatcher expected) throws Exception {
@@ -673,7 +672,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
                         .content(jsonPostValid)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print());
+        result.andDo(resultPrint());
         result.andExpect(expected);
         return result;
     }
@@ -686,7 +685,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print());
+        result.andDo(resultPrint());
         result.andExpect(expected);
         return result;
     }
@@ -698,7 +697,7 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
                 .header("Authorization", "Bearer " + accessToken);
         
         return mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
     }
 
     private ResultActions deleteContentVersion(UserDetails user, String contentId, Long versionId) throws Exception {
@@ -708,6 +707,6 @@ public class ContentVersioningControllerIntegrationTest extends AbstractControll
                 .header("Authorization", "Bearer " + accessToken);
 
         return mockMvc.perform(requestBuilder)
-                .andDo(print());
+                .andDo(resultPrint());
     }
 }

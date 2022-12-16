@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,9 +51,11 @@ import com.agiletec.aps.util.DateConverter;
 import com.agiletec.aps.util.FileTextReader;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
+import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentDto;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.ICmsSearchEngineManager;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import java.io.InputStream;
@@ -67,12 +68,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
+import org.entando.entando.plugins.jacms.aps.system.services.content.ContentService;
 import org.entando.entando.plugins.jacms.aps.system.services.content.IContentService;
 import org.entando.entando.plugins.jacms.web.content.validator.BatchContentStatusRequest;
 import org.entando.entando.plugins.jacms.web.content.validator.ContentStatusRequest;
 import org.entando.entando.plugins.jacms.web.resource.request.CreateResourceRequest;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.analysis.AnalysisControllerDiffAnalysisEngineTestsStubs;
+import org.entando.entando.web.common.model.PagedMetadata;
+import org.entando.entando.web.common.model.PagedRestResponse;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -84,6 +88,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest {
@@ -110,24 +115,24 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                 .withAuthorization(Group.FREE_GROUP_NAME, "editor", Permission.CONTENT_EDITOR)
                 .build();
         ResultActions result = this.performGetContent("ART180", "1", true, null, true, user);
+        result.andDo(resultPrint());
         String result1 = result.andReturn().getResponse().getContentAsString();
-        System.out.println(result1);
         result.andExpect(status().isOk());
         String html1 = JsonPath.read(result1, "$.payload.html");
         Assertions.assertTrue(!StringUtils.isBlank(html1));
 
         result.andExpect(MockMvcResultMatchers.jsonPath("$.payload.html", Matchers.anything()));
         result = this.performGetContent("ART180", "11", true, null, true, user);
+        result.andDo(resultPrint());
         String result2 = result.andReturn().getResponse().getContentAsString();
         String html2 = JsonPath.read(result2, "$.payload.html");
         Assertions.assertTrue(!StringUtils.isBlank(html2));
-        System.out.println(result2);
 
         result.andExpect(status().isOk());
         result = this.performGetContent("ART180", "default", true, null, true, user);
         result.andExpect(MockMvcResultMatchers.jsonPath("$.payload.html", Matchers.anything()));
+        result.andDo(resultPrint());
         String result1_copy = result.andReturn().getResponse().getContentAsString();
-        System.out.println(result1_copy);
         result.andExpect(status().isOk());
         String htmlCopy = JsonPath.read(result1_copy, "$.payload.html");
         Assertions.assertTrue(!StringUtils.isBlank(htmlCopy));
@@ -135,8 +140,8 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
 
         result = this.performGetContent("ART180", "list", true, null, true, user);
         result.andExpect(MockMvcResultMatchers.jsonPath("$.payload.html", Matchers.anything()));
+        result.andDo(resultPrint());
         String result2_copy = result.andReturn().getResponse().getContentAsString();
-        System.out.println(result2);
         String html2Copy = JsonPath.read(result2_copy, "$.payload.html");
         Assertions.assertTrue(!StringUtils.isBlank(html2Copy));
         result.andExpect(status().isOk());
@@ -145,8 +150,8 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
 
         result = this.performGetContent("ART180", "list", true, "en", true, user);
         result.andExpect(MockMvcResultMatchers.jsonPath("$.payload.html", Matchers.anything()));
+        result.andDo(resultPrint());
         String result2_copy_en = result.andReturn().getResponse().getContentAsString();
-        System.out.println(result2_copy_en);
         String html2Copy_en = JsonPath.read(result2_copy_en, "$.payload.html");
         result.andExpect(status().isOk());
         Assertions.assertNotEquals(html2Copy_en, html2Copy);
@@ -156,7 +161,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
     void testGetInvalidContent() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         ResultActions result = this.performGetContent("ART985", null, true, null, true, user);
-        System.out.println(result.andReturn().getResponse().getContentAsString());
+        result.andDo(resultPrint());
         result.andExpect(status().isNotFound());
     }
 
@@ -176,7 +181,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             result.andExpect(jsonPath("$.metaData.size()", is(0)));
 
             ResultActions result2 = this.executeContentPost("1_POST_valid.json", accessToken, status().isOk());
-            result2.andDo(print());
+            result2.andDo(resultPrint());
             result2.andExpect(jsonPath("$.payload.size()", is(1)));
             result2.andExpect(jsonPath("$.payload[0].id", Matchers.anything()));
             result2.andExpect(jsonPath("$.payload[0].firstEditor", is("jack_bauer")));
@@ -281,7 +286,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("TST"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_id.json", accessToken, status().isOk());
-            result.andDo(print());
+            result.andDo(resultPrint());
             result.andExpect(jsonPath("$.payload.size()", is(1)));
             result.andExpect(jsonPath("$.payload[0].id", is(contentId)));
             result.andExpect(jsonPath("$.errors.size()", is(0)));
@@ -315,7 +320,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("LNK"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_links.json", accessToken, status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -802,7 +807,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_image_all_fields.json", accessToken, status().isOk(), resourceId)
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -833,7 +838,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .perform(post("/plugins/cms/contents/{code}/clone", newContentId)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessToken))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.id", not(newContentId)))
                     .andExpect(jsonPath("$.payload.attributes[0].code", is("img1")))
@@ -894,7 +899,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_image_no_metadata.json", accessToken, status().isOk(), resourceId)
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -947,7 +952,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_image_no_name.json", accessToken, status().isOk(), resourceId)
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1004,7 +1009,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_attach.json", accessToken, status().isOk(), resourceId)
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1059,7 +1064,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
 
             ResultActions result = this
                     .executeContentPost("1_POST_valid_with_attach_and_image.json", accessToken, status().isOk(), imageResourceId)
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(2)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1138,7 +1143,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_list_image.json", accessToken, status().isOk(), resourceId);
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1207,7 +1212,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_list_file.json", accessToken, status().isOk(), resourceId);
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1271,7 +1276,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("LSB"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_list_bool.json", accessToken, status().isOk());
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1351,7 +1356,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_monolist_image.json", accessToken, status().isOk(), resourceId);
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1420,7 +1425,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_monolist_2_images.json", accessToken,
                     status().isOk(), resourceId);
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1514,7 +1519,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_monolist_2_images_cc.json", accessToken,
                     status().isOk(), code);
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1547,7 +1552,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(newContent);
 
         } finally {
-            performDeleteResource(accessToken, "image", "cc=" + code).andDo(print()).andExpect(status().isOk());
+            performDeleteResource(accessToken, "image", "cc=" + code).andDo(resultPrint()).andExpect(status().isOk());
             if (null != newContentId) {
                 Content newContent = this.contentManager.loadContent(newContentId, false);
                 if (null != newContent) {
@@ -1576,7 +1581,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_monolist_file.json", accessToken, status().isOk(), resourceId);
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1645,7 +1650,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_composite_image.json", accessToken, status().isOk(), resourceId);
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1714,7 +1719,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_composite_file.json", accessToken, status().isOk(), resourceId);
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1777,7 +1782,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("TLL"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_list_date.json", accessToken, status().isOk());
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1861,7 +1866,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("CLD"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_list_date2.json", accessToken, status().isOk());
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1906,7 +1911,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("ENU"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_list_enum.json", accessToken, status().isOk());
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -1990,7 +1995,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("ENM"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_list_enum_map.json", accessToken, status().isOk());
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -2073,7 +2078,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(contentManager.getEntityPrototype("TST"));
 
             executeContentPost("1_POST_invalid_resource.json", accessToken, status().isBadRequest())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.errors.size()", is(1)));
         } finally {
             if (null != contentManager.getEntityPrototype("TST")) {
@@ -2092,7 +2097,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(contentManager.getEntityPrototype("TST"));
 
             executeContentPost("1_POST_resource_not_found.json", accessToken, status().isBadRequest())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.errors.size()", is(1)));
         } finally {
             if (null != contentManager.getEntityPrototype("TST")) {
@@ -2112,7 +2117,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("TST"));
 
             ResultActions result = executeContentPost("1_POST_valid.json", accessToken, status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.payload[0].id", Matchers.anything()))
                     .andExpect(jsonPath("$.payload[0].firstEditor", is("jack_bauer")))
@@ -2405,7 +2410,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             resourceId = JsonPath.read(resourceResult.andReturn().getResponse().getContentAsString(), "$.payload.id");
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_composite_image_text.json", accessToken, status().isOk(), resourceId);
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -2511,7 +2516,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .content(jsonPostValid)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print());
+        result.andDo(resultPrint());
         result.andExpect(expected);
         return result;
     }
@@ -2532,7 +2537,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .content(jsonPutValid)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print()).andExpect(expected);
+        result.andDo(resultPrint()).andExpect(expected);
         return result;
     }
 
@@ -2620,7 +2625,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filter[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isOk());
-        System.out.println(result.andReturn().getResponse().getContentAsString());
+        result.andDo(resultPrint());
         result.andExpect(jsonPath("$.payload", Matchers.hasSize(Matchers.greaterThan(0))));
     }
 
@@ -2644,7 +2649,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filter[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
+                .andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(2)))
                 .andExpect(jsonPath("$.metaData.page", is(1)))
@@ -2664,7 +2669,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filter[0].operator", "eq")
                         .param("filter[0].value", "EVN"));
         result.andExpect(status().isOk());
-        System.out.println(result.andReturn().getResponse().getContentAsString());
+        result.andDo(resultPrint());
         result.andExpect(jsonPath("$.payload", Matchers.hasSize(Matchers.greaterThan(0))));
     }
 
@@ -2679,7 +2684,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8));
-        result.andDo(print());
+        result.andDo(resultPrint());
         result.andExpect(status().isOk());
         result.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
         result.andExpect(jsonPath("$.metaData.pageSize").value("100"));
@@ -2992,7 +2997,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(9)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN25")))
@@ -3021,7 +3026,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(9)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN25")));
@@ -3041,7 +3046,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].operator", "eq")
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(3)));
     }
@@ -3060,7 +3065,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].operator", "eq")
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(9)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN20")))
@@ -3088,7 +3093,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].operator", "eq")
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(9)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN193")))
@@ -3116,7 +3121,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].operator", "eq")
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(9)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN21")))
@@ -3144,7 +3149,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].operator", "eq")
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(9)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN21")))
@@ -3171,7 +3176,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].value", "Sagra")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN21")));
@@ -3191,7 +3196,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].value", "EVN194")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN194")));
@@ -3209,7 +3214,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].value", "admin")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(0)));
     }
@@ -3230,7 +3235,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[1].operator", "eq")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(2)));
     }
@@ -3251,7 +3256,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[1].operator", "eq")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)));
     }
@@ -3271,7 +3276,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[1].value", "editor2")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)));
     }
@@ -3292,7 +3297,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[1].operator", "not")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)));
     }
@@ -3313,7 +3318,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[1].operator", "eq")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(8)));
     }
@@ -3334,7 +3339,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[1].operator", "not")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)));
     }
@@ -3353,7 +3358,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("categories[0]", "general_cat1")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(2)));
     }
@@ -3373,7 +3378,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("categories[1]", "general_cat2")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)));
     }
@@ -3392,7 +3397,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("categories[0]", "general_cat2")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)));
     }
@@ -3411,7 +3416,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("categories[0]", "general_cat3")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(0)));
     }
@@ -3431,7 +3436,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[1].value", "group1")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(3)));
     }
@@ -3457,7 +3462,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[4].value", "group3")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)));
     }
@@ -3477,7 +3482,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[1].value", "OPEN")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(2)));
     }
@@ -3497,7 +3502,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[1].value", "RESTRICTED")
                         .header("Authorization", "Bearer " + accessToken));
 
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(1)));
     }
@@ -3677,7 +3682,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             ResultActions result = this
                     .executeContentPost("1_POST_valid_with_link_number_composite_bool.json", accessToken,
                             status().isOk());
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.payload[0].id", Matchers.anything()))
                     .andExpect(jsonPath("$.payload[0].firstEditor", is("jack_bauer")))
@@ -3724,7 +3729,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("AL2"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_all_attributes.json", accessToken, status().isOk());
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.payload[0].id", Matchers.anything()))
                     .andExpect(jsonPath("$.payload[0].firstEditor", is("jack_bauer")))
@@ -3950,7 +3955,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("CML"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_empty_link.json", accessToken, status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -3971,7 +3976,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             this.contentManager.deleteContent(newContent);
 
             result = this.executeContentPost("1_POST_valid_with_empty_link2.json", accessToken, status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -3992,7 +3997,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             this.contentManager.deleteContent(newContent);
 
             result = this.executeContentPost("1_POST_valid_with_empty_link3.json", accessToken, status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -4013,7 +4018,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             this.contentManager.deleteContent(newContent);
 
             result = this.executeContentPost("1_POST_valid_with_empty_link4.json", accessToken, status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -4034,7 +4039,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             this.contentManager.deleteContent(newContent);
 
             result = this.executeContentPost("1_POST_valid_with_empty_link5.json", accessToken, status().isOk())
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.errors.size()", is(0)))
                     .andExpect(jsonPath("$.metaData.size()", is(0)))
@@ -4163,7 +4168,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .perform(get("/plugins/cms/contents/{code}", newContentId1)
                             .header("Authorization", "Bearer " + accessToken));
             result
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.id", is(newContentId1)))
                     .andExpect(jsonPath("$.payload.references.CmsPageManagerWrapper", is(false)))
                     .andExpect(jsonPath("$.payload.references.jacmsContentManager", is(true)));
@@ -4174,7 +4179,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                             .content(mapper.writeValueAsString(contentStatusRequest))
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("Authorization", "Bearer " + accessToken));
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.errors.size()", is(1)))
                     .andExpect(jsonPath("$.errors[0].code", is("2")))
@@ -4283,7 +4288,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .perform(get("/plugins/cms/contents/{code}", newContentId1)
                             .header("Authorization", "Bearer " + accessToken));
             result
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.id", is(newContentId1)))
                     .andExpect(jsonPath("$.payload.references.CmsPageManagerWrapper", is(false)))
                     .andExpect(jsonPath("$.payload.references.jacmsContentManager", is(true)));
@@ -4292,7 +4297,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .perform(get("/plugins/cms/contents/{code}", newContentId2)
                             .header("Authorization", "Bearer " + accessToken));
             result
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.id", is(newContentId2)))
                     .andExpect(jsonPath("$.payload.references.CmsPageManagerWrapper", is(false)))
                     .andExpect(jsonPath("$.payload.references.jacmsContentManager", is(true)));
@@ -4307,7 +4312,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                             .content(mapper.writeValueAsString(batchContentStatusRequest))
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("Authorization", "Bearer " + accessToken));
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.errors.size()", is(2)))
                     .andExpect(jsonPath("$.errors[0].code", is("2")))
@@ -4352,13 +4357,58 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filter[0].attribute", IContentManager.ENTITY_TYPE_CODE_FILTER_KEY)
                         .param("filter[0].operator", "eq")
                         .param("filter[0].value", "EVN")
-                        .param("forLinkingWithOwnerGroup", "GROUP1")
-                        .param("forLinkingWithExtraGroups[0]", "GROUP2")
-                        .param("forLinkingWithExtraGroups[1]", "GROUP3")
+                        .param("status", "published")
+                        .param("forLinkingWithOwnerGroup", "group1")
+                        .param("forLinkingWithExtraGroups[0]", "group2")
+                        .param("forLinkingWithExtraGroups[1]", "group3")
+                        .param("page", "1")
+                        .param("pageSize", "5")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload", Matchers.hasSize(Matchers.greaterThan(0))));
+                // checking pagination
+                .andExpect(jsonPath("$.payload", Matchers.hasSize(5)))
+                .andExpect(jsonPath("$.metaData.pageSize", Matchers.equalTo(5)))
+                .andExpect(jsonPath("$.metaData.totalItems", Matchers.equalTo(9)))
+                // checking owner group filter
+                .andExpect(jsonPath("$.payload[?(@.mainGroup == 'free')]", Matchers.hasSize(Matchers.greaterThan(0))))
+                // checking join groups filter
+                .andExpect(jsonPath("$.payload[?(@.mainGroup == 'coach')].groups[*]", Matchers.hasItem("group1")));
+    }
+
+    @Test
+    void testGetContentsAnonymousUser() throws Exception {
+        ResultActions result = mockMvc
+                .perform(get("/plugins/cms/contents")
+                        .param("status", "published")
+                        .param("mode", ContentService.MODE_FULL)
+                        .param("page", "1")
+                        .param("pageSize", "500"));
+
+        String stringResponse = result.andDo(resultPrint())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payload", Matchers.hasSize(Matchers.greaterThan(0))))
+                .andReturn().getResponse().getContentAsString();
+
+        PagedRestResponse<ContentDto> response = new ObjectMapper().readValue(stringResponse,
+                new TypeReference<PagedRestResponse<ContentDto>>() {
+                });
+
+        // verify that an anonymous user can retrieve only public contents
+        for (ContentDto content : response.getPayload()) {
+            boolean isPublic = content.getMainGroup().equals(Group.FREE_GROUP_NAME);
+            if (!isPublic) {
+                if (content.getGroups() != null) {
+                    for (String group : content.getGroups()) {
+                        if (group.equals(Group.FREE_GROUP_NAME)) {
+                            isPublic = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            Assertions.assertTrue(isPublic);
+        }
     }
 
     @Test
@@ -4368,7 +4418,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             String accessToken = this.createAccessToken();
 
             ResultActions result = this.executeContentTypePost("1_POST_type_with_link_regex.json", accessToken, status().isCreated());
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.attributes.size()", Matchers.is(5)))
                     .andExpect(jsonPath("$.payload.attributes[0].code", Matchers.is("link1")))
                     .andExpect(jsonPath("$.payload.attributes[0].validationRules.minLength", Matchers.is(10)))
@@ -4435,7 +4485,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].operator", "eq")
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(9)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN21")))
@@ -4539,7 +4589,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
         ResultActions result = mockMvc
                 .perform(get("/plugins/cms/contents/status")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(5)))
                 .andExpect(jsonPath("$.payload.unpublished", is(unpublished)))
@@ -4562,7 +4612,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("AL2"));
 
             ResultActions result = this.executeContentPost("1_POST_valid_with_all_attributes.json", accessToken, status().isOk());
-            result.andDo(print())
+            result.andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.size()", is(1)))
                     .andExpect(jsonPath("$.payload[0].id", Matchers.anything()))
                     .andExpect(jsonPath("$.payload[0].firstEditor", is("jack_bauer")))
@@ -4616,7 +4666,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .perform(post("/plugins/cms/contents/{code}/clone", newContentId)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessToken))
-                    .andDo(print())
+                    .andDo(resultPrint())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.payload.id", not(newContentId)))
                     .andExpect(jsonPath("$.payload.firstEditor", is("jack_bauer")))
@@ -4698,7 +4748,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].operator", "eq")
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(9)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN191")))
@@ -4727,12 +4777,9 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].operator", "eq")
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload.size()", is(3)))
-                .andExpect(jsonPath("$.payload[0].id", is("EVN103")))
-                .andExpect(jsonPath("$.payload[1].id", is("EVN25")))
-                .andExpect(jsonPath("$.payload[2].id", is("EVN41")));
+                .andExpect(jsonPath("$.payload.size()", is(11)));
     }
 
     @Test
@@ -4749,7 +4796,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
                         .param("filters[0].operator", "eq")
                         .param("filters[0].value", "EVN")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andDo(print())
+        result.andDo(resultPrint())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload.size()", is(11)))
                 .andExpect(jsonPath("$.payload[0].id", is("EVN103")))

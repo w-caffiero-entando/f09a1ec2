@@ -140,7 +140,7 @@ class PageConfigurationControllerWidgetsIntegrationTest extends AbstractControll
                     pageCode, "xxx", accessToken, status().isBadRequest());
             result.andExpect(jsonPath("$.errors", hasSize(1)));
             result.andExpect(jsonPath("$.errors[0].code", is("40")));
-            System.out.println(result.andReturn().getResponse().getContentAsString());
+            result.andDo(resultPrint());
 
             String validContentIdWithIncompatibleGroup = "{\n"
                     + "  \"code\": \"content_viewer\",\n"
@@ -152,7 +152,7 @@ class PageConfigurationControllerWidgetsIntegrationTest extends AbstractControll
             result = this.executePutPageConfig(validContentIdWithIncompatibleGroup,
                     pageCode, "0", accessToken, status().isConflict());
             result.andExpect(jsonPath("$.errors", hasSize(1)));
-            System.out.println(result.andReturn().getResponse().getContentAsString());
+            result.andDo(resultPrint());
 
             String validContent_1 = "{\n"
                     + "  \"code\": \"content_viewer\",\n"
@@ -166,7 +166,7 @@ class PageConfigurationControllerWidgetsIntegrationTest extends AbstractControll
             result.andExpect(jsonPath("$.errors", hasSize(0)));
             result.andExpect(jsonPath("$.payload.code", is("content_viewer")));
             result.andExpect(jsonPath("$.payload.config.size()", is(2)));
-            System.out.println(result.andReturn().getResponse().getContentAsString());
+            result.andDo(resultPrint());
 
             String validContent_2 = "{\n"
                     + "  \"code\": \"content_viewer\",\n"
@@ -318,7 +318,7 @@ class PageConfigurationControllerWidgetsIntegrationTest extends AbstractControll
                         .content(payload)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        System.out.println(result.andReturn().getResponse().getContentAsString());
+        result.andDo(resultPrint());
         result.andExpect(rm);
         return result;
     }
@@ -330,7 +330,7 @@ class PageConfigurationControllerWidgetsIntegrationTest extends AbstractControll
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response);
+        result.andDo(resultPrint());
         result.andExpect(rm);
         return result;
     }

@@ -13,7 +13,6 @@
  */
 package org.entando.entando.plugins.jpmail.ent.system.services.model;
 
-import com.agiletec.aps.BaseTestCase;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -21,14 +20,14 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TestSMTPConfigurationServerDto extends BaseTestCase {
+class TestSMTPConfigurationServerDto {
 
     private static final String HOST_1 = "localhost";
     private static final String HOST_2 = "test";
     private static final String PROTOCOL_1 = "SSL";
     private static final String PROTOCOL_2 = "TLS";
     private static final int PORT_1 = 25000;
-    private static final int PORT_2= 25002;
+    private static final int PORT_2 = 25002;
     private static final String USERNAME = "";
     private static final String PASSWORD = "";
     private static final Boolean ACTIVE = true;
@@ -37,8 +36,8 @@ class TestSMTPConfigurationServerDto extends BaseTestCase {
     private static final Boolean CHECK_SERVER_IDENTITY = false;
 
     @Test
-    void testEqualsAndHashcode()  {
-        EmailSenderDto emailSenderDto= new EmailSenderDto();
+    void testEqualsAndHashcode() {
+        EmailSenderDto emailSenderDto = new EmailSenderDto();
         SMTPServerConfigurationDto server1 = createSMTPServerConfigurationDto(HOST_1, PROTOCOL_1, PORT_1);
         SMTPServerConfigurationDto server2 = createSMTPServerConfigurationDto(HOST_1, PROTOCOL_1, PORT_1);
         SMTPServerConfigurationDto server3 = createSMTPServerConfigurationDto(HOST_2, PROTOCOL_2, PORT_2);
@@ -53,20 +52,20 @@ class TestSMTPConfigurationServerDto extends BaseTestCase {
     }
 
     @Test
-    void testToString()  {
+    void testToString() {
         SMTPServerConfigurationDto server1 = createSMTPServerConfigurationDto(HOST_1, PROTOCOL_1, PORT_1);
         final String serverString = server1.toString();
         assertTrue(serverString.contains("host='" + HOST_1 + '\''));
         assertTrue(serverString.contains("protocol='" + PROTOCOL_1 + '\''));
-        assertTrue(serverString.contains("port=" + PORT_1 ));
-        assertTrue(serverString.contains("active=" +ACTIVE));
+        assertTrue(serverString.contains("port=" + PORT_1));
+        assertTrue(serverString.contains("active=" + ACTIVE));
         assertTrue(serverString.contains("debugMode=" + DEBUG_MODE));
-        assertTrue(serverString.contains("timeout=" + TIMEOUT ));
+        assertTrue(serverString.contains("timeout=" + TIMEOUT));
         assertTrue(serverString.contains("username='" + USERNAME + '\''));
         assertTrue(serverString.contains("checkServerIdentity=" + CHECK_SERVER_IDENTITY));
     }
 
-        private SMTPServerConfigurationDto createSMTPServerConfigurationDto(String host, String protocol,int port) {
+    private SMTPServerConfigurationDto createSMTPServerConfigurationDto(String host, String protocol, int port) {
         SMTPServerConfigurationDto dto = new SMTPServerConfigurationDto();
         dto.setProtocol(protocol);
         dto.setHost(host);

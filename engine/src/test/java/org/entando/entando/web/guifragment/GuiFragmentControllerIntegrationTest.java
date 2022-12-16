@@ -280,7 +280,7 @@ class GuiFragmentControllerIntegrationTest extends AbstractControllerIntegration
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(requestBody)))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(resultPrint())
                 .andExpect(status().isOk());
 
         requestBody.setCode(null);
@@ -289,7 +289,7 @@ class GuiFragmentControllerIntegrationTest extends AbstractControllerIntegration
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(requestBody)))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(resultPrint())
                 .andExpect(status().isOk());
     }
 
@@ -308,7 +308,7 @@ class GuiFragmentControllerIntegrationTest extends AbstractControllerIntegration
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(requestBody)))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(resultPrint())
                 .andExpect(status().isOk());
     }
 

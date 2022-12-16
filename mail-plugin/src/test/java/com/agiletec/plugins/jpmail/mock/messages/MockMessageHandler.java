@@ -28,13 +28,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.RejectException;
 
 public class MockMessageHandler implements MessageHandler {
 	
-
+	private static final Logger log = LoggerFactory.getLogger(MockMessageHandler.class);
 
 	public MockMessageHandler(MessageContext ctx) {
 		this._ctx = ctx;
@@ -45,28 +47,28 @@ public class MockMessageHandler implements MessageHandler {
 
 	public void from(String from) throws RejectException {
 		this.setFrom(from);
-		System.out.println("MockMessageHandler - FROM:"+from);
+		log.info("MockMessageHandler - FROM:"+from);
 	}
 
 	public void recipient(String recipient) throws RejectException {
 		this.setTo(recipient);
-		System.out.println("MockMessageHandler - RECIPIENT:"+recipient);
+		log.info("MockMessageHandler - RECIPIENT:"+recipient);
 	}
 
 	public void data(InputStream data) throws IOException {
 		String dataStr = this.convertStreamToString(data);
 		this.setData(dataStr);
-		System.out.println("MockMessageHandler - MAIL DATA");
-		System.out.println("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
-		System.out.println(dataStr);
-		System.out.println("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
+		log.info("MockMessageHandler - MAIL DATA");
+		log.info("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
+		log.info(dataStr);
+		log.info("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
 		MockMailMessage message = new MockMailMessage(this.getFrom(), this.getTo(), this._data);
 		this.getMessages().add(message);
-		System.out.println(" MockMessageHandler - size " + this.getMessages().size());
+		log.info(" MockMessageHandler - size " + this.getMessages().size());
 	}
 
 	public void done() {
-		System.out.println("MockMessageHandler - Finished");
+		log.info("MockMessageHandler - Finished");
 	}
 
 	public String convertStreamToString(InputStream is) {
