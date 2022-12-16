@@ -1123,6 +1123,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
         } finally {
             this.pageManager.deletePage(SEO_TEST_2);
             seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_2);
+        }
+    }
 
     @Test
     void testUnpublishThenPostAlreadyUsedFriendlyCode() throws Exception {
