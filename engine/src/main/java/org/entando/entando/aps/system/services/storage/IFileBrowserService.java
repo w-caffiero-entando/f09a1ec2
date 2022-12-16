@@ -40,4 +40,5 @@ public interface IFileBrowserService extends IComponentExistsService {
 
     public void deleteDirectory(String currentPath, Boolean protectedFolder);
 
+    public boolean isDirectory(String currentPath, Boolean protectedFolder);
 }
