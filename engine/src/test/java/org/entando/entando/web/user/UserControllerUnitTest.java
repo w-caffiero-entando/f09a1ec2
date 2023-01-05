@@ -163,6 +163,24 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isOk());
     }
+    @Test
+    void shouldValidateGuestUsernamePut() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        String mockJson = "{\n"
+                + "    \"username\": \"guest\",\n"
+                + "    \"status\": \"inactive\",\n"
+                + "    \"password\": \"different_password\"\n"
+                + " }";
+        when(this.userManager.getUser("guest")).thenReturn(this.mockUserDetails("guest"));
+        ResultActions result = mockMvc.perform(
+                put("/users/{username}", "guest")
+                        .content(mockJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken));
+        result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_INVALID_GUEST_USERNAME)));
+        result.andExpect(status().isBadRequest());
+    }
 
     @Test
     void shouldValidateUserPut() throws Exception {
@@ -246,6 +264,27 @@ class UserControllerUnitTest extends AbstractControllerTest {
 
         result.andExpect(status().isBadRequest());
         result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_USERNAME_FORMAT_INVALID)));
+    }
+
+    @Test
+    void shouldValidateGuestUsernamePost() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+
+        String mockJson = "{\"username\": \"guest\",\n"
+                + "    \"password\": \"new_password\",\n"
+                + "    \"passwordConfirm\": \"new_password\",\n"
+                + "    \"status\": \"active\"\n"
+                + "}";
+
+        Mockito.lenient().when(this.userService.addUser(any(UserRequest.class))).thenReturn(this.mockUser());
+        ResultActions result = mockMvc.perform(
+                post("/users")
+                        .content(mockJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken));
+        result.andExpect(status().isBadRequest());
+        result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_INVALID_GUEST_USERNAME)));
     }
 
     @Test
