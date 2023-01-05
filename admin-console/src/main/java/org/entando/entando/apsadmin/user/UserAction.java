@@ -71,7 +71,7 @@ public class UserAction extends BaseAction {
 		String username = this.getUsername();
 		String profileTypeCode = this.getProfileTypeCode();
 		try {
-			if (username.equalsIgnoreCase("guest")) {
+			if (username.equalsIgnoreCase(SystemConstants.GUEST_USER_NAME)) {
 				this.addFieldError("username", this.getText("error.user.invalidGuestUsername"));
 			}
 			if (this.existsUser(username)) {
