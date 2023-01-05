@@ -27,6 +27,14 @@ $(function () {
 		$previewFrame = $('iframe#previewFrame');
 
 
+	$previewFrame.on('load', function() {
+		$previewFrame[0].contentDocument.querySelectorAll('a').forEach(a => {
+			if (a.getAttribute('href') && !a.getAttribute('href').startsWith(location.origin)) {
+				a.setAttribute('target', '_blank');
+			}
+		});
+	});
+
 
 	function updatePreviewSize() {
 		var key = $previewModeSelect.val(),

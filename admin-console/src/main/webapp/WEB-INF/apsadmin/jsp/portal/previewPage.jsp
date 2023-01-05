@@ -43,7 +43,8 @@
         
         <label for="preview-mode-lang"><s:text name="previewPage.lang" /></label>
         <s:select  list="langs" id="preview-mode-lang" name="lang" listKey="code" listValue="descr"></s:select>
-        
+
+        <p><s:text name="previewPage.links.warning" /></p>
     </div>
 </body>
 </html>
