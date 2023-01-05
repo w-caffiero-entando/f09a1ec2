@@ -98,6 +98,30 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
+    void testAddGuestUsername() throws Throwable {
+        String username = "guest";
+        String password = "password";
+        try {
+            this.setUserOnSession("admin");
+            this.initAction("/do/User", "save");
+            this.addParameter("strutsAction", String.valueOf(ApsAdminSystemConstants.ADD));
+            this.addParameter("username", username);
+            this.addParameter("password", password);
+            this.addParameter("passwordConfirm", password);
+            this.addParameter("active", "true");
+            this.addParameter("profileTypeCode", SystemConstants.DEFAULT_PROFILE_TYPE_CODE);
+            String result = this.executeAction();
+            assertEquals(Action.INPUT, result);
+            Map<String, List<String>> fieldErrors = this.getAction().getFieldErrors();
+            assertEquals(1, fieldErrors.size());
+            List<String> errors = fieldErrors.get("username");
+            assertEquals(1, errors.size());
+        } catch (Throwable t) {
+            throw t;
+        }
+    }
+
+    @Test
 	void testAddNew_2() throws Throwable {
         String username = "user.name_for_test"; // the dot '.' is accepted in the username as well as the underscore '_'
         String password = "password.for_test"; // the dot '.' is accepted in the password as well as the underscore '_'

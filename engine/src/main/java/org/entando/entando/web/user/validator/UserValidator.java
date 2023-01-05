@@ -13,6 +13,7 @@
  */
 package org.entando.entando.web.user.validator;
 
+import com.agiletec.aps.system.SystemConstants;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.ent.exception.EntException;
@@ -77,6 +78,8 @@ public class UserValidator extends AbstractPaginationValidator {
     public static final String ERRCODE_UPDATE_OTHER = "9";
 
     public static final String ERRCODE_PASSWORD_CONFIRM_MISMATCH = "10";
+
+    public static final String ERRCODE_INVALID_GUEST_USERNAME = "11";
 
     @Autowired
     @Qualifier("compatiblePasswordEncoder")
@@ -154,6 +157,10 @@ public class UserValidator extends AbstractPaginationValidator {
         if (!request.getPassword().equals(request.getPasswordConfirm())) {
             bindingResult.reject(UserValidator.ERRCODE_PASSWORD_CONFIRM_MISMATCH, new String[]{}, "user.password-confirm.mismatch");
         }
+        if (username.equalsIgnoreCase(SystemConstants.GUEST_USER_NAME)) {
+            bindingResult.reject(UserValidator.ERRCODE_INVALID_GUEST_USERNAME, new String[]{}, "user.username.invalidGuest");
+        }
+
         this.checkNewPassword(username, request.getPassword(), bindingResult);
         String profileTypeCode = request.getProfileType();
         if (null != profileTypeCode) {
@@ -218,10 +225,14 @@ public class UserValidator extends AbstractPaginationValidator {
             bindingResult.rejectValue("username", ERRCODE_USERNAME_MISMATCH, new String[]{username, userRequest.getUsername()}, "user.username.mismatch");
             throw new ValidationConflictException(bindingResult);
         } else {
+            if (username.equalsIgnoreCase(SystemConstants.GUEST_USER_NAME)) {
+                bindingResult.reject(UserValidator.ERRCODE_INVALID_GUEST_USERNAME, new String[]{}, "user.username.invalidGuest");
+            }
             UserDetails user = this.extractUser(username);
             if (null == user) {
                 throw new ResourceNotFoundException(ERRCODE_USER_NOT_FOUND, "username", username);
             }
+
             if (null != userRequest.getPassword()) {
                 this.checkNewPassword(username, userRequest.getPassword(), bindingResult);
             }
