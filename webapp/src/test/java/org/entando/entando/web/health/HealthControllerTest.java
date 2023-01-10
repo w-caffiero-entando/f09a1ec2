@@ -23,7 +23,7 @@ class HealthControllerTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        healthController = new HealthController(healthService, true);
+        healthController = new HealthController(healthService, "extended");
     }
 
     @Test

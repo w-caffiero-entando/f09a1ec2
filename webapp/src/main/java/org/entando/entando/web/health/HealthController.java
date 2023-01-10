@@ -13,6 +13,7 @@
  */
 package org.entando.entando.web.health;
 
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.health.IHealthService;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -30,17 +31,17 @@ public class HealthController {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
     private final IHealthService healthService;
-    private boolean checkDb;
+    private boolean isExtendedCheck;
 
     @Autowired
-    public HealthController(IHealthService healthService, @Value("${de.app.health.check.db:false}") boolean checkDb) {
+    public HealthController(IHealthService healthService, @Value("${entando.app.engine.health.check.type:standard}") String checkDb) {
         this.healthService = healthService;
-        this.checkDb = checkDb;
+        this.isExtendedCheck = StringUtils.equalsIgnoreCase(checkDb, "extended");
     }
 
     @GetMapping
     public ResponseEntity<Void> isHealthy() {
-        if(checkDb) {
+        if(isExtendedCheck) {
             logger.debug("health check with db");
             return new ResponseEntity<>(this.healthService.isHealthy() ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
