@@ -14,9 +14,10 @@
 package org.entando.entando.web.health;
 
 import org.entando.entando.aps.system.services.health.IHealthService;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,19 +29,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
-
     private final IHealthService healthService;
+    private boolean checkDb;
 
     @Autowired
-    public HealthController(IHealthService healthService) {
+    public HealthController(IHealthService healthService, @Value("${de.app.health.check.db:false}") boolean checkDb) {
         this.healthService = healthService;
+        this.checkDb = checkDb;
     }
 
     @GetMapping
     public ResponseEntity<Void> isHealthy() {
-
-        logger.debug("health check");
-
-        return new ResponseEntity<>(this.healthService.isHealthy() ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR);
+        if(checkDb) {
+            logger.debug("health check with db");
+            return new ResponseEntity<>(this.healthService.isHealthy() ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            logger.debug("health check standard");
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
     }
 }

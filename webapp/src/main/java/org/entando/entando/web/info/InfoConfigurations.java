@@ -2,7 +2,6 @@ package org.entando.entando.web.info;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 

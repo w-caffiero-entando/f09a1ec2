@@ -37,7 +37,7 @@ public abstract class AbstractInfoDto {
         if (epoch != null) {
             return String.valueOf(epoch);
         }
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         try {
             return String.valueOf(format.parse(s, Instant::from).toEpochMilli());
         }
