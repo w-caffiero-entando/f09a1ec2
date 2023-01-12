@@ -29,11 +29,17 @@ mvn clean package jetty:run-war -Pjetty-local -Ppostgresql -DskipDatabaseImage=t
   -Dportdb.url=jdbc:postgresql://localhost:5432/portdb -Dportdb.username=dbuser -Dportdb.password=password \
   -Dservdb.url=jdbc:postgresql://localhost:5432/servdb -Dservdb.username=dbuser -Dservdb.password=password
 ```
+In order to build the JS OOTB widgets using node and copy the built files (css and js) to the webapp resources ootb-widgets folder, 
+you can also add the flag`-P build-ootp-widgets` to enable the related maven profile.
 
 ## Using swagger
 
 In order to enable swagger, it's enough to pass `-Dspring.profiles.active=swagger` parameter. Swagger UI will be
 reachable [here](http://localhost:8080/app-engine/api/swagger-ui.html)
+
+
+### mvn clean install -P build-ooot-widgets
+
 
 ## Using docker
 
