@@ -17,11 +17,17 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "renamer": "^4.0.0"
   },
   "scripts": {
     "start": "REACT_APP_LOCAL=true react-scripts start",
     "build": "react-scripts build",
+    "build-rename": "npm run build-rename-main-js && npm run build-rename-2-js && npm run build-rename-runtime-main-js && npm run build-rename-css",
+    "build-rename-main-js": "renamer --verbose --find '/^main\\.[^\\.]+\\.chunk\\.js$/' --replace 'main.ootb.chunk.js' build/static/js/*.js",
+    "build-rename-runtime-main-js": "renamer --verbose --find '/^runtime-main\\.[^\\.]+\\.js$/' --replace 'runtime-main.ootb.js' build/static/js/*.js",
+    "build-rename-2-js": "renamer --verbose --find '/^2\\.[^\\.]+\\.chunk\\.js$/' --replace '2.ootb.chunk.js' build/static/js/*.js",
+    "build-rename-css": "renamer --verbose --find '/^main\\.[^\\.]+\\.chunk\\.css$/' --replace 'main.ootb.chunk.css' build/static/css/*.css",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
