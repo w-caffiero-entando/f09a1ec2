@@ -37,10 +37,6 @@ you can also add the flag`-P build-ootp-widgets` to enable the related maven pro
 In order to enable swagger, it's enough to pass `-Dspring.profiles.active=swagger` parameter. Swagger UI will be
 reachable [here](http://localhost:8080/app-engine/api/swagger-ui.html)
 
-
-### mvn clean install -P build-ooot-widgets
-
-
 ## Using docker
 
 You can use the fabric8 plugin both to build and run the docker images for this project. You can choose between
