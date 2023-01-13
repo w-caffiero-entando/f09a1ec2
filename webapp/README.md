@@ -30,7 +30,7 @@ mvn clean package jetty:run-war -Pjetty-local -Ppostgresql -DskipDatabaseImage=t
   -Dservdb.url=jdbc:postgresql://localhost:5432/servdb -Dservdb.username=dbuser -Dservdb.password=password
 ```
 In order to build the JS OOTB widgets using node and copy the built files (css and js) to the webapp resources ootb-widgets folder, 
-you can also add the flag`-P build-ootp-widgets` to enable the related maven profile.
+you can also add the flag`-P build-ootb-widgets` to enable the related maven profile.
 
 ## Using swagger
 
