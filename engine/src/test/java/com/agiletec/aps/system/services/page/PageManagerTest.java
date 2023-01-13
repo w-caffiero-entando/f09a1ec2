@@ -191,6 +191,57 @@ public class PageManagerTest {
     }
 
     @Test
+    void testJoinWidgetNotExistingPage() throws Exception {
+        EntException exception = Assertions.assertThrows(EntException.class, () -> {
+            pageManager.joinWidget("does_not_exists", null, 0);
+        });
+        Assertions.assertEquals("The page 'does_not_exists' does not exist!", exception.getMessage());
+    }
+
+    @Test
+    void testJoinWidgetNullMetadata() throws Exception {
+        Mockito.when(cacheWrapper.getDraftPage("page_code")).thenReturn(Mockito.mock(IPage.class));
+        EntException exception = Assertions.assertThrows(EntException.class, () -> {
+            pageManager.joinWidget("page_code", null, 0);
+        });
+        Assertions.assertEquals("Null metadata for page 'page_code'!", exception.getMessage());
+    }
+
+    @Test
+    void testJoinWidgetNullWidget() throws Exception {
+        IPage page = Mockito.mock(IPage.class);
+        PageMetadata pageMetadata = Mockito.mock(PageMetadata.class);
+        Mockito.when(pageMetadata.getModelCode()).thenReturn("page_model");
+        Mockito.when(page.getMetadata()).thenReturn(pageMetadata);
+        PageModel pageModel = new PageModel();
+        pageModel.setConfiguration(new Frame[]{new Frame()});
+        Mockito.when(pageModelManager.getPageModel("page_model")).thenReturn(pageModel);
+        Mockito.when(cacheWrapper.getDraftPage("page_code")).thenReturn(page);
+        EntException exception = Assertions.assertThrows(EntException.class, () -> {
+            pageManager.joinWidget("page_code", null, 0);
+        });
+        Assertions.assertEquals("Invalid null value found in either the Widget or the widgetType",
+                exception.getMessage());
+    }
+
+    @Test
+    void testJoinWidgetNullWidgetTypeCode() throws Exception {
+        IPage page = Mockito.mock(IPage.class);
+        PageMetadata pageMetadata = Mockito.mock(PageMetadata.class);
+        Mockito.when(pageMetadata.getModelCode()).thenReturn("page_model");
+        Mockito.when(page.getMetadata()).thenReturn(pageMetadata);
+        PageModel pageModel = new PageModel();
+        pageModel.setConfiguration(new Frame[]{new Frame()});
+        Mockito.when(pageModelManager.getPageModel("page_model")).thenReturn(pageModel);
+        Mockito.when(cacheWrapper.getDraftPage("page_code")).thenReturn(page);
+        EntException exception = Assertions.assertThrows(EntException.class, () -> {
+            pageManager.joinWidget("page_code", new Widget(), 0);
+        });
+        Assertions.assertEquals("Invalid null value found in either the Widget or the widgetType",
+                exception.getMessage());
+    }
+
+    @Test
     void searchPages_FilterByCodeOnAllowedGroup_ShouldReturnResult() throws Exception {
         testSearchPages("page_a", "group_a", "group_a", "page_a", null, "page_a");
     }
