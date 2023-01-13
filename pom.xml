@@ -23,6 +23,7 @@
         <module>redis-plugin</module>
         <module>seo-plugin</module>
         <module>versioning-plugin</module>
+        <module>contentscheduler-plugin</module>
         <module>webapp</module>
     </modules>
 
@@ -1581,12 +1582,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <profile>
-            <id>contentscheduler</id>
-            <modules>
-                <module>contentscheduler-plugin</module>
-            </modules>
         </profile>
     </profiles>
 </project>
