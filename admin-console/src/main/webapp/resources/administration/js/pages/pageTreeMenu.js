@@ -121,14 +121,11 @@ $(function () {
         $('.diff-slot').removeClass('diff-slot');
         $('.grid-slot').find('.ghost').remove();
         if (pageData.online) {
-            if (pageData.draftMetadata.modelCode !== pageData.draftMetadata.modelCode) {
-                $('.grid-slot').addClass('diff-slot');
-            } else if (pageData.draftWidgets.length === pageData.onlineWidgets.length) {
+            if (pageData.draftWidgets.length === pageData.onlineWidgets.length) {
                 for (const i = 0; i < pageData.draftWidgets.length; ++i) {
-                    var
-                            $gridSlot = $('.grid-slot[data-pos="' + i + '"]'),
-                            draftW = pageData.draftWidgets[i],
-                            onlineW = pageData.onlineWidgets[i];
+                    const $gridSlot = $('.grid-slot[data-pos="' + i + '"]'),
+                          draftW = pageData.draftWidgets[i],
+                          onlineW = pageData.onlineWidgets[i];
                     if (!_.isEqual(draftW, onlineW)) {
                         $gridSlot.addClass('diff-slot');
                     }
