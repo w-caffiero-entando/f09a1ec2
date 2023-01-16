@@ -41,7 +41,11 @@ public class RequestContext {
 	 * @return Il parametro richiesto
 	 */
 	public Object getExtraParam(String name) {
-		return _extraParams.get(name);
+		if (isCurrentFrameOrCurrentWidget(name)) {
+			return ReqCtxThreadLocal.get(name);
+		} else {
+			return _extraParams.get(name);
+		}
 	}
 
 	/**
@@ -50,7 +54,11 @@ public class RequestContext {
 	 * @param param Il parametro da aggiungere
 	 */
 	public void addExtraParam(String name, Object param) {
-		this._extraParams.put(name, param);
+		if (isCurrentFrameOrCurrentWidget(name)) {
+			ReqCtxThreadLocal.set(name, param);
+		} else {
+			this._extraParams.put(name, param);
+		}
 	}
 
 	/**
@@ -58,9 +66,20 @@ public class RequestContext {
 	 * @param name Il nome del parametro
 	 */
 	public void removeExtraParam(String name) {
-		this._extraParams.remove(name);
+		if (isCurrentFrameOrCurrentWidget(name)) {
+			ReqCtxThreadLocal.remove(name);
+		} else {
+			this._extraParams.remove(name);
+		}
 	}
-	
+
+	private boolean isCurrentFrameOrCurrentWidget(String name) {
+		return name != null &&
+				(name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_FRAME) ||
+						name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_WIDGET));
+	}
+
+
 	/**
 	 * Restituisce la request della servlet.
 	 * @return La request della servlet.

@@ -39,13 +39,21 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 /**
  * Print a gui fragment output by the given code.
  * @author E.Santoboni
+ * @deprecated remove FreemarkerTemplateParameterTag from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive
  */
 public class GuiFragmentTag extends ExtendedTagSupport {
-	
+
 	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(GuiFragmentTag.class);
-	
+
 	@Override
     public int doStartTag() throws JspException {
+		String parallelWidgetEnv = System.getenv(SystemConstants.PARALLEL_WIDGET_RENDER_ENV_PARAM);
+		boolean parallel = (!StringUtils.isBlank(parallelWidgetEnv)) ? Boolean.valueOf(parallelWidgetEnv) : false;
+		if (parallel) {
+			_logger.warn("** TAG GuiFragmentTag DEPRECATED ** - "
+					+ "remove FreemarkerTemplateParameterTag from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive");
+		}
+
 		ServletRequest request = this.pageContext.getRequest();
 		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
 		try {
@@ -69,7 +77,7 @@ public class GuiFragmentTag extends ExtendedTagSupport {
         }
         return super.doStartTag();
     }
-	
+
 	protected String extractFragmentOutput(RequestContext reqCtx) throws EntException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
@@ -90,35 +98,35 @@ public class GuiFragmentTag extends ExtendedTagSupport {
 		}
 		return baos.toString();
 	}
-	
+
 	@Override
 	public int doEndTag() throws JspException {
 		this.release();
 		return super.doEndTag();
 	}
-	
+
 	@Override
 	public void release() {
 		super.release();
 		this.setVar(null);
 		this.setCode(null);
 	}
-	
+
 	public String getVar() {
 		return _var;
 	}
 	public void setVar(String var) {
 		this._var = var;
 	}
-	
+
 	public String getCode() {
 		return _code;
 	}
 	public void setCode(String code) {
 		this._code = code;
 	}
-	
+
 	private String _var;
 	private String _code;
-	
+
 }
