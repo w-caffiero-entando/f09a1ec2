@@ -25,8 +25,9 @@ import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
  *
  * @author M.Diana - E.Santoboni
  */
-public interface SystemConstants {
+public final class SystemConstants {
 
+    private SystemConstants(){}
     /**
      * Nome della property che definisce la versione di configurazione da
      * utilizzare (tipo: String)

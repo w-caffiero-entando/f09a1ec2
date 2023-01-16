@@ -24,7 +24,7 @@ import freemarker.core.Environment;
 import freemarker.ext.beans.StringModel;
 import freemarker.ext.servlet.AllHttpScopesHashModel;
 import freemarker.template.TemplateModel;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanContainer;
 
@@ -42,8 +42,7 @@ public class FreemarkerTemplateParameterTag extends TagSupport {
 	
 	@Override
     public int doStartTag() throws JspException {
-		String parallelWidgetEnv = System.getenv(SystemConstants.PARALLEL_WIDGET_RENDER_ENV_PARAM);
-		boolean parallel = (!StringUtils.isBlank(parallelWidgetEnv)) ? Boolean.valueOf(parallelWidgetEnv) : false;
+		boolean parallel = BooleanUtils.toBoolean(System.getenv(SystemConstants.PARALLEL_WIDGET_RENDER_ENV_PARAM));
 		if (parallel) {
 			_logger.warn("** TAG FreemarkerTemplateParameterTag DEPRECATED ** - "
 					+ "remove it from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive");

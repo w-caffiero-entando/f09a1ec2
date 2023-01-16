@@ -13,16 +13,6 @@
  */
 package com.agiletec.plugins.jacms.aps.system.services.content.widget;
 
-import static com.agiletec.plugins.jacms.aps.system.services.content.helper.BaseContentListHelper.getAllowedGroupCodes;
-import static com.agiletec.plugins.jacms.aps.system.services.content.helper.BaseContentListHelper.splitValues;
-import static com.agiletec.plugins.jacms.aps.system.services.content.helper.IContentListHelper.CATEGORIES_SEPARATOR;
-import static com.agiletec.plugins.jacms.aps.system.services.content.widget.IContentListWidgetHelper.SHOWLET_PARAM_CATEGORY;
-import static com.agiletec.plugins.jacms.aps.system.services.content.widget.IContentListWidgetHelper.WIDGET_PARAM_CATEGORIES;
-import static com.agiletec.plugins.jacms.aps.system.services.content.widget.IContentListWidgetHelper.WIDGET_PARAM_CONTENT_TYPE;
-import static com.agiletec.plugins.jacms.aps.system.services.content.widget.IContentListWidgetHelper.WIDGET_PARAM_FILTERS;
-import static com.agiletec.plugins.jacms.aps.system.services.content.widget.IContentListWidgetHelper.WIDGET_PARAM_OR_CLAUSE_CATEGORY_FILTER;
-import static com.agiletec.plugins.jacms.aps.system.services.content.widget.IContentListWidgetHelper.WIDGET_PARAM_USER_FILTERS;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.ListUtils;
-import org.entando.entando.aps.system.services.cache.CacheableInfo;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.searchengine.IEntitySearchEngineManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -98,7 +87,7 @@ public class ContentListHelper extends BaseContentListHelper implements IContent
     @Override
     public List<String> getContentsId(IContentListTagBean bean, RequestContext reqCtx) throws Throwable {
         String key = ContentListHelper.buildCacheKey(bean, reqCtx);
-        this.releaseCache(key, reqCtx);
+        this.releaseCache(key);
         boolean cacheable = bean.isCacheable() && !isUserFilterExecuted(bean);
         List<String> contentsId = null;
         if (cacheable) {
@@ -124,7 +113,7 @@ public class ContentListHelper extends BaseContentListHelper implements IContent
         return contentsId;
     }
 
-    private void releaseCache(String key, RequestContext reqCtx) {
+    private void releaseCache(String key) {
         boolean isExpired = this.getCacheInfoManager().isExpired(ICacheInfoManager.DEFAULT_CACHE_NAME, key);
         if (isExpired) {
             this.getCacheInfoManager().flushEntry(ICacheInfoManager.DEFAULT_CACHE_NAME, key);

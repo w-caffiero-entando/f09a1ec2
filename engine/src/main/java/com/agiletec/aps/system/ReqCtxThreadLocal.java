@@ -16,9 +16,9 @@ package com.agiletec.aps.system;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReqCtxThreadLocal {
+public final class ReqCtxThreadLocal {
 
-    private static final ThreadLocal<Map<String, Object>> sessionThreadLocal = new ThreadLocal<Map<String, Object>>();
+    private static final ThreadLocal<Map<String, Object>> sessionThreadLocal = new ThreadLocal<>();
 
     private ReqCtxThreadLocal() {
         throw new IllegalStateException("ReqCtxThreadLocal is an Utility class");
@@ -29,8 +29,7 @@ public class ReqCtxThreadLocal {
         if (null != map) {
             map.clear();
         } else {
-            sessionThreadLocal.set(new HashMap<String, Object>());
-            map = sessionThreadLocal.get();
+            sessionThreadLocal.set(new HashMap<>());
         }
     }
 
@@ -39,6 +38,7 @@ public class ReqCtxThreadLocal {
         if (null != map) {
             map.clear();
         }
+        sessionThreadLocal.remove();
     }
 
     public static void set(String key, Object value) {

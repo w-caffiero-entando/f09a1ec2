@@ -202,11 +202,11 @@ public class ControllerServlet extends freemarker.ext.servlet.FreemarkerServlet 
 	private static final String ATTR_APPLICATION_MODEL = ".freemarker.Application";
 	private static final String ATTR_JSP_TAGLIBS_MODEL = ".freemarker.JspTaglibs";
 
-	protected static class EntTemplateLoader implements TemplateLoader {
+	public static class EntTemplateLoader implements TemplateLoader {
 
 		private IGuiFragmentManager guiFragmentManager;
 
-		protected EntTemplateLoader(IGuiFragmentManager guiFragmentManager) {
+		public EntTemplateLoader(IGuiFragmentManager guiFragmentManager) {
 			this.guiFragmentManager = guiFragmentManager;
 		}
 

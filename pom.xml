@@ -210,7 +210,7 @@
                         <forkCount>1</forkCount>
                         <shutdown>exit</shutdown>
                         <parallel>methods</parallel>
-                        <threadCount>1</threadCount>
+                        <threadCount>8</threadCount>
                         <excludes>
                             <exclude>**/*BaseTestCase*</exclude>
                             <exclude>**/Abstract*</exclude>
@@ -218,7 +218,7 @@
                         <environmentVariables>
                             <ROOT_LOG_LEVEL>WARN</ROOT_LOG_LEVEL>
                         </environmentVariables>
-                        <rerunFailingTestsCount>2</rerunFailingTestsCount>
+                        <rerunFailingTestsCount>1</rerunFailingTestsCount>
                     </configuration>
                 </plugin>
 

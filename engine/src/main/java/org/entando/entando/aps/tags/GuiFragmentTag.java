@@ -15,6 +15,7 @@ package org.entando.entando.aps.tags;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
+import org.apache.commons.lang3.BooleanUtils;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 
@@ -47,8 +48,7 @@ public class GuiFragmentTag extends ExtendedTagSupport {
 
 	@Override
     public int doStartTag() throws JspException {
-		String parallelWidgetEnv = System.getenv(SystemConstants.PARALLEL_WIDGET_RENDER_ENV_PARAM);
-		boolean parallel = (!StringUtils.isBlank(parallelWidgetEnv)) ? Boolean.valueOf(parallelWidgetEnv) : false;
+		boolean parallel = BooleanUtils.toBoolean(System.getenv(SystemConstants.PARALLEL_WIDGET_RENDER_ENV_PARAM));
 		if (parallel) {
 			_logger.warn("** TAG GuiFragmentTag DEPRECATED ** - "
 					+ "remove FreemarkerTemplateParameterTag from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive");
