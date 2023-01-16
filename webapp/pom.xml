@@ -348,6 +348,40 @@
             </properties>
         </profile>
         <profile>
+            <id>contentscheduler</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.entando.entando.plugins</groupId>
+                    <artifactId>entando-plugin-jpcontentscheduler</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-contentscheduler-resources</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target/${project.build.finalName}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/../contentscheduler-plugin/src/main/webapp</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>build-ootb-widgets</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -812,9 +846,6 @@
                                 </resource>
                                 <resource>
                                     <directory>${basedir}/../versioning-plugin/src/main/webapp</directory>
-                                </resource>
-                                <resource>
-                                    <directory>${basedir}/../contentscheduler-plugin/src/main/webapp</directory>
                                 </resource>
                             </resources>
                         </configuration>
