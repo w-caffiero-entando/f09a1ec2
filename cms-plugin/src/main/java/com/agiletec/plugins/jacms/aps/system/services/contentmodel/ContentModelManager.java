@@ -259,6 +259,8 @@ public class ContentModelManager extends AbstractService implements IContentMode
                     case "row_content_viewer_list":
                         reference = getMultipleContentsWidgetReference(modelId, widget, includeDefaultTemplateReferences);
                         break;
+                    default:
+                        return;
                 }
 
                 if (null != reference) {

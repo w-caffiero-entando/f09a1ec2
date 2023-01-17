@@ -504,10 +504,10 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
         Page page = null;
         try {
             page = (Page) this.getPage(this.getPageCode());
-            PageModel model = this.getPageModelManager().getPageModel(page.getMetadata().getModelCode());
-            Widget[] defaultWidgets = model.getDefaultWidget();
+            PageModel pageModel = this.getPageModelManager().getPageModel(page.getMetadata().getModelCode());
+            Widget[] defaultWidgets = pageModel.getDefaultWidget();
             if (null == defaultWidgets) {
-                logger.info("No default Widget found for pagemodel '{}' of page '{}'", model.getCode(), page.getCode());
+                logger.info("No default Widget found for pagemodel '{}' of page '{}'", pageModel.getCode(), page.getCode());
                 return SUCCESS;
             }
             Widget[] widgets = new Widget[defaultWidgets.length];
@@ -515,7 +515,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
                 Widget defaultWidget = defaultWidgets[i];
                 if (null != defaultWidget) {
                     if (null == defaultWidget.getTypeCode()) {
-                        logger.info("Widget Type null when adding defaulWidget (of pagemodel '{}') on frame '{}' of page '{}'", model
+                        logger.info("Widget Type null when adding defaulWidget (of pagemodel '{}') on frame '{}' of page '{}'", pageModel
                                 .getCode(), i, page.getCode());
                         continue;
                     }

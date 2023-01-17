@@ -36,9 +36,9 @@ public class ContentPageMapperManager extends AbstractService implements IConten
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ContentPageMapperManager.class);
 
-	private IPageManager pageManager;
-	private IPageModelManager pageModelManager;
-	private IContentMapperCacheWrapper cacheWrapper;
+	private transient IPageManager pageManager;
+	private transient IPageModelManager pageModelManager;
+	private transient IContentMapperCacheWrapper cacheWrapper;
 	
 	@Override
 	public void init() throws Exception {

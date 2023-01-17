@@ -13,6 +13,7 @@
  */
 package com.agiletec.plugins.jacms.apsadmin.content;
 
+import org.entando.entando.aps.util.PageUtils;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.group.Group;
@@ -50,11 +51,11 @@ public class ContentAction extends AbstractContentAction {
 
     private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ContentAction.class);
 
-    private IPageManager pageManager;
-    private IPageModelManager pageModelManager;
-    private ConfigInterface configManager;
-    private IResourceManager resourceManager;
-    private IWidgetTypeManager widgetTypeManager;
+    private transient IPageManager pageManager;
+    private transient IPageModelManager pageModelManager;
+    private transient ConfigInterface configManager;
+    private transient IResourceManager resourceManager;
+    private transient IWidgetTypeManager widgetTypeManager;
 
     private Map references;
 
@@ -339,8 +340,11 @@ public class ContentAction extends AbstractContentAction {
             Content content = this.getContent();
             if (null != content) {
                 IPage defaultViewerPage = this.getPageManager().getOnlinePage(content.getViewPage());
+                if (defaultViewerPage == null) {
+                    return pageItems;
+                }
                 PageModel model = this.getPageModelManager().getPageModel(defaultViewerPage.getMetadata().getModelCode());
-                if (null != defaultViewerPage && CmsPageUtil.isOnlineFreeViewerPage(defaultViewerPage, model, null, this.getWidgetTypeManager())) {
+                if (PageUtils.isOnlineFreeViewerPage(defaultViewerPage, model, null, this.getWidgetTypeManager())) {
                     pageItems.add(new SelectItem("", this.getText("label.default")));
                 }
                 if (null == content.getId()) {

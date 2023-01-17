@@ -48,8 +48,8 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
     @Autowired
     private PageManager pageManager;
     
-    private IContentManager _contentManager;
-    private IContentModelManager _contentModelManager;
+    private IContentManager contentManager;
+    private IContentModelManager contentModelManager;
     
     private IPageModelManager pageModelManager;
     private IWidgetTypeManager widgetTypeManager;
@@ -188,11 +188,11 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
 	}
 
     protected IContentManager getContentManager() {
-        return _contentManager;
+        return contentManager;
     }
 
     public void setContentManager(IContentManager contentManager) {
-        this._contentManager = contentManager;
+        this.contentManager = contentManager;
     }
 
     protected PageManager getPageManager() {
@@ -203,10 +203,10 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
     }
 
     protected IContentModelManager getContentModelManager() {
-        return _contentModelManager;
+        return contentModelManager;
     }
     public void setContentModelManager(IContentModelManager contentModelManager) {
-        this._contentModelManager = contentModelManager;
+        this.contentModelManager = contentModelManager;
     }
 
     protected IPageModelManager getPageModelManager() {

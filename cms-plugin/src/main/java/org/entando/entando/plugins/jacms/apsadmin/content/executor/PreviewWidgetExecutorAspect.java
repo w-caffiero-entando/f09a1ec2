@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
+import org.entando.entando.aps.system.services.controller.executor.AbstractWidgetExecutorService;
 import org.entando.entando.aps.system.services.controller.executor.WidgetExecutorService;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -37,50 +38,63 @@ import org.entando.entando.aps.system.services.widgettype.WidgetType;
 @Aspect
 public class PreviewWidgetExecutorAspect extends WidgetExecutorService {
 
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PreviewWidgetExecutorAspect.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(PreviewWidgetExecutorAspect.class);
 
-	@After("execution(* org.entando.entando.aps.system.services.controller.executor.WidgetExecutorService.service(..)) && args(reqCtx)")
-	public void checkContentPreview(RequestContext reqCtx) {
-		HttpServletRequest request = reqCtx.getRequest();
-		String contentOnSessionMarker = (String) request.getAttribute("contentOnSessionMarker");
-		if (null == contentOnSessionMarker || contentOnSessionMarker.trim().length() == 0) {
-			contentOnSessionMarker = request.getParameter("contentOnSessionMarker");
-		}
-		if (null == contentOnSessionMarker) {
-			return;
-		}
-		Content contentOnSession = (Content) request.getSession().getAttribute(
-				ContentActionConstants.SESSION_PARAM_NAME_CURRENT_CONTENT_PREXIX + contentOnSessionMarker);
-		if (null == contentOnSession) {
-			return;
-		}
-		try {
-			IPage currentPage = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
-			Widget[] widgets = currentPage.getWidgets();
-            IWidgetTypeManager widgetTypeManager = (IWidgetTypeManager) ApsWebApplicationUtils.getBean(SystemConstants.WIDGET_TYPE_MANAGER, reqCtx.getRequest());
-			for (int frame = 0; frame < widgets.length; frame++) {
-				Widget widget = widgets[frame];
+    @After("execution(* org.entando.entando.aps.system.services.controller.executor.WidgetExecutorService.service(..)) && args(reqCtx)")
+    public void checkContentPreview(RequestContext reqCtx) {
+        Content contentOnSession = getContentOnSession(reqCtx);
+        if (null == contentOnSession) {
+            return;
+        }
+        try {
+            IPage currentPage = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+            Widget[] widgets = currentPage.getWidgets();
+            IWidgetTypeManager widgetTypeManager = (IWidgetTypeManager) ApsWebApplicationUtils.getBean(
+                    SystemConstants.WIDGET_TYPE_MANAGER, reqCtx.getRequest());
+            for (int frame = 0; frame < widgets.length; frame++) {
+                Widget widget = widgets[frame];
                 WidgetType type = (null != widget) ? widgetTypeManager.getWidgetType(widget.getTypeCode()) : null;
-				if (widget != null && "viewerConfig".equals(type.getAction())) {
-					if ((currentPage.getCode().equals(contentOnSession.getViewPage()) && (widget.getConfig() == null || widget.getConfig()
-							.size() == 0)) || (widget.getConfig() != null && widget.getConfig().get("contentId") != null && widget
-									.getConfig().get("contentId").equals(contentOnSession.getId()))) {
-						reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_WIDGET, widget);
-						reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, new Integer(frame));
-						String output = super.extractJspOutput(reqCtx, CONTENT_VIEWER_JSP);
-						String[] widgetOutput = (String[]) reqCtx.getExtraParam("ShowletOutput");
-						widgetOutput[frame] = output;
-						return;
-					}
-				}
-			}
-		} catch (Throwable t) {
-			String msg = "Error detected while include content preview";
-			_logger.error(msg, t);
-			throw new RuntimeException(msg, t);
-		}
-	}
+                if (widget != null && "viewerConfig".equals(type.getAction())
+                        && widgetMatchesContent(currentPage, contentOnSession, widget)) {
+                    reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_WIDGET, widget);
+                    reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
+                    String output = AbstractWidgetExecutorService.extractJspOutput(reqCtx, CONTENT_VIEWER_JSP);
+                    String[] widgetOutput = (String[]) reqCtx.getExtraParam("ShowletOutput");
+                    widgetOutput[frame] = output;
+                    return;
+                }
+            }
+        } catch (Throwable t) {
+            String msg = "Error detected while include content preview";
+            logger.error(msg, t);
+            throw new RuntimeException(msg, t);
+        }
+    }
 
-	private final String CONTENT_VIEWER_JSP = "/WEB-INF/plugins/jacms/apsadmin/jsp/content/preview/content_viewer.jsp";
+    private Content getContentOnSession(RequestContext reqCtx) {
+        HttpServletRequest request = reqCtx.getRequest();
+        String contentOnSessionMarker = (String) request.getAttribute("contentOnSessionMarker");
+        if (null == contentOnSessionMarker || contentOnSessionMarker.trim().length() == 0) {
+            contentOnSessionMarker = request.getParameter("contentOnSessionMarker");
+        }
+        if (null == contentOnSessionMarker) {
+            return null;
+        }
+        return (Content) request.getSession().getAttribute(
+                ContentActionConstants.SESSION_PARAM_NAME_CURRENT_CONTENT_PREXIX + contentOnSessionMarker);
+    }
+
+    private boolean widgetMatchesContent(IPage currentPage, Content contentOnSession, Widget widget) {
+        return (
+                currentPage.getCode().equals(contentOnSession.getViewPage())
+                        && (widget.getConfig() == null || widget.getConfig().size() == 0)
+        ) || (
+                widget.getConfig() != null
+                        && widget.getConfig().get("contentId") != null
+                        && widget.getConfig().get("contentId").equals(contentOnSession.getId())
+        );
+    }
+
+    private static final String CONTENT_VIEWER_JSP = "/WEB-INF/plugins/jacms/apsadmin/jsp/content/preview/content_viewer.jsp";
 
 }

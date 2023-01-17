@@ -132,10 +132,9 @@ public class PageModelAction extends AbstractPageModelAction implements ServletR
 
     public String showDetails() {
         String result = this.extractPageModelFormValues();
-        if (!result.equals(SUCCESS)) {
-            return result;
+        if (result.equals(SUCCESS)) {
+            this.extractReferencingObjects(this.getCode());
         }
-        this.extractReferencingObjects(this.getCode());
         return result;
     }
 

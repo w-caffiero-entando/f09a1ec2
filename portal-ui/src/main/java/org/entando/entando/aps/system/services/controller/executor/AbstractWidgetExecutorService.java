@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import java.util.Objects;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -286,7 +287,26 @@ public abstract class AbstractWidgetExecutorService {
         public ApsProperties getConfig() {
             return this.config;
         }
-        
-    }
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (!(o instanceof CurrentLogicWidget)) {
+				return false;
+			}
+			if (!super.equals(o)) {
+				return false;
+			}
+			CurrentLogicWidget that = (CurrentLogicWidget) o;
+			return Objects.equals(config, that.config) && Objects.equals(concrete, that.concrete);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(super.hashCode(), config, concrete);
+		}
+	}
 
 }

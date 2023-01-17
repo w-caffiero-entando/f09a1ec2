@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
+import org.entando.entando.aps.util.PageUtils;
 import org.entando.entando.plugins.jacms.aps.util.CmsPageUtil;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -54,7 +55,7 @@ public class PageAction extends com.agiletec.apsadmin.portal.PageAction {
      */
     public boolean isFreeViewerPage(IPage page) {
         PageModel model = this.getPageModelManager().getPageModel(page.getMetadata().getModelCode());
-        return CmsPageUtil.isDraftFreeViewerPage(page, model, this.getViewerWidgetCode(), super.getWidgetTypeManager());
+        return PageUtils.isDraftFreeViewerPage(page, model, this.getViewerWidgetCode(), super.getWidgetTypeManager());
     }
 
     public String setViewerPageAPI() {
