@@ -32,19 +32,29 @@ import com.agiletec.aps.util.DateConverter;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.opensymphony.xwork2.Action;
+import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
+import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 
 import org.entando.entando.ent.exception.EntException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 1.0
  * @author E.Santoboni, E.Mezzano
  */
 class TestUserAction extends ApsAdminBaseTestCase {
 
+    private IUserManager userManager;
+    private IUserProfileManager userProfileManager;
+
+    @BeforeEach
+    private void init() {
+        this.userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);
+        this.userProfileManager = (IUserProfileManager) this.getService(SystemConstants.USER_PROFILE_MANAGER);
+    }
+
     @Test
-	void testNew() throws Throwable {
+    void testNew() throws Throwable {
         String result = this.executeNew("developersConf");
         assertEquals("apslogin", result);
 
@@ -55,7 +65,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	void testFailureEdit() throws Throwable {
+    void testFailureEdit() throws Throwable {
         String result = this.executeNew("developersConf");
         assertEquals("apslogin", result);
 
@@ -64,7 +74,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	void testEdit() throws Throwable {
+    void testEdit() throws Throwable {
         String result = this.executeEdit("admin", "mainEditor");
         assertEquals(Action.SUCCESS, result);
         UserAction action = (UserAction) this.getAction();
@@ -72,7 +82,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	void testAddNew_1() throws Throwable {
+    void testAddNew_1() throws Throwable {
         String username = "usernameForTest";
         String password = "password";
         try {
@@ -87,18 +97,18 @@ class TestUserAction extends ApsAdminBaseTestCase {
             String result = this.executeAction();
             assertEquals(Action.SUCCESS, result);
 
-            UserDetails extracted = this._userManager.getUser(username, password);
+            UserDetails extracted = this.userManager.getUser(username, password);
             assertNotNull(extracted);
             assertFalse(extracted.isDisabled());
         } catch (Throwable t) {
             throw t;
         } finally {
-            this._userManager.removeUser(username);
+            this.userManager.removeUser(username);
         }
     }
 
     @Test
-	void testAddNew_2() throws Throwable {
+    void testAddNew_2() throws Throwable {
         String username = "user.name_for_test"; // the dot '.' is accepted in the username as well as the underscore '_'
         String password = "password.for_test"; // the dot '.' is accepted in the password as well as the underscore '_'
         try {
@@ -113,19 +123,19 @@ class TestUserAction extends ApsAdminBaseTestCase {
             String result = this.executeAction();
             assertEquals(Action.SUCCESS, result);
 
-            UserDetails extracted = this._userManager.getUser(username, password);
+            UserDetails extracted = this.userManager.getUser(username, password);
             assertNotNull(extracted);
             assertFalse(extracted.isDisabled());
         } catch (Throwable t) {
             throw t;
         } finally {
-            this._userManager.removeUser(username);
-            assertNull(this._userManager.getUser(username));
+            this.userManager.removeUser(username);
+            assertNull(this.userManager.getUser(username));
         }
     }
 
     @Test
-	void testAddEditDelete() throws Throwable {
+    void testAddEditDelete() throws Throwable {
         String username = "username";
         String password = "password";
         String newPassword = "pluto1234";
@@ -141,7 +151,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
             String result = this.executeAction();
             assertEquals(Action.SUCCESS, result);
 
-            UserDetails extracted = this._userManager.getUser(username, newPassword);
+            UserDetails extracted = this.userManager.getUser(username, newPassword);
             assertNotNull(extracted);
             assertFalse(extracted.isDisabled());
 
@@ -149,18 +159,18 @@ class TestUserAction extends ApsAdminBaseTestCase {
             this.addParameter("username", username);
             result = this.executeAction();
             assertEquals(Action.SUCCESS, result);
-            extracted = this._userManager.getUser(username);
+            extracted = this.userManager.getUser(username);
             assertNull(extracted);
         } catch (Throwable t) {
-            this._userManager.removeUser(username);
+            this.userManager.removeUser(username);
             throw t;
         }
     }
 
     @Test
-	void testFailureDisableAdminUser() throws Throwable {
+    void testFailureDisableAdminUser() throws Throwable {
         String username = SystemConstants.ADMIN_USER_NAME;
-        UserDetails adminUser = this._userManager.getUser(username);
+        UserDetails adminUser = this.userManager.getUser(username);
         try {
             this.setUserOnSession("admin");
             this.initAction("/do/User", "save");
@@ -174,14 +184,14 @@ class TestUserAction extends ApsAdminBaseTestCase {
             List<String> errors = fieldErrors.get("active");
             assertEquals(1, errors.size());
         } catch (Throwable t) {
-            this._userManager.updateUser(adminUser);
+            this.userManager.updateUser(adminUser);
             throw t;
         }
     }
 
     @Test
-	void testSaveNewFailure() throws Throwable {
-        UserDetails oldUser = this._userManager.getUser("admin");
+    void testSaveNewFailure() throws Throwable {
+        UserDetails oldUser = this.userManager.getUser("admin");
         try {
             // permessi non disponibili
             String result = this.executeSaveNew("developersConf", "username", "password", "password");
@@ -198,7 +208,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
             // username too short
             result = this.executeSaveNew("admin", "usr", "password", "password");
             this.verifyErrors(result, 1, "username", 1);
-            
+
             // username troppo lunga
             result = this.executeSaveNew("admin", "usernameDecisamenteTroppoLunga", "password", "password");
             this.verifyErrors(result, 1, "username", 1);
@@ -223,8 +233,8 @@ class TestUserAction extends ApsAdminBaseTestCase {
             result = this.executeSaveNew("admin", "test", "&345bnr67fg$", "&345bnr67fg$");
             this.verifyErrors(result, 1, "password", 1);
         } catch (RuntimeException e) {
-            this._userManager.updateUser(oldUser);
-            this._userManager.changePassword(oldUser.getUsername(), oldUser.getUsername());
+            this.userManager.updateUser(oldUser);
+            this.userManager.changePassword(oldUser.getUsername(), oldUser.getUsername());
             throw e;
         }
     }
@@ -241,7 +251,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	void testSaveEditFailure() throws Throwable {
+    void testSaveEditFailure() throws Throwable {
         this.setUserOnSession("admin");
         String usernameForTest = "testUserName";
         this.addUser(usernameForTest, "password");
@@ -268,7 +278,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
         } catch (Throwable t) {
             throw t;
         } finally {
-            this._userManager.removeUser(usernameForTest);
+            this.userManager.removeUser(usernameForTest);
         }
     }
 
@@ -281,7 +291,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	void testTrash() throws Throwable {
+    void testTrash() throws Throwable {
         String username = "username";
         String password = "password";
         try {
@@ -289,16 +299,16 @@ class TestUserAction extends ApsAdminBaseTestCase {
 
             String result = this.executeTrash("admin", username);
             assertEquals(Action.SUCCESS, result);
-            assertNotNull(this._userManager.getUser(username));
+            assertNotNull(this.userManager.getUser(username));
         } catch (Throwable t) {
             throw t;
         } finally {
-            this._userManager.removeUser(username);
+            this.userManager.removeUser(username);
         }
     }
 
     @Test
-	void testFailureTrash() throws Throwable {
+    void testFailureTrash() throws Throwable {
         String result = this.executeTrash("developersConf", "editor");
         assertEquals("apslogin", result);
 
@@ -309,23 +319,61 @@ class TestUserAction extends ApsAdminBaseTestCase {
     }
 
     @Test
-	void testDelete() throws Throwable {
+    void testDelete() throws Throwable {
         String username = "user.name_to_delete";
         String password = "password";
         try {
             this.addUser(username, password);
             String result = this.executeDelete("admin", username);
             assertEquals(Action.SUCCESS, result);
-            assertNull(this._userManager.getUser(username));
+            assertNull(this.userManager.getUser(username));
         } catch (Throwable t) {
             throw t;
         } finally {
-            this._userManager.removeUser(username);
+            this.userManager.removeUser(username);
         }
     }
 
     @Test
-	void testFailureDelete() throws Throwable {
+    void testDeleteUserWithProfile() throws Throwable {
+        String username = "test_profile";
+        try {
+            IUserProfile profile = this.userProfileManager.getDefaultProfileType();
+            profile.setId("test_profile");
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(username);
+            user.setProfile(profile);
+            this.userManager.addUser(user);
+            assertNotNull(userManager.getUser(username));
+            assertNotNull(userProfileManager.getProfile(username));
+
+            String result = this.executeDelete("admin", username);
+            assertEquals(Action.SUCCESS, result);
+
+            assertNull(userManager.getUser(username));
+            assertNull(userProfileManager.getProfile(username));
+
+            userProfileManager.addProfile(username, profile);
+            assertNull(userManager.getUser(username));
+            assertNotNull(userProfileManager.getProfile(username));
+
+            result = this.executeDelete("admin", username);
+            assertEquals(Action.SUCCESS, result);
+
+            assertNull(userManager.getUser(username));
+            assertNull(userProfileManager.getProfile(username));
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.userManager.removeUser(username);
+            assertNull(userManager.getUser(username));
+            assertNull(userProfileManager.getProfile(username));
+        }
+    }
+
+    @Test
+    void testFailureDelete() throws Throwable {
         String result = this.executeDelete("developersConf", "editor");
         assertEquals("apslogin", result);
 
@@ -333,17 +381,23 @@ class TestUserAction extends ApsAdminBaseTestCase {
         assertEquals("userList", result);
         Collection<String> actionErrors = this.getAction().getActionErrors();
         assertEquals(1, actionErrors.size());
+
+        assertNull(this.userManager.getUser("not_exists"));
+        result = this.executeDelete("admin", "not_exists");
+        assertEquals("userList", result);
+        actionErrors = this.getAction().getActionErrors();
+        assertEquals(1, actionErrors.size());
     }
 
     @Test
-	void testResetUser() throws Throwable {
+    void testResetUser() throws Throwable {
         String username = "username";
         String password = "password";
         String datePattern = "ddMMyyyy";
         String today = DateConverter.getFormattedDate(new Date(), datePattern);
         try {
             this.addUser(username, password);
-            User extracted = (User) this._userManager.getUser(username, password);
+            User extracted = (User) this.userManager.getUser(username, password);
             assertEquals(today, DateConverter.getFormattedDate(extracted.getCreationDate(), datePattern));
             assertNull(extracted.getLastAccess());
             assertNull(extracted.getLastPasswordChange());
@@ -356,7 +410,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
             String result = this.executeAction();
             assertEquals(Action.SUCCESS, result);
 
-            extracted = (User) this._userManager.getUser(username, password);
+            extracted = (User) this.userManager.getUser(username, password);
             assertNotNull(extracted);
             assertEquals(today, DateConverter.getFormattedDate(extracted.getCreationDate(), datePattern));
             assertEquals(today, DateConverter.getFormattedDate(extracted.getLastAccess(), datePattern));
@@ -364,7 +418,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
         } catch (Throwable t) {
             throw t;
         } finally {
-            this._userManager.removeUser(username);
+            this.userManager.removeUser(username);
         }
     }
 
@@ -409,14 +463,7 @@ class TestUserAction extends ApsAdminBaseTestCase {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        this._userManager.addUser(user);
+        this.userManager.addUser(user);
     }
-
-    @BeforeEach
-    private void init() {
-        this._userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);
-    }
-
-    private IUserManager _userManager;
 
 }
