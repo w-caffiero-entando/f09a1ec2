@@ -66,9 +66,11 @@ class TestUserAction extends ApsAdminBaseTestCase {
 
     @Test
     void testFailureEdit() throws Throwable {
-        String result = this.executeNew("developersConf");
-        assertEquals("apslogin", result);
-
+        String result = this.executeEdit("admin", "not-exists");
+        assertEquals("userList", result);
+        Collection<String> actionErrors = this.getAction().getActionErrors();
+        assertEquals(1, actionErrors.size());
+        
         result = this.executeEdit("admin", "admin");
         assertEquals(Action.SUCCESS, result);
     }
