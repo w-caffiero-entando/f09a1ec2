@@ -80,7 +80,6 @@ public class CurrentWidgetTag extends ExtendedTagSupport {
 			}
 		} catch (Throwable t) {
 			_logger.error("Error detected during showlet preprocessing", t);
-			// ApsSystemUtils.logThrowable(t, this, "doEndTag", msg);
 			String msg = "Error detected during showlet preprocessing";
 			throw new JspException(msg, t);
 		}

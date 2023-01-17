@@ -546,19 +546,10 @@ class TestWidgetTypeAction extends ApsAdminBaseTestCase {
 
             Widget newWidget = this._pageManager.getDraftPage(pageDest).getWidgets()[frameDest];
             assertNotNull(newWidget);
-            //assertNotNull(newWidget.getConfig());
             assertNull(newWidget.getConfig());
             WidgetType addedType = this._widgetTypeManager.getWidgetType(widgetTypeCode);
             assertNotNull(addedType);
             assertEquals(newWidget.getTypeCode(), addedType.getCode());
-            /*
-            ApsProperties config = addedType.getConfig();
-            Iterator<Object> keysIter = config.keySet().iterator();
-            while (keysIter.hasNext()) {
-                String key = (String) keysIter.next();
-                assertEquals(newWidget.getConfig().getProperty(key), config.getProperty(key));
-            }
-            */
         } catch (Throwable t) {
             throw t;
         } finally {

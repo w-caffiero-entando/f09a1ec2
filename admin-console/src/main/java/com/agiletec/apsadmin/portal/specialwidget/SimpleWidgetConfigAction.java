@@ -69,8 +69,7 @@ public class SimpleWidgetConfigAction extends AbstractPortalAction {
 
     protected Widget createNewWidget() {
         if (this.getWidgetTypeCode() == null || this.getWidgetType(this.getWidgetTypeCode()) == null) {
-            _logger.error("Widget Code missin or invalid : " + this.getWidgetTypeCode());
-            //throw new Exception("Widget Code missin or invalid : " + this.getWidgetTypeCode());
+            _logger.error("Widget Code missing or invalid : " + this.getWidgetTypeCode());
             return null;
         }
         Widget widget = new Widget();

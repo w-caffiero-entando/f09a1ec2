@@ -485,7 +485,6 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
 
     private void valueMetadataFromForm(PageMetadata metadata) {
         if (null != this.getModel() && (metadata.getModelCode() == null || !metadata.getModelCode().equals(this.getModel()))) {
-            // Ho cambiato modello e allora cancello tutti widgets precedenti
             PageModel extractedModel = this.getPageModelManager().getPageModel(this.getModel());
             metadata.setModelCode(extractedModel.getCode());
         }
