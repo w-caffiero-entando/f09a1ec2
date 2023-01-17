@@ -133,13 +133,9 @@ public class ContentModelAction extends BaseAction implements IContentModelActio
             for (ContentModelReference reference : references) {
                 String pageCode = reference.getPageCode();
                 if (reference.isOnline()) {
-                    if (!this.onlineReferencedPages.containsKey(pageCode)) {
-                        this.onlineReferencedPages.put(pageCode, this.pageManager.getOnlinePage(pageCode));
-                    }
+                    this.onlineReferencedPages.computeIfAbsent(pageCode, code -> this.pageManager.getOnlinePage(code));
                 } else {
-                    if (!this.draftReferencedPages.containsKey(pageCode)) {
-                        this.draftReferencedPages.put(pageCode, this.pageManager.getDraftPage(pageCode));
-                    }
+                    this.draftReferencedPages.computeIfAbsent(pageCode, code -> this.pageManager.getDraftPage(code));
                 }
             }
 
