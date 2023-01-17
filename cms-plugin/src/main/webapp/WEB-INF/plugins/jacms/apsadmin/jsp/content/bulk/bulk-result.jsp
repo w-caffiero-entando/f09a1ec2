@@ -32,11 +32,6 @@
 
     <div class="alert alert-success mt-20">
         <span class="pficon pficon-ok"></span>
-        <%--
-        <p>
-            <strong><s:text name="label.bulk.status" /></strong>: <s:text name="name.bulk.status.%{#command.status}" />
-        </p>
-        --%>
         <s:if test="%{#report.endingTime != null}" >
             <p>
                 <strong><s:text name="label.bulk.report.endingTime" /></strong>: <s:date name="#report.endingTime" format="dd/MM/yyyy HH:mm:ss"/>

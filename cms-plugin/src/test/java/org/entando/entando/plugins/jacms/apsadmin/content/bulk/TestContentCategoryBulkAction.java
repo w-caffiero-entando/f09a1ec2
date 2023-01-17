@@ -60,9 +60,7 @@ class TestContentCategoryBulkAction extends ApsAdminBaseTestCase {
 
 		result = this.executeCheckResult(currentUser);
 		assertEquals(BaseAction.USER_NOT_ALLOWED, result);
-// FIXME
-//		result = this.executeViewResult(currentUser);
-//		assertEquals(BaseAction.USER_NOT_ALLOWED, result);
+
 	}
 
 	@Test
@@ -140,10 +138,6 @@ class TestContentCategoryBulkAction extends ApsAdminBaseTestCase {
 			this.checkItems(contentIds, action.getSelectedIds());
 			this.checkItems(categoryCodes, action.getCategoryCodes());
 
-//			result = this.executeCheckResult(currentUser);
-//			assertEquals(Action.SUCCESS, result);
-//			result = this.executeViewResult(currentUser);
-//			assertEquals(Action.SUCCESS, result);
 			this.checkContentCategories(contentIds, categoryCodes, true, false);
 			result = this.executeApply(currentUser, ApsAdminSystemConstants.DELETE, contentIds, categoryCodes);
 			this.checkContentCategories(contentIds, categoryCodes, false, false);

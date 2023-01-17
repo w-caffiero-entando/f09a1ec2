@@ -22,21 +22,7 @@
 
     <bean id="jacmsRemoveCategoryBulkCommand" parent="jacmsBaseContentBulkCommand" scope="prototype"
             class="org.entando.entando.plugins.jacms.apsadmin.content.bulk.commands.RemoveCategoryBulkCommand" />
-    <!--
-    <bean id="jacmsJoinGroupBulkCommand" parent="jacmsBaseContentBulkCommand" scope="prototype"
-              class="org.entando.entando.plugins.jacms.apsadmin.content.bulk.commands.JoinGroupBulkCommand" >
-        <property name="langManager" ref="LangManager" />
-        <property name="pageManager" ref="PageManager" />
-        <property name="resourceManager" ref="jacmsResourceManager" />
-    </bean>
 
-    <bean id="jacmsRemoveGroupBulkCommand" parent="jacmsBaseContentBulkCommand" scope="prototype"
-              class="org.entando.entando.plugins.jacms.apsadmin.content.bulk.commands.RemoveGroupBulkCommand" >
-        <property name="langManager" ref="LangManager" />
-        <property name="pageManager" ref="PageManager" />
-        <property name="resourceManager" ref="jacmsResourceManager" />
-    </bean>
-    -->
     <bean id="jacmsDeleteContentBulkCommand" parent="jacmsBaseContentBulkCommand" scope="prototype"
             class="org.entando.entando.plugins.jacms.apsadmin.content.bulk.commands.DeleteContentBulkCommand" />
 
