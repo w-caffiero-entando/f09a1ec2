@@ -162,7 +162,7 @@ public class UserProfileManager extends ApsEntityManager implements IUserProfile
 
     @Override
     protected IEntitySearcherDAO getEntitySearcherDao() {
-        return entitySearcherDAO;
+        return this.getEntitySearcherDAO();
     }
 
     protected IUserProfileDAO getProfileDAO() {

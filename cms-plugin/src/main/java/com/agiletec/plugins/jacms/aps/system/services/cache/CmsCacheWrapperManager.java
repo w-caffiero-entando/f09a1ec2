@@ -106,11 +106,6 @@ public class CmsCacheWrapperManager extends AbstractService
         this.getCacheInfoManager().flushEntry(ICacheInfoManager.DEFAULT_CACHE_NAME, JacmsSystemConstants.CONTENT_CACHE_PREFIX + content.getId());
     }
 
-    public static String getContentCacheGroupsCsv(String contentId) {
-        String[] groups = getContentCacheGroups(contentId);
-        return String.join(",", groups);
-    }
-
     public static String[] getContentCacheGroups(String contentId) {
         if (StringUtils.isEmpty(contentId)) {
             return new String[0];
@@ -119,11 +114,6 @@ public class CmsCacheWrapperManager extends AbstractService
         String contentCacheGroupId = JacmsSystemConstants.CONTENT_CACHE_GROUP_PREFIX + contentId;
         String typeCacheGroupId = JacmsSystemConstants.CONTENT_TYPE_CACHE_GROUP_PREFIX + typeCode;
         return new String[]{contentCacheGroupId, typeCacheGroupId};
-    }
-
-    public static String getContentListCacheGroupsCsv(IContentListTagBean bean, RequestContext reqCtx) {
-        String[] groups = getContentListCacheGroups(bean, reqCtx);
-        return String.join(",", groups);
     }
 
     public static String[] getContentListCacheGroups(IContentListTagBean bean, RequestContext reqCtx) {
@@ -138,19 +128,9 @@ public class CmsCacheWrapperManager extends AbstractService
         return new String[]{pageCacheGroupName, contentTypeCacheGroupName};
     }
 
-    public static String getContentCacheGroupsToEvictCsv(String contentId) {
-        String[] groups = getContentCacheGroupsToEvict(contentId);
-        return String.join(",", groups);
-    }
-
     public static String[] getContentCacheGroupsToEvict(String contentId) {
         String typeCode = contentId.substring(0, 3);
         return getContentCacheGroupsToEvict(contentId, typeCode);
-    }
-
-    public static String getContentCacheGroupsToEvictCsv(String contentId, String typeCode) {
-        String[] groups = getContentCacheGroupsToEvict(contentId, typeCode);
-        return String.join(",", groups);
     }
 
     public static String[] getContentCacheGroupsToEvict(String contentId, String typeCode) {
