@@ -26,12 +26,11 @@ $(function () {
             };
 
 
-
     const gridSlots = {}, // contains previous slots HTML
-            apiMappings = {}, // contains the API mappings
-            pageData = null, // contains page details data
-            pageFrames = [], // contains the page frames
-            alertService = new EntandoAlert('.alert-container');
+        alertService = new EntandoAlert('.alert-container');
+    let apiMappings = {}, // contains the API mappings
+        pageData = null, // contains page details data
+        pageFrames = []; // contains the page frames
 
 
     // jQuery selectors
@@ -122,7 +121,7 @@ $(function () {
         $('.grid-slot').find('.ghost').remove();
         if (pageData.online) {
             if (pageData.draftWidgets.length === pageData.onlineWidgets.length) {
-                for (const i = 0; i < pageData.draftWidgets.length; ++i) {
+                for (let i = 0; i < pageData.draftWidgets.length; ++i) {
                     const $gridSlot = $('.grid-slot[data-pos="' + i + '"]'),
                           draftW = pageData.draftWidgets[i],
                           onlineW = pageData.onlineWidgets[i];
@@ -193,9 +192,9 @@ $(function () {
      * @param {string} alertText
      */
     function getMessageText(key, args) {
-        const msg = TEXT[key] || '';
+        let msg = TEXT[key] || '';
         if (_.isArray(args)) {
-            for (const i = 0; i < args.length; ++i) {
+            for (let i = 0; i < args.length; ++i) {
                 msg = msg.replace('{' + i + '}', args[i]);
             }
         }
@@ -447,11 +446,11 @@ $(function () {
             $('.grid-slot').each(function (index, el) {
                 if ($(el).attr('data-pos') !== 'undefined' ){
                     const pos = $(el).attr('data-pos');
+                    gridSlots[pos] = $(el).html();
                 }
                 else {
                     el.classList.remove('grid-slot');
                 }
-                gridSlots[pos] = $(el).html();
             });
 
             // populates the slots
@@ -473,7 +472,7 @@ $(function () {
                 },
                 drop: function (ev, ui) {
 
-                    const $prevSlot = $(ui.draggable).parent(),
+                    let $prevSlot = $(ui.draggable).parent(),
                             $curSlot = $(ev.target),
                             $curWidget = $(ui.draggable),
                             curWidgetType = $curWidget.attr('data-widget-id'),
@@ -710,7 +709,7 @@ $(function () {
     }
 
     function getPageTitle(pageData) {
-        const title = pageData.draftMetadata.titles[PROPERTY.currentLang];
+        let title = pageData.draftMetadata.titles[PROPERTY.currentLang];
         if (title == null || title == 'undefined') {// TODO Verificare
             title = pageData.draftMetadata.titles[PROPERTY.defaultLang];
         }
@@ -747,7 +746,7 @@ $(function () {
      */
     function isDefaultWidgetApplied() {
     	const draftWidgets = pageData.draftWidgets;
-    	for (const i=0; i<draftWidgets.length; ++i) {
+    	for (let i=0; i<draftWidgets.length; ++i) {
     		const defCode = _.get(pageFrames[i], 'defaultWidget.typeCode');
     		const curCode = _.get(draftWidgets[i], 'typeCode');
     		if (defCode !== curCode) {
