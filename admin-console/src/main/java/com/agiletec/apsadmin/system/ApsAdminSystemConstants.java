@@ -19,8 +19,6 @@ package com.agiletec.apsadmin.system;
  */
 public interface ApsAdminSystemConstants {
 	
-	public static final String SHORTCUT_MANAGER = "ShortcutAdminAreaManager";
-	
 	/**
 	 * Identificativo dell'azione di aggiunta nuovo elemento di sistema.
 	 */
