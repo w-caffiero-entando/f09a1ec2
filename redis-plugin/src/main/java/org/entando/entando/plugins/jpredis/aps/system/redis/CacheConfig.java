@@ -84,16 +84,16 @@ public class CacheConfig extends CachingConfigurerSupport {
 
     @Value("${REDIS_PASSWORD:}")
     private String redisPassword;
-    
+
     @Value("${REDIS_FEC_CHECK_DELAY_SEC:100}")
     private int frontEndCacheCheckDelay;
-    
+
     @Autowired
     @Qualifier(value = "entandoDefaultCaches")
     private Collection<Cache> defaultCaches;
-    
+
     private TimerTask scheduler;
-    
+
     @Autowired(required = false)
     private List<ExternalCachesContainer> defaultExternalCachesContainers;
 
@@ -102,7 +102,7 @@ public class CacheConfig extends CachingConfigurerSupport {
     private static RedisCacheConfiguration createCacheConfiguration(long timeoutInSeconds) {
         return RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(timeoutInSeconds));
     }
-    
+
     @PreDestroy
     public void destroy() {
         if (null != this.scheduler) {
@@ -112,7 +112,7 @@ public class CacheConfig extends CachingConfigurerSupport {
     }
 
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
+    public LettuceConnectionFactory connectionFactory() {
         if (!this.active) {
             return new LettuceConnectionFactory();
         }
@@ -226,7 +226,7 @@ public class CacheConfig extends CachingConfigurerSupport {
         CacheFrontend<String, Object> cacheFrontend = ClientSideCaching.enable(CacheAccessor.forMap(clientCache), myself, trackingArgs);
         return cacheFrontend;
     }
-    
+
     protected void rebuildCacheFrontend(RedisClient lettuceClient) {
         CacheFrontend<String, Object> cacheFrontend = this.buildCacheFrontend(lettuceClient);
         Collection<String> cacheNames = this.getCacheManagerBean().getCacheNames();
@@ -237,7 +237,7 @@ public class CacheConfig extends CachingConfigurerSupport {
             }
         }
     }
-    
+
     private RedisCacheConfiguration buildDefaultConfiguration() {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ZERO);
         ObjectMapper mapper = new Jackson2ObjectMapperBuilder()

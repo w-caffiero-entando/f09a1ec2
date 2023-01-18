@@ -46,7 +46,7 @@ class CacheConfigTest {
         CacheConfig config = new CacheConfig();
         ReflectionTestUtils.setField(config, "active", true);
         ReflectionTestUtils.setField(config, "redisAddress", "redis://localhost:6380");
-        LettuceConnectionFactory factory = config.redisConnectionFactory();
+        LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
         TimerTask scheduler = (TimerTask) ReflectionTestUtils.getField(config, "scheduler");
         Assertions.assertNull(scheduler);
@@ -57,7 +57,7 @@ class CacheConfigTest {
         CacheConfig config = new CacheConfig();
         ReflectionTestUtils.setField(config, "active", true);
         ReflectionTestUtils.setField(config, "redisAddresses", "redis://localhost:6380,redis://localhost:6381,redis://localhost:6382");
-        LettuceConnectionFactory factory = config.redisConnectionFactory();
+        LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
         TimerTask scheduler = (TimerTask) ReflectionTestUtils.getField(config, "scheduler");
         Assertions.assertNull(scheduler);
@@ -69,7 +69,7 @@ class CacheConfigTest {
         ReflectionTestUtils.setField(config, "active", true);
         ReflectionTestUtils.setField(config, "redisAddresses", "localhost:26379,localhost:26379,localhost:26379");
         ReflectionTestUtils.setField(config, "redisMasterName", "redis");
-        LettuceConnectionFactory factory = config.redisConnectionFactory();
+        LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
         RedisClient client = config.getRedisClient();
         Assertions.assertNotNull(client);
