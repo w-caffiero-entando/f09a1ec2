@@ -13,7 +13,7 @@
 
     <changeSet id="00000000000001_adminconsole_dataServ_restore" author="entando" context="restore" />
 
-    <changeSet id="00000000000002_adminconsole_dataServ_remove_" author="entando">
+    <changeSet id="20230118000001_adminconsole_dataServ_remove_" author="entando">
         <dropTable tableName="authusershortcuts"/>
     </changeSet>
 
