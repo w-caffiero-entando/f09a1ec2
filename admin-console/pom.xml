@@ -15,8 +15,6 @@
     <url>http://www.entando.com/</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <allTestsSuiteClass>com.agiletec.apsadmin.system.services.TestShortcutManager</allTestsSuiteClass>
-        <!--        <allTestsSuiteClass>com.agiletec.apsadmin.AllTests</allTestsSuiteClass>-->
         <maven-repository-id-release>nexus</maven-repository-id-release>
         <maven-repository-url-release>http://nexus/repository/maven-releases</maven-repository-url-release>
     </properties>
