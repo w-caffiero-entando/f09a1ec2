@@ -52,9 +52,9 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     
     private static final String CODES_BY_TYPE_CACHE_PREXIX = "GuiFragment_codesByWidgetType_";
 
-    private IGuiFragmentDAO guiFragmentDAO;
+    private transient IGuiFragmentDAO guiFragmentDAO;
 
-    private ICacheInfoManager cacheInfoManager;
+    private transient ICacheInfoManager cacheInfoManager;
 
     @Autowired
     @Qualifier(value = "GuiFragmentManagerParameterNames")

@@ -108,7 +108,7 @@ public class CmsCacheWrapperManager extends AbstractService
 
     public static String getContentCacheGroupsCsv(String contentId) {
         String[] groups = getContentCacheGroups(contentId);
-        return String.join(",", (CharSequence[]) groups);
+        return String.join(",", groups);
     }
 
     public static String[] getContentCacheGroups(String contentId) {
@@ -123,7 +123,7 @@ public class CmsCacheWrapperManager extends AbstractService
 
     public static String getContentListCacheGroupsCsv(IContentListTagBean bean, RequestContext reqCtx) {
         String[] groups = getContentListCacheGroups(bean, reqCtx);
-        return String.join(",", (CharSequence[]) groups);
+        return String.join(",", groups);
     }
 
     public static String[] getContentListCacheGroups(IContentListTagBean bean, RequestContext reqCtx) {
@@ -140,7 +140,7 @@ public class CmsCacheWrapperManager extends AbstractService
 
     public static String getContentCacheGroupsToEvictCsv(String contentId) {
         String[] groups = getContentCacheGroupsToEvict(contentId);
-        return String.join(",", (CharSequence[]) groups);
+        return String.join(",", groups);
     }
 
     public static String[] getContentCacheGroupsToEvict(String contentId) {
@@ -150,7 +150,7 @@ public class CmsCacheWrapperManager extends AbstractService
 
     public static String getContentCacheGroupsToEvictCsv(String contentId, String typeCode) {
         String[] groups = getContentCacheGroupsToEvict(contentId, typeCode);
-        return String.join(",", (CharSequence[]) groups);
+        return String.join(",", groups);
     }
 
     public static String[] getContentCacheGroupsToEvict(String contentId, String typeCode) {

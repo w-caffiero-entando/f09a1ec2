@@ -14,8 +14,6 @@
 package org.entando.entando.aps.system.services.cache;
 
 import java.util.Date;
-import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.cache.Cache;
 
 /**
  * @author E.Santoboni

@@ -45,11 +45,11 @@ public class UserProfileManager extends ApsEntityManager implements IUserProfile
 
     private static final String USER_PROFILES_CACHE_GROUP = "UserProfileTypes_cacheGroup";
 
-    private IUserProfileDAO profileDAO;
+    private transient IUserProfileDAO profileDAO;
 
-    private IEntitySearcherDAO entitySearcherDAO;
+    private transient IEntitySearcherDAO entitySearcherDAO;
 
-    private ICacheInfoManager cacheInfoManager;
+    private transient ICacheInfoManager cacheInfoManager;
 
     @Override
     public IApsEntity getEntity(String entityId) throws EntException {

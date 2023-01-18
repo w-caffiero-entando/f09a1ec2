@@ -49,15 +49,15 @@ public class SocialActivityStreamManager extends AbstractService implements ISoc
 
     private static final String COMMENT_RECORDS_CACHE_PREFIX = "ActivityStreamCommentRecords_id_";
 
-    private IActionLogManager actionLogManager;
+    private transient IActionLogManager actionLogManager;
 
-    private ISocialActivityStreamDAO socialActivityStreamDAO;
+    private transient ISocialActivityStreamDAO socialActivityStreamDAO;
 
-    private IKeyGeneratorManager keyGeneratorManager;
+    private transient IKeyGeneratorManager keyGeneratorManager;
 
-    private IUserProfileManager userProfileManager;
+    private transient IUserProfileManager userProfileManager;
 
-    private ICacheInfoManager cacheInfoManager;
+    private transient ICacheInfoManager cacheInfoManager;
 
     @Override
     public void init() throws Exception {

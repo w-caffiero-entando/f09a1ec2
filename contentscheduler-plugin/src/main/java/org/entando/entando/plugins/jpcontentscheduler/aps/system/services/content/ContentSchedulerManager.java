@@ -82,7 +82,7 @@ public class ContentSchedulerManager extends AbstractService implements IContent
 
     private IMailManager _mailManager;
     
-    private ICacheInfoManager cacheInfoManager;
+    private transient ICacheInfoManager cacheInfoManager;
 
     @Override
     public void init() throws Exception {

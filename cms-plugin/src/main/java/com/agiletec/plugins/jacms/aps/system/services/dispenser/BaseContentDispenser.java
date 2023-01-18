@@ -38,7 +38,6 @@ import com.agiletec.plugins.jacms.aps.system.services.renderer.IContentRenderer;
 import java.util.stream.Collectors;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 
 /**
  * Fornisce i contenuti formattati. Il compito del servizio, in fase di
@@ -279,6 +278,6 @@ public class BaseContentDispenser extends AbstractService implements IContentDis
     private ILinkResolverManager _linkResolver;
     private IAuthorizationManager _authorizationManager;
     
-    private ICacheInfoManager cacheInfoManager;
+    private transient ICacheInfoManager cacheInfoManager;
 
 }
