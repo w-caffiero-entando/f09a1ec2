@@ -58,12 +58,12 @@
 	</bean>
 	
 	<!-- *************************** -->
-	
+	<!--
 	<bean id="myShortcutConfigAction" scope="prototype" 
 			class="org.entando.entando.apsadmin.common.MyShortcutConfigAction" parent="abstractBaseAction">
 		<property name="shortcutManager" ref="ShortcutAdminAreaManager"/>
 	</bean>
-	
+	-->
 	<!-- *************************** -->
 	
 	<bean id="activityStreamAction" scope="prototype" 
