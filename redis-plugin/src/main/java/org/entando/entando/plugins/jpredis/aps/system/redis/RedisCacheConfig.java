@@ -13,6 +13,12 @@
  */
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
+import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ADDRESS;
+import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ADDRESSES;
+import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_FEC_CHECK_DELAY_SEC;
+import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_MASTER_NAME;
+import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_PASSWORD;
+
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lettuce.core.RedisClient;
@@ -33,19 +39,16 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.cache.ExternalCachesContainer;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -62,40 +65,30 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  * @author E.Santoboni
  */
 @Configuration
-@ComponentScan
 @EnableCaching
-public class CacheConfig extends CachingConfigurerSupport {
+@RedisActive(true)
+public class RedisCacheConfig extends CachingConfigurerSupport {
 
-    private static final Logger logger = LoggerFactory.getLogger(CacheConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(RedisCacheConfig.class);
 
     private static final String REDIS_PREFIX = "redis://";
 
-    @Value("${REDIS_ACTIVE:false}")
-    private boolean active;
-
-    @Value("${REDIS_ADDRESS:redis://localhost:6379}")
+    @Value("${" + REDIS_ADDRESS + ":redis://localhost:6379}")
     private String redisAddress;
 
-    @Value("${REDIS_ADDRESSES:}")
+    @Value("${" + REDIS_ADDRESSES + ":}")
     private String redisAddresses;
 
-    @Value("${REDIS_MASTER_NAME:mymaster}")
+    @Value("${" + REDIS_MASTER_NAME + ":mymaster}")
     private String redisMasterName;
 
-    @Value("${REDIS_PASSWORD:}")
+    @Value("${" + REDIS_PASSWORD + ":}")
     private String redisPassword;
 
-    @Value("${REDIS_FEC_CHECK_DELAY_SEC:100}")
+    @Value("${" + REDIS_FEC_CHECK_DELAY_SEC + ":100}")
     private int frontEndCacheCheckDelay;
 
-    @Autowired
-    @Qualifier(value = "entandoDefaultCaches")
-    private Collection<Cache> defaultCaches;
-
     private TimerTask scheduler;
-
-    @Autowired(required = false)
-    private List<ExternalCachesContainer> defaultExternalCachesContainers;
 
     private CacheManager cacheManagerBean;
 
@@ -113,9 +106,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 
     @Bean
     public LettuceConnectionFactory connectionFactory() {
-        if (!this.active) {
-            return new LettuceConnectionFactory();
-        }
         if (!StringUtils.isBlank(this.redisAddresses)) {
             logger.warn("** Redis Cluster with sentinel configuration - the master node will be the first node defined in REDIS_ADDRESSES parameter **");
             String[] addresses = this.redisAddresses.split(",");
@@ -152,14 +142,6 @@ public class CacheConfig extends CachingConfigurerSupport {
     @Primary
     @Bean
     public CacheManager cacheManager(@Autowired(required = false) RedisClient lettuceClient, RedisConnectionFactory redisConnectionFactory) {
-        if (!this.active) {
-            logger.warn("** Redis not active **");
-            DefaultEntandoCacheManager defaultCacheManager = new DefaultEntandoCacheManager();
-            defaultCacheManager.setCaches(this.defaultCaches);
-            defaultCacheManager.setExternalCachesContainers(this.getDefaultExternalCachesContainers());
-            defaultCacheManager.afterPropertiesSet();
-            return defaultCacheManager;
-        }
         RedisCacheConfiguration redisCacheConfiguration = this.buildDefaultConfiguration();
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
         // time to leave = 4 Hours
@@ -179,9 +161,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 
     @Bean
     public RedisClient getRedisClient() {
-        if (!this.active) {
-            return null;
-        }
         DefaultClientResources resources = DefaultClientResources.builder().build();
         RedisClient lettuceClient = null;
         if (!StringUtils.isBlank(this.redisAddresses)) {
@@ -253,13 +232,6 @@ public class CacheConfig extends CachingConfigurerSupport {
     }
     protected void setCacheManagerBean(CacheManager cacheManagerBean) {
         this.cacheManagerBean = cacheManagerBean;
-    }
-
-    protected List<ExternalCachesContainer> getDefaultExternalCachesContainers() {
-        return defaultExternalCachesContainers;
-    }
-    protected void setDefaultExternalCachesContainers(List<ExternalCachesContainer> defaultExternalCachesContainers) {
-        this.defaultExternalCachesContainers = defaultExternalCachesContainers;
     }
 
 }

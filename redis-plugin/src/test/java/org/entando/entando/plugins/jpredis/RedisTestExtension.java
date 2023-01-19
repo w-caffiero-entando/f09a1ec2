@@ -1,5 +1,7 @@
 package org.entando.entando.plugins.jpredis;
 
+import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ADDRESS;
+
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -22,7 +24,7 @@ public class RedisTestExtension implements BeforeAllCallback, AfterAllCallback, 
     public void beforeAll(ExtensionContext extensionContext) throws Exception {
         redisContainer = new GenericContainer(REDIS_IMAGE).withExposedPorts(REDIS_PORT);
         redisContainer.start();
-        System.setProperty("REDIS_ADDRESS", "redis://localhost:" + redisContainer.getMappedPort(REDIS_PORT));
+        System.setProperty(REDIS_ADDRESS, "redis://localhost:" + redisContainer.getMappedPort(REDIS_PORT));
     }
 
     @Override

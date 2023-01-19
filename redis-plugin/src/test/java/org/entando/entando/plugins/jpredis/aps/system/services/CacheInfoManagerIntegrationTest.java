@@ -13,6 +13,7 @@
  */
 package org.entando.entando.plugins.jpredis.aps.system.services;
 
+import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -53,6 +54,7 @@ class CacheInfoManagerIntegrationTest {
     @BeforeAll
     static void setUp() {
         TestEntandoJndiUtils.setupJndi();
+        System.setProperty(REDIS_ACTIVE, "true");
     }
 
     @Autowired

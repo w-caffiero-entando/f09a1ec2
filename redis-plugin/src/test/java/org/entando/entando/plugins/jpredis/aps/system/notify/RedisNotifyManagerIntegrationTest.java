@@ -1,5 +1,7 @@
 package org.entando.entando.plugins.jpredis.aps.system.notify;
 
+import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
+
 import com.agiletec.aps.system.services.lang.events.LangsChangedEvent;
 import io.lettuce.core.internal.LettuceFactories;
 import java.util.HashMap;
@@ -34,6 +36,7 @@ class RedisNotifyManagerIntegrationTest {
     @BeforeAll
     static void setUp() {
         TestEntandoJndiUtils.setupJndi();
+        System.setProperty(REDIS_ACTIVE, "true");
     }
 
     @Autowired

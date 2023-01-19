@@ -32,11 +32,11 @@ public class SentinelScheduler extends TimerTask {
 	
 	private Timer timer;
 	private RedisClient lettuceClient;
-	private CacheConfig cacheConfig;
+	private RedisCacheConfig redisCacheConfig;
     private String currentMasterIp;
 	
-	public SentinelScheduler(RedisClient lettuceClient, int delaySeconds, CacheConfig cacheConfig) {
-        this.cacheConfig = cacheConfig;
+	public SentinelScheduler(RedisClient lettuceClient, int delaySeconds, RedisCacheConfig redisCacheConfig) {
+        this.redisCacheConfig = redisCacheConfig;
 		this.lettuceClient = lettuceClient;
 		this.timer = new Timer();
         Calendar startTime = Calendar.getInstance();
@@ -60,7 +60,7 @@ public class SentinelScheduler extends TimerTask {
             String ip = (!masters.isEmpty()) ? masters.get(0).get("ip") : null;
             if (null != this.currentMasterIp && !this.currentMasterIp.equals(ip)) {
                 logger.info("Refresh of front-end-cache -> from master node '{}' to '{}'", this.currentMasterIp, ip);
-                cacheConfig.rebuildCacheFrontend(this.lettuceClient);
+                redisCacheConfig.rebuildCacheFrontend(this.lettuceClient);
                 this.currentMasterIp = ip;
             }
         } catch (Exception e) {

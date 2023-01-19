@@ -1,26 +1,20 @@
-package org.entando.entando.plugins.jpredis.aps.system.redis.session;
+package org.entando.entando.plugins.jpredis.aps.system.redis;
 
 import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_SESSION_ACTIVE;
 
-import javax.servlet.Filter;
 import org.entando.entando.TestEntandoJndiUtils;
-import org.entando.entando.plugins.jpredis.RedisTestExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.session.web.http.SessionRepositoryFilter;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.testcontainers.containers.Container.ExecResult;
-import org.testcontainers.containers.GenericContainer;
 
-@ExtendWith(RedisTestExtension.class)
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
         "classpath*:spring/testpropertyPlaceholder.xml",
@@ -31,23 +25,19 @@ import org.testcontainers.containers.GenericContainer;
 })
 @WebAppConfiguration(value = "")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
-class RedisSessionNotActiveTest {
+class DefaultCacheConfigTest {
 
     @BeforeAll
     static void setUp() {
         TestEntandoJndiUtils.setupJndi();
-        System.setProperty(REDIS_ACTIVE, "true");
-        System.setProperty(REDIS_SESSION_ACTIVE, "false");
+        System.setProperty(REDIS_ACTIVE, "false");
     }
 
     @Autowired
-    private Filter springSessionRepositoryFilter;
+    private CacheManager cacheManager;
 
     @Test
-    void testRedisSessionNotActive(GenericContainer redisContainer) throws Exception {
-        Assertions.assertFalse(springSessionRepositoryFilter instanceof SessionRepositoryFilter);
-        Assertions.assertTrue(springSessionRepositoryFilter.getClass().getName().contains("DefaultSessionConfig"));
-        ExecResult result = redisContainer.execInContainer("redis-cli", "keys", "*");
-        Assertions.assertTrue(result.getStdout().contains("Entando_")); // Redis is used as cache
+    void testDefaultEntandoCache() {
+        Assertions.assertTrue(cacheManager instanceof DefaultEntandoCacheManager);
     }
 }
