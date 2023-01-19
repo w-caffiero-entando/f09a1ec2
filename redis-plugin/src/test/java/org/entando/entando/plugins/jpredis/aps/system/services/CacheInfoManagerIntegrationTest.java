@@ -38,90 +38,90 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @ExtendWith(RedisTestExtension.class)
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
-		"classpath*:spring/testpropertyPlaceholder.xml",
-		"classpath*:spring/baseSystemConfig.xml",
-		"classpath*:spring/aps/**/**.xml",
-		"classpath*:spring/plugins/**/aps/**/**.xml",
-		"classpath*:spring/web/**.xml"
+        "classpath*:spring/testpropertyPlaceholder.xml",
+        "classpath*:spring/baseSystemConfig.xml",
+        "classpath*:spring/aps/**/**.xml",
+        "classpath*:spring/plugins/**/aps/**/**.xml",
+        "classpath*:spring/web/**.xml"
 })
 @WebAppConfiguration(value = "")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class CacheInfoManagerIntegrationTest {
 
-	private static final String DEFAULT_CACHE = CacheInfoManager.DEFAULT_CACHE_NAME;
+    private static final String DEFAULT_CACHE = CacheInfoManager.DEFAULT_CACHE_NAME;
 
-	@BeforeAll
-	static void setUp() {
-		TestEntandoJndiUtils.setupJndi();
-	}
+    @BeforeAll
+    static void setUp() {
+        TestEntandoJndiUtils.setupJndi();
+    }
 
-	@Autowired
-	private CacheInfoManager cacheInfoManager;
-
-    @Test
-	void testPutGetFromCache_1() throws Throwable {
-		String value = "Stringa prova";
-		String key = "Chiave_prova";
-		this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
-		Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertEquals(value, extracted);
-		this.cacheInfoManager.flushEntry(DEFAULT_CACHE, key);
-		synchronized (this) {
-			this.wait(1000);
-		}
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-	}
+    @Autowired
+    private CacheInfoManager cacheInfoManager;
 
     @Test
-	void testPutGetFromCache_2() throws Throwable {
-		String key = "Chiave_prova";
-		Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
+    void testPutGetFromCache_1() throws Throwable {
+        String value = "Stringa prova";
+        String key = "Chiave_prova";
+        this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
+        Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertEquals(value, extracted);
+        this.cacheInfoManager.flushEntry(DEFAULT_CACHE, key);
+        synchronized (this) {
+            this.wait(1000);
+        }
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+    }
 
-		String value = "Stringa prova";
-		this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
+    @Test
+    void testPutGetFromCache_2() throws Throwable {
+        String key = "Chiave_prova";
+        Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
 
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNotNull(extracted);
-		assertEquals(value, extracted);
-		this.cacheInfoManager.flushEntry(DEFAULT_CACHE, key);
-		synchronized (this) {
-			this.wait(1000);
-		}
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-	}
+        String value = "Stringa prova";
+        this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
 
-	@Test
-	void testPutGetFromCacheOnRefreshPeriod() throws Throwable {
-		String value = "Stringa prova";
-		String key = "Chiave prova";
-		this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
-		this.cacheInfoManager.setExpirationTime(DEFAULT_CACHE, key, 2l);
-		Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertEquals(value, extracted);
-		synchronized (this) {
-			this.wait(3000);
-		}
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-	}
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNotNull(extracted);
+        assertEquals(value, extracted);
+        this.cacheInfoManager.flushEntry(DEFAULT_CACHE, key);
+        synchronized (this) {
+            this.wait(1000);
+        }
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+    }
 
-	@Test
-	void testPutGetFromCacheGroup() {
-		String value = "Stringa prova";
-		String key = "Chiave prova";
-		String group1 = "group1";
-		String[] groups = {group1};
-		cacheInfoManager.putInCache(DEFAULT_CACHE, key, value, groups);
-		Object extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertEquals(value, extracted);
-		cacheInfoManager.flushGroup(DEFAULT_CACHE, group1);
-		extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-	}
+    @Test
+    void testPutGetFromCacheOnRefreshPeriod() throws Throwable {
+        String value = "Stringa prova";
+        String key = "Chiave prova";
+        this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
+        this.cacheInfoManager.setExpirationTime(DEFAULT_CACHE, key, 2l);
+        Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertEquals(value, extracted);
+        synchronized (this) {
+            this.wait(3000);
+        }
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+    }
+
+    @Test
+    void testPutGetFromCacheGroup() {
+        String value = "Stringa prova";
+        String key = "Chiave prova";
+        String group1 = "group1";
+        String[] groups = {group1};
+        cacheInfoManager.putInCache(DEFAULT_CACHE, key, value, groups);
+        Object extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertEquals(value, extracted);
+        cacheInfoManager.flushGroup(DEFAULT_CACHE, group1);
+        extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+    }
 
 }
