@@ -45,7 +45,7 @@
         <p class="sr-only">
             <wpsf:hidden name="pageCode" />
             <wpsf:hidden name="frame" />
-            <wpsf:hidden name="widgetTypeCode" value="%{widget.type.code}" />
+            <wpsf:hidden name="widgetTypeCode" value="%{widget.typeCode}" />
         </p>
 
         <div class="panel panel-default">
@@ -56,14 +56,15 @@
                 <h2 class="h5 margin-small-vertical">
                     <label class="sr-only"><s:text name="name.widget" /></label>
                     <span class="icon fa fa-puzzle-piece" title="<s:text name="name.widget" />"></span>&#32;
-                    <s:property value="%{getTitle(widget.type.code, widget.type.titles)}" />
+                    <s:property value="%{getWidgetTypeTitle(widget.typeCode)}" />
                 </h2>
 
                 <fieldset class="col-xs-12 no-padding">
                     <legend>
                         <s:text name="title.editFrame.settings" />
                     </legend>
-                    <s:iterator value="widget.type.typeParameters" var="widgetParam">
+                    <s:set var="widgetTypeVar" value="%{getWidgetType(widget.typeCode)}" />
+                    <s:iterator value="#widgetTypeVar.typeParameters" var="widgetParam">
                         <div class="form-group">
                             <label class="col-sm-2 control-label"
                                    for="%{'config-simple-parameter-'+#widgetParam.name}"> <s:property

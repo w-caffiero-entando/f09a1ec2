@@ -309,7 +309,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
             if (this.isReplaceOnPage()) {
                 WidgetType type = this.getWidgetType(this.getWidgetTypeCode());
                 Widget widget = new Widget();
-                widget.setType(type);
+                widget.setTypeCode(type.getCode());
                 IPage page = this.getPageManager().getDraftPage(this.getPageCode());
                 page.getWidgets()[this.getFramePos()] = widget;
                 this.getPageManager().updatePage(page);
@@ -387,7 +387,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
 
     private WidgetType createCopiedWidget(Widget widgetToCopy) {
         WidgetType type = this.createNewWidgetType();
-        WidgetType parentType = widgetToCopy.getType();
+        WidgetType parentType = this.getWidgetTypeManager().getWidgetType(widgetToCopy.getTypeCode());
         type.setParentType(parentType);
         type.setConfig(widgetToCopy.getConfig());
         return type;
@@ -750,7 +750,7 @@ public class WidgetTypeAction extends AbstractPortalAction {
     protected IGuiFragmentManager getGuiFragmentManager() {
         return _guiFragmentManager;
     }
-
+    
     public void setGuiFragmentManager(IGuiFragmentManager guiFragmentManager) {
         this._guiFragmentManager = guiFragmentManager;
     }

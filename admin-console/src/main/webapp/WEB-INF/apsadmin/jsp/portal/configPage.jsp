@@ -1,5 +1,5 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<%@ taglib prefix="wp" uri="/aps-core" %>
+<%@ taglib prefix="wpsa" uri="/apsadmin-core" %>
 
 <h1 class="panel panel-default title-page">
     <span class="panel-body display-block">
@@ -28,7 +28,7 @@
 
             <s:set var="showletTypeApiMappingsVar" value="showletTypeApiMappings" />
             <s:iterator var="showlet" value="currentPage.draftWidgets" status="rowstatus">
-                <s:set var="showletType" value="#showlet.getType()" ></s:set>
+                <s:set var="showletType" value="%{getWidgetType(#showlet.getTypeCode())}" ></s:set>
                 <s:set var="metadata" value="currentPage.metadata" ></s:set>
 
                     <li class="list-group-item padding-base-top padding-base-bottom" id="widget<s:property value="#rowstatus.count" />">
@@ -65,7 +65,7 @@
                                            class="btn btn-default">
                                             <span class="icon fa fa-info"></span>
                                         </a>
-                                        <wp:ifauthorized permission="superuser">
+                                        <wpsa:ifauthorized permission="superuser">
                                             <s:if test="!#showletType.isLogic() && null != #showletType.typeParameters && #showletType.typeParameters.size() > 0">
                                                 <a href="<s:url namespace="/do/Portal/WidgetType" action="copy">
                                                        <s:param name="pageCode" value="currentPage.code" />
@@ -76,9 +76,9 @@
                                                     <span class="icon fa fa-puzzle-piece"></span>
                                                 </a>
                                             </s:if>
-                                        </wp:ifauthorized>
+                                        </wpsa:ifauthorized>
                                         <s:if test="null != #showletType.code">
-                                            <wp:ifauthorized permission="superuser">
+                                            <wpsa:ifauthorized permission="superuser">
                                                 <s:if test="!#showletType.isLogic()">
                                                     <s:set var="relatedApiMethodVar" value="#showletTypeApiMappingsVar[#showletType.code]" />
                                                 </s:if>
@@ -98,7 +98,7 @@
                                                     </a>
                                                 </s:if>
                                                 <s:set var="relatedApiMethodVar" />
-                                            </wp:ifauthorized>
+                                            </wpsa:ifauthorized>
                                         </s:if>
                                     </div>
                                     <s:if test="null != #showletType.code">

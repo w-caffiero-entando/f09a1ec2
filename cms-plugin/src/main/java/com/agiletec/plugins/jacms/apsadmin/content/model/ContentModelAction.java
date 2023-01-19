@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
+import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -126,18 +128,14 @@ public class ContentModelAction extends BaseAction implements IContentModelActio
             });
 
             // build page maps (used for displaying information on the table inside JSP)
-            this._onlineReferencedPages = new HashMap<>();
-            this._draftReferencedPages = new HashMap<>();
+            this.onlineReferencedPages = new HashMap<>();
+            this.draftReferencedPages = new HashMap<>();
             for (ContentModelReference reference : references) {
                 String pageCode = reference.getPageCode();
                 if (reference.isOnline()) {
-                    if (!this._onlineReferencedPages.containsKey(pageCode)) {
-                        this._onlineReferencedPages.put(pageCode, this._pageManager.getOnlinePage(pageCode));
-                    }
+                    this.onlineReferencedPages.computeIfAbsent(pageCode, code -> this.pageManager.getOnlinePage(code));
                 } else {
-                    if (!this._draftReferencedPages.containsKey(pageCode)) {
-                        this._draftReferencedPages.put(pageCode, this._pageManager.getDraftPage(pageCode));
-                    }
+                    this.draftReferencedPages.computeIfAbsent(pageCode, code -> this.pageManager.getDraftPage(code));
                 }
             }
 
@@ -250,9 +248,9 @@ public class ContentModelAction extends BaseAction implements IContentModelActio
     /* Used by JSP page */
     public IPage getPage(ContentModelReference reference) {
         if (reference.isOnline()) {
-            return _onlineReferencedPages.get(reference.getPageCode());
+            return onlineReferencedPages.get(reference.getPageCode());
         } else {
-            return _draftReferencedPages.get(reference.getPageCode());
+            return draftReferencedPages.get(reference.getPageCode());
         }
     }
 
@@ -263,7 +261,15 @@ public class ContentModelAction extends BaseAction implements IContentModelActio
 
     /* Used by JSP page */
     public String getWidgetTitle(ContentModelReference reference, String langCode) {
-        return getWidget(reference).getType().getTitles().getProperty(langCode);
+        Widget widget = this.getWidget(reference);
+        if (null == widget) {
+            return null;
+        }
+        WidgetType type = this.getWidgetTypeManager().getWidgetType(widget.getTypeCode());
+        if (null == type) {
+            return null;
+        }
+        return type.getTitles().getProperty(langCode);
     }
 
     public Content getContentPrototype() {
@@ -292,105 +298,113 @@ public class ContentModelAction extends BaseAction implements IContentModelActio
     }
     
     public int getStrutsAction() {
-        return _strutsAction;
+        return strutsAction;
     }
     public void setStrutsAction(int strutsAction) {
-        this._strutsAction = strutsAction;
+        this.strutsAction = strutsAction;
     }
 
     public Integer getModelId() {
-        return _modelId;
+        return modelId;
     }
     public void setModelId(Integer modelId) {
-        this._modelId = modelId;
+        this.modelId = modelId;
     }
 
     public String getContentType() {
-        return _contentType;
+        return contentType;
     }
     public void setContentType(String contentType) {
-        this._contentType = contentType;
+        this.contentType = contentType;
     }
 
     public String getDescription() {
-        return _description;
+        return description;
     }
     public void setDescription(String description) {
-        this._description = description;
+        this.description = description;
     }
 
     public String getContentShape() {
-        return _contentShape;
+        return contentShape;
     }
     public void setContentShape(String contentShape) {
-        this._contentShape = contentShape;
+        this.contentShape = contentShape;
     }
 
     public String getStylesheet() {
-        return _stylesheet;
+        return stylesheet;
     }
     public void setStylesheet(String stylesheet) {
-        this._stylesheet = stylesheet;
+        this.stylesheet = stylesheet;
     }
 
     public List<String> getAllowedPublicContentMethods() {
-        return _allowedPublicContentMethods;
+        return allowedPublicContentMethods;
     }
     public void setAllowedPublicContentMethods(List<String> allowedPublicContentMethods) {
-        this._allowedPublicContentMethods = allowedPublicContentMethods;
+        this.allowedPublicContentMethods = allowedPublicContentMethods;
     }
 
     public Properties getAllowedPublicAttributeMethods() {
-        return _allowedPublicAttributeMethods;
+        return allowedPublicAttributeMethods;
     }
     public void setAllowedPublicAttributeMethods(Properties allowedPublicAttributeMethods) {
-        this._allowedPublicAttributeMethods = allowedPublicAttributeMethods;
+        this.allowedPublicAttributeMethods = allowedPublicAttributeMethods;
     }
 
     public List<ContentModelReference> getContentModelReferences() {
-        return _contentModelReferences;
+        return contentModelReferences;
     }
     protected void setContentModelReferences(List<ContentModelReference> contentModelReferences) {
-        this._contentModelReferences = contentModelReferences;
+        this.contentModelReferences = contentModelReferences;
     }
 
     protected IContentModelManager getContentModelManager() {
-        return _contentModelManager;
+        return contentModelManager;
     }
     public void setContentModelManager(IContentModelManager contentModelManager) {
-        this._contentModelManager = contentModelManager;
+        this.contentModelManager = contentModelManager;
     }
 
     protected IContentManager getContentManager() {
-        return _contentManager;
+        return contentManager;
     }
     public void setContentManager(IContentManager contentManager) {
-        this._contentManager = contentManager;
+        this.contentManager = contentManager;
     }
 
     public IPageManager getPageManager() {
-        return _pageManager;
+        return pageManager;
     }
-    public void setPageManager(IPageManager _pageManager) {
-        this._pageManager = _pageManager;
+    public void setPageManager(IPageManager pageManager) {
+        this.pageManager = pageManager;
     }
 
-    private int _strutsAction;
-    private Integer _modelId;
-    private String _contentType;
-    private String _description;
-    private String _contentShape;
-    private String _stylesheet;
+    protected IWidgetTypeManager getWidgetTypeManager() {
+        return widgetTypeManager;
+    }
+    public void setWidgetTypeManager(IWidgetTypeManager widgetTypeManager) {
+        this.widgetTypeManager = widgetTypeManager;
+    }
 
-    private List<String> _allowedPublicContentMethods;
-    private Properties _allowedPublicAttributeMethods;
+    private int strutsAction;
+    private Integer modelId;
+    private String contentType;
+    private String description;
+    private String contentShape;
+    private String stylesheet;
 
-    private List<ContentModelReference> _contentModelReferences;
-    private Map<String, IPage> _draftReferencedPages;
-    private Map<String, IPage> _onlineReferencedPages;
+    private List<String> allowedPublicContentMethods;
+    private Properties allowedPublicAttributeMethods;
 
-    private IContentModelManager _contentModelManager;
-    private IContentManager _contentManager;
-    private IPageManager _pageManager;
+    private List<ContentModelReference> contentModelReferences;
+    private Map<String, IPage> draftReferencedPages;
+    private Map<String, IPage> onlineReferencedPages;
+
+    private transient IContentModelManager contentModelManager;
+    private IContentManager contentManager;
+    private transient IPageManager pageManager;
+    private transient IWidgetTypeManager widgetTypeManager;
 
 }

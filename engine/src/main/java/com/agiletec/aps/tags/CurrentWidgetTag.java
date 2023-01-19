@@ -29,6 +29,7 @@ import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 
 /**
  * Returns informations about the showlet where the tag resides. The "param"
@@ -56,7 +57,7 @@ public class CurrentWidgetTag extends ExtendedTagSupport {
 				return super.doStartTag();
 			String value = null;
 			if ("code".equals(this.getParam())) {
-				value = widget.getType().getCode();
+				value = widget.getTypeCode();
 			} else if ("title".equals(this.getParam())) {
 				value = this.extractTitle(widget);
 			} else if ("config".equals(this.getParam())) {
@@ -79,7 +80,6 @@ public class CurrentWidgetTag extends ExtendedTagSupport {
 			}
 		} catch (Throwable t) {
 			_logger.error("Error detected during showlet preprocessing", t);
-			// ApsSystemUtils.logThrowable(t, this, "doEndTag", msg);
 			String msg = "Error detected during showlet preprocessing";
 			throw new JspException(msg, t);
 		}
@@ -90,7 +90,8 @@ public class CurrentWidgetTag extends ExtendedTagSupport {
 		ServletRequest request = this.pageContext.getRequest();
 		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
 		Lang currentLang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
-		WidgetType type = widget.getType();
+        IWidgetTypeManager widgetTypeManager = (IWidgetTypeManager) ApsWebApplicationUtils.getBean(SystemConstants.WIDGET_TYPE_MANAGER, this.pageContext);
+		WidgetType type = widgetTypeManager.getWidgetType(widget.getTypeCode());
 		String value = type.getTitles().getProperty(currentLang.getCode());
 		if (null == value || value.trim().length() == 0) {
 			ILangManager langManager = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);

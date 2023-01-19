@@ -16,7 +16,7 @@ package com.agiletec.plugins.jacms.apsadmin.system;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.entando.entando.plugins.jacms.aps.util.CmsPageUtil;
+import org.entando.entando.aps.util.PageUtils;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -24,10 +24,13 @@ import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.apsadmin.system.entity.type.EntityTypeConfigAction;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.ContentModel;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.IContentModelManager;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 
 /**
  * @author E.Santoboni
@@ -65,7 +68,8 @@ public class ContentTypeConfigAction extends EntityTypeConfigAction {
 		if (null == page) {
 			return;
 		}
-		if (page.getGroup().equals(Group.FREE_GROUP_NAME) && CmsPageUtil.isOnlineFreeViewerPage(page, null)) {
+        PageModel model = this.getPageModelManager().getPageModel(page.getMetadata().getModelCode());
+		if (page.getGroup().equals(Group.FREE_GROUP_NAME) && PageUtils.isOnlineFreeViewerPage(page, model, null, this.getWidgetTypeManager())) {
 			pages.add(page);
 		}
 		String[] children = page.getChildrenCodes();
@@ -99,50 +103,66 @@ public class ContentTypeConfigAction extends EntityTypeConfigAction {
 	}
 
 	public String getViewPageCode() {
-		return _viewPageCode;
+		return viewPageCode;
 	}
 
 	public void setViewPageCode(String viewPageCode) {
-		this._viewPageCode = viewPageCode;
+		this.viewPageCode = viewPageCode;
 	}
 
 	public Integer getListModelId() {
-		return _listModelId;
+		return listModelId;
 	}
 
 	public void setListModelId(Integer listModelId) {
-		this._listModelId = listModelId;
+		this.listModelId = listModelId;
 	}
 
 	public Integer getDefaultModelId() {
-		return _defaultModelId;
+		return defaultModelId;
 	}
 
 	public void setDefaultModelId(Integer defaultModelId) {
-		this._defaultModelId = defaultModelId;
+		this.defaultModelId = defaultModelId;
 	}
 
 	protected IPageManager getPageManager() {
-		return _pageManager;
+		return pageManager;
 	}
 
 	public void setPageManager(IPageManager pageManager) {
-		this._pageManager = pageManager;
+		this.pageManager = pageManager;
 	}
 
 	protected IContentModelManager getContentModelManager() {
-		return _contentModelManager;
+		return contentModelManager;
 	}
 
 	public void setContentModelManager(IContentModelManager contentModelManager) {
-		this._contentModelManager = contentModelManager;
+		this.contentModelManager = contentModelManager;
 	}
+    
+    protected IWidgetTypeManager getWidgetTypeManager() {
+        return widgetTypeManager;
+    }
+    public void setWidgetTypeManager(IWidgetTypeManager widgetTypeManager) {
+        this.widgetTypeManager = widgetTypeManager;
+    }
 
-	private String _viewPageCode;
-	private Integer _listModelId;
-	private Integer _defaultModelId;
+    protected IPageModelManager getPageModelManager() {
+        return pageModelManager;
+    }
+    public void setPageModelManager(IPageModelManager pageModelManager) {
+        this.pageModelManager = pageModelManager;
+    }
 
-	private IPageManager _pageManager;
-	private IContentModelManager _contentModelManager;
+	private String viewPageCode;
+	private Integer listModelId;
+	private Integer defaultModelId;
 
+	private transient IPageManager pageManager;
+	private transient IContentModelManager contentModelManager;
+	private transient IWidgetTypeManager widgetTypeManager;
+	private transient IPageModelManager pageModelManager;
+    
 }
