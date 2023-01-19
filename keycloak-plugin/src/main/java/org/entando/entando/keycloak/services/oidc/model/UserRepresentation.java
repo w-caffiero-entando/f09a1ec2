@@ -1,8 +1,9 @@
 package org.entando.entando.keycloak.services.oidc.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class UserRepresentation {
+public class UserRepresentation implements Serializable {
 
     private String id;
     private long createdTimestamp;
