@@ -1,42 +1,43 @@
 package org.entando.entando.plugins.jpredis.aps.system.notify;
 
-import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.services.lang.events.LangsChangedEvent;
 import io.lettuce.core.internal.LettuceFactories;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import org.entando.entando.plugins.jpredis.RedisTestUtils;
-import org.junit.jupiter.api.AfterAll;
+import org.entando.entando.TestEntandoJndiUtils;
+import org.entando.entando.plugins.jpredis.RedisTestExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 
+@ExtendWith(RedisTestExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = {
+        "classpath*:spring/testpropertyPlaceholder.xml",
+        "classpath*:spring/baseSystemConfig.xml",
+        "classpath*:spring/aps/**/**.xml",
+        "classpath*:spring/plugins/**/aps/**/**.xml",
+        "classpath*:spring/web/**.xml"
+})
+@WebAppConfiguration(value = "")
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class RedisNotifyManagerIntegrationTest {
 
-    private RedisNotifyManager redisNotifyManager = null;
-    
     @BeforeAll
-    public static void startUp() throws Exception {
-        RedisTestUtils.startContainer(false);
-        BaseTestCase.setUp();
-    }
-    
-    @AfterAll
-    public static void tearDown() throws Exception {
-        BaseTestCase.tearDown();
-        RedisTestUtils.stopContainer();
+    static void setUp() {
+        TestEntandoJndiUtils.setupJndi();
     }
 
-    @BeforeEach
-    public void init() throws Exception {
-        try {
-            redisNotifyManager = BaseTestCase.getApplicationContext().getBean(RedisNotifyManager.class);
-        } catch (Throwable t) {
-            throw new Exception(t);
-        }
-    }
+    @Autowired
+    private RedisNotifyManager redisNotifyManager;
 
     @Test
     void testNotifyEvent() throws Exception {

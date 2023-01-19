@@ -13,39 +13,32 @@
  */
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
+import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.REDIS_SENTINEL_SERVICE;
+import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.REDIS_SERVICE;
+import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.REDIS_SLAVE_SERVICE;
+
 import io.lettuce.core.RedisClient;
+import java.util.Collections;
 import java.util.TimerTask;
-import org.entando.entando.plugins.jpredis.RedisTestUtils;
-import org.junit.jupiter.api.AfterAll;
+import org.entando.entando.plugins.jpredis.RedisSentinelTestExtension;
+import org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.ServicePort;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * @author E.Santoboni
  */
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(RedisSentinelTestExtension.class)
 class CacheConfigTest {
-    
-    @BeforeAll
-    public static void startUp() throws Exception {
-        RedisTestUtils.startContainer(true);
-    }
-    
-    @AfterAll
-    public static void tearDown() throws Exception {
-        RedisTestUtils.stopContainer();
-    }
-    
+
     @Test
-    void testRedisConnectionFactory_1() throws Exception {
+    void testRedisConnectionFactory_1(@ServicePort(REDIS_SERVICE) int redisPort) throws Exception {
         CacheConfig config = new CacheConfig();
         ReflectionTestUtils.setField(config, "active", true);
-        ReflectionTestUtils.setField(config, "redisAddress", "redis://localhost:6380");
+        ReflectionTestUtils.setField(config, "redisAddress", "redis://localhost:" + redisPort);
         LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
         TimerTask scheduler = (TimerTask) ReflectionTestUtils.getField(config, "scheduler");
@@ -53,10 +46,12 @@ class CacheConfigTest {
     }
 
     @Test
-    void testRedisConnectionFactory_2() throws Exception {
+    void testRedisConnectionFactory_2(@ServicePort(REDIS_SERVICE) int redisPort,
+            @ServicePort(REDIS_SLAVE_SERVICE) int redisSlavePort) throws Exception {
         CacheConfig config = new CacheConfig();
         ReflectionTestUtils.setField(config, "active", true);
-        ReflectionTestUtils.setField(config, "redisAddresses", "redis://localhost:6380,redis://localhost:6381,redis://localhost:6382");
+        ReflectionTestUtils.setField(config, "redisAddresses",
+                "redis://localhost:" + redisPort + ",redis://localhost:" + redisSlavePort + ",redis://localhost:6382");
         LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
         TimerTask scheduler = (TimerTask) ReflectionTestUtils.getField(config, "scheduler");
@@ -64,22 +59,17 @@ class CacheConfigTest {
     }
 
     @Test
-    void testCacheManager() throws Exception {
+    void testCacheManager(@ServicePort(REDIS_SENTINEL_SERVICE) int redisSentinelPort) throws Exception {
         CacheConfig config = new CacheConfig();
         ReflectionTestUtils.setField(config, "active", true);
-        ReflectionTestUtils.setField(config, "redisAddresses", "localhost:26379,localhost:26379,localhost:26379");
+        ReflectionTestUtils.setField(config, "redisAddresses",
+                String.join(",", Collections.nCopies(3, "localhost:" + redisSentinelPort)));
         ReflectionTestUtils.setField(config, "redisMasterName", "redis");
         LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
         RedisClient client = config.getRedisClient();
         Assertions.assertNotNull(client);
-        /*
-        CacheManager cacheManager = config.cacheManager(client, factory);
-        Assertions.assertNotNull(cacheManager);
-        TimerTask scheduler = (TimerTask) ReflectionTestUtils.getField(config, "scheduler");
-        Assertions.assertNotNull(scheduler);
-        */
         config.destroy();
     }
-    
+
 }
