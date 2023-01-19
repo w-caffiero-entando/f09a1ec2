@@ -202,8 +202,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         StatefulRedisConnection<String, Object> myself = lettuceClient.connect(new SerializedObjectCodec());
         TrackingArgs trackingArgs = TrackingArgs.Builder.enabled().bcast();
         Map<String, Object> clientCache = new ConcurrentHashMap<>();
-        CacheFrontend<String, Object> cacheFrontend = ClientSideCaching.enable(CacheAccessor.forMap(clientCache), myself, trackingArgs);
-        return cacheFrontend;
+        return ClientSideCaching.enable(CacheAccessor.forMap(clientCache), myself, trackingArgs);
     }
 
     protected void rebuildCacheFrontend(RedisClient lettuceClient) {
@@ -222,7 +221,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         ObjectMapper mapper = new Jackson2ObjectMapperBuilder()
                 .failOnEmptyBeans(false)
                 .build();
-        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        mapper.activateDefaultTyping(mapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
         config = config.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JdkSerializationRedisSerializer()));
         return config;
     }

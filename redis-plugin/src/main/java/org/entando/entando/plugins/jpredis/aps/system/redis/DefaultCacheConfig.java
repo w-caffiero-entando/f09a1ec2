@@ -22,19 +22,16 @@ public class DefaultCacheConfig extends CachingConfigurerSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultCacheConfig.class);
 
-    @Autowired
-    @Qualifier(value = "entandoDefaultCaches")
-    private Collection<Cache> defaultCaches;
-
     @Autowired(required = false)
     private List<ExternalCachesContainer> defaultExternalCachesContainers;
 
     @Primary
     @Bean
-    public CacheManager cacheManager() {
+    @Autowired
+    public CacheManager cacheManager(@Qualifier(value = "entandoDefaultCaches") Collection<Cache> defaultCaches) {
         logger.warn("** Redis not active **");
         DefaultEntandoCacheManager defaultCacheManager = new DefaultEntandoCacheManager();
-        defaultCacheManager.setCaches(this.defaultCaches);
+        defaultCacheManager.setCaches(defaultCaches);
         defaultCacheManager.setExternalCachesContainers(this.getDefaultExternalCachesContainers());
         defaultCacheManager.afterPropertiesSet();
         return defaultCacheManager;

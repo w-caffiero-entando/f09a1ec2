@@ -122,16 +122,9 @@ class SentinelSchedulerTest {
     @Test
     void failRunScheduler() throws Exception {
         SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, 1, redisCacheConfig);
-        Assertions.assertThrows(EntRuntimeException.class, () -> {
-            Mockito.doThrow(RuntimeException.class).when(this.redisCacheConfig).rebuildCacheFrontend(this.lettuceClient);
-            try {
-                scheduler.run();
-            } catch (RuntimeException e) {
-                throw e;
-            } finally {
-                Mockito.verify(master, Mockito.times(2)).get("ip");
-            }
-        });
+        Mockito.doThrow(RuntimeException.class).when(this.redisCacheConfig).rebuildCacheFrontend(this.lettuceClient);
+        Assertions.assertThrows(EntRuntimeException.class, () -> scheduler.run());
+        Mockito.verify(master, Mockito.times(2)).get("ip");
     }
     
 }
