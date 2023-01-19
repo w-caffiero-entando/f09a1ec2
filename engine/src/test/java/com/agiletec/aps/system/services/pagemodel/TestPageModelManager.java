@@ -263,17 +263,17 @@ class TestPageModelManager extends BaseTestCase {
         assertNull(this._pageModelManager.getPageModel(testPageModelBCode));
         assertNull(this._pageModelManager.getPageModel(testPageModelCCode));
         try {
-            String templateA = "Hello 	<@wp.fragment code=\"CODE_1\" escapeXml=false /><@wp.fragment code=\"CODE_1\" escapeXml=false /><@wp.fragment escapeXml=false code=\"CODE_1\"  /><@wp.fragment code=\"CODE_1\"  />world";
+            String templateA = "Hello 	<#include \"CODE_1\" ><@wp.fragment code=\"CODE_1\" escapeXml=false /><#include \"CODE_1\" ><@wp.fragment code=\"CODE_1\"  />world";
             PageModel mockModelA = this.createMockPageModel(testPageModelACode);
             mockModelA.setTemplate(templateA);
             this._pageModelManager.addPageModel(mockModelA);
 
-            String templateB = "Hello 	<@wp.fragment code=\"CODE_B\" escapeXml=false />\r\n<@wp.fragment escapeXml=false code=\"CODE_X\" /><@wp.fragment escapeXml=false code=\"CODE_1\"  /><@wp.fragment code=\"CODE_1\"  />world";
+            String templateB = "Hello 	<@wp.fragment code=\"CODE_B\" escapeXml=false />\r\n<#include \"CODE_X\" ><@wp.fragment escapeXml=false code=\"CODE_1\"  /><#include \"CODE_1\"  >world";
             PageModel mockModelB = this.createMockPageModel(testPageModelBCode);
             mockModelB.setTemplate(templateB);
             this._pageModelManager.addPageModel(mockModelB);
 
-            String templateC = "Hello\r\n 	<@wp.fragment code=\"CODE_B\" escapeXml=false />\n\t<@wp.fragment code=\"CODE_1\" escapeXml=false /><@wp.fragment escapeXml=false code=\"CODE_C\"  /><@wp.fragment code=\"CODE_1\"  />world";
+            String templateC = "Hello\r\n 	<#include \"CODE_B\" >\n\t<@wp.fragment code=\"CODE_1\" escapeXml=false /><#include \"CODE_C\" ><@wp.fragment code=\"CODE_1\"  />world";
             PageModel mockModelC = this.createMockPageModel(testPageModelCCode);
             mockModelC.setTemplate(templateC);
             this._pageModelManager.addPageModel(mockModelC);

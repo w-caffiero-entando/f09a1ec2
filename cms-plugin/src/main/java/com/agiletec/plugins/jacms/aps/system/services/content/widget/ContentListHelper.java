@@ -87,11 +87,11 @@ public class ContentListHelper extends BaseContentListHelper implements IContent
     @Override
     public List<String> getContentsId(IContentListTagBean bean, RequestContext reqCtx) throws Throwable {
         String key = ContentListHelper.buildCacheKey(bean, reqCtx);
-        this.releaseCache(key);
+        this.releaseCache(bean, reqCtx);
         boolean cacheable = bean.isCacheable() && !isUserFilterExecuted(bean);
         List<String> contentsId = null;
         if (cacheable) {
-            contentsId = (List<String>) ((CacheInfoManager) this.getCacheInfoManager()).getFromCache(ICacheInfoManager.DEFAULT_CACHE_NAME, key);
+            contentsId = (List<String>) this.getCacheInfoManager().getFromCache(ICacheInfoManager.DEFAULT_CACHE_NAME, key);
             if (null != contentsId) {
                 return contentsId;
             }
@@ -104,16 +104,17 @@ public class ContentListHelper extends BaseContentListHelper implements IContent
             throw new EntException("Error extracting contents id", t);
         }
         if (cacheable) {
-            String[] groups = CmsCacheWrapperManager.getContentListCacheGroupsCsv(bean, reqCtx).split(",");
-            ((CacheInfoManager) this.getCacheInfoManager()).putInCache(ICacheInfoManager.DEFAULT_CACHE_NAME, key, contentsId, groups);
+            String[] groups = CmsCacheWrapperManager.getContentListCacheGroups(bean, reqCtx);
+            this.getCacheInfoManager().putInCache(ICacheInfoManager.DEFAULT_CACHE_NAME, key, contentsId, groups);
             Calendar expiration = Calendar.getInstance();
             expiration.add(Calendar.MINUTE, 30);
-            ((CacheInfoManager) this.getCacheInfoManager()).setExpirationTime(ICacheInfoManager.DEFAULT_CACHE_NAME, key, expiration.getTime());
+            this.getCacheInfoManager().setExpirationTime(ICacheInfoManager.DEFAULT_CACHE_NAME, key, expiration.getTime());
         }
         return contentsId;
     }
 
-    private void releaseCache(String key) {
+    private void releaseCache(IContentListTagBean bean, RequestContext reqCtx) {
+        String key = ContentListHelper.buildCacheKey(bean, reqCtx);
         boolean isExpired = this.getCacheInfoManager().isExpired(ICacheInfoManager.DEFAULT_CACHE_NAME, key);
         if (isExpired) {
             this.getCacheInfoManager().flushEntry(ICacheInfoManager.DEFAULT_CACHE_NAME, key);

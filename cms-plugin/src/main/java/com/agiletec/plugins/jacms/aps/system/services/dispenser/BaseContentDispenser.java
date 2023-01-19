@@ -37,7 +37,6 @@ import com.agiletec.plugins.jacms.aps.system.services.linkresolver.ILinkResolver
 import com.agiletec.plugins.jacms.aps.system.services.renderer.IContentRenderer;
 import java.util.stream.Collectors;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.entando.entando.aps.system.services.cache.CacheInfoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -86,7 +85,7 @@ public class BaseContentDispenser extends AbstractService implements IContentDis
         }
         return this.getRenderizationInfo(authInfo, contentId, modelId, langCode, reqCtx, cacheable);
     }
-
+    
     @Override
     public ContentRenderizationInfo getRenderizationInfo(String contentId, long modelId, String langCode, UserDetails currentUser, boolean cacheable) {
         PublicContentAuthorizationInfo authInfo = this.getContentAuthorizationHelper().getAuthorizationInfo(contentId, cacheable);
@@ -106,7 +105,7 @@ public class BaseContentDispenser extends AbstractService implements IContentDis
             String contentId, long modelId, String langCode, UserDetails user, RequestContext reqCtx, boolean cacheable) {
         String cacheKey = BaseContentDispenser.getRenderizationInfoCacheKey(contentId, modelId, langCode, user);
         ContentRenderizationInfo renderInfo = (cacheable)
-                ? (ContentRenderizationInfo) ((CacheInfoManager) this.getCacheInfoManager()).getFromCache(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey) : null;
+                ? (ContentRenderizationInfo) this.getCacheInfoManager().getFromCache(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey) : null;
         if (null != renderInfo) {
             return renderInfo;
         }
@@ -126,7 +125,7 @@ public class BaseContentDispenser extends AbstractService implements IContentDis
         }
         if (cacheable) {
             String[] groups = BaseContentDispenser.getRenderizationInfoCacheGroupsCsv(contentId, modelId).split(",");
-            ((CacheInfoManager) this.getCacheInfoManager()).putInCache(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey, renderInfo, groups);
+            this.getCacheInfoManager().putInCache(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey, renderInfo, groups);
         }
         return renderInfo;
     }
@@ -278,6 +277,7 @@ public class BaseContentDispenser extends AbstractService implements IContentDis
     private IContentManager _contentManager;
     private ILinkResolverManager _linkResolver;
     private IAuthorizationManager _authorizationManager;
-    private ICacheInfoManager cacheInfoManager;
+    
+    private transient ICacheInfoManager cacheInfoManager;
 
 }
