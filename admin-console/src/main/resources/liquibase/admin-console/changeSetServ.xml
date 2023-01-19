@@ -13,7 +13,10 @@
 
     <changeSet id="00000000000001_adminconsole_dataServ_restore" author="entando" context="restore" />
 
-    <changeSet id="20230118000001_adminconsole_dataServ_remove_" author="entando">
+    <changeSet id="20230118100000_adminconsole_usershortcuts_table_remove" author="entando">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="authusershortcuts"></tableExists>
+        </preConditions>
         <dropTable tableName="authusershortcuts"/>
     </changeSet>
 

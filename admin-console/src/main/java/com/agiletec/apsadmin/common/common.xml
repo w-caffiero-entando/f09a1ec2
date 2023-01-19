@@ -34,7 +34,7 @@
 			<interceptor-ref name="entandoFreeStack" />
 		</action>
 
-		<action name="main" class="baseCommonAction">
+		<action name="main">
 			<result type="tiles">admin.intro</result>
 			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">enterBackend</param></interceptor-ref>
 		</action>
