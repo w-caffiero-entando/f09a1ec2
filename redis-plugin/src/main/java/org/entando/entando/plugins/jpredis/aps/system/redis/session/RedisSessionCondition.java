@@ -13,7 +13,10 @@ public class RedisSessionCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         MultiValueMap<String, Object> attrs = metadata.getAllAnnotationAttributes(RedisSessionActive.class.getName());
-        boolean active = (boolean) attrs.getFirst("value");
+        boolean active = false;
+        if (attrs != null) {
+            active = (boolean) attrs.getFirst("value");
+        }
         return active == this.isActive();
     }
 
