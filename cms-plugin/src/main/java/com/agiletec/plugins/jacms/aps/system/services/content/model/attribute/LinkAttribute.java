@@ -25,6 +25,9 @@ import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.CmsAttributeReference;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
+import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.IReferenceableAttribute;
+import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.JAXBLinkAttribute;
+import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.JAXBLinkValue;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.util.SymbolicLinkValidator;
 import com.agiletec.plugins.jacms.aps.system.services.linkresolver.ILinkResolverManager;
 import com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager;
@@ -183,7 +186,6 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
         JAXBLinkValue value = new JAXBLinkValue();
         String text = this.getTextForLang(langCode);
         value.setText(text);
-        value.setUrl(this.getLinkResolverManager().resolveLink(this.getSymbolicLink(), this.getParentEntity().getId(), null));
         value.setSymbolicLink(this.getSymbolicLink());
         jaxbAttribute.setLinkValue(value);
         return jaxbAttribute;
