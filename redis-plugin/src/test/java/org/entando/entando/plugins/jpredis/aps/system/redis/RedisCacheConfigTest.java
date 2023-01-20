@@ -19,8 +19,8 @@ import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.RED
 import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.resource.DefaultClientResources;
 import java.util.Collections;
-import java.util.TimerTask;
 import org.entando.entando.TestEntandoJndiUtils;
 import org.entando.entando.plugins.jpredis.RedisSentinelTestExtension;
 import org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.ServicePort;
@@ -45,37 +45,32 @@ class RedisCacheConfigTest {
 
     @Test
     void testRedisConnectionFactory_1(@ServicePort(REDIS_SERVICE) int redisPort) throws Exception {
-        RedisCacheConfig config = new RedisCacheConfig();
+        SingleNodeConfig config = new SingleNodeConfig();
         ReflectionTestUtils.setField(config, "redisAddress", "redis://localhost:" + redisPort);
         LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
-        TimerTask scheduler = (TimerTask) ReflectionTestUtils.getField(config, "scheduler");
-        Assertions.assertNull(scheduler);
     }
 
     @Test
     void testRedisConnectionFactory_2(@ServicePort(REDIS_SERVICE) int redisPort,
             @ServicePort(REDIS_SLAVE_SERVICE) int redisSlavePort) throws Exception {
-        RedisCacheConfig config = new RedisCacheConfig();
+        SentinelConfig config = new SentinelConfig();
         ReflectionTestUtils.setField(config, "redisAddresses",
                 "redis://localhost:" + redisPort + ",redis://localhost:" + redisSlavePort + ",redis://localhost:6382");
         LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
-        TimerTask scheduler = (TimerTask) ReflectionTestUtils.getField(config, "scheduler");
-        Assertions.assertNull(scheduler);
     }
 
     @Test
     void testCacheManager(@ServicePort(REDIS_SENTINEL_SERVICE) int redisSentinelPort) throws Exception {
-        RedisCacheConfig config = new RedisCacheConfig();
+        SentinelConfig config = new SentinelConfig();
         ReflectionTestUtils.setField(config, "redisAddresses",
                 String.join(",", Collections.nCopies(3, "localhost:" + redisSentinelPort)));
         ReflectionTestUtils.setField(config, "redisMasterName", "redis");
         LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
-        RedisClient client = config.getRedisClient();
+        RedisClient client = config.getRedisClient(DefaultClientResources.builder().build());
         Assertions.assertNotNull(client);
-        config.destroy();
     }
 
 }

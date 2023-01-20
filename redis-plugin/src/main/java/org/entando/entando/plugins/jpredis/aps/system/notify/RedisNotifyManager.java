@@ -18,6 +18,7 @@ import com.agiletec.aps.system.common.notify.NotifyManager;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import javax.annotation.PreDestroy;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,8 @@ public class RedisNotifyManager extends NotifyManager {
     
     @Autowired(required = false)
     private transient RedisClient redisClient;
-    
+
+    @PreDestroy
     public void destroy() {
         if (null != pubConn) {
             this.pubConn.close();

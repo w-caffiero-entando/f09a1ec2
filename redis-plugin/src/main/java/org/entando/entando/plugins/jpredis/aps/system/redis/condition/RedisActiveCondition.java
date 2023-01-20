@@ -1,4 +1,4 @@
-package org.entando.entando.plugins.jpredis.aps.system.redis;
+package org.entando.entando.plugins.jpredis.aps.system.redis.condition;
 
 import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
 
