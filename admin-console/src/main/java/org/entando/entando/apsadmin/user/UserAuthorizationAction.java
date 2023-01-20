@@ -39,16 +39,12 @@ public class UserAuthorizationAction extends BaseAction {
 
 	public static final String CURRENT_FORM_USER_AUTHS_PARAM_NAME = "currentUserAuthoritiesOnForm";
 	private static final String USER_LIST = "userList";
-
-
 	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(UserAuthorizationAction.class);
 
 
 	private String username;
-
 	private String roleName;
 	private String groupName;
-
 	private Integer index;
 
 	private IUserManager userManager;
@@ -62,7 +58,7 @@ public class UserAuthorizationAction extends BaseAction {
 			if (null != result) return result;
 			List<Authorization> authorizations = super.getAuthorizationManager().getUserAuthorizations(this.getUsername());
 			UserAuthsFormBean userAuthsFormBean = new UserAuthsFormBean(this.getUsername(), authorizations);
-			this.getRequest().getSession().setAttribute(CURRENT_FORM_USER_AUTHS_PARAM_NAME,  userAuthsFormBean);
+			this.setUserAuthsFormBean(userAuthsFormBean);
 		} catch (Throwable t) {
 			logger.error("error in edit", t);
 			return FAILURE;
@@ -71,10 +67,6 @@ public class UserAuthorizationAction extends BaseAction {
 	}
 	
 	private String checkUser() throws Throwable {
-		if (!this.existsUser()) {
-			this.addActionError(this.getText("error.user.notExist"));
-			return USER_LIST;
-		}
 		if (SystemConstants.ADMIN_USER_NAME.equals(this.getUsername())) {
 			this.addActionError(this.getText("error.user.cannotModifyAdminUser"));
 			return USER_LIST;
@@ -107,11 +99,15 @@ public class UserAuthorizationAction extends BaseAction {
 				return INPUT;
 			}
 			Authorization authorization = new Authorization(group, role);
-			boolean result = this.getUserAuthsFormBean().addAuthorization(authorization);
+			UserAuthsFormBean authsBean = this.getUserAuthsFormBean();
+			boolean result = authsBean.addAuthorization(authorization);
 			if (!result) {
 				this.addActionError(this.getText("error.userAuthorization.alreadyExists", new String[]{groupName, roleName}));
 				return INPUT;
+			} else {
+				this.setUserAuthsFormBean(authsBean);
 			}
+
 		} catch (Throwable t) {
 			logger.error("error adding user authorization", t);
 			return FAILURE;
@@ -156,15 +152,10 @@ public class UserAuthorizationAction extends BaseAction {
 		return currentUser.getUsername().equals(this.getUsername());
 	}
 	
-	/**
-	 * Verifica l'esistenza dell'utente.
-	 * @return true in caso positivo, false nel caso l'utente non esista.
-	 * @throws EntException In caso di errore.
-	 */
-	protected boolean existsUser() throws EntException {
-		return (username != null) && (userManager.getUser(username) != null);
+	private void setUserAuthsFormBean(UserAuthsFormBean userAuthsFormBean) {
+		this.getRequest().getSession().setAttribute(CURRENT_FORM_USER_AUTHS_PARAM_NAME, userAuthsFormBean);
 	}
-	
+
 	private boolean checkAuthorizationSessionBean() {
 		UserAuthsFormBean authsBean = this.getUserAuthsFormBean();
 		if (null == username || null == authsBean || !username.equals(authsBean.getUsername())) {
