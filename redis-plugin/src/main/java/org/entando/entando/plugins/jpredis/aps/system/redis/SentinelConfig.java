@@ -38,7 +38,7 @@ public class SentinelConfig extends BaseRedisCacheConfig {
     @Value("${" + REDIS_ADDRESSES + ":}")
     private String redisAddresses;
 
-    @Value("${" + REDIS_MASTER_NAME + ":}")
+    @Value("${" + REDIS_MASTER_NAME + ":mymaster}")
     private String redisMasterName;
 
     @Value("${" + REDIS_FEC_CHECK_DELAY_SEC + ":100}")

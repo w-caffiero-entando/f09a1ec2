@@ -3,6 +3,8 @@ package org.entando.entando.plugins.jpredis.aps.system.redis.session;
 import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
 import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_SESSION_ACTIVE;
 
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulRedisConnection;
 import javax.servlet.Filter;
 import org.entando.entando.TestEntandoJndiUtils;
 import org.entando.entando.plugins.jpredis.RedisTestExtension;
@@ -17,7 +19,6 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.GenericContainer;
 
 @ExtendWith(RedisTestExtension.class)
@@ -43,11 +44,17 @@ class RedisSessionNotActiveTest {
     @Autowired
     private Filter springSessionRepositoryFilter;
 
+    @Autowired
+    private RedisClient redisClient;
+
     @Test
     void testRedisSessionNotActive(GenericContainer redisContainer) throws Exception {
         Assertions.assertFalse(springSessionRepositoryFilter instanceof SessionRepositoryFilter);
         Assertions.assertTrue(springSessionRepositoryFilter.getClass().getName().contains("DefaultSessionConfig"));
-        ExecResult result = redisContainer.execInContainer("redis-cli", "keys", "*");
-        Assertions.assertTrue(result.getStdout().contains("Entando_")); // Redis is used as cache
+        try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
+            Assertions.assertFalse(connection.sync().keys("Entando_*").isEmpty());  // Redis is used as cache
+            Assertions.assertTrue(
+                    connection.sync().keys("spring:session:*").isEmpty()); // Redis is not used for session
+        }
     }
 }

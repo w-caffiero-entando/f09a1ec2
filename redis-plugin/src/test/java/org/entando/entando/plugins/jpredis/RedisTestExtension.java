@@ -14,12 +14,14 @@ public class RedisTestExtension implements BeforeAllCallback, ParameterResolver 
     private static final int REDIS_PORT = 6379;
     private static final String REDIS_IMAGE = "redis:7";
 
-    private GenericContainer redisContainer;
+    private static GenericContainer redisContainer;
 
     @Override
     public void beforeAll(ExtensionContext extensionContext) throws Exception {
-        redisContainer = new GenericContainer(REDIS_IMAGE).withExposedPorts(REDIS_PORT);
-        redisContainer.start();
+        if (redisContainer == null) {
+            redisContainer = new GenericContainer(REDIS_IMAGE).withExposedPorts(REDIS_PORT);
+            redisContainer.start();
+        }
         System.setProperty(REDIS_ADDRESS, "redis://localhost:" + redisContainer.getMappedPort(REDIS_PORT));
     }
 

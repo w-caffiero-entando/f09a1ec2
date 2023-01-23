@@ -3,6 +3,9 @@ package org.entando.entando.plugins.jpredis.aps.system.redis.session;
 import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
 import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_SESSION_ACTIVE;
 
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulRedisConnection;
+import java.util.List;
 import javax.servlet.Filter;
 import org.entando.entando.TestEntandoJndiUtils;
 import org.entando.entando.plugins.jpredis.RedisTestExtension;
@@ -20,7 +23,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.GenericContainer;
 
 @ExtendWith(RedisTestExtension.class)
@@ -46,6 +48,9 @@ class RedisSessionActiveTest {
     @Autowired
     private Filter springSessionRepositoryFilter;
 
+    @Autowired
+    private RedisClient redisClient;
+
     @Test
     void testRedisSessionActive(GenericContainer redisContainer) throws Exception {
         Assertions.assertTrue(springSessionRepositoryFilter instanceof SessionRepositoryFilter);
@@ -54,8 +59,14 @@ class RedisSessionActiveTest {
                 "sessionRepository");
         Assertions.assertTrue(sessionRepository instanceof RedisIndexedSessionRepository);
         sessionRepository.save(sessionRepository.createSession());
-        ExecResult result = redisContainer.execInContainer("redis-cli", "keys", "*");
-        Assertions.assertTrue(result.getStdout().contains("Entando_")); // Redis is used as cache
-        Assertions.assertTrue(result.getStdout().contains("spring:session:sessions")); // Redis is used as session
+
+        try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
+            Assertions.assertFalse(connection.sync().keys("Entando_*").isEmpty());  // Redis is used as cache
+            List<String> sessionKeys = connection.sync().keys("spring:session:*");
+            Assertions.assertFalse(sessionKeys.isEmpty());  // Redis is used as session
+            for (String key : sessionKeys) { // cleanup session data for other tests
+                connection.sync().del(key);
+            }
+        }
     }
 }

@@ -59,10 +59,9 @@ public class BaseRedisCacheConfig extends CachingConfigurerSupport {
         // time to leave = 4 Hours
         cacheConfigurations.put(ICacheInfoManager.DEFAULT_CACHE_NAME, createCacheConfiguration(4L * 60 * 60));
         CacheFrontend<String, Object> cacheFrontend = cacheFrontendManager.getCacheFrontend();
-        LettuceCacheManager manager = LettuceCacheManager.builder(redisConnectionFactory)
+        return LettuceCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration).cacheFrontend(cacheFrontend)
                 .withInitialCacheConfigurations(cacheConfigurations).build();
-        return manager;
     }
 
     private static RedisCacheConfiguration createCacheConfiguration(long timeoutInSeconds) {
