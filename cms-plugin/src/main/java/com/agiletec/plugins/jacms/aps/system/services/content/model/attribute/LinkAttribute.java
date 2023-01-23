@@ -183,7 +183,6 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
         JAXBLinkValue value = new JAXBLinkValue();
         String text = this.getTextForLang(langCode);
         value.setText(text);
-        value.setUrl(this.getLinkResolverManager().resolveLink(this.getSymbolicLink(), this.getParentEntity().getId(), null));
         value.setSymbolicLink(this.getSymbolicLink());
         jaxbAttribute.setLinkValue(value);
         return jaxbAttribute;

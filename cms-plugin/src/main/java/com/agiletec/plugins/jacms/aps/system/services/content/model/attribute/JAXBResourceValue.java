@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * @author E.Santoboni
  */
-@XmlType(propOrder = {"text", "path", "resourceId", "restResourcePath"})
+@XmlType(propOrder = {"text", "resourceId", "restResourcePath"})
 @XmlSeeAlso({HashMap.class})
 public class JAXBResourceValue implements Serializable {
 
@@ -32,14 +32,6 @@ public class JAXBResourceValue implements Serializable {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
     }
 
     public String getResourceId() {
@@ -59,7 +51,6 @@ public class JAXBResourceValue implements Serializable {
     }
 
     private String text;
-    private String path;
     private String resourceId;
     private String restResourcePath;
 
