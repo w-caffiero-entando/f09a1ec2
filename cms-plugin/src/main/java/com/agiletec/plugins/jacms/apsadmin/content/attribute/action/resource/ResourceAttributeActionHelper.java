@@ -186,7 +186,7 @@ public class ResourceAttributeActionHelper {
         Content currentContent = getContent(request);
         HttpSession session = request.getSession();
         String attributeName = (String) session.getAttribute(ATTRIBUTE_NAME_SESSION_PARAM);
-        AttributeInterface attribute = (AttributeInterface) currentContent.getAttribute(attributeName);
+        AttributeInterface attribute = currentContent.getAttribute(attributeName);
         removeResource(attribute, request);
         removeSessionParams(session);
         updateContent(currentContent, request);

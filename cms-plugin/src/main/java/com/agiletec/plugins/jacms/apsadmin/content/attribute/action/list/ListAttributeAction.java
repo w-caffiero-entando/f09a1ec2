@@ -74,8 +74,8 @@ public class ListAttributeAction extends com.agiletec.apsadmin.system.entity.att
 			Content content = (Content) this.getCurrentApsEntity();
 			this.executeMoveListElement(content);
 			this.updateContent(content);
-		} catch (Throwable t) {
-			_logger.error("error in moveListElement", t);
+		} catch (Exception ex) {
+			_logger.error("error in moveListElement", ex);
 			return FAILURE;
 		}
 		return SUCCESS;
@@ -87,8 +87,8 @@ public class ListAttributeAction extends com.agiletec.apsadmin.system.entity.att
 			Content content = (Content) this.getCurrentApsEntity();
 			this.executeRemoveListElement(content);
 			this.updateContent(content);
-		} catch (Throwable t) {
-			_logger.error("error in removeListElement", t);
+		} catch (Exception ex) {
+			_logger.error("error in removeListElement", ex);
 			return FAILURE;
 		}
 		return SUCCESS;

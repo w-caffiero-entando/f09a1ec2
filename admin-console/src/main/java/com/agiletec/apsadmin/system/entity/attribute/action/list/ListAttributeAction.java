@@ -39,7 +39,7 @@ public abstract class ListAttributeAction extends BaseAction implements IListAtt
 		IApsEntity entity = this.getCurrentApsEntity();
 		try {
 			this.executeAddListElement(entity);
-		} catch (Throwable t) {
+		} catch (EntException t) {
 			_logger.error("error in addListElement", t);
 			return FAILURE;
 		}
@@ -66,7 +66,7 @@ public abstract class ListAttributeAction extends BaseAction implements IListAtt
 		IApsEntity entity = this.getCurrentApsEntity();
 		try {
 			this.executeMoveListElement(entity);
-		} catch (Throwable t) {
+		} catch (EntException t) {
 			_logger.error("error in moveListElement", t);
 			return FAILURE;
 		}
@@ -118,7 +118,7 @@ public abstract class ListAttributeAction extends BaseAction implements IListAtt
 		IApsEntity entity = this.getCurrentApsEntity();
 		try {
 			this.executeRemoveListElement(entity);
-		} catch (Throwable t) {
+		} catch (EntException t) {
 			_logger.error("error in removeListElement", t);
 			return FAILURE;
 		}
