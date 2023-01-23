@@ -12,5 +12,6 @@
     <include file="port/20221004100000_errorpage_config.xml" relativeToChangelogFile="true" />
     <include file="port/20221202000000_init_session_from_keycloak.xml" relativeToChangelogFile="true" />
     <include file="port/20221214000000_legacy_navigation_menu_widget.xml" relativeToChangelogFile="true" />
+    <include file="port/20230119000000_defaultResources_freemarker_for_parallel.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
