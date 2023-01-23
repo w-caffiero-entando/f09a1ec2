@@ -193,20 +193,21 @@ public class EntityAttributeConfigAction extends AbstractBaseEntityAttributeConf
     public String saveAttribute() {
         AttributeInterface attribute = null;
         try {
+            IApsEntity entity = this.getEntityType();
             if (this.getStrutsAction() == ApsAdminSystemConstants.EDIT) {
-                attribute = (AttributeInterface) this.getEntityType().getAttribute(this.getAttributeName());
+                attribute = entity.getAttribute(this.getAttributeName());
             } else {
                 attribute = this.getAttributePrototype(this.getAttributeTypeCode());
                 attribute.setName(this.getAttributeName().trim());
-                this.getEntityType().addAttribute(attribute);
+                entity.addAttribute(attribute);
             }
             String resultCode = this.fillAttributeFields(attribute);
+            this.updateEntityType(entity);
             if (null != resultCode) {
                 return resultCode;
             }
         } catch (Throwable t) {
             _logger.error("error in saveAttribute", t);
-            //ApsSystemUtils.logThrowable(t, this, "saveAttribute");
             return FAILURE;
         }
         return SUCCESS;
