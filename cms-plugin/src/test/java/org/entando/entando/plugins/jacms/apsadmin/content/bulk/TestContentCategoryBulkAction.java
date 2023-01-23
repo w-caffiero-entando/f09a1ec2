@@ -174,7 +174,7 @@ class TestContentCategoryBulkAction extends ApsAdminBaseTestCase {
 	}
 
 	private List<String> addContents(String masterContentId, int size) throws EntException {
-		List<String> contentIds = new ArrayList<String>(size);
+		List<String> contentIds = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			Content current = this._contentManager.loadContent(masterContentId, false);
 			current.setId(null);

@@ -19,10 +19,10 @@
         <!--  Json action -->
         <action name="checkResult" class="jacmsContentBulkAction" method="viewResult">
             <result name="expired" type="json">
-                <param name="root">smallReport</param>
+                <param name="root">report</param>
             </result>
             <result type="json">
-                <param name="root">smallReport</param>
+                <param name="root">report</param>
             </result>
             <interceptor-ref name="jsonStack" />
             <interceptor-ref name="entandoDefaultStack">

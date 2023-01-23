@@ -68,6 +68,7 @@
         <allTestsSuiteClass/>
         <preDeploymentTestGroups/>
         <postDeploymentTestGroups/>
+        <sonar.coverage.exclusions>**/*.js</sonar.coverage.exclusions>
         <!--test database default settings -->
         <test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</test.database.driver>
         <test.database.hostname>localhost</test.database.hostname>

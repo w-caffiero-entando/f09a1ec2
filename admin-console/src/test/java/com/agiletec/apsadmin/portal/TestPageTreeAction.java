@@ -27,6 +27,8 @@ import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.Page;
 import com.agiletec.aps.system.services.page.PageMetadata;
 import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.agiletec.apsadmin.system.ITreeAction;
 import com.agiletec.apsadmin.system.TreeNodeWrapper;
@@ -312,14 +314,14 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
             Widget w00 = updatedPage.getWidgets()[0];
             Widget w11 = updatedPage.getWidgets()[1];
             assertNull(w00);
-            assertEquals(w11.getType().getCode(), configWidget.getType().getCode());
+            assertEquals(w11.getTypeCode(), configWidget.getTypeCode());
 
             result = this.executeMoveUp(pageCode, 1, "admin");
             assertEquals(Action.SUCCESS, result);
             updatedPage = this._pageManager.getDraftPage("pagina_2");
             w00 = updatedPage.getWidgets()[0];
             w11 = updatedPage.getWidgets()[1];
-            assertEquals(w00.getType().getCode(), configWidget.getType().getCode());
+            assertEquals(w00.getTypeCode(), configWidget.getTypeCode());
             assertNull(w11);
         } finally {
             this._pageManager.updatePage(page);
@@ -552,7 +554,8 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
         PageMetadata draft = new PageMetadata();
         draft.setTitle("en", pageCode);
         draft.setTitle("it", pageCode);
-        draft.setModel(root.getMetadata().getModel());
+        PageModel pageModel = this._pageModelManager.getPageModel(root.getMetadata().getModelCode());
+        draft.setModelCode(pageModel.getCode());
         testPage.setMetadata(draft);
         return testPage;
     }
@@ -561,11 +564,13 @@ class TestPageTreeAction extends ApsAdminBaseTestCase {
     private void init() throws Exception {
         try {
             this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
+            this._pageModelManager = (IPageModelManager) this.getService(SystemConstants.PAGE_MODEL_MANAGER);
         } catch (Throwable t) {
             throw new Exception(t);
         }
     }
 
     private IPageManager _pageManager = null;
+    private IPageModelManager _pageModelManager = null;
 
 }

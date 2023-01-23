@@ -47,6 +47,7 @@ import com.agiletec.aps.system.services.page.Page;
 import com.agiletec.aps.system.services.page.PageMetadata;
 import com.agiletec.aps.system.services.page.PageTestUtil;
 import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
@@ -73,7 +74,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.plugins.jacms.aps.system.services.content.ContentService;
 import org.entando.entando.plugins.jacms.aps.system.services.content.IContentService;
 import org.entando.entando.plugins.jacms.web.content.validator.BatchContentStatusRequest;
@@ -112,7 +112,7 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
     private IPageManager pageManager;
 
     @Autowired
-    private IWidgetTypeManager widgetTypeManager;
+    private IPageModelManager pageModelManager;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -4530,17 +4530,18 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
 
     protected Page createPage(String pageCode, boolean addWidget, String groupName) {
         IPage parentPage = pageManager.getDraftPage("service");
-        PageModel pageModel = parentPage.getMetadata().getModel();
+        PageModel pageModel = this.pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
         PageMetadata metadata = PageTestUtil
                 .createPageMetadata(pageModel, true, pageCode + "_title", null, null, false, null, null);
-        ApsProperties config = PageTestUtil.createProperties("temp", "tempValue", "contentId", "ART11");
+        ApsProperties config = new ApsProperties();
+        config.put("contentId", "ART11");
         Widget[] widgets = null;
         if (addWidget) {
             widgets = new Widget[pageModel.getFrames().length];
-            Widget widgetToAdd = PageTestUtil.createWidget("content_viewer", config, this.widgetTypeManager);
+            Widget widgetToAdd = PageTestUtil.createWidget("content_viewer", config);
             widgets[0] = widgetToAdd;
         }
-        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), groupName, metadata, widgets);
+        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), groupName, pageModel, metadata, widgets);
         return pageToAdd;
     }
 
