@@ -33,12 +33,12 @@
 		<action name="logout" class="dispatchAction" method="doLogout">
 			<interceptor-ref name="entandoFreeStack" />
 		</action>
-		
-		<action name="main" class="myShortcutConfigAction">
+
+		<action name="main">
 			<result type="tiles">admin.intro</result>
 			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">enterBackend</param></interceptor-ref>
 		</action>
-		
+
 		<action name="editPassword" class="baseCommonAction" method="editPassword">
 			<result type="tiles">admin.Common.Password.entry</result>
 			<interceptor-ref name="entandoFreeStack"></interceptor-ref>
