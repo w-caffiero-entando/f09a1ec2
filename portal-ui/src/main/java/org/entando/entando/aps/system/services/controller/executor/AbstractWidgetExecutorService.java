@@ -53,6 +53,7 @@ import com.agiletec.aps.util.ApsWebApplicationUtils;
 
 import freemarker.template.Template;
 import java.util.Arrays;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
