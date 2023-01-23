@@ -137,12 +137,12 @@ public class PageModelManager extends AbstractService implements IPageModelManag
     public List getGuiFragmentUtilizers(String guiFragmentCode) throws EntException {
         List<PageModel> utilizers = new ArrayList<>();
         try {
+            Pattern patternTag = Pattern.compile("<@wp\\.fragment.*code=\"" + guiFragmentCode + "\".*/>", Pattern.MULTILINE);
+            Pattern patternFreem = Pattern.compile("<#include.*\"" + guiFragmentCode + "\".*>", Pattern.MULTILINE);
             for (PageModel pModel : this.getPageModels()) {
                 String template = pModel.getTemplate();
                 if (StringUtils.isNotBlank(template)) {
-                    Pattern pattern = Pattern.compile("<@wp\\.fragment.*code=\"" + guiFragmentCode + "\".*/>", Pattern.MULTILINE);
-                    Matcher matcher = pattern.matcher(template);
-                    if (matcher.find()) {
+                    if (patternTag.matcher(template).find() || patternFreem.matcher(template).find()) {
                         utilizers.add(pModel);
                     }
                 }
