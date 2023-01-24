@@ -257,11 +257,11 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     }
 
     protected Set<String> searchFragments(String strToSearch, String column) throws EntException {
-        FieldSearchFilter filterCode = new FieldSearchFilter(column, strToSearch, true);
-        FieldSearchFilter filterTag = new FieldSearchFilter(column, "<@wp.fragment", true);
+        FieldSearchFilter<String> filterCode = new FieldSearchFilter<>(column, strToSearch, true);
+        FieldSearchFilter<String> filterTag = new FieldSearchFilter<>(column, "<@wp.fragment", true);
         FieldSearchFilter[] filters1 = new FieldSearchFilter[]{filterCode, filterTag};
         List<String> result1 = this.searchGuiFragments(filters1);
-        FieldSearchFilter filterFreem = new FieldSearchFilter(column, "<#include", true);
+        FieldSearchFilter<String> filterFreem = new FieldSearchFilter<>(column, "<#include", true);
         FieldSearchFilter[] filters2 = new FieldSearchFilter[]{filterCode, filterFreem};
         List<String> result2 = this.searchGuiFragments(filters2);
         Set<String> result = new HashSet<>();

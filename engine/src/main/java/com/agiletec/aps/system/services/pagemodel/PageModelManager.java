@@ -141,10 +141,9 @@ public class PageModelManager extends AbstractService implements IPageModelManag
             Pattern patternFreem = Pattern.compile("<#include.*\"" + guiFragmentCode + "\".*>", Pattern.MULTILINE);
             for (PageModel pModel : this.getPageModels()) {
                 String template = pModel.getTemplate();
-                if (StringUtils.isNotBlank(template)) {
-                    if (patternTag.matcher(template).find() || patternFreem.matcher(template).find()) {
-                        utilizers.add(pModel);
-                    }
+                if (StringUtils.isNotBlank(template) &&
+                        (patternTag.matcher(template).find() || patternFreem.matcher(template).find())) {
+                    utilizers.add(pModel);
                 }
             }
         } catch (Throwable t) {

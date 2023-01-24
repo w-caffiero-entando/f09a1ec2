@@ -45,7 +45,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.entando.entando.aps.system.services.cache.CacheInfoManager;
 
 /**
  * Classe helper per la widget di erogazione contenuti in lista.
