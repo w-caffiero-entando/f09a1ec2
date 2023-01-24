@@ -10,6 +10,7 @@
 	<p><em><@wp.i18n key="SEARCH_RESULTS_INTRO" /> <!-- infamous whitespace hack -->
 	${groupContent.size}
 	<@wp.i18n key="SEARCH_RESULTS_OUTRO" /> [${groupContent.begin + 1} &ndash; ${groupContent.end + 1}]:</em></p>
+        <#assign group=groupContent >
 	<#include "default_pagerBlock" >
 	<#list contentListResult as contentId>
 	<#if (contentId_index >= groupContent.begin) && (contentId_index <= groupContent.end)>
@@ -21,3 +22,4 @@
 <#else>
 <p class="alert alert-info"><@wp.i18n key="SEARCH_NOTHING_FOUND" /></p>
 </#if>
+<#assign group="" >

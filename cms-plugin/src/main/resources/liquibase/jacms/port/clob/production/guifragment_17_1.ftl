@@ -7,6 +7,7 @@
 </#if>
 <#if (contentInfoList??) && (contentInfoList?has_content) && (contentInfoList?size > 0)>
 	<@wp.pager listName="contentInfoList" objectName="groupContent" pagerIdFromFrame=true advanced=true offset=5>
+        <#assign group=groupContent >
 	<#include "default_pagerBlock">
 	<#list contentInfoList as contentInfoVar>
 	<#if (contentInfoVar_index >= groupContent.begin) && (contentInfoVar_index <= groupContent.end)>
@@ -23,4 +24,5 @@
 <#if (pageLinkVar??) && (pageLinkDescriptionVar??)>
 	<p class="text-right"><a class="btn btn-primary" href="<@wp.url page="${pageLinkVar}"/>">${pageLinkDescriptionVar}</a></p>
 </#if>
+<#assign group="" >
 <#assign contentInfoList="">

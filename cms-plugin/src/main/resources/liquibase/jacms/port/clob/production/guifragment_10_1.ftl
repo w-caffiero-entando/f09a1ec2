@@ -9,6 +9,7 @@
 <#include "jacms_content_viewer_list_userfilters" >
 <#if (contentList??) && (contentList?has_content) && (contentList?size > 0)>
 	<@wp.pager listName="contentList" objectName="groupContent" pagerIdFromFrame=true advanced=true offset=5>
+                <#assign group=groupContent >
 		<#include "default_pagerBlock" >
 <#list contentList as contentId>
 <#if (contentId_index >= groupContent.begin) && (contentId_index <= groupContent.end)>
@@ -23,4 +24,5 @@
 <#if (pageLinkVar??) && (pageLinkDescriptionVar??)>
 	<p class="text-right"><a class="btn btn-primary" href="<@wp.url page="${pageLinkVar}"/>">${pageLinkDescriptionVar}</a></p>
 </#if>
+<#assign group="" >
 <#assign contentList="">
