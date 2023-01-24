@@ -12,9 +12,8 @@
                     .addClass('fa-angle-down');
         });
         $("#collapseAll").click(function () {
-            $("#categoryTree .treeRow").addClass("childrenNodes");
-            $("#home").removeClass("childrenNodes");
-            $(".childrenNodes").addClass("hidden collapsed");
+            $('#categoryTree .treeRow:not(:first-child)').addClass('hidden');
+            $(".childrenNodes").addClass("collapsed");
             $('#categoryTree .icon.fa-angle-down').removeClass('fa-angle-down').addClass('fa-angle-right');
         });
 
