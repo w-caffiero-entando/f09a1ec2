@@ -1,18 +1,17 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis.session;
 
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_SESSION_ACTIVE;
-
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import java.util.List;
 import javax.servlet.Filter;
 import org.entando.entando.TestEntandoJndiUtils;
 import org.entando.entando.plugins.jpredis.RedisTestExtension;
+import org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
@@ -39,10 +38,9 @@ import org.testcontainers.containers.GenericContainer;
 class RedisSessionActiveTest {
 
     @BeforeAll
-    static void setUp() {
+    static void setUp(MockedStatic<RedisEnvironmentVariables> mockedEnv) {
+        mockedEnv.when(() -> RedisEnvironmentVariables.sessionActive()).thenReturn(true);
         TestEntandoJndiUtils.setupJndi();
-        System.setProperty(REDIS_ACTIVE, "true");
-        System.setProperty(REDIS_SESSION_ACTIVE, "true");
     }
 
     @Autowired

@@ -1,8 +1,5 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis.session;
 
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_SESSION_ACTIVE;
-
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import javax.servlet.Filter;
@@ -37,8 +34,6 @@ class RedisSessionNotActiveTest {
     @BeforeAll
     static void setUp() {
         TestEntandoJndiUtils.setupJndi();
-        System.setProperty(REDIS_ACTIVE, "true");
-        System.setProperty(REDIS_SESSION_ACTIVE, "false");
     }
 
     @Autowired

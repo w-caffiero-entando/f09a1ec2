@@ -1,9 +1,5 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ADDRESSES;
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_FEC_CHECK_DELAY_SEC;
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_MASTER_NAME;
-
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.resource.DefaultClientResources;
@@ -18,7 +14,6 @@ import org.entando.entando.plugins.jpredis.aps.system.redis.condition.RedisActiv
 import org.entando.entando.plugins.jpredis.aps.system.redis.condition.RedisSentinel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -35,14 +30,17 @@ public class SentinelConfig extends BaseRedisCacheConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SentinelConfig.class);
 
-    @Value("${" + REDIS_ADDRESSES + ":}")
-    private String redisAddresses;
+    private final String redisAddresses;
+    private final String redisPassword;
+    private final String redisMasterName;
+    private final int frontEndCacheCheckDelay;
 
-    @Value("${" + REDIS_MASTER_NAME + ":mymaster}")
-    private String redisMasterName;
-
-    @Value("${" + REDIS_FEC_CHECK_DELAY_SEC + ":100}")
-    private int frontEndCacheCheckDelay;
+    public SentinelConfig() {
+        this.redisAddresses = RedisEnvironmentVariables.redisAddresses();
+        this.redisPassword = RedisEnvironmentVariables.redisPassword();
+        this.redisMasterName = RedisEnvironmentVariables.redisMasterName();
+        this.frontEndCacheCheckDelay = RedisEnvironmentVariables.frontEndCacheCheckDelay();
+    }
 
     @Bean
     public Executor sentinelSchedulerExecutor(RedisClient redisClient, CacheManager cacheManager,

@@ -1,7 +1,5 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ADDRESS;
-
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.resource.DefaultClientResources;
@@ -10,7 +8,6 @@ import org.entando.entando.plugins.jpredis.aps.system.redis.condition.RedisActiv
 import org.entando.entando.plugins.jpredis.aps.system.redis.condition.RedisSentinel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +22,13 @@ public class SingleNodeConfig extends BaseRedisCacheConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SingleNodeConfig.class);
 
-    @Value("${" + REDIS_ADDRESS + ":redis://localhost:6379}")
-    private String redisAddress;
+    private final String redisAddress;
+    private final String redisPassword;
+
+    public SingleNodeConfig() {
+        this.redisAddress = RedisEnvironmentVariables.redisAddress();
+        this.redisPassword = RedisEnvironmentVariables.redisPassword();
+    }
 
     @Bean(destroyMethod = "destroy")
     public LettuceConnectionFactory connectionFactory() {

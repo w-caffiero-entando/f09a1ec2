@@ -16,7 +16,6 @@ package org.entando.entando.plugins.jpredis.aps.system.redis;
 import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.REDIS_SENTINEL_SERVICE;
 import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.REDIS_SERVICE;
 import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.REDIS_SLAVE_SERVICE;
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.resource.DefaultClientResources;
@@ -40,7 +39,6 @@ class RedisCacheConfigTest {
     @BeforeAll
     static void setUp() {
         TestEntandoJndiUtils.setupJndi();
-        System.setProperty(REDIS_ACTIVE, "true");
     }
 
     @Test

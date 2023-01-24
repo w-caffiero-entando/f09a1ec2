@@ -6,14 +6,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.List;
+import org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables;
+import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.testcontainers.containers.DockerComposeContainer;
 
-public class RedisSentinelTestExtension implements BeforeAllCallback, ParameterResolver {
+public class RedisSentinelTestExtension implements BeforeAllCallback, AfterAllCallback, ParameterResolver {
 
     private static final int REDIS_PORT = 6379;
     private static final int REDIS_SENTINEL_PORT = 26379;
@@ -24,6 +28,8 @@ public class RedisSentinelTestExtension implements BeforeAllCallback, ParameterR
 
     private static DockerComposeContainer composeContainer;
 
+    private MockedStatic<RedisEnvironmentVariables> mockedRedisEnvironment;
+
     @Override
     public void beforeAll(ExtensionContext extensionContext) throws Exception {
         if (composeContainer == null) {
@@ -33,6 +39,12 @@ public class RedisSentinelTestExtension implements BeforeAllCallback, ParameterR
                     .withExposedService(REDIS_SENTINEL_SERVICE, REDIS_SENTINEL_PORT);
             composeContainer.start();
         }
+        mockedRedisEnvironment = Mockito.mockStatic(RedisEnvironmentVariables.class);
+    }
+
+    @Override
+    public void afterAll(ExtensionContext extensionContext) throws Exception {
+        mockedRedisEnvironment.close();
     }
 
     @Retention(RetentionPolicy.RUNTIME)

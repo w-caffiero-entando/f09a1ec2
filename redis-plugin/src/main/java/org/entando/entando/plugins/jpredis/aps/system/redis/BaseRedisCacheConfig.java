@@ -13,8 +13,6 @@
  */
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_PASSWORD;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lettuce.core.RedisClient;
@@ -24,7 +22,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
@@ -41,9 +38,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class BaseRedisCacheConfig extends CachingConfigurerSupport {
 
     protected static final String REDIS_PREFIX = "redis://";
-
-    @Value("${" + REDIS_PASSWORD + ":}")
-    protected String redisPassword;
 
     @Bean(destroyMethod = "shutdown")
     public DefaultClientResources defaultClientResources() {

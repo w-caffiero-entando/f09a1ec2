@@ -1,12 +1,13 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
-import static org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables.REDIS_ACTIVE;
-
 import org.entando.entando.TestEntandoJndiUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.DirtiesContext;
@@ -27,10 +28,18 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class DefaultCacheConfigTest {
 
+    private static MockedStatic<RedisEnvironmentVariables> mockedRedisEnvironment;
+
     @BeforeAll
     static void setUp() {
+        mockedRedisEnvironment = Mockito.mockStatic(RedisEnvironmentVariables.class);
+        mockedRedisEnvironment.when(() -> RedisEnvironmentVariables.active()).thenReturn(false);
         TestEntandoJndiUtils.setupJndi();
-        System.setProperty(REDIS_ACTIVE, "false");
+    }
+
+    @AfterAll
+    static void tearDown() {
+        mockedRedisEnvironment.close();
     }
 
     @Autowired
