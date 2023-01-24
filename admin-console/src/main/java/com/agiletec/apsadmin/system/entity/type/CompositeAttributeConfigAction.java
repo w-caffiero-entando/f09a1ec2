@@ -75,9 +75,9 @@ public class CompositeAttributeConfigAction extends AbstractBaseEntityAttributeC
 					attributes.add(elementIndex+1, attributeToMove);
 				}
 			}
+			this.updateCompositeAttributeOnEdit(composite);
 		} catch (Throwable t) {
 			_logger.error("error in moveAttribute", t);
-			//ApsSystemUtils.logThrowable(t, this, "moveAttribute");
 			return FAILURE;
 		}
 		return SUCCESS;
@@ -91,9 +91,9 @@ public class CompositeAttributeConfigAction extends AbstractBaseEntityAttributeC
 			AttributeInterface attributeToRemove = composite.getAttributes().get(elementIndex);
 			composite.getAttributes().remove(elementIndex);
 			composite.getAttributeMap().remove(attributeToRemove.getName());
+			this.updateCompositeAttributeOnEdit(composite);
 		} catch (Throwable t) {
 			_logger.error("error in removeAttribute", t);
-			//ApsSystemUtils.logThrowable(t, this, "removeAttribute");
 			return FAILURE;
 		}
 		return SUCCESS;
@@ -112,9 +112,9 @@ public class CompositeAttributeConfigAction extends AbstractBaseEntityAttributeC
 				composite.getAttributes().add(attribute);
 				composite.getAttributeMap().put(attribute.getName(), attribute);
 			}
+			this.updateCompositeAttributeOnEdit(composite);
 		} catch (Throwable t) {
 			_logger.error("error in saveAttributeElement", t);
-			//ApsSystemUtils.logThrowable(t, this, "saveAttributeElement");
 			return FAILURE;
 		}
 		return SUCCESS;
@@ -133,10 +133,10 @@ public class CompositeAttributeConfigAction extends AbstractBaseEntityAttributeC
 			} else if (!attribute.getType().equals(composite.getType())) {
 				throw new EntException("Attribute Type '" + attribute.getType() + "' incompatible with composite Attribute type '" + composite.getType() + "'");
 			}
+			this.updateEntityType(entityType);
 			this.getRequest().getSession().removeAttribute(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM);
 		} catch (Throwable t) {
 			_logger.error("error in saveAttribute", t);
-			//ApsSystemUtils.logThrowable(t, this, "saveAttribute");
 			return FAILURE;
 		}
 		return SUCCESS;
@@ -157,7 +157,6 @@ public class CompositeAttributeConfigAction extends AbstractBaseEntityAttributeC
 			Collections.sort(attributes, new BeanComparator("type"));
 		} catch (Throwable t) {
 			_logger.error("Error extracting the allowed types of attribute elements", t);
-			//ApsSystemUtils.logThrowable(t, this, "getAllowedAttributeElementTypes");
 			throw new RuntimeException("Error extracting the allowed types of attribute elements", t);
 		}
 		return attributes;
@@ -165,6 +164,10 @@ public class CompositeAttributeConfigAction extends AbstractBaseEntityAttributeC
 	
 	public CompositeAttribute getCompositeAttributeOnEdit() {
 		return (CompositeAttribute) this.getRequest().getSession().getAttribute(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM);
+	}
+
+	public void updateCompositeAttributeOnEdit(CompositeAttribute compositeAttribute) {
+		this.getRequest().getSession().setAttribute(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM, compositeAttribute);
 	}
 	
 	public AbstractListAttribute getListAttribute() {
