@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import org.entando.entando.TestEntandoJndiUtils;
-import org.entando.entando.plugins.jpredis.RedisTestExtension;
+import org.entando.entando.plugins.jpredis.utils.RedisTestExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package org.entando.entando.plugins.jpredis;
+package org.entando.entando.plugins.jpredis.utils;
 
 import java.io.File;
 import java.lang.annotation.ElementType;

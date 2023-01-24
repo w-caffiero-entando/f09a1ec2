@@ -1,4 +1,4 @@
-package org.entando.entando.plugins.jpredis.aps.system.redis.condition;
+package org.entando.entando.plugins.jpredis.aps.system.redis.conditions;
 
 import org.springframework.context.annotation.Condition;
 

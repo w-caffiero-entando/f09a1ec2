@@ -21,6 +21,7 @@ import io.lettuce.core.support.caching.CacheFrontend;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -50,16 +51,16 @@ public class BaseRedisCacheConfig extends CachingConfigurerSupport {
             CacheFrontendManager cacheFrontendManager) {
         RedisCacheConfiguration redisCacheConfiguration = this.buildDefaultConfiguration();
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-        // time to leave = 4 Hours
-        cacheConfigurations.put(ICacheInfoManager.DEFAULT_CACHE_NAME, createCacheConfiguration(4L * 60 * 60));
+        long ttlInSeconds = TimeUnit.HOURS.toSeconds(4);
+        cacheConfigurations.put(ICacheInfoManager.DEFAULT_CACHE_NAME, createCacheConfiguration(ttlInSeconds));
         CacheFrontend<String, Object> cacheFrontend = cacheFrontendManager.getCacheFrontend();
         return LettuceCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration).cacheFrontend(cacheFrontend)
                 .withInitialCacheConfigurations(cacheConfigurations).build();
     }
 
-    private static RedisCacheConfiguration createCacheConfiguration(long timeoutInSeconds) {
-        return RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(timeoutInSeconds));
+    private static RedisCacheConfiguration createCacheConfiguration(long ttlInSeconds) {
+        return RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(ttlInSeconds));
     }
 
     private RedisCacheConfiguration buildDefaultConfiguration() {

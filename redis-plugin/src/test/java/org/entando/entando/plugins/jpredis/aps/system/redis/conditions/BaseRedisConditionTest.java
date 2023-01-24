@@ -1,4 +1,4 @@
-package org.entando.entando.plugins.jpredis.aps.system.redis.condition;
+package org.entando.entando.plugins.jpredis.aps.system.redis.conditions;
 
 import java.util.List;
 import org.junit.jupiter.api.Assertions;

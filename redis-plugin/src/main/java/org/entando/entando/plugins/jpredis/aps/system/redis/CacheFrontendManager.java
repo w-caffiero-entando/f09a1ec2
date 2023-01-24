@@ -8,7 +8,7 @@ import io.lettuce.core.support.caching.CacheFrontend;
 import io.lettuce.core.support.caching.ClientSideCaching;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.entando.entando.plugins.jpredis.aps.system.redis.condition.RedisActive;
+import org.entando.entando.plugins.jpredis.aps.system.redis.conditions.RedisActive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

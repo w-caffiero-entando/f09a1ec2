@@ -12,7 +12,7 @@ class RedisEnvironmentVariablesTest {
 
     @Test
     void testSessionActive() {
-        Assertions.assertFalse(RedisEnvironmentVariables.sessionActive());
+        Assertions.assertFalse(RedisEnvironmentVariables.redisSessionActive());
     }
 
     @Test

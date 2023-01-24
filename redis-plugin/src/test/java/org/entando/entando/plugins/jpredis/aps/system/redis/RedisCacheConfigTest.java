@@ -13,16 +13,16 @@
  */
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
-import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.REDIS_SENTINEL_SERVICE;
-import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.REDIS_SERVICE;
-import static org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.REDIS_SLAVE_SERVICE;
+import static org.entando.entando.plugins.jpredis.utils.RedisSentinelTestExtension.REDIS_SENTINEL_SERVICE;
+import static org.entando.entando.plugins.jpredis.utils.RedisSentinelTestExtension.REDIS_SERVICE;
+import static org.entando.entando.plugins.jpredis.utils.RedisSentinelTestExtension.REDIS_SLAVE_SERVICE;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.resource.DefaultClientResources;
 import java.util.Collections;
 import org.entando.entando.TestEntandoJndiUtils;
-import org.entando.entando.plugins.jpredis.RedisSentinelTestExtension;
-import org.entando.entando.plugins.jpredis.RedisSentinelTestExtension.ServicePort;
+import org.entando.entando.plugins.jpredis.utils.RedisSentinelTestExtension;
+import org.entando.entando.plugins.jpredis.utils.RedisSentinelTestExtension.ServicePort;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class RedisCacheConfigTest {
     }
 
     @Test
-    void testRedisConnectionFactory_1(@ServicePort(REDIS_SERVICE) int redisPort) throws Exception {
+    void testSingleNodeConfig(@ServicePort(REDIS_SERVICE) int redisPort) throws Exception {
         SingleNodeConfig config = new SingleNodeConfig();
         ReflectionTestUtils.setField(config, "redisAddress", "redis://localhost:" + redisPort);
         LettuceConnectionFactory factory = config.connectionFactory();
@@ -50,7 +50,7 @@ class RedisCacheConfigTest {
     }
 
     @Test
-    void testRedisConnectionFactory_2(@ServicePort(REDIS_SERVICE) int redisPort,
+    void testSentinelConfigMasterSlavePorts(@ServicePort(REDIS_SERVICE) int redisPort,
             @ServicePort(REDIS_SLAVE_SERVICE) int redisSlavePort) throws Exception {
         SentinelConfig config = new SentinelConfig();
         ReflectionTestUtils.setField(config, "redisAddresses",
@@ -60,7 +60,7 @@ class RedisCacheConfigTest {
     }
 
     @Test
-    void testCacheManager(@ServicePort(REDIS_SENTINEL_SERVICE) int redisSentinelPort) throws Exception {
+    void testSentinelConfigSentinelPort(@ServicePort(REDIS_SENTINEL_SERVICE) int redisSentinelPort) throws Exception {
         SentinelConfig config = new SentinelConfig();
         ReflectionTestUtils.setField(config, "redisAddresses",
                 String.join(",", Collections.nCopies(3, "localhost:" + redisSentinelPort)));

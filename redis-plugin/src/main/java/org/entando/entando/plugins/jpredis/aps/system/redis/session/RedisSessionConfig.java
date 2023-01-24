@@ -1,6 +1,6 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis.session;
 
-import org.entando.entando.plugins.jpredis.aps.system.redis.condition.RedisSessionActive;
+import org.entando.entando.plugins.jpredis.aps.system.redis.conditions.RedisSessionActive;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 

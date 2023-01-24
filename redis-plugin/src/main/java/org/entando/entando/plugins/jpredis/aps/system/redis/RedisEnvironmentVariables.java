@@ -19,7 +19,7 @@ public final class RedisEnvironmentVariables {
         return Boolean.toString(true).equals(System.getenv(REDIS_ACTIVE));
     }
 
-    public static boolean sessionActive() {
+    public static boolean redisSessionActive() {
         return active() && Boolean.toString(true).equals(System.getenv(REDIS_SESSION_ACTIVE));
     }
 

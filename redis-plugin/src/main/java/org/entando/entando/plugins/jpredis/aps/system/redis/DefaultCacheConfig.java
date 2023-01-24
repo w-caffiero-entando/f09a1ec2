@@ -3,7 +3,7 @@ package org.entando.entando.plugins.jpredis.aps.system.redis;
 import java.util.Collection;
 import java.util.List;
 import org.entando.entando.aps.system.services.cache.ExternalCachesContainer;
-import org.entando.entando.plugins.jpredis.aps.system.redis.condition.RedisActive;
+import org.entando.entando.plugins.jpredis.aps.system.redis.conditions.RedisActive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +33,8 @@ public class DefaultCacheConfig extends CachingConfigurerSupport {
         logger.warn("** Redis not active **");
         DefaultEntandoCacheManager defaultCacheManager = new DefaultEntandoCacheManager();
         defaultCacheManager.setCaches(defaultCaches);
-        defaultCacheManager.setExternalCachesContainers(this.getDefaultExternalCachesContainers());
+        defaultCacheManager.setExternalCachesContainers(this.defaultExternalCachesContainers);
         defaultCacheManager.afterPropertiesSet();
         return defaultCacheManager;
-    }
-
-    protected List<ExternalCachesContainer> getDefaultExternalCachesContainers() {
-        return defaultExternalCachesContainers;
-    }
-
-    protected void setDefaultExternalCachesContainers(List<ExternalCachesContainer> defaultExternalCachesContainers) {
-        this.defaultExternalCachesContainers = defaultExternalCachesContainers;
     }
 }

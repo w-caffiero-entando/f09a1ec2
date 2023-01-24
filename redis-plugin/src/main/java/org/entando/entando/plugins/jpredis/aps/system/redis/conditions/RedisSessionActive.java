@@ -1,4 +1,4 @@
-package org.entando.entando.plugins.jpredis.aps.system.redis.condition;
+package org.entando.entando.plugins.jpredis.aps.system.redis.conditions;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Conditional;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Conditional(RedisActiveCondition.class)
-public @interface RedisActive {
+@Conditional(RedisSessionActiveCondition.class)
+public @interface RedisSessionActive {
 
     boolean value();
 }
