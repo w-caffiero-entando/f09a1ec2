@@ -77,6 +77,7 @@ class SentinelSchedulerTest {
         scheduler.run();
         Mockito.verify(master, Mockito.times(2)).get("ip");
         Mockito.verify(cacheConfig, Mockito.times(0)).rebuildCacheFrontend(this.lettuceClient);
+        scheduler.cancel();
     }
     
     @Test
@@ -95,6 +96,7 @@ class SentinelSchedulerTest {
         scheduler.run();
         Mockito.verify(master, Mockito.times(0)).get("ip");
         Mockito.verify(cacheConfig, Mockito.times(0)).rebuildCacheFrontend(this.lettuceClient);
+        scheduler.cancel();
     }
     
     @Test

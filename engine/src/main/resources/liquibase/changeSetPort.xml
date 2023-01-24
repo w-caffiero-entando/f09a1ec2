@@ -16,5 +16,7 @@
     <changeSet id="00000000000001_dataPort_restore" author="entando" context="restore" />
     
     <include file="port/20221004100000_messages_system.xml" relativeToChangelogFile="true" />
+    
+    <include file="port/20230119000000_freemarker_for_parallel.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

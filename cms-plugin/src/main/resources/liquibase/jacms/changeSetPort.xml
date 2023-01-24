@@ -15,4 +15,6 @@
 
     <changeSet id="00000000000001_jacms_dataPort_restore" author="entando" context="restore" />
 
+    <include file="port/20230119000000_jacms_freemarker_for_parallel.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>

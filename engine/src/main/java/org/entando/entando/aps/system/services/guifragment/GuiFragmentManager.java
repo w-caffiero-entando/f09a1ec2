@@ -224,12 +224,16 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
             results.addAll(this.searchFragments(strToSearch, "gui"));
             results.addAll(this.searchFragments(strToSearch, "defaultgui"));
             if (!results.isEmpty()) {
-                Pattern pattern = Pattern.compile("<@wp\\.fragment.*code=\"" + guiFragmentCode + "\".*/>", Pattern.MULTILINE);
+                Pattern patternTag = Pattern.compile("<@wp\\.fragment.*code=\"" + guiFragmentCode + "\".*/>", Pattern.MULTILINE);
+                Pattern patternFreem = Pattern.compile("<#include.*\"" + guiFragmentCode + "\".*>", Pattern.MULTILINE);
                 Iterator<String> it = results.iterator();
                 while (it.hasNext()) {
                     String fcode = it.next();
                     GuiFragment fragment = this.getGuiFragment(fcode);
-                    if (this.scanTemplate(pattern, fragment.getGui()) || this.scanTemplate(pattern, fragment.getDefaultGui())) {
+                    if (this.scanTemplate(patternTag, fragment.getGui()) 
+                            || this.scanTemplate(patternTag, fragment.getDefaultGui())
+                            || this.scanTemplate(patternFreem, fragment.getGui())
+                            || this.scanTemplate(patternFreem, fragment.getDefaultGui())) {
                         utilizers.add(fragment);
                     }
                 }
@@ -253,11 +257,12 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     }
 
     protected Set<String> searchFragments(String strToSearch, String column) throws EntException {
-        FieldSearchFilter filterTag = new FieldSearchFilter(column, "<@wp.fragment", true);
-        FieldSearchFilter[] filters1 = new FieldSearchFilter[]{filterTag};
+        FieldSearchFilter<String> filterCode = new FieldSearchFilter<>(column, strToSearch, true);
+        FieldSearchFilter<String> filterTag = new FieldSearchFilter<>(column, "<@wp.fragment", true);
+        FieldSearchFilter[] filters1 = new FieldSearchFilter[]{filterCode, filterTag};
         List<String> result1 = this.searchGuiFragments(filters1);
-        FieldSearchFilter filterCode = new FieldSearchFilter(column, strToSearch, true);
-        FieldSearchFilter[] filters2 = new FieldSearchFilter[]{filterCode};
+        FieldSearchFilter<String> filterFreem = new FieldSearchFilter<>(column, "<#include", true);
+        FieldSearchFilter[] filters2 = new FieldSearchFilter[]{filterCode, filterFreem};
         List<String> result2 = this.searchGuiFragments(filters2);
         Set<String> result = new HashSet<>();
         result.addAll(result1);
