@@ -23,13 +23,17 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 import org.apache.struts2.tiles.StrutsTilesContainerFactory;
 import org.apache.tiles.definition.DefinitionsFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @see org.entando.entando.apsadmin.system.tiles.EntandoStrutsTilesListener
  * @author zuanni G.Cocco - E.Santoboni
  */
 public class EntandoStrutsTilesContainerFactory extends StrutsTilesContainerFactory {
-	
+
+	private Logger logger = LoggerFactory.getLogger(EntandoStrutsTilesContainerFactory.class);
+
 	private ServletContext _servletContext;
 	
 	protected EntandoStrutsTilesContainerFactory(ServletContext servletContext) {
@@ -47,13 +51,13 @@ public class EntandoStrutsTilesContainerFactory extends StrutsTilesContainerFact
 	protected Set<String> getResourceNames(String resourceString) {
 		StringTokenizer tokenizer = new StringTokenizer(resourceString, ",");
 		Set<String> filenames = new HashSet<String>();
-		System.out.println(EntandoStrutsTilesContainerFactory.class.getName() + " Tiles Conf files: ");
+		logger.info(" Tiles Conf files: ");
 		while (tokenizer.hasMoreTokens()) {
 			String currentFilename = tokenizer.nextToken().trim();
 			int index = currentFilename.indexOf(AXTER);
 			if (-1 == index) {
 				filenames.add(currentFilename);
-				System.out.println(EntandoStrutsTilesContainerFactory.class.getName() + " " + currentFilename);
+				logger.info(" ${}",currentFilename);
 			} else {
 				Set<String> confFiles = new HashSet<String>();
 				String rootInspectionDir = currentFilename.substring(0, index);
@@ -72,7 +76,7 @@ public class EntandoStrutsTilesContainerFactory extends StrutsTilesContainerFact
 				String current = it.next();
 				if (!current.endsWith("/") && this.isConfResource(current, currentFilenamesConf)) {
 					confFiles.add(current);
-					System.out.println(EntandoStrutsTilesContainerFactory.class.getName() + " " + current);
+					logger.info(" ${}",current);
 				} else {
 					this.inspectResources(currentFilenamesConf, current, confFiles);
 				}
