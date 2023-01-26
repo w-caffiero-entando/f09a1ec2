@@ -99,13 +99,11 @@ public class SentinelConfig extends BaseRedisCacheConfig {
                 uriBuilder.withSentinel(sections[0], Integer.parseInt(sections[1]));
             }
         }
-        RedisURI redisUri = uriBuilder.build();
-        redisUri.setSentinelMasterId(this.redisMasterName);
+        uriBuilder.withSentinelMasterId(this.redisMasterName);
         if (!StringUtils.isBlank(this.redisPassword)) {
-            redisUri.setPassword(this.redisPassword.toCharArray());
+            uriBuilder.withPassword(this.redisPassword.toCharArray());
         }
-        return new RedisClient(resources, redisUri) {
-        };
+        return RedisClient.create(resources, uriBuilder.build());
     }
 
 }

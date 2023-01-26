@@ -118,6 +118,7 @@ class SentinelSchedulerTest {
         Mockito.doThrow(RuntimeException.class).when(this.cacheFrontendManager).rebuildCacheFrontend();
         Assertions.assertThrows(EntRuntimeException.class, () -> scheduler.run());
         Mockito.verify(master, Mockito.times(2)).get("ip");
+        scheduler.cancel();
     }
 
 }
