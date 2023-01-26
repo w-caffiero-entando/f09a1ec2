@@ -124,7 +124,9 @@ public class KeycloakFilter implements Filter {
                 if (request.getQueryString() != null) {
                     redirect += "?" + request.getQueryString();
                 }
-                session.setAttribute(SESSION_PARAM_REDIRECT, redirect);
+                if ("/".equals(redirect) || redirect.startsWith("/do/")) {
+                    session.setAttribute(SESSION_PARAM_REDIRECT, redirect);
+                }
             }
         }
     }
