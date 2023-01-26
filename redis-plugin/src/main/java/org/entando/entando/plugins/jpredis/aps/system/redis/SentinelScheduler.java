@@ -14,58 +14,88 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
 import io.lettuce.core.RedisClient;
-import java.util.Calendar;
+import io.lettuce.core.sentinel.api.StatefulRedisSentinelConnection;
+import io.lettuce.core.support.caching.CacheFrontend;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
+import java.util.Optional;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 
 /**
  * @author E.Santoboni
  */
 public class SentinelScheduler extends TimerTask {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SentinelScheduler.class);
-	
-	private Timer timer;
-	private RedisClient lettuceClient;
-	private CacheConfig cacheConfig;
+
+    private final RedisClient redisClient;
+    private final CacheManager cacheManager;
+    private final CacheFrontendManager cacheFrontendManager;
+
     private String currentMasterIp;
-	
-	public SentinelScheduler(RedisClient lettuceClient, int delaySeconds, CacheConfig cacheConfig) {
-        this.cacheConfig = cacheConfig;
-		this.lettuceClient = lettuceClient;
-		this.timer = new Timer();
-        Calendar startTime = Calendar.getInstance();
-        startTime.add(Calendar.SECOND, delaySeconds);
-		this.timer.schedule(this, startTime.getTime(), delaySeconds*1000l);
-        List<Map<String, String>> masters = lettuceClient.connectSentinel().sync().masters();
-        this.currentMasterIp = (!masters.isEmpty()) ? masters.get(0).get("ip") : null;
-        logger.info("CURRENT master node '{}'", this.currentMasterIp);
-	}
-	
-	@Override
-	public boolean cancel() {
-		this.timer.cancel();
-		return super.cancel();
-	}
-	
+
+    private int masterCheckLogCount = 0;
+
+    public SentinelScheduler(RedisClient redisClient, CacheManager cacheManager,
+            CacheFrontendManager cacheFrontendManager) {
+        this.redisClient = redisClient;
+        this.cacheManager = cacheManager;
+        this.cacheFrontendManager = cacheFrontendManager;
+        this.getMasterIp().ifPresent(ip -> {
+            this.currentMasterIp = ip;
+            logger.info("CURRENT master node '{}'", this.currentMasterIp);
+        });
+    }
+
     @Override
     public void run() {
         try {
-            List<Map<String, String>> masters = lettuceClient.connectSentinel().sync().masters();
-            String ip = (!masters.isEmpty()) ? masters.get(0).get("ip") : null;
-            if (null != this.currentMasterIp && !this.currentMasterIp.equals(ip)) {
-                logger.info("Refresh of front-end-cache -> from master node '{}' to '{}'", this.currentMasterIp, ip);
-                cacheConfig.rebuildCacheFrontend(this.lettuceClient);
-                this.currentMasterIp = ip;
-            }
+            this.getMasterIp().ifPresent(ip -> {
+                if (!ip.equals(this.currentMasterIp)) {
+                    logger.info("Refresh of front-end-cache -> from master node '{}' to '{}'",
+                            this.currentMasterIp, ip);
+                    this.rebuildCacheFrontend();
+                    this.currentMasterIp = ip;
+                }
+            });
         } catch (Exception e) {
             throw new EntRuntimeException("Error on executing TimerTask", e);
         }
     }
-	
+
+    private void rebuildCacheFrontend() {
+        CacheFrontend<String, Object> cacheFrontend = this.cacheFrontendManager.rebuildCacheFrontend();
+        Collection<String> cacheNames = this.cacheManager.getCacheNames();
+        for (String cacheName : cacheNames) {
+            Cache cache = this.cacheManager.getCache(cacheName);
+            if (cache instanceof LettuceCache) {
+                ((LettuceCache) cache).setFrontendCache(cacheFrontend);
+            }
+        }
+    }
+
+    private Optional<String> getMasterIp() {
+        this.logMasterCheck();
+        try (StatefulRedisSentinelConnection<String, String> connection = redisClient.connectSentinel()) {
+            List<Map<String, String>> masters = connection.sync().masters();
+            if (masters.isEmpty()) {
+                logger.warn("Sentinel master node not found!");
+                return Optional.empty();
+            }
+            return Optional.of(masters.get(0).get("ip"));
+        }
+    }
+
+    private void logMasterCheck() {
+        Consumer<String> loggerMethod = masterCheckLogCount == 0 ? logger::info : logger::debug;
+        loggerMethod.accept("Checking Sentinel master IP");
+        masterCheckLogCount = (masterCheckLogCount + 1) % 10;
+    }
 }

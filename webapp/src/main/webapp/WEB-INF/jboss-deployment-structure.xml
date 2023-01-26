@@ -3,6 +3,7 @@
     <deployment>
         <exclude-subsystems>
             <subsystem name="webservices" />
+            <subsystem name="jaxrs" />
         </exclude-subsystems>
         <exclusions>
             <module name="javax.xml.bind.api" />

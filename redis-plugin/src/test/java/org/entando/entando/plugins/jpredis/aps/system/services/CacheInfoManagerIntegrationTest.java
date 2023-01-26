@@ -17,111 +17,111 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.agiletec.aps.BaseTestCase;
-import com.agiletec.aps.system.SystemConstants;
+import org.entando.entando.TestEntandoJndiUtils;
 import org.entando.entando.aps.system.services.cache.CacheInfoManager;
-import org.entando.entando.plugins.jpredis.RedisTestUtils;
-import org.junit.jupiter.api.AfterAll;
+import org.entando.entando.plugins.jpredis.utils.RedisTestExtension;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Classe test del servizio gestore cache.
  *
  * @author E.Santoboni
  */
+@ExtendWith(RedisTestExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = {
+        "classpath*:spring/testpropertyPlaceholder.xml",
+        "classpath*:spring/baseSystemConfig.xml",
+        "classpath*:spring/aps/**/**.xml",
+        "classpath*:spring/plugins/**/aps/**/**.xml",
+        "classpath*:spring/web/**.xml"
+})
+@WebAppConfiguration(value = "")
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class CacheInfoManagerIntegrationTest {
 
-	private static final String DEFAULT_CACHE = CacheInfoManager.DEFAULT_CACHE_NAME;
+    private static final String DEFAULT_CACHE = CacheInfoManager.DEFAULT_CACHE_NAME;
 
-	private CacheInfoManager cacheInfoManager = null;
-
-	@BeforeAll
-    public static void startUp() throws Exception {
-        RedisTestUtils.startContainer(false);
-        BaseTestCase.setUp();
-    }
-    
-    @AfterAll
-    public static void tearDown() throws Exception {
-        BaseTestCase.tearDown();
-        RedisTestUtils.stopContainer();
+    @BeforeAll
+    static void setUp() {
+        TestEntandoJndiUtils.setupJndi();
     }
 
-    @BeforeEach
-    public void init() throws Exception {
-        try {
-            cacheInfoManager = (CacheInfoManager) BaseTestCase.getApplicationContext().getBean(SystemConstants.CACHE_INFO_MANAGER);
-        } catch (Throwable t) {
-            throw new Exception(t);
+    @Autowired
+    private CacheInfoManager cacheInfoManager;
+
+    @Test
+    void testPutGetFromCache_1() throws Throwable {
+        String value = "Stringa prova";
+        String key = "Chiave_prova";
+        this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
+        Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertEquals(value, extracted);
+        this.cacheInfoManager.flushEntry(DEFAULT_CACHE, key);
+        synchronized (this) {
+            this.wait(1000);
         }
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
     }
-    
+
     @Test
-	void testPutGetFromCache_1() throws Throwable {
-		String value = "Stringa prova";
-		String key = "Chiave_prova";
-		this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
-		Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertEquals(value, extracted);
-		this.cacheInfoManager.flushEntry(DEFAULT_CACHE, key);
-		synchronized (this) {
-			this.wait(1000);
-		}
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-	}
-    
+    void testPutGetFromCache_2() throws Throwable {
+        String key = "Chiave_prova";
+        Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+
+        String value = "Stringa prova";
+        this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
+
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNotNull(extracted);
+        assertEquals(value, extracted);
+        this.cacheInfoManager.flushEntry(DEFAULT_CACHE, key);
+        synchronized (this) {
+            this.wait(1000);
+        }
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+    }
+
     @Test
-	void testPutGetFromCache_2() throws Throwable {
-		String key = "Chiave_prova";
-		Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
+    void testPutGetFromCacheOnRefreshPeriod() throws Throwable {
+        String value = "Stringa prova";
+        String key = "Chiave prova";
+        this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
+        this.cacheInfoManager.setExpirationTime(DEFAULT_CACHE, key, 2l);
+        Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertEquals(value, extracted);
+        synchronized (this) {
+            this.wait(3000);
+        }
+        extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+    }
 
-		String value = "Stringa prova";
-		this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
+    @Test
+    void testPutGetFromCacheGroup() {
+        String value = "Stringa prova";
+        String key = "Chiave prova";
+        String group1 = "group1";
+        String[] groups = {group1};
+        cacheInfoManager.putInCache(DEFAULT_CACHE, key, value, groups);
+        Object extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertEquals(value, extracted);
+        cacheInfoManager.flushGroup(DEFAULT_CACHE, group1);
+        extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
+        assertNull(extracted);
+    }
 
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNotNull(extracted);
-		assertEquals(value, extracted);
-		this.cacheInfoManager.flushEntry(DEFAULT_CACHE, key);
-		synchronized (this) {
-			this.wait(1000);
-		}
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-	}
-
-	@Test
-	void testPutGetFromCacheOnRefreshPeriod() throws Throwable {
-		String value = "Stringa prova";
-		String key = "Chiave prova";
-		this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
-		this.cacheInfoManager.setExpirationTime(DEFAULT_CACHE, key, 2l);
-		Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertEquals(value, extracted);
-		synchronized (this) {
-			this.wait(3000);
-		}
-		extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-	}
-
-	@Test
-	void testPutGetFromCacheGroup() {
-		String value = "Stringa prova";
-		String key = "Chiave prova";
-		String group1 = "group1";
-		String[] groups = {group1};
-		cacheInfoManager.putInCache(DEFAULT_CACHE, key, value, groups);
-		Object extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertEquals(value, extracted);
-		cacheInfoManager.flushGroup(DEFAULT_CACHE, group1);
-		extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
-		assertNull(extracted);
-	}
-    
 }
