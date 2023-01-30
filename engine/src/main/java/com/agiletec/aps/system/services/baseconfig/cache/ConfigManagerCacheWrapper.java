@@ -18,12 +18,12 @@ import com.agiletec.aps.system.common.AbstractCacheWrapper;
 import com.agiletec.aps.system.services.baseconfig.IConfigItemDAO;
 import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.entando.entando.ent.exception.EntException;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.cache.Cache;
 
 /**
@@ -71,17 +71,14 @@ public class ConfigManagerCacheWrapper extends AbstractCacheWrapper implements I
             Map<String, String> objects, String codesCacheName, String codeCachePrefix) {
         List<String> oldCodes = (List<String>) this.get(cache, codesCacheName, List.class);
         List<String> codes = new ArrayList<>();
-        Iterator<String> iter = objects.keySet().iterator();
-        while (iter.hasNext()) {
-            String key = iter.next();
-            cache.put(codeCachePrefix + key, objects.get(key));
-            if (null != oldCodes) {
-                oldCodes.remove(key);
-            }
-            codes.add(key);
+        for (Map.Entry<String, String> entry : objects.entrySet()) {
+            cache.put(codeCachePrefix + entry.getKey(), entry.getValue());
+            codes.add(entry.getKey());
         }
         cache.put(codesCacheName, codes);
-        this.releaseObjects(cache, oldCodes, codeCachePrefix);
+        List<String> keysToRelease = oldCodes == null ? null :
+                oldCodes.stream().filter(c -> !codes.contains(c)).collect(Collectors.toList());
+        this.releaseObjects(cache, keysToRelease, codeCachePrefix);
     }
 
     private void releaseObjects(Cache cache, List<String> keysToRelease, String prefix) {

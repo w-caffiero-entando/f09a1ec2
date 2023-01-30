@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collections;
 import java.util.List;
 import org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables;
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -40,6 +41,14 @@ public class RedisSentinelTestExtension implements BeforeAllCallback, AfterAllCa
             composeContainer.start();
         }
         mockedRedisEnvironment = Mockito.mockStatic(RedisEnvironmentVariables.class);
+        mockedRedisEnvironment.when(() -> RedisEnvironmentVariables.active()).thenReturn(true);
+        mockedRedisEnvironment.when(() -> RedisEnvironmentVariables.sentinelActive()).thenReturn(true);
+        mockedRedisEnvironment.when(() -> RedisEnvironmentVariables.redisMasterName()).thenReturn("mymaster");
+        mockedRedisEnvironment.when(() -> RedisEnvironmentVariables.redisPassword()).thenReturn("str0ng_passw0rd");
+        mockedRedisEnvironment.when(() -> RedisEnvironmentVariables.frontEndCacheCheckDelay()).thenReturn(100);
+        mockedRedisEnvironment.when(() -> RedisEnvironmentVariables.redisAddresses())
+                .thenReturn(String.join(",", Collections.nCopies(2, "redis://localhost:" +
+                        composeContainer.getServicePort(REDIS_SENTINEL_SERVICE, REDIS_SENTINEL_PORT))));
     }
 
     @Override

@@ -166,8 +166,9 @@ public class CategoryManagerCacheWrapper extends AbstractCacheWrapper implements
         }
         List<String> codes = (List<String>) this.get(cache, CATEGORY_CODES_CACHE_NAME, List.class);
         if (null != codes) {
-            codes.remove(code);
-            cache.put(CATEGORY_CODES_CACHE_NAME, codes);
+            List<String> newCodes = new ArrayList<>(codes);
+            newCodes.remove(code);
+            cache.put(CATEGORY_CODES_CACHE_NAME, newCodes);
         }
         cache.evict(CATEGORY_CACHE_NAME_PREFIX + code);
     }

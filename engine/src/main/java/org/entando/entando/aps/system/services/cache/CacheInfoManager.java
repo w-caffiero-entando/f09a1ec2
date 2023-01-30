@@ -151,16 +151,19 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
     protected synchronized void accessOnGroupMapping(String targetCache, int operationId, String[] groups, String key) {
         Cache cache = this.getCache(CACHE_INFO_MANAGER_CACHE_NAME);
         Map<String, List<String>> objectsByGroup = this.get(cache, GROUP_CACHE_NAME_PREFIX + targetCache, Map.class);
+        if (objectsByGroup != null) {
+            objectsByGroup = new HashMap<>(objectsByGroup);
+        }
         boolean updateMapInCache = false;
         if (operationId > 0) {
             //add
             if (null == objectsByGroup) {
-                objectsByGroup = new HashMap<String, List<String>>();
+                objectsByGroup = new HashMap<>();
             }
             for (String group : groups) {
                 List<String> objectKeys = objectsByGroup.get(group);
                 if (null == objectKeys) {
-                    objectKeys = new ArrayList<String>();
+                    objectKeys = new ArrayList<>();
                     objectsByGroup.put(group, objectKeys);
                 }
                 if (!objectKeys.contains(key)) {
@@ -217,7 +220,9 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
             return false;
         }
         if (expirationTime.before(new Date())) {
-            expirationTimes.remove(key);
+            Map<String, Date> newExpirationTimes = new HashMap<>(expirationTimes);
+            newExpirationTimes.remove(key);
+            this.putInCache(CACHE_INFO_MANAGER_CACHE_NAME, EXPIRATIONS_CACHE_NAME_PREFIX + targetCache, newExpirationTimes);
             return true;
         } else {
             return false;
