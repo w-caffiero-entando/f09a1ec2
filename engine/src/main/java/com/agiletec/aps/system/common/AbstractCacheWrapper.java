@@ -13,6 +13,8 @@
  */
 package com.agiletec.aps.system.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -55,6 +57,14 @@ public abstract class AbstractCacheWrapper implements ICacheWrapper {
             value = ((Cache.ValueWrapper) value).get();
         }
         return (T) value;
+    }
+
+    protected <T> List<T> getCopyFromImmutableCacheList(Cache cache, String name) {
+        List<T> value = this.get(cache, name, List.class);
+        if (value == null) {
+            return null;
+        }
+        return new ArrayList<>(value);
     }
 
     protected Cache getCache() {

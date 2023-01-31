@@ -61,7 +61,7 @@ class CacheInfoManagerIntegrationTest {
     @Test
     void testPutGetFromCache_1() throws Throwable {
         String value = "Stringa prova";
-        String key = "Chiave_prova";
+        String key = "Chiave_prova_1";
         this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
         Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
         assertEquals(value, extracted);
@@ -75,7 +75,7 @@ class CacheInfoManagerIntegrationTest {
 
     @Test
     void testPutGetFromCache_2() throws Throwable {
-        String key = "Chiave_prova";
+        String key = "Chiave_prova_2";
         Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
         assertNull(extracted);
         extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
@@ -98,7 +98,7 @@ class CacheInfoManagerIntegrationTest {
     @Test
     void testPutGetFromCacheOnRefreshPeriod() throws Throwable {
         String value = "Stringa prova";
-        String key = "Chiave prova";
+        String key = "Chiave_prova_3";
         this.cacheInfoManager.putInCache(DEFAULT_CACHE, key, value);
         this.cacheInfoManager.setExpirationTime(DEFAULT_CACHE, key, 2l);
         Object extracted = this.cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
@@ -113,13 +113,13 @@ class CacheInfoManagerIntegrationTest {
     @Test
     void testPutGetFromCacheGroup() {
         String value = "Stringa prova";
-        String key = "Chiave prova";
-        String group1 = "group1";
-        String[] groups = {group1};
+        String key = "Chiave_prova_4";
+        String group = "group4";
+        String[] groups = {group};
         cacheInfoManager.putInCache(DEFAULT_CACHE, key, value, groups);
         Object extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
         assertEquals(value, extracted);
-        cacheInfoManager.flushGroup(DEFAULT_CACHE, group1);
+        cacheInfoManager.flushGroup(DEFAULT_CACHE, group);
         extracted = cacheInfoManager.getFromCache(DEFAULT_CACHE, key);
         assertNull(extracted);
     }
