@@ -54,8 +54,7 @@ public class SentinelConfig extends BaseRedisCacheConfig {
 
     @Bean(destroyMethod = "destroy")
     public LettuceConnectionFactory connectionFactory() {
-        logger.warn(
-                "** Redis Cluster with sentinel configuration - the master node will be the first node defined in REDIS_ADDRESSES parameter **");
+        logger.warn("** Redis Cluster with sentinel configuration **");
         String[] addresses = this.redisAddresses.split(",");
         RedisSentinelConfiguration sentinelConfig = new RedisSentinelConfiguration();
         for (int i = 0; i < addresses.length; i++) {
@@ -65,13 +64,9 @@ public class SentinelConfig extends BaseRedisCacheConfig {
                             : address.trim();
             String[] sections = purgedAddress.split(":");
             RedisNode node = new RedisNode(sections[0], Integer.parseInt(sections[1]));
-            if (i == 0) {
-                node.setName(this.redisMasterName);
-                sentinelConfig.setMaster(node);
-            } else {
-                sentinelConfig.addSentinel(node);
-            }
+            sentinelConfig.addSentinel(node);
         }
+        sentinelConfig.setMaster(this.redisMasterName);
         if (!StringUtils.isBlank(this.redisPassword)) {
             sentinelConfig.setPassword(this.redisPassword);
         }
