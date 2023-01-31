@@ -220,6 +220,7 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
             return false;
         }
         if (expirationTime.before(new Date())) {
+            logger.debug("Key {} of cache {} is expired", key, targetCache);
             Map<String, Date> newExpirationTimes = new HashMap<>(expirationTimes);
             newExpirationTimes.remove(key);
             this.putInCache(CACHE_INFO_MANAGER_CACHE_NAME, EXPIRATIONS_CACHE_NAME_PREFIX + targetCache, newExpirationTimes);

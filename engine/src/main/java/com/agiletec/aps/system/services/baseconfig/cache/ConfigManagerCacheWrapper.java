@@ -69,7 +69,7 @@ public class ConfigManagerCacheWrapper extends AbstractCacheWrapper implements I
     
     protected void insertAndCleanCache(Cache cache,
             Map<String, String> objects, String codesCacheName, String codeCachePrefix) {
-        List<String> oldCodes = (List<String>) this.get(cache, codesCacheName, List.class);
+        List<String> oldCodes = this.get(cache, codesCacheName, List.class);
         List<String> codes = new ArrayList<>();
         for (Map.Entry<String, String> entry : objects.entrySet()) {
             cache.put(codeCachePrefix + entry.getKey(), entry.getValue());
@@ -77,7 +77,7 @@ public class ConfigManagerCacheWrapper extends AbstractCacheWrapper implements I
         }
         cache.put(codesCacheName, codes);
         List<String> keysToRelease = oldCodes == null ? null :
-                oldCodes.stream().filter(c -> !codes.contains(c)).collect(Collectors.toList());
+                oldCodes.stream().filter(c -> !objects.containsKey(c)).collect(Collectors.toList());
         this.releaseObjects(cache, keysToRelease, codeCachePrefix);
     }
 

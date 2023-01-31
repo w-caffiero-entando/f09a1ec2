@@ -164,11 +164,10 @@ public class CategoryManagerCacheWrapper extends AbstractCacheWrapper implements
                 this.checkRootModification(parent, cache);
             }
         }
-        List<String> codes = (List<String>) this.get(cache, CATEGORY_CODES_CACHE_NAME, List.class);
+        List<String> codes = this.getCopyFromImmutableCacheList(cache, CATEGORY_CODES_CACHE_NAME);
         if (null != codes) {
-            List<String> newCodes = new ArrayList<>(codes);
-            newCodes.remove(code);
-            cache.put(CATEGORY_CODES_CACHE_NAME, newCodes);
+            codes.remove(code);
+            cache.put(CATEGORY_CODES_CACHE_NAME, codes);
         }
         cache.evict(CATEGORY_CACHE_NAME_PREFIX + code);
     }

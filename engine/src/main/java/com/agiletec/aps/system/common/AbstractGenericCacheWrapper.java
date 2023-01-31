@@ -62,7 +62,7 @@ public abstract class AbstractGenericCacheWrapper<O> extends AbstractCacheWrappe
     }
 
     protected void insertAndCleanCache(Cache cache, Map<String, O> objects, String codesCacheKey, String cacheKeyPrefix) {
-        List<String> oldCodes = (List<String>) this.get(cache, codesCacheKey, List.class);
+        List<String> oldCodes = this.get(cache, codesCacheKey, List.class);
         List<String> codes = new ArrayList<>();
         for (Map.Entry<String, O> entry: objects.entrySet()) {
             cache.put(cacheKeyPrefix + entry.getKey(), entry.getValue());
@@ -70,7 +70,7 @@ public abstract class AbstractGenericCacheWrapper<O> extends AbstractCacheWrappe
         }
         cache.put(codesCacheKey, codes);
         List<String> keysToRelease = oldCodes == null ? null :
-                oldCodes.stream().filter(c -> !codes.contains(c)).collect(Collectors.toList());
+                oldCodes.stream().filter(c -> !objects.containsKey(c)).collect(Collectors.toList());
         this.releaseObjects(cache, keysToRelease, cacheKeyPrefix);
     }
 
@@ -117,7 +117,7 @@ public abstract class AbstractGenericCacheWrapper<O> extends AbstractCacheWrappe
             return;
         }
         Cache cache = this.getCache();
-        List<String> codes = new ArrayList<>(this.get(cache, this.getCodesCacheKey(), List.class));
+        List<String> codes = this.getCopyFromImmutableCacheList(cache, this.getCodesCacheKey());
         if (Action.ADD.equals(operation)) {
             if (!codes.contains(key)) {
                 codes.add(key);
