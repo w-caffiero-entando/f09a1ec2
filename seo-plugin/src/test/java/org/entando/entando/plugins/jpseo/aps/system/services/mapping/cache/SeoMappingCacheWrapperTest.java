@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingDAO;
+import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,9 +61,10 @@ class SeoMappingCacheWrapperTest {
     @Test
     void shouldCreateDraftPagesMappingWithSeoPageMetadataAndValidFriendlyCodes() throws Exception {
         ApsProperties friendlyCodes = new ApsProperties();
-        friendlyCodes.setProperty("en", "code_en");
-        friendlyCodes.setProperty("it", "code_it");
+        friendlyCodes.put("en", new PageMetatag("en", "en", "code_en"));
+        friendlyCodes.put("it", new PageMetatag("it", "it", "code_it"));
         SeoPageMetadata seoPageMetadata = new SeoPageMetadata();
+
         seoPageMetadata.setFriendlyCodes(friendlyCodes);
 
         Map<String, String> mapping = testCreateDraftPagesMapping(seoPageMetadata);
