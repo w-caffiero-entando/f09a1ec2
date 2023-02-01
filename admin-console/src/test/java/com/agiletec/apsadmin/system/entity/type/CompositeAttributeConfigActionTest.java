@@ -99,7 +99,7 @@ class CompositeAttributeConfigActionTest {
 
         CompositeAttribute compositeAttribute = new CompositeAttribute();
         compositeAttribute.setName(COMPOSITE_ATTRIBUTE_NAME);
-        Mockito.when(entity.getAttribute(Mockito.eq(COMPOSITE_ATTRIBUTE_NAME))).thenReturn(compositeAttribute);
+        Mockito.when(entity.getAttribute(COMPOSITE_ATTRIBUTE_NAME)).thenReturn(compositeAttribute);
 
         action.saveCompositeAttribute();
 
@@ -107,7 +107,7 @@ class CompositeAttributeConfigActionTest {
                 .setAttribute(Mockito.eq(ENTITY_TYPE_ON_EDIT_SESSION_PARAM), Mockito.any());
 
         Mockito.verify(session, Mockito.times(1))
-                .removeAttribute(Mockito.eq(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM));
+                .removeAttribute(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM);
     }
 
     @Test
