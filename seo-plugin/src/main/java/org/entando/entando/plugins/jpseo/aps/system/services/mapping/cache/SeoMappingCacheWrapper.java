@@ -107,7 +107,7 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
         ApsProperties friendlyCodes = (metadata instanceof SeoPageMetadata) ?
                 ((SeoPageMetadata) metadata).getFriendlyCodes() : null;
         if (friendlyCodes != null) {
-            mapping.put((String)friendlyCodes.get(0), current.getCode());
+            friendlyCodes.values().forEach(friendlyCode -> mapping.put((String) friendlyCode, current.getCode()));
         }
         String[] children = current.getChildrenCodes();
         if (null != children) {
@@ -173,7 +173,7 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
     @Override
     public void updateDraftPageReferences(List<String> friendlyCodes, String pageCode) {
         Cache cache = this.getCache();
-        Map<String,String> mapping = this.get(cache, DRAFT_PAGES_MAPPING, Map.class);
+        Map<String, String> mapping = this.getCopyFromImmutableCacheMap(cache, DRAFT_PAGES_MAPPING);
         mapping.entrySet().removeIf(e -> e.getValue().equals(pageCode));
         if (!friendlyCodes.isEmpty()) {
             friendlyCodes.forEach( fc-> {
