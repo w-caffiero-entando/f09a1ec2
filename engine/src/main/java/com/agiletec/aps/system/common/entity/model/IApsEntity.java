@@ -78,6 +78,13 @@ public interface IApsEntity extends Serializable {
     public void addAttribute(AttributeInterface attribute);
 
     /**
+     * Add an attribute to the list of the attributes of the entity or replace if it exists one withe same code.
+     *
+     * @param attribute The attribute to add or replace.
+     */
+    public void addOrReplaceAttribute(AttributeInterface attribute);
+
+    /**
      * Return an Entity Attribute identified by the key.
      *
      * @param key The name of the attribute,
