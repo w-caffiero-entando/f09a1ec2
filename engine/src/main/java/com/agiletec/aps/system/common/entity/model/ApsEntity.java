@@ -182,7 +182,7 @@ public class ApsEntity implements IApsEntity {
 
 
     /**
-     * Add an attribute to the list of the attributes of the entity or replace if it exists one withe same code.
+     * Add an attribute to the list of the attributes of the entity or replace if it exists one with the same code.
      *
      * @param attribute The attribute to add or replace.
      */
