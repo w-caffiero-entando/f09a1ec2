@@ -92,7 +92,26 @@ class CompositeAttributeConfigActionTest {
     }
 
     @Test
-    void testSaveCompositeAttribute() {
+    void shouldMethodSaveCompositeAttributeSaveComposite() {
+
+        IApsEntity entity = Mockito.mock(IApsEntity.class);
+        Mockito.when(session.getAttribute(ENTITY_TYPE_ON_EDIT_SESSION_PARAM)).thenReturn(entity);
+
+        CompositeAttribute compositeAttribute = new CompositeAttribute();
+        compositeAttribute.setName(COMPOSITE_ATTRIBUTE_NAME);
+        Mockito.when(entity.getAttribute(COMPOSITE_ATTRIBUTE_NAME)).thenReturn(compositeAttribute);
+
+        action.saveCompositeAttribute();
+
+        Mockito.verify(session, Mockito.times(1))
+                .setAttribute(Mockito.eq(ENTITY_TYPE_ON_EDIT_SESSION_PARAM), Mockito.any());
+
+        Mockito.verify(session, Mockito.times(1))
+                .removeAttribute(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM);
+    }
+
+    @Test
+    void shouldMethodSaveCompositeAttributeSaveMonolist() {
         MonoListAttribute attribute = new MonoListAttribute();
         IApsEntity entity = Mockito.mock(IApsEntity.class);
         Mockito.when(entity.getAttribute(COMPOSITE_ATTRIBUTE_NAME)).thenReturn(attribute);

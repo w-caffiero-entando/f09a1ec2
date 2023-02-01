@@ -126,7 +126,9 @@ public class CompositeAttributeConfigAction extends AbstractBaseEntityAttributeC
 			CompositeAttribute composite = this.getCompositeAttributeOnEdit();
 			IApsEntity entityType = this.getEntityType();
 			AttributeInterface attribute = (AttributeInterface) entityType.getAttribute(composite.getName());
-			if (attribute instanceof MonoListAttribute) {
+			if(attribute instanceof CompositeAttribute) {
+				entityType.addOrReplaceAttribute(composite);
+			} else if (attribute instanceof MonoListAttribute) {
 				((MonoListAttribute) attribute).setNestedAttributeType(composite);
 			} else if (!attribute.getName().equals(composite.getName())) {
 				throw new EntException("Attribute Name '" + attribute.getName() + "' incompatible with composite Attribute name '" + composite.getName() + "'");
