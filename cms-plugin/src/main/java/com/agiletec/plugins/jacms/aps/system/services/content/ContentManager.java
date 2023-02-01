@@ -329,7 +329,7 @@ public class ContentManager extends ApsEntityManager
      */
     @Override
     @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME,
-            key = "T(com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants).CONTENT_CACHE_PREFIX.concat(#content.id)", condition = "#content.id != null")
+            key = "'" + JacmsSystemConstants.CONTENT_CACHE_PREFIX + "'.concat(#content.id)", condition = "#content.id != null")
     public String insertOnLineContent(Content content) throws EntException {
         String id = null;
         try {
@@ -399,7 +399,7 @@ public class ContentManager extends ApsEntityManager
      */
     @Override
     @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME,
-            key = "T(com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants).CONTENT_CACHE_PREFIX.concat(#content.id)", condition = "#content.id != null")
+            key = "'" + JacmsSystemConstants.CONTENT_CACHE_PREFIX + "'.concat(#content.id)", condition = "#content.id != null")
     public String removeOnLineContent(Content content) throws EntException {
         try {
             content.setLastModified(new Date());
@@ -488,14 +488,14 @@ public class ContentManager extends ApsEntityManager
      */
     @Override
     @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME,
-            key = "T(com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants).CONTENT_CACHE_PREFIX.concat(#content.id)", condition = "#content.id != null")
+            key = "'" + JacmsSystemConstants.CONTENT_CACHE_PREFIX + "'.concat(#content.id)", condition = "#content.id != null")
     public String deleteContent(Content content) throws EntException {
         return this.deleteContent(content.getId());
     }
 
     @Override
     @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME,
-            key = "T(com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants).CONTENT_CACHE_PREFIX.concat(#contentId)", condition = "#contentId != null")
+            key = "'" + JacmsSystemConstants.CONTENT_CACHE_PREFIX + "'.concat(#contentId)", condition = "#contentId != null")
     public String deleteContent(String contentId) throws EntException {
         try {
             this.getContentDAO().deleteEntity(contentId);

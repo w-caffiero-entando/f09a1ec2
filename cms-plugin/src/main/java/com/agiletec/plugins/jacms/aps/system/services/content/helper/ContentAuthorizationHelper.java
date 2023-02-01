@@ -111,14 +111,14 @@ public class ContentAuthorizationHelper implements IContentAuthorizationHelper {
 
     @Override
     @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME,
-            key = "T(com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants).CONTENT_AUTH_INFO_CACHE_PREFIX.concat(#contentId)")
+            key = "'" + JacmsSystemConstants.CONTENT_AUTH_INFO_CACHE_PREFIX + "'.concat(#contentId)")
     public PublicContentAuthorizationInfo getAuthorizationInfo(String contentId) {
         return this.getAuthorizationInfo(contentId, true);
     }
     
     @Override
     @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, condition = "#cacheable",
-            key = "T(com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants).CONTENT_AUTH_INFO_CACHE_PREFIX.concat(#contentId)")
+            key = "'" + JacmsSystemConstants.CONTENT_AUTH_INFO_CACHE_PREFIX + "'.concat(#contentId)")
     public PublicContentAuthorizationInfo getAuthorizationInfo(String contentId, boolean cacheable) {
         PublicContentAuthorizationInfo authInfo = null;
         String cacheKey = JacmsSystemConstants.CONTENT_AUTH_INFO_CACHE_PREFIX + contentId;
