@@ -14,7 +14,9 @@
 package com.agiletec.aps.system.common;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -65,6 +67,14 @@ public abstract class AbstractCacheWrapper implements ICacheWrapper {
             return null;
         }
         return new ArrayList<>(value);
+    }
+
+    protected <K, V> Map<K, V> getCopyFromImmutableCacheMap(Cache cache, String name) {
+        Map<K, V> value = this.get(cache, name, Map.class);
+        if (value == null) {
+            return null;
+        }
+        return new HashMap<>(value);
     }
 
     protected Cache getCache() {
