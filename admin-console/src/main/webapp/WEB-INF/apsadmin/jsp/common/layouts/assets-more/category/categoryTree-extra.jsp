@@ -12,8 +12,9 @@
                     .addClass('fa-angle-down');
         });
         $("#collapseAll").click(function () {
-            $('#categoryTree .treeRow:not(:first-child)').addClass('hidden');
-            $(".childrenNodes").addClass("collapsed");
+            $("#categoryTree .treeRow").addClass("childrenNodes");
+            $('#categoryTree .treeRow:first-child').removeClass("childrenNodes");
+            $(".childrenNodes").addClass("hidden collapsed");
             $('#categoryTree .icon.fa-angle-down').removeClass('fa-angle-down').addClass('fa-angle-right');
         });
 
