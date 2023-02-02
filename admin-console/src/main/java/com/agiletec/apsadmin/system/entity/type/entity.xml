@@ -259,6 +259,7 @@
 		</action>
 		
 		<action name="addAttributeElement" class="entityCompositeAttributeConfigAction" method="addAttributeElement">
+			<result name="input" type="tiles">admin.entityManagement.compositeAttribute.entry</result>
 			<result type="tiles">admin.entityManagement.compositeAttribute.entryAttributeElementType</result>
 			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
 		</action>
