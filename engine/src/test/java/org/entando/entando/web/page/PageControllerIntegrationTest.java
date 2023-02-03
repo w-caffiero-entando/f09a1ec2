@@ -54,7 +54,6 @@ import java.util.stream.Stream;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.page.PageServiceUtilizer;
 import org.entando.entando.aps.system.services.page.model.PageDto;
-import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.JsonPatchBuilder;
 import org.entando.entando.web.analysis.AnalysisControllerDiffAnalysisEngineTestsStubs;
@@ -1357,11 +1356,19 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .build();
         String accessToken = mockOAuthInterceptor(user);
 
+        String newPageModelCode = "new_model_code";
         String newPageCode1 = "view_page_1";
         String newPageCode2 = "view_page_2";
 
         try {
-            IPage newPage1 = this.createPage(newPageCode1, null, this.pageManager.getDraftRoot().getCode(), true);
+            
+            PageModel pageModel = this.pageModelManager.getPageModel("home").clone();
+            pageModel.setCode(newPageModelCode);
+            pageModel.setMainFrame(0);
+            this.pageModelManager.addPageModel(pageModel);
+            
+            
+            IPage newPage1 = this.createPage(newPageCode1, pageModel, this.pageManager.getDraftRoot().getCode(), true);
             newPage1.setTitle("it", "Title1 IT");
             newPage1.setTitle("en", "Title1 EN");
             pageManager.addPage(newPage1);
@@ -1383,6 +1390,7 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
         } finally {
             pageManager.deletePage(newPageCode1);
             pageManager.deletePage(newPageCode2);
+            this.pageModelManager.deletePageModel(newPageModelCode);
         }
     }
 
@@ -1826,7 +1834,6 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
         config.put("actionPath", "/mypage.jsp");
         Widget widgetToAdd = PageTestUtil.createWidget("formAction", config);
         if (viewPage) {
-            pageModel.setMainFrame(0);
             widgetToAdd.setConfig(null);
         }
         Widget[] widgets = new Widget[pageModel.getFrames().length];
@@ -1836,11 +1843,6 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
             widgets[0] = widgetToAdd;
         }
         Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), group, pageModel, metadata, widgets);
-        try {
-            this.pageModelManager.updatePageModel(pageModel);
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
         return pageToAdd;
     }
 
