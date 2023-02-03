@@ -71,18 +71,4 @@ public class LettuceCache extends RedisCache {
         return super.get(key, valueLoader);
     }
 
-    /*
-    private Object getImmutable(Object value) {
-        if (value == null) {
-            return null;
-        }
-        if (value instanceof List) {
-            return List.copyOf((List) value);
-        }
-        if (value instanceof Map) {
-            return Map.copyOf((Map) value);
-        }
-        return value;
-    }
-    */
 }
