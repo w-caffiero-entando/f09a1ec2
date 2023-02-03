@@ -1836,6 +1836,11 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
             widgets[0] = widgetToAdd;
         }
         Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), group, pageModel, metadata, widgets);
+        try {
+            this.pageModelManager.updatePageModel(pageModel);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
         return pageToAdd;
     }
 
