@@ -174,7 +174,7 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
     @Override
     public void updateDraftPageReferences(List<String> friendlyCodes, String pageCode) {
         Cache cache = this.getCache();
-        Map<String, String> mapping = this.getCopyFromImmutableCacheMap(cache, DRAFT_PAGES_MAPPING);
+        Map<String, String> mapping = this.getCopyOfMapFromCache(cache, DRAFT_PAGES_MAPPING);
         mapping.entrySet().removeIf(e -> e.getValue().equals(pageCode));
         if (!friendlyCodes.isEmpty()) {
             friendlyCodes.forEach( fc-> {

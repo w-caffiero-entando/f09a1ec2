@@ -80,7 +80,7 @@ public class ApiServiceCacheWrapper extends AbstractGenericCacheWrapper<ApiServi
 
 	@Override
 	public void removeService(String key) {
-		ApiService apiService = this.get(this.getCacheKeyPrefix() + key, ApiService.class);
+		ApiService apiService = this.get(this.getCacheKeyPrefix() + key, ApiService.class).clone();
 		this.manage(key, apiService, Action.DELETE);
 	}
 

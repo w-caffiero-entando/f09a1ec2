@@ -62,7 +62,7 @@ public class LettuceCache extends RedisCache {
 
     private Object getFromLocalCache(Object key) {
         Object value = this.frontendCache.get(super.getName() + "::" + key.toString());
-        return getImmutable(value);
+        return value;
     }
     
     @Override
@@ -71,6 +71,7 @@ public class LettuceCache extends RedisCache {
         return super.get(key, valueLoader);
     }
 
+    /*
     private Object getImmutable(Object value) {
         if (value == null) {
             return null;
@@ -83,4 +84,5 @@ public class LettuceCache extends RedisCache {
         }
         return value;
     }
+    */
 }

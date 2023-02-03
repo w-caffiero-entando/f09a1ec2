@@ -44,7 +44,7 @@ public class PageModelManagerCacheWrapper extends AbstractGenericCacheWrapper<Pa
 
 	@Override
 	public PageModel getPageModel(String name) {
-		return this.get(PAGE_MODEL_CACHE_NAME_PREFIX + name, PageModel.class);
+		return this.get(PAGE_MODEL_CACHE_NAME_PREFIX + name, PageModel.class).clone();
 	}
 
 	@Override

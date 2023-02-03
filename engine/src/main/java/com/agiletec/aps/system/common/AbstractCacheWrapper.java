@@ -61,7 +61,7 @@ public abstract class AbstractCacheWrapper implements ICacheWrapper {
         return (T) value;
     }
 
-    protected <T> List<T> getCopyFromImmutableCacheList(Cache cache, String name) {
+    protected <T> List<T> getCopyOfListFromCache(Cache cache, String name) {
         List<T> value = this.get(cache, name, List.class);
         if (value == null) {
             return null;
@@ -69,12 +69,16 @@ public abstract class AbstractCacheWrapper implements ICacheWrapper {
         return new ArrayList<>(value);
     }
 
-    protected <K, V> Map<K, V> getCopyFromImmutableCacheMap(Cache cache, String name) {
+    protected <K, V> Map<K, V> getCopyOfMapFromCache(Cache cache, String name) {
         Map<K, V> value = this.get(cache, name, Map.class);
         if (value == null) {
             return null;
         }
         return new HashMap<>(value);
+    }
+
+    protected <K, V> Map<K, V> getCopyOfMapFromCache(String name) {
+        return this.getCopyOfMapFromCache(this.getCache(), name);
     }
 
     protected Cache getCache() {

@@ -117,7 +117,7 @@ public abstract class AbstractGenericCacheWrapper<O> extends AbstractCacheWrappe
             return;
         }
         Cache cache = this.getCache();
-        List<String> codes = this.getCopyFromImmutableCacheList(cache, this.getCodesCacheKey());
+        List<String> codes = this.getCopyOfListFromCache(cache, this.getCodesCacheKey());
         if (Action.ADD.equals(operation)) {
             if (!codes.contains(key)) {
                 codes.add(key);

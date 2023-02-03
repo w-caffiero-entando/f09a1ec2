@@ -48,7 +48,7 @@ public class ApiResourceCacheWrapper extends AbstractGenericCacheWrapper<ApiReso
 
 	@Override
 	public ApiResource getMasterResource(String code) {
-		return this.get(this.getCacheKeyPrefix() + code, ApiResource.class);
+		return this.get(this.getCacheKeyPrefix() + code, ApiResource.class).clone();
 	}
 
 	@Override

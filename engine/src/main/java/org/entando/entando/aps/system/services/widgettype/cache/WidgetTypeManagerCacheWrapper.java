@@ -53,7 +53,7 @@ public class WidgetTypeManagerCacheWrapper extends AbstractGenericCacheWrapper<W
 
     @Override
     public WidgetType getWidgetType(String code) {
-        return this.get(WIDGET_TYPE_CACHE_NAME_PREFIX + code, WidgetType.class);
+        return this.get(WIDGET_TYPE_CACHE_NAME_PREFIX + code, WidgetType.class).clone();
     }
 
     @Override

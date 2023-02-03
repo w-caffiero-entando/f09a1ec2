@@ -398,7 +398,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
     }
     
     private void addCodeFromCachedList(Cache cache, String listKey, String codeToAdd) {
-        List<String> codes = this.getCopyFromImmutableCacheList(cache, listKey);
+        List<String> codes = this.getCopyOfListFromCache(cache, listKey);
         if (null != codes && !codes.contains(codeToAdd)) {
             codes.add(codeToAdd);
             cache.put(listKey, codes);
@@ -406,7 +406,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
     }
     
     private void removeCodeFromCachedList(Cache cache, String listKey, String codeToRemove) {
-        List<String> codes = this.getCopyFromImmutableCacheList(cache, listKey);
+        List<String> codes = this.getCopyOfListFromCache(cache, listKey);
         if (null != codes) {
             codes.remove(codeToRemove);
             cache.put(listKey, codes);
@@ -473,6 +473,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
     
     @Override
     public PagesStatus getPagesStatus() {
+        // FIXME must clone ...
         return this.get(PAGE_STATUS_CACHE_NAME, PagesStatus.class);
     }
     

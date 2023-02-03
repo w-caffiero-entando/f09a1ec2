@@ -52,7 +52,7 @@ public class I18nManagerCacheWrapper extends AbstractGenericCacheWrapper<ApsProp
 
     @Override
     public ApsProperties getLabelGroup(String key) {
-        return super.get(this.getCacheKeyPrefix() + key, ApsProperties.class);
+        return super.get(this.getCacheKeyPrefix() + key, ApsProperties.class).clone();
     }
     
     @Override
