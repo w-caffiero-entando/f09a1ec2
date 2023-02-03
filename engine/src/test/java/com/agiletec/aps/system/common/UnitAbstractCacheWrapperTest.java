@@ -33,13 +33,13 @@ class UnitAbstractCacheWrapperTest {
 
     @Test
     void getCopyFromImmutableCacheMapShouldHandleNullValue() {
-        Assertions.assertNull(cacheWrapper.getCopyFromImmutableCacheMap(cache, "not_set"));
+        Assertions.assertNull(cacheWrapper.getCopyOfMapFromCache(cache, "not_set"));
     }
 
     @Test
     void getCopyFromImmutableCacheMapShouldCreateAMutableCopy() {
         Mockito.when(cache.get("key")).thenReturn(new SimpleValueWrapper(Map.of("k1", "v1")));
-        Map<String, String> copy = cacheWrapper.getCopyFromImmutableCacheMap(cache, "key");
+        Map<String, String> copy = cacheWrapper.getCopyOfMapFromCache(cache, "key");
         copy.put("k2", "v2");
         Assertions.assertEquals(2, copy.size());
     }

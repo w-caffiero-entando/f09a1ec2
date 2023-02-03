@@ -164,7 +164,7 @@ public class CategoryManagerCacheWrapper extends AbstractCacheWrapper implements
                 this.checkRootModification(parent, cache);
             }
         }
-        List<String> codes = this.getCopyFromImmutableCacheList(cache, CATEGORY_CODES_CACHE_NAME);
+        List<String> codes = this.getCopyOfListFromCache(cache, CATEGORY_CODES_CACHE_NAME);
         if (null != codes) {
             codes.remove(code);
             cache.put(CATEGORY_CODES_CACHE_NAME, codes);
@@ -215,7 +215,8 @@ public class CategoryManagerCacheWrapper extends AbstractCacheWrapper implements
 
     @Override
     public Map<String, Integer> getMoveNodeStatus() {
-        return (Map<String, Integer>) this.get(CATEGORY_STATUS_CACHE_NAME, Map.class);
+        Map<String, Integer>value = (Map<String, Integer>) this.get(CATEGORY_STATUS_CACHE_NAME, Map.class);
+         return new HashMap<>(value);
     }
 
     @Override

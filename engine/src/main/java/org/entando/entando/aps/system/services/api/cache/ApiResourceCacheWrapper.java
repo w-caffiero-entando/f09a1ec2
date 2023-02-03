@@ -15,6 +15,7 @@ package org.entando.entando.aps.system.services.api.cache;
 
 import java.util.Map;
 
+import java.util.Optional;
 import org.entando.entando.aps.system.services.api.IApiCatalogDAO;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -48,7 +49,9 @@ public class ApiResourceCacheWrapper extends AbstractGenericCacheWrapper<ApiReso
 
 	@Override
 	public ApiResource getMasterResource(String code) {
-		return this.get(this.getCacheKeyPrefix() + code, ApiResource.class);
+		return Optional.ofNullable(this.get(this.getCacheKeyPrefix() + code, ApiResource.class))
+				.map(ApiResource::clone)
+				.orElse(null);
 	}
 
 	@Override

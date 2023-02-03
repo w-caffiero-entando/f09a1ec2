@@ -53,7 +53,7 @@ public class ResourceManagerCacheWrapper extends AbstractCacheWrapper implements
 
     @Override
     public Map<String, List<String>> getMetadataMapping() {
-        return this.get(CACHE_NAME_METADATA_MAPPING, Map.class);
+        return this.getCopyOfMapFromCache(CACHE_NAME_METADATA_MAPPING);
     }
 
     @Override
