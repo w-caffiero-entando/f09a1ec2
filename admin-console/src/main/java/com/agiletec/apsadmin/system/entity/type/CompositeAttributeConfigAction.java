@@ -54,6 +54,17 @@ public class CompositeAttributeConfigAction extends AbstractBaseEntityAttributeC
 	@Override
 	public String addAttributeElement() {
 		this.setStrutsAction(ApsAdminSystemConstants.ADD);
+		try {
+			AttributeInterface attribute = super.getAttributePrototype(this.getAttributeTypeCode());
+			if (attribute == null) {
+				String[] args = {this.getAttributeTypeCode()};
+				this.addFieldError("attributeTypeCode", this.getText("error.attribute.not.exists",args));
+				return INPUT;
+			}
+		} catch (Exception ex) {
+			_logger.error("error in addAttributeElement", ex);
+			return FAILURE;
+		}
 		return SUCCESS;
 	}
 	
