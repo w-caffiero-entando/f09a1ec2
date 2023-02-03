@@ -473,8 +473,11 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
     
     @Override
     public PagesStatus getPagesStatus() {
-        // FIXME must clone ...
-        return this.get(PAGE_STATUS_CACHE_NAME, PagesStatus.class);
+        PagesStatus status = this.get(PAGE_STATUS_CACHE_NAME, PagesStatus.class);
+        if (null != status) {
+            return status.clone();
+        }
+        return null;
     }
     
     @Override
