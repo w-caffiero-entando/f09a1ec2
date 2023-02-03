@@ -1,4 +1,5 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="wp" uri="/aps-core" %>
 <%@ taglib prefix="wpsa" uri="/apsadmin-core" %>
 
 <h1 class="panel panel-default title-page">
@@ -65,7 +66,7 @@
                                            class="btn btn-default">
                                             <span class="icon fa fa-info"></span>
                                         </a>
-                                        <wpsa:ifauthorized permission="superuser">
+                                        <wp:ifauthorized permission="superuser">
                                             <s:if test="!#showletType.isLogic() && null != #showletType.typeParameters && #showletType.typeParameters.size() > 0">
                                                 <a href="<s:url namespace="/do/Portal/WidgetType" action="copy">
                                                        <s:param name="pageCode" value="currentPage.code" />
@@ -76,9 +77,9 @@
                                                     <span class="icon fa fa-puzzle-piece"></span>
                                                 </a>
                                             </s:if>
-                                        </wpsa:ifauthorized>
+                                        </wp:ifauthorized>
                                         <s:if test="null != #showletType.code">
-                                            <wpsa:ifauthorized permission="superuser">
+                                            <wp:ifauthorized permission="superuser">
                                                 <s:if test="!#showletType.isLogic()">
                                                     <s:set var="relatedApiMethodVar" value="#showletTypeApiMappingsVar[#showletType.code]" />
                                                 </s:if>
@@ -98,7 +99,7 @@
                                                     </a>
                                                 </s:if>
                                                 <s:set var="relatedApiMethodVar" />
-                                            </wpsa:ifauthorized>
+                                            </wp:ifauthorized>
                                         </s:if>
                                     </div>
                                     <s:if test="null != #showletType.code">
