@@ -12,6 +12,7 @@ import com.agiletec.aps.system.common.entity.model.attribute.CompositeAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoListAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.TextAttribute;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
+import com.agiletec.apsadmin.system.BaseAction;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.TextProvider;
 import java.util.HashMap;
@@ -118,6 +119,23 @@ class CompositeAttributeConfigActionTest {
 
         Assertions.assertEquals(Action.INPUT, result);
         Assertions.assertEquals(1, action.getFieldErrors().size());
+    }
+
+    @Test
+    void shouldMethodAddAttributeElementRaiseFailure() {
+
+        String entityManagerName = "EntityManagerName";
+        Mockito.when(session.getAttribute(IEntityTypeConfigAction.ENTITY_TYPE_MANAGER_SESSION_PARAM))
+                .thenReturn(entityManagerName);
+
+        IEntityManager entityManager = Mockito.mock(IEntityManager.class);
+        Mockito.when(entityManager.getEntityAttributePrototypes()).thenThrow(new RuntimeException());
+        Mockito.when(beanFactory.getBean(entityManagerName)).thenReturn(entityManager);
+        action.setAttributeTypeCode("");
+
+        String result = action.addAttributeElement();
+
+        Assertions.assertEquals(BaseAction.FAILURE, result);
     }
 
     @Test
