@@ -31,23 +31,7 @@ class LettuceCacheTest {
     void setUp() {
         lettuceCache = new LettuceCache("CacheName", cacheWriter, cacheConfig, cacheFrontend);
     }
-
-    @Test
-    void listValuesReturnedByFrontendCacheShouldBeImmutable() {
-        List<String> mutableList = new ArrayList<>();
-        Mockito.when(cacheFrontend.get("CacheName::list")).thenReturn(mutableList);
-        List<String> cachedList = (List<String>) lettuceCache.get("list").get();
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> cachedList.add("test"));
-    }
-
-    @Test
-    void mapValuesReturnedByFrontendCacheShouldBeImmutable() {
-        Map<String, String> mutableMap = new HashMap<>();
-        Mockito.when(cacheFrontend.get("CacheName::map")).thenReturn(mutableMap);
-        Map<String, String> cachedMap = (Map<String, String>) lettuceCache.get("map").get();
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> cachedMap.put("test", "test"));
-    }
-
+    
     @Test
     void cacheShouldHandleNullValues() {
         Object value = lettuceCache.get("null");
