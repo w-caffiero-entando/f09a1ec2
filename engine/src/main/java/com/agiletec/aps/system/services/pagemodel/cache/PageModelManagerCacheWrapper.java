@@ -14,6 +14,7 @@
 package com.agiletec.aps.system.services.pagemodel.cache;
 
 import com.agiletec.aps.system.common.AbstractGenericCacheWrapper;
+import java.util.Optional;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.pagemodel.IPageModelDAO;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
@@ -44,7 +45,8 @@ public class PageModelManagerCacheWrapper extends AbstractGenericCacheWrapper<Pa
 
 	@Override
 	public PageModel getPageModel(String name) {
-		return this.get(PAGE_MODEL_CACHE_NAME_PREFIX + name, PageModel.class).clone();
+		return Optional.ofNullable(this.get(PAGE_MODEL_CACHE_NAME_PREFIX + name, PageModel.class))
+				.map(PageModel::clone).orElse(null);
 	}
 
 	@Override

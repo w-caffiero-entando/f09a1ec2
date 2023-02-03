@@ -14,6 +14,7 @@
 package org.entando.entando.aps.system.services.widgettype.cache;
 
 import com.agiletec.aps.system.common.AbstractGenericCacheWrapper;
+import java.util.Optional;
 import org.entando.entando.ent.exception.EntException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -53,7 +54,9 @@ public class WidgetTypeManagerCacheWrapper extends AbstractGenericCacheWrapper<W
 
     @Override
     public WidgetType getWidgetType(String code) {
-        return this.get(WIDGET_TYPE_CACHE_NAME_PREFIX + code, WidgetType.class).clone();
+        return Optional.ofNullable(this.get(WIDGET_TYPE_CACHE_NAME_PREFIX + code, WidgetType.class))
+                .map(WidgetType::clone)
+                .orElse(null);
     }
 
     @Override

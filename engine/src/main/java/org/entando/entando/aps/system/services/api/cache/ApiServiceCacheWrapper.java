@@ -16,6 +16,7 @@ package org.entando.entando.aps.system.services.api.cache;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Optional;
 import org.entando.entando.aps.system.services.api.IApiCatalogDAO;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
@@ -80,7 +81,8 @@ public class ApiServiceCacheWrapper extends AbstractGenericCacheWrapper<ApiServi
 
 	@Override
 	public void removeService(String key) {
-		ApiService apiService = this.get(this.getCacheKeyPrefix() + key, ApiService.class).clone();
+		ApiService apiService = Optional.ofNullable(this.get(this.getCacheKeyPrefix() + key, ApiService.class))
+				.map(ApiService::clone).orElse(null);
 		this.manage(key, apiService, Action.DELETE);
 	}
 

@@ -352,8 +352,8 @@ class TestWidgetTypeManager extends BaseTestCase {
             assertNotNull(updated);
             assertNotNull(updated.getConfig());
             assertTrue(updated.isReadonlyPageWidgetConfig());
-            assertEquals(widgetType.getWidgetCategory(),updated.getWidgetCategory());
-            assertEquals(widgetType.getIcon(),updated.getIcon());
+            assertEquals("test",updated.getWidgetCategory());
+            assertEquals("test",updated.getIcon());
         } catch (Throwable t) {
             throw t;
         }
