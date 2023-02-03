@@ -2,6 +2,8 @@ package com.agiletec.apsadmin.system.entity.type;
 
 import static com.agiletec.apsadmin.system.entity.type.ICompositeAttributeConfigAction.COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM;
 import static com.agiletec.apsadmin.system.entity.type.IEntityTypeConfigAction.ENTITY_TYPE_ON_EDIT_SESSION_PARAM;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
@@ -10,10 +12,13 @@ import com.agiletec.aps.system.common.entity.model.attribute.CompositeAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoListAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.TextAttribute;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.TextProvider;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +39,8 @@ class CompositeAttributeConfigActionTest {
     private HttpSession session;
     @Mock
     private BeanFactory beanFactory;
-
+    @Mock
+    private TextProvider textProvider;
     @InjectMocks
     private CompositeAttributeConfigAction action;
 
@@ -46,7 +52,7 @@ class CompositeAttributeConfigActionTest {
         compositeAttribute.setName(COMPOSITE_ATTRIBUTE_NAME);
         addTextAttribute(compositeAttribute, "attribute1");
         addTextAttribute(compositeAttribute, "attribute2");
-        Mockito.when(session.getAttribute(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM)).thenReturn(compositeAttribute);
+        Mockito.lenient().when(session.getAttribute(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM)).thenReturn(compositeAttribute);
     }
 
     private void addTextAttribute(CompositeAttribute compositeAttribute, String attributeName) {
@@ -62,7 +68,7 @@ class CompositeAttributeConfigActionTest {
         action.setAttributeIndex(1);
         action.moveAttributeElement();
         Mockito.verify(session, Mockito.times(1))
-                .setAttribute(Mockito.eq(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM), Mockito.any());
+                .setAttribute(Mockito.eq(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM), any());
     }
 
     @Test
@@ -70,7 +76,7 @@ class CompositeAttributeConfigActionTest {
         action.setAttributeIndex(0);
         action.removeAttributeElement();
         Mockito.verify(session, Mockito.times(1))
-                .setAttribute(Mockito.eq(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM), Mockito.any());
+                .setAttribute(Mockito.eq(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM), any());
     }
 
 
@@ -88,8 +94,53 @@ class CompositeAttributeConfigActionTest {
         action.setAttributeTypeCode(attributeTypeCode);
         action.saveAttributeElement();
         Mockito.verify(session, Mockito.times(1))
-                .setAttribute(Mockito.eq(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM), Mockito.any());
+                .setAttribute(Mockito.eq(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM), any());
     }
+
+    @Test
+    void shouldMethodNotAddAttributeElement() {
+
+        String entityManagerName = "EntityManagerName";
+        Mockito.when(session.getAttribute(IEntityTypeConfigAction.ENTITY_TYPE_MANAGER_SESSION_PARAM))
+                .thenReturn(entityManagerName);
+
+        String attributeTypeCode = "typeCode";
+        Map<String, AttributeInterface> attributeTypes = new HashMap<>();
+        attributeTypes.put(attributeTypeCode, new TextAttribute());
+        IEntityManager entityManager = Mockito.mock(IEntityManager.class);
+        Mockito.when(entityManager.getEntityAttributePrototypes()).thenReturn(attributeTypes);
+        Mockito.when(beanFactory.getBean(entityManagerName)).thenReturn(entityManager);
+        action.setAttributeTypeCode("attributeTypeCodeNotExistent");
+
+        Mockito.when(textProvider.getText(any(), (String[]) any())).thenReturn("label");
+
+        String result = action.addAttributeElement();
+
+        Assertions.assertEquals(Action.INPUT, result);
+        Assertions.assertEquals(1, action.getFieldErrors().size());
+    }
+
+    @Test
+    void shouldMethodAddAttributeElement() {
+
+        String entityManagerName = "EntityManagerName";
+        Mockito.when(session.getAttribute(IEntityTypeConfigAction.ENTITY_TYPE_MANAGER_SESSION_PARAM))
+                .thenReturn(entityManagerName);
+
+        String attributeTypeCode = "typeCode";
+        Map<String, AttributeInterface> attributeTypes = new HashMap<>();
+        attributeTypes.put(attributeTypeCode, new TextAttribute());
+        IEntityManager entityManager = Mockito.mock(IEntityManager.class);
+        Mockito.when(entityManager.getEntityAttributePrototypes()).thenReturn(attributeTypes);
+        Mockito.when(beanFactory.getBean(entityManagerName)).thenReturn(entityManager);
+        action.setAttributeTypeCode(attributeTypeCode);
+
+        String result = action.addAttributeElement();
+
+        Assertions.assertEquals(Action.SUCCESS, result);
+        Assertions.assertEquals(0, action.getFieldErrors().size());
+    }
+
 
     @Test
     void shouldMethodSaveCompositeAttributeSaveComposite() {
@@ -104,7 +155,7 @@ class CompositeAttributeConfigActionTest {
         action.saveCompositeAttribute();
 
         Mockito.verify(session, Mockito.times(1))
-                .setAttribute(Mockito.eq(ENTITY_TYPE_ON_EDIT_SESSION_PARAM), Mockito.any());
+                .setAttribute(Mockito.eq(ENTITY_TYPE_ON_EDIT_SESSION_PARAM), any());
 
         Mockito.verify(session, Mockito.times(1))
                 .removeAttribute(COMPOSITE_ATTRIBUTE_ON_EDIT_SESSION_PARAM);
@@ -118,6 +169,7 @@ class CompositeAttributeConfigActionTest {
         Mockito.when(session.getAttribute(ENTITY_TYPE_ON_EDIT_SESSION_PARAM)).thenReturn(entity);
         action.saveCompositeAttribute();
         Mockito.verify(session, Mockito.times(1))
-                .setAttribute(Mockito.eq(ENTITY_TYPE_ON_EDIT_SESSION_PARAM), Mockito.any());
+                .setAttribute(Mockito.eq(ENTITY_TYPE_ON_EDIT_SESSION_PARAM), any());
     }
+
 }
