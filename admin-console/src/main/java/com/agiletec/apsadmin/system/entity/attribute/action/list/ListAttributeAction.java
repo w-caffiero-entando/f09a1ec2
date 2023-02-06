@@ -24,6 +24,7 @@ import com.agiletec.aps.system.common.entity.model.attribute.ListAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.ListAttributeInterface;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoListAttribute;
 import com.agiletec.apsadmin.system.BaseAction;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * This action class implements all the methods needed to handle the attributes of the list
@@ -37,6 +38,16 @@ public abstract class ListAttributeAction extends BaseAction implements IListAtt
 	public String addListElement() {
 		IApsEntity entity = this.getCurrentApsEntity();
 		try {
+			this.executeAddListElement(entity);
+		} catch (EntException t) {
+			_logger.error("error in addListElement", t);
+			return FAILURE;
+		}
+		return SUCCESS;
+	}
+
+	protected void executeAddListElement(IApsEntity entity) throws EntException {
+		try {
 			ListAttributeInterface currentAttribute = (ListAttributeInterface) entity.getAttribute(this.getAttributeName());
 			if (currentAttribute instanceof MonoListAttribute) {
 				((MonoListAttribute) currentAttribute).addAttribute();
@@ -44,17 +55,25 @@ public abstract class ListAttributeAction extends BaseAction implements IListAtt
 				((ListAttribute) currentAttribute).addAttribute(this.getListLangCode());
 			}
 			_logger.debug("Added element of type {} to the list {}", currentAttribute.getNestedAttributeTypeCode(), currentAttribute.getName());
-		} catch (Throwable t) {
-			_logger.error("error in addListElement", t);
-			//ApsSystemUtils.logThrowable(t, this, "addListElement");
-			return FAILURE;
+		} catch (Exception e) {
+			_logger.error("error in executeAddListElement", e);
+			throw new EntException("error in executeAddListElement", e);
 		}
-		return SUCCESS;
 	}
 	
 	@Override
 	public String moveListElement() {
 		IApsEntity entity = this.getCurrentApsEntity();
+		try {
+			this.executeMoveListElement(entity);
+		} catch (EntException t) {
+			_logger.error("error in moveListElement", t);
+			return FAILURE;
+		}
+		return SUCCESS;
+	}
+
+	protected void executeMoveListElement(IApsEntity entity) throws EntException {
 		try {
 			int elementIndex = this.getElementIndex();
 			ListAttributeInterface currentAttribute = (ListAttributeInterface) entity.getAttribute(this.getAttributeName());
@@ -66,12 +85,10 @@ public abstract class ListAttributeAction extends BaseAction implements IListAtt
 				this.moveListElement(list, elementIndex, this.getMovement());
 			}
 			_logger.debug("Moved element of type {} of the list {} in the position {} with a '{}' movement ", currentAttribute.getNestedAttributeTypeCode(), currentAttribute.getName(), elementIndex, this.getMovement());
-		} catch (Throwable t) {
-			_logger.error("error in moveListElement", t);
-			//ApsSystemUtils.logThrowable(t, this, "moveListElement");
-			return FAILURE;
+		} catch (Exception e) {
+			_logger.error("error in executeMoveListElement", e);
+			throw new EntException("error in executeMoveListElement", e);
 		}
-		return SUCCESS;
 	}
 	
 	/**
@@ -100,6 +117,16 @@ public abstract class ListAttributeAction extends BaseAction implements IListAtt
 	public String removeListElement() {
 		IApsEntity entity = this.getCurrentApsEntity();
 		try {
+			this.executeRemoveListElement(entity);
+		} catch (EntException t) {
+			_logger.error("error in removeListElement", t);
+			return FAILURE;
+		}
+		return SUCCESS;
+	}
+
+	protected void executeRemoveListElement(IApsEntity entity) throws EntException {
+		try {
 			int elementIndex = this.getElementIndex();
 			ListAttributeInterface currentAttribute = (ListAttributeInterface) entity.getAttribute(this.getAttributeName());
 			if (currentAttribute instanceof MonoListAttribute) {
@@ -108,12 +135,10 @@ public abstract class ListAttributeAction extends BaseAction implements IListAtt
 				((ListAttribute) currentAttribute).removeAttribute(this.getListLangCode(), elementIndex);
 			}
 			_logger.debug("Element oy type {} removed fomr the list {}", currentAttribute.getNestedAttributeTypeCode(), currentAttribute.getName());
-		} catch (Throwable t) {
-			_logger.error("error in removeListElement", t);
-			//ApsSystemUtils.logThrowable(t, this, "removeListElement");
-			return FAILURE;
+		} catch (Exception e) {
+			_logger.error("error in executeRemoveListElement", e);
+			throw new EntException("error in executeRemoveListElement", e);
 		}
-		return SUCCESS;
 	}
 	
 	protected abstract IApsEntity getCurrentApsEntity();

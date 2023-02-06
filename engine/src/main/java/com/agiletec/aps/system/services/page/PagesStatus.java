@@ -21,7 +21,17 @@ public class PagesStatus implements Serializable {
     public int getTotal() {
         return this.getOnline() + this.getOnlineWithChanges() + this.getUnpublished();
     }
-
+    
+    @Override
+    public PagesStatus clone() {
+        PagesStatus clone = new PagesStatus();
+        clone.setLastUpdate(this.getLastUpdate());
+        clone.setOnline(this.getOnline());
+        clone.setOnlineWithChanges(this.getOnlineWithChanges());
+        clone.setUnpublished(this.getUnpublished());
+        return clone;
+    }
+    
     @Override
     public String toString() {
         return "PagesStatus [online=" + online + ", onlineWithChanges=" + onlineWithChanges + ", unpublished=" + unpublished + "]";

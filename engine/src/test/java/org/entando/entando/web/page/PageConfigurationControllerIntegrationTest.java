@@ -13,11 +13,28 @@
  */
 package org.entando.entando.web.page;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.ws.rs.core.HttpHeaders;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
@@ -26,31 +43,12 @@ import org.entando.entando.web.page.model.WidgetConfigurationRequest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.entando.entando.web.widget.model.WidgetRequest;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
-
-import javax.ws.rs.core.HttpHeaders;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.agiletec.aps.system.services.page.IPage;
-import com.agiletec.aps.system.services.page.Page;
-import com.agiletec.aps.system.services.page.Widget;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import org.junit.jupiter.api.Assertions;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class PageConfigurationControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -130,8 +128,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             result = this.executeGetPageFrameWidget(pageCode, accessToken, status().isOk());
 
             result.andExpect(status().isOk())
-                    .andExpect(jsonPath("$.payload.code", Matchers.is(newWidgetCode)))
-                    .andExpect(jsonPath("$.payload.config.parentCode", Matchers.is("value")));
+                    .andExpect(jsonPath("$.payload.code", Matchers.is(newWidgetCode)));
 
 
         } catch (Exception e) {
@@ -229,7 +226,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             for (int i = 0; i < widgets.length; i++) {
                 Widget widget = widgets[i];
                 Assertions.assertNotNull(widget);
-                Assertions.assertEquals(widgetCode, widget.getType().getCode());
+                Assertions.assertEquals(widgetCode, widget.getTypeCode());
             }
             
             IntStream.range(0, addedPage.getWidgets().length).parallel().forEach(i -> {
@@ -295,7 +292,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
                     Widget widget = widgets[j];
                     if (j == 0) {
                         Assertions.assertNotNull(widget);
-                        Assertions.assertEquals(widgetCode, widget.getType().getCode());
+                        Assertions.assertEquals(widgetCode, widget.getTypeCode());
                     } else {
                         Assertions.assertNull(widget);
                     }

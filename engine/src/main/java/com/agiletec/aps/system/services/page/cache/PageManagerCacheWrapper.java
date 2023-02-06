@@ -372,7 +372,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
                         widgetEquals = false;
                         break;
                     }
-                    if (!widgetOnline.getType().getCode().equals(widgetDraft.getType().getCode())) {
+                    if (!widgetOnline.getTypeCode().equals(widgetDraft.getTypeCode())) {
                         widgetEquals = false;
                     }
                     if (null == widgetOnline.getConfig() && null == widgetDraft.getConfig()) {
@@ -398,7 +398,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
     }
     
     private void addCodeFromCachedList(Cache cache, String listKey, String codeToAdd) {
-        List<String> codes = (List<String>) this.get(cache, listKey, List.class);
+        List<String> codes = this.getCopyOfListFromCache(cache, listKey);
         if (null != codes && !codes.contains(codeToAdd)) {
             codes.add(codeToAdd);
             cache.put(listKey, codes);
@@ -406,7 +406,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
     }
     
     private void removeCodeFromCachedList(Cache cache, String listKey, String codeToRemove) {
-        List<String> codes = (List<String>) this.get(cache, listKey, List.class);
+        List<String> codes = this.getCopyOfListFromCache(cache, listKey);
         if (null != codes) {
             codes.remove(codeToRemove);
             cache.put(listKey, codes);
@@ -473,7 +473,11 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
     
     @Override
     public PagesStatus getPagesStatus() {
-        return this.get(PAGE_STATUS_CACHE_NAME, PagesStatus.class);
+        PagesStatus status = this.get(PAGE_STATUS_CACHE_NAME, PagesStatus.class);
+        if (null != status) {
+            return status.clone();
+        }
+        return null;
     }
     
     @Override
@@ -585,8 +589,8 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
         Widget[] widgets = page.getWidgets();
         if (widgets != null) {
             for (Widget widget : widgets) {
-                if (null != widget && null != widget.getType()) {
-                    String cacheCode = this.getWidgetUtilizerCacheName(widget.getType().getCode(), draft);
+                if (null != widget && null != widget.getTypeCode()) {
+                    String cacheCode = this.getWidgetUtilizerCacheName(widget.getTypeCode(), draft);
                     List<String> widgetUtilizers = utilizersMap.get(cacheCode);
                     if (null == widgetUtilizers) {
                         widgetUtilizers = new ArrayList<>();

@@ -17,15 +17,6 @@
 <script>
     jQuery(function () {
         $('#activity-stream [data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-
-        // trigger updateLocale if language is changed
-        $('#languageDropdownComponent a').click(function(e) {
-            e.preventDefault();
-            if (updateLocalStorageWithLocale) {
-                updateLocalStorageWithLocale($(this).data('locale'));
-            }
-            window.location.href = $(this).attr('href');
-        });
     })
 </script>
 
@@ -110,9 +101,10 @@
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu" aria-labelledby="userDropdownMenu">
-                <c:if test="${sessionScope.currentUser.japsUser}">
+                <c:if test="${sessionScope.currentUser.entandoUser}">
                     <li>
-                        <a href='<c:out value="${appBuilderBaseURL}"/>myProfile'>
+                        <a href='<s:if test="#appBuilderIntegrationEnabled == 'true'"><c:out value="${appBuilderBaseURL}"/>myProfile</s:if>
+                           <s:else><s:url namespace="/do/CurrentUser" action="editProfile"/></s:else>'>
                             <i class="fa fa-user" aria-hidden="true"></i>
                             <s:text name="note.changeYourPassword" />
                         </a>

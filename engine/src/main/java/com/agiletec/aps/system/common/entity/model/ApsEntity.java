@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jdom.Element;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -175,6 +176,19 @@ public class ApsEntity implements IApsEntity {
      */
     @Override
     public void addAttribute(AttributeInterface attribute) {
+        this._attributeList.add(attribute);
+        this._attributeMap.put(attribute.getName(), attribute);
+    }
+
+
+    /**
+     * Add an attribute to the list of the attributes of the entity or replace if it exists one with the same code.
+     *
+     * @param attribute The attribute to add or replace.
+     */
+    @Override
+    public void addOrReplaceAttribute(AttributeInterface attribute) {
+        this._attributeList.removeIf(c -> StringUtils.equals(c.getName(),attribute.getName()));
         this._attributeList.add(attribute);
         this._attributeMap.put(attribute.getName(), attribute);
     }

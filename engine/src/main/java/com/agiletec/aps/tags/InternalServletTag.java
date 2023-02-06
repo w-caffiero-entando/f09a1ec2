@@ -35,6 +35,9 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.util.ApsProperties;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
+import org.entando.entando.aps.system.services.widgettype.WidgetType;
 
 /**
  * Tag for widget "InternalServlet". Publish a function erogated throw a
@@ -120,9 +123,8 @@ public class InternalServletTag extends TagSupport {
         ServletRequest req = this.pageContext.getRequest();
         RequestContext reqCtx = (RequestContext) req.getAttribute(RequestContext.REQCTX);
         try {
-            IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
             ResponseWrapper responseWrapper = new ResponseWrapper((HttpServletResponse) this.pageContext.getResponse());
-            String output = this.buildWidgetOutput(page, responseWrapper);
+            String output = this.buildWidgetOutput(responseWrapper);
             if (responseWrapper.isRedirected()) {
                 String redirect = responseWrapper.getRedirectPath();
                 reqCtx.addExtraParam(SystemConstants.EXTRAPAR_EXTERNAL_REDIRECT, redirect);
@@ -138,7 +140,7 @@ public class InternalServletTag extends TagSupport {
         return result;
     }
 
-    protected String buildWidgetOutput(IPage page, ResponseWrapper responseWrapper) throws JspException {
+    protected String buildWidgetOutput(ResponseWrapper responseWrapper) throws JspException {
         String output = null;
         ServletRequest req = this.pageContext.getRequest();
         RequestContext reqCtx = (RequestContext) req.getAttribute(RequestContext.REQCTX);
@@ -224,8 +226,10 @@ public class InternalServletTag extends TagSupport {
         String actionPath = this.getActionPath();
         if (null == this.getActionPath()) {
             ApsProperties config = widget.getConfig();
-            if (widget.getType().isLogic()) {
-                config = widget.getType().getConfig();
+            IWidgetTypeManager widgetTypeManager = (IWidgetTypeManager) ApsWebApplicationUtils.getBean(SystemConstants.WIDGET_TYPE_MANAGER, this.pageContext);
+            WidgetType type = widgetTypeManager.getWidgetType(widget.getTypeCode());
+            if (type.isLogic()) {
+                config = type.getConfig();
             }
             if (null != config) {
                 actionPath = config.getProperty(CONFIG_PARAM_ACTIONPATH);

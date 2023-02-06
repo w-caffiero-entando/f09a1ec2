@@ -17,8 +17,6 @@ import static org.mockito.Mockito.when;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.StatefulRedisConnectionImpl;
-import io.lettuce.core.api.sync.RedisCommands;
-import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.sentinel.api.StatefulRedisSentinelConnection;
 import io.lettuce.core.sentinel.api.sync.RedisSentinelCommands;
 import java.util.ArrayList;
@@ -34,26 +32,28 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
-import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * @author E.Santoboni
  */
 @ExtendWith(MockitoExtension.class)
 class SentinelSchedulerTest {
-    
+
     @Mock
     private Map<String, String> master;
-    
+
     @Mock
     private RedisSentinelCommands commands;
-    
+
     @Mock
     private RedisClient lettuceClient;
-    
-	@Mock
-    private CacheConfig cacheConfig;
-    
+
+    @Mock
+    private CacheManager cacheManager;
+
+    @Mock
+    private CacheFrontendManager cacheFrontendManager;
+
     @BeforeEach
     void setUp() throws Exception {
         StatefulRedisSentinelConnection connection = Mockito.mock(StatefulRedisSentinelConnection.class);
@@ -63,73 +63,62 @@ class SentinelSchedulerTest {
         when(commands.masters()).thenReturn(masters);
         Mockito.lenient().when(master.get("ip")).thenReturn("myMaster").thenReturn("mySecondMaster");
     }
-    
+
     @Test
     void getInitScheduler() throws Exception {
-        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, 1, cacheConfig);
+        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, cacheManager, cacheFrontendManager);
         Mockito.verify(master, Mockito.times(1)).get("ip");
     }
-    
+
     @Test
     void runScheduler_1() throws Exception {
-         when(master.get("ip")).thenReturn("myMaster");
-        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, 1, cacheConfig);
+        when(master.get("ip")).thenReturn("myMaster");
+        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, cacheManager, cacheFrontendManager);
         scheduler.run();
         Mockito.verify(master, Mockito.times(2)).get("ip");
-        Mockito.verify(cacheConfig, Mockito.times(0)).rebuildCacheFrontend(this.lettuceClient);
-    }
-    
-    @Test
-    void runScheduler_2() throws Exception {
-        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, 1, cacheConfig);
-        scheduler.run();
-        Mockito.verify(master, Mockito.times(2)).get("ip");
-        Mockito.verify(cacheConfig, Mockito.times(1)).rebuildCacheFrontend(this.lettuceClient);
+        Mockito.verify(cacheFrontendManager, Mockito.times(0)).rebuildCacheFrontend();
         scheduler.cancel();
     }
-    
+
+    @Test
+    void runScheduler_2() throws Exception {
+        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, cacheManager, cacheFrontendManager);
+        scheduler.run();
+        Mockito.verify(master, Mockito.times(2)).get("ip");
+        Mockito.verify(cacheFrontendManager, Mockito.times(1)).rebuildCacheFrontend();
+        scheduler.cancel();
+    }
+
     @Test
     void runScheduler_3() throws Exception {
-        when(commands.masters()).thenReturn(new ArrayList());
-        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, 1, cacheConfig);
+        when(commands.masters()).thenReturn(new ArrayList<>());
+        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, cacheManager, cacheFrontendManager);
         scheduler.run();
         Mockito.verify(master, Mockito.times(0)).get("ip");
-        Mockito.verify(cacheConfig, Mockito.times(0)).rebuildCacheFrontend(this.lettuceClient);
+        Mockito.verify(cacheFrontendManager, Mockito.times(0)).rebuildCacheFrontend();
+        scheduler.cancel();
     }
-    
+
     @Test
     void runScheduler_4() throws Exception {
-        CacheConfig config = new CacheConfig();
-        CacheManager mockCacheManager = Mockito.mock(CacheManager.class);
-        ReflectionTestUtils.setField(config, "cacheManagerBean", mockCacheManager);
-        when(mockCacheManager.getCacheNames()).thenReturn(Arrays.asList("cache1", "cache2"));
+        when(cacheManager.getCacheNames()).thenReturn(Arrays.asList("cache1", "cache2"));
         LettuceCache cache = Mockito.mock(LettuceCache.class);
-        when(mockCacheManager.getCache(Mockito.anyString())).thenReturn(cache);
+        when(cacheManager.getCache(Mockito.anyString())).thenReturn(cache);
         StatefulRedisConnectionImpl connection = Mockito.mock(StatefulRedisConnectionImpl.class);
-        when(lettuceClient.connect(Mockito.any(RedisCodec.class))).thenReturn(connection);
-        RedisCommands mockCommands = Mockito.mock(RedisCommands.class);
-        when(connection.sync()).thenReturn(mockCommands);
-        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, 1, config);
-        ReflectionTestUtils.setField(config, "scheduler", scheduler);
+        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, cacheManager, cacheFrontendManager);
         scheduler.run();
         Mockito.verify(master, Mockito.times(2)).get("ip");
         Mockito.verify(cache, Mockito.times(2)).setFrontendCache(Mockito.any());
         scheduler.cancel();
     }
-    
+
     @Test
     void failRunScheduler() throws Exception {
-        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, 1, cacheConfig);
-        Assertions.assertThrows(EntRuntimeException.class, () -> {
-            Mockito.doThrow(RuntimeException.class).when(this.cacheConfig).rebuildCacheFrontend(this.lettuceClient);
-            try {
-                scheduler.run();
-            } catch (RuntimeException e) {
-                throw e;
-            } finally {
-                Mockito.verify(master, Mockito.times(2)).get("ip");
-            }
-        });
+        SentinelScheduler scheduler = new SentinelScheduler(lettuceClient, cacheManager, cacheFrontendManager);
+        Mockito.doThrow(RuntimeException.class).when(this.cacheFrontendManager).rebuildCacheFrontend();
+        Assertions.assertThrows(EntRuntimeException.class, () -> scheduler.run());
+        Mockito.verify(master, Mockito.times(2)).get("ip");
+        scheduler.cancel();
     }
-    
+
 }

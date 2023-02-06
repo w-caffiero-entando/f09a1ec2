@@ -1,5 +1,6 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="wp" uri="/aps-core" %>
+<%@ taglib prefix="wpsa" uri="/apsadmin-core" %>
 
 <h1 class="panel panel-default title-page">
     <span class="panel-body display-block">
@@ -28,7 +29,7 @@
 
             <s:set var="showletTypeApiMappingsVar" value="showletTypeApiMappings" />
             <s:iterator var="showlet" value="currentPage.draftWidgets" status="rowstatus">
-                <s:set var="showletType" value="#showlet.getType()" ></s:set>
+                <s:set var="showletType" value="%{getWidgetType(#showlet.getTypeCode())}" ></s:set>
                 <s:set var="metadata" value="currentPage.metadata" ></s:set>
 
                     <li class="list-group-item padding-base-top padding-base-bottom" id="widget<s:property value="#rowstatus.count" />">

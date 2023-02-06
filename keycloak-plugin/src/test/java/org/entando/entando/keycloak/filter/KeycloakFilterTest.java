@@ -469,6 +469,30 @@ class KeycloakFilterTest {
         verify(response).sendRedirect("https://dev.entando.org/entando-app/do/login?redirectTo=" + returnUrlParam);
     }
 
+    @Test
+    void testRedirectParameterNotStartingWithDoPrefix() throws Exception {
+
+        String path = "/resources";
+
+        when(configuration.isEnabled()).thenReturn(true);
+        when(request.getServletPath()).thenReturn(path);
+        keycloakFilter.doFilter(request, response, filterChain);
+
+        verify(session, never()).setAttribute(eq(KeycloakFilter.SESSION_PARAM_REDIRECT), any());
+    }
+
+    @Test
+    void testRedirectParameterRoot() throws Exception {
+
+        String path = "/";
+
+        when(configuration.isEnabled()).thenReturn(true);
+        when(request.getServletPath()).thenReturn(path);
+        keycloakFilter.doFilter(request, response, filterChain);
+
+        verify(session).setAttribute(KeycloakFilter.SESSION_PARAM_REDIRECT, "/");
+    }
+
     static class ServletOutputStreamWrapper extends ServletOutputStream {
         private final StringWriter writer;
         private ServletOutputStreamWrapper(final StringWriter aWriter) {

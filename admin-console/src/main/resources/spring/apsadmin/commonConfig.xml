@@ -57,16 +57,7 @@
 		<property name="entityActionHelper" ref="entityActionHelper"/>
 	</bean>
 	
-	<!-- *************************** -->
-	
-	<bean id="myShortcutConfigAction" scope="prototype" 
-			class="org.entando.entando.apsadmin.common.MyShortcutConfigAction" parent="abstractBaseAction">
-		<property name="shortcutManager" ref="ShortcutAdminAreaManager"/>
-	</bean>
-	
-	<!-- *************************** -->
-	
-	<bean id="activityStreamAction" scope="prototype" 
+	<bean id="activityStreamAction" scope="prototype"
 			class="org.entando.entando.apsadmin.common.ActivityStreamAction" parent="abstractBaseAction">
 		<property name="actionLogManager" ref="ActionLogManager"/>
 	</bean>

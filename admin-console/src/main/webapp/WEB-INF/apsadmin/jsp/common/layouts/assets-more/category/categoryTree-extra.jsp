@@ -13,7 +13,7 @@
         });
         $("#collapseAll").click(function () {
             $("#categoryTree .treeRow").addClass("childrenNodes");
-            $("#home").removeClass("childrenNodes");
+            $('#categoryTree .treeRow:first-child').removeClass("childrenNodes");
             $(".childrenNodes").addClass("hidden collapsed");
             $('#categoryTree .icon.fa-angle-down').removeClass('fa-angle-down').addClass('fa-angle-right');
         });

@@ -153,6 +153,7 @@ public class ApiCatalogManager extends AbstractService implements IApiCatalogMan
 			}
 			String resourceCode = ApiResource.getCode(masterMethod.getNamespace(), masterMethod.getResourceName());
 			ApiResource resource = this.getResourceCacheWrapper().getMasterResource(resourceCode);
+			resource.setMethod(apiMethod);
 			this.getResourceCacheWrapper().updateResource(resource);
 		} catch (Throwable t) {
 			logger.error("Error error updating api status : resource '{}' method '{}'", apiMethod.getResourceName(), apiMethod.getHttpMethod(), t);

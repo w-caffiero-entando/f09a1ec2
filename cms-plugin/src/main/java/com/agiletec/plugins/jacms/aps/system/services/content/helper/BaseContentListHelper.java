@@ -13,6 +13,15 @@
  */
 package com.agiletec.plugins.jacms.aps.system.services.content.helper;
 
+import com.agiletec.aps.system.common.entity.helper.BaseFilterUtils;
+import com.agiletec.aps.system.common.entity.helper.IEntityFilterBean;
+import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
+import com.agiletec.aps.system.services.authorization.Authorization;
+import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
+import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
+import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,22 +30,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import org.entando.entando.aps.system.services.cache.CacheableInfo;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
-import com.agiletec.aps.system.common.entity.helper.BaseFilterUtils;
-import com.agiletec.aps.system.common.entity.helper.IEntityFilterBean;
-import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import org.entando.entando.ent.exception.EntException;
-import com.agiletec.aps.system.services.authorization.Authorization;
-import com.agiletec.aps.system.services.group.Group;
-import com.agiletec.aps.system.services.user.UserDetails;
-import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
-import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
-import org.springframework.cache.annotation.Cacheable;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 /**
  * @author E.Santoboni
@@ -75,10 +72,15 @@ public class BaseContentListHelper implements IContentListHelper {
     }
 
     @Override
-    @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME,
-            key = "T(com.agiletec.plugins.jacms.aps.system.services.content.helper.BaseContentListHelper).buildCacheKey(#bean, #user)", condition = "#bean.cacheable")
-    @CacheableInfo(groups = "T(com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants).CONTENTS_ID_CACHE_GROUP_PREFIX.concat(#bean.contentType)", expiresInMinute = 30)
     public List<String> getContentsId(IContentListBean bean, UserDetails user) throws Throwable {
+        String cacheKey = buildCacheKey(bean, user);
+        if (bean.isCacheable()) {
+            List<String> values = (List<String>) this.getCacheInfoManager().getFromCache(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey);
+            if (values != null) {
+                return values;
+            }
+        }
+        String key = BaseContentListHelper.buildCacheKey(bean, user);
         this.releaseCache(bean, user);
         List<String> contentsId = null;
         try {
@@ -87,6 +89,10 @@ public class BaseContentListHelper implements IContentListHelper {
             }
             Collection<String> userGroupCodes = getAllowedGroupCodes(user);
             contentsId = this.getContentManager().loadPublicContentsId(bean.getContentType(), bean.getCategories(), bean.isOrClauseCategoryFilter(), bean.getFilters(), userGroupCodes);
+            this.getCacheInfoManager().putInGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, key, new String[]{JacmsSystemConstants.CONTENTS_ID_CACHE_GROUP_PREFIX + bean.getContentType()});
+            if (bean.isCacheable()) {
+                this.getCacheInfoManager().putInCache(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey, contentsId);
+            }
         } catch (Throwable t) {
             logger.error("Error extracting contents id", t);
             throw new EntException("Error extracting contents id", t);

@@ -14,9 +14,10 @@
 <script src="<wp:resourceURL />administration/js/jquery-confirm.min.js"></script>
 
 <script>
+    
     var PROPERTY = {};
     PROPERTY.code = '<s:property value="pageCode"/>' || '<s:property value="selectedNode"/>';
-    PROPERTY.pagemodel = '<s:property value="%{getCurrentPage().getMetadata().getModel().getCode()}"/>';
+    PROPERTY.pagemodel = '<s:property value="%{getCurrentPage().getMetadata().getModelCode()}"/>';
     PROPERTY.baseUrl = '<wp:info key="systemParam" paramName="applicationBaseURL" />';
     PROPERTY.currentLang = '<s:property value="%{currentLang.code}"/>';
     PROPERTY.defaultLang = '<wp:info key="defaultLang" />';

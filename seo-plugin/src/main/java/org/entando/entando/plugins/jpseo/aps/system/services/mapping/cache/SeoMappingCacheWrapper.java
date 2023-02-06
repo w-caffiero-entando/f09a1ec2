@@ -38,6 +38,7 @@ import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCod
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingDAO;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.springframework.cache.Cache;
 
@@ -107,7 +108,7 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
         ApsProperties friendlyCodes = (metadata instanceof SeoPageMetadata) ?
                 ((SeoPageMetadata) metadata).getFriendlyCodes() : null;
         if (friendlyCodes != null) {
-            mapping.put((String)friendlyCodes.get(0), current.getCode());
+            friendlyCodes.values().forEach(tag -> mapping.put(((PageMetatag) tag).getValue(), current.getCode()));
         }
         String[] children = current.getChildrenCodes();
         if (null != children) {
@@ -173,7 +174,7 @@ public class SeoMappingCacheWrapper extends AbstractCacheWrapper implements ISeo
     @Override
     public void updateDraftPageReferences(List<String> friendlyCodes, String pageCode) {
         Cache cache = this.getCache();
-        Map<String,String> mapping = this.get(cache, DRAFT_PAGES_MAPPING, Map.class);
+        Map<String, String> mapping = this.getCopyOfMapFromCache(cache, DRAFT_PAGES_MAPPING);
         mapping.entrySet().removeIf(e -> e.getValue().equals(pageCode));
         if (!friendlyCodes.isEmpty()) {
             friendlyCodes.forEach( fc-> {

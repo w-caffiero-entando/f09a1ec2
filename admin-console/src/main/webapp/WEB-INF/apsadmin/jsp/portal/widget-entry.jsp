@@ -1,6 +1,6 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<%@ taglib prefix="wpsa" uri="/apsadmin-core" %>
 <%@ taglib prefix="wp" uri="/aps-core" %>
+<%@ taglib prefix="wpsa" uri="/apsadmin-core" %>
 <%@ taglib prefix="wpsf" uri="/apsadmin-form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -48,17 +48,17 @@
 
 <div class="mb-20">
     <p>
-        <s:elseif test="strutsAction != 2">
+        <s:if test="strutsAction != 2">
             <s:text name="title.newWidgetType.from" />:&#32;
             <s:if test="strutsAction == 5">
                 <wpsa:widgetType var="parentWidgetTypeVar" key="%{parentWidgetTypeCode}" />
                 <em><s:property value="%{getTitle(#parentWidgetTypeVar.code, #parentWidgetTypeVar.titles)}" /></em>
             </s:if>
             <s:elseif test="strutsAction == 3">
-                <s:property value="%{getTitle(showletToCopy.type.code, showletToCopy.type.titles)}" />	<wpsa:page var="pageVar" key="%{pageCode}" />
+                <s:property value="%{getWidgetTypeTitle(showletToCopy.typeCode)}" />	<wpsa:page var="pageVar" key="%{pageCode}" />
                 <s:text name="note.widgetType.page"/>:&#32;<em class="important"><s:property value="%{getTitle(#pageVar.code, #pageVar.titles)}" /></em>,&#32;<s:text name="note.widgetType.position" />:&#32;<em class="important"><s:property value="framePos" /></em>
             </s:elseif>
-        </s:elseif>
+        </s:if>
     </p>
     <s:form action="save" namespace="/do/Portal/WidgetType" cssClass="form-horizontal">
 
@@ -181,7 +181,7 @@
                     </div>
                 </div>
             </s:if>
-
+                
             <div class="form-group<s:property value="controlGroupErrorClassVar" />">
                 <s:set var="pageCodeFieldErrorsVar" value="%{fieldErrors['configUi']}" />
                 <s:set var="pageCodeHasFieldErrorVar" value="#pageCodeFieldErrorsVar != null && !#pageCodeFieldErrorsVar.isEmpty()" />
@@ -210,7 +210,7 @@
             <fieldset class="col-xs-12 col-md-12 no-padding">
                 <legend><s:text name="title.widgetType.settings" /></legend>
                 <s:if test="strutsAction == 5">
-                    <s:set var="parentWidgetTypeVar" value="%{getWidgetType(parentShowletTypeCode)}" />
+                    <s:set var="parentWidgetTypeVar" value="%{getWidgetType(widgetToCopy.getTypeCode)}" />
                     <s:iterator value="#parentWidgetTypeVar.typeParameters" var="widgetParamVar" >
                         <div class="form-group">
                             <label for="<s:property value="#widgetParamVar.name" />" class="col-sm-2 control-label"><s:property value="#widgetParamVar.name" />
@@ -246,7 +246,8 @@
                     <s:set var="isSuperuserVar" value="%{false}" />
                 </s:elseif>
                 <s:elseif test="strutsAction == 3">
-                    <s:iterator value="showletToCopy.type.typeParameters" var="widgetParamVar" >
+                    <s:set var="widgetTypeToCopyVar" value="%{getWidgetType(widgetToCopy.typeCode)}" />
+                    <s:iterator value="#widgetTypeToCopyVar.typeParameters" var="widgetParamVar" >
                         <div class="form-group">
                             <s:if test="#widgetParamVar.descr != ''">
                                 <label class="col-sm-2 control-label"><s:property value="#widgetParamVar.descr" /></label>

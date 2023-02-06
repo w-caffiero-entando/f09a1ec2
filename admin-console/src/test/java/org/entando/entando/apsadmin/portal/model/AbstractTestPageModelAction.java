@@ -41,7 +41,7 @@ public abstract class AbstractTestPageModelAction extends ApsAdminBaseTestCase {
         frame1.setPos(1);
         frame1.setDescription("Frame 1");
         Widget defWidg1 = new Widget();
-        defWidg1.setType(this._widgetTypeManager.getWidgetType("formAction"));
+        defWidg1.setTypeCode("formAction");
         ApsProperties props1 = new ApsProperties();
         props1.setProperty("actionPath", "/do/login");
         defWidg1.setConfig(props1);
@@ -50,7 +50,7 @@ public abstract class AbstractTestPageModelAction extends ApsAdminBaseTestCase {
         frame2.setPos(1);
         frame2.setDescription("Frame 2");
         Widget defWidg2 = new Widget();
-        defWidg2.setType(this._widgetTypeManager.getWidgetType("login_form"));
+        defWidg2.setTypeCode("login_form");
         frame2.setDefaultWidget(defWidg2);
         Frame[] configuration = {frame0, frame1, frame2};
         model.setConfiguration(configuration);

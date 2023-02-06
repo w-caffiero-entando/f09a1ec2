@@ -18,12 +18,12 @@ import com.agiletec.aps.system.services.page.Page;
 import com.agiletec.aps.system.services.page.PageMetadata;
 import com.agiletec.aps.system.services.page.PageTestUtil;
 import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.ApsProperties;
 import org.entando.entando.aps.system.services.page.IPageService;
-import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.jupiter.api.Test;
@@ -36,9 +36,8 @@ class PageConfigurationControllerWidgetsIntegrationTest extends AbstractControll
 
     @Autowired
     private IPageManager pageManager;
-
     @Autowired
-    private IWidgetTypeManager widgetTypeManager;
+    private IPageModelManager pageModelManager;
 
     @Test
     void testConfigureListViewer() throws Exception {
@@ -337,13 +336,15 @@ class PageConfigurationControllerWidgetsIntegrationTest extends AbstractControll
 
     protected Page createPage(String pageCode) {
         IPage parentPage = pageManager.getDraftPage("service");
-        PageModel pageModel = parentPage.getMetadata().getModel();
+        PageModel pageModel = this.pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
         PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel, true, pageCode + "_title", null, null, false, null, null);
-        ApsProperties config = PageTestUtil.createProperties("temp", "tempValue", "contentId", "ART11");
-        Widget widgetToAdd = PageTestUtil.createWidget("content_viewer", config, this.widgetTypeManager);
+        ApsProperties config = new ApsProperties();
+        config.put("contentId", "ART11");
+        config.put("temp", "tempValue");
+        Widget widgetToAdd = PageTestUtil.createWidget("content_viewer", config);
         Widget[] widgets = new Widget[pageModel.getFrames().length];
         widgets[0] = widgetToAdd;
-        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), "free", metadata, widgets);
+        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), "free", pageModel, metadata, widgets);
         return pageToAdd;
     }
 

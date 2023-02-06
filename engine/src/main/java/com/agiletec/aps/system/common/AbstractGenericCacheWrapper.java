@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.CacheItemNotFoundException;
 import org.springframework.cache.Cache;
 
@@ -61,19 +62,16 @@ public abstract class AbstractGenericCacheWrapper<O> extends AbstractCacheWrappe
     }
 
     protected void insertAndCleanCache(Cache cache, Map<String, O> objects, String codesCacheKey, String cacheKeyPrefix) {
-        List<String> oldCodes = (List<String>) this.get(cache, codesCacheKey, List.class);
+        List<String> oldCodes = this.get(cache, codesCacheKey, List.class);
         List<String> codes = new ArrayList<>();
-        Iterator<String> iter = objects.keySet().iterator();
-        while (iter.hasNext()) {
-            String key = iter.next();
-            cache.put(cacheKeyPrefix + key, objects.get(key));
-            if (null != oldCodes) {
-                oldCodes.remove(key);
-            }
-            codes.add(key);
+        for (Map.Entry<String, O> entry: objects.entrySet()) {
+            cache.put(cacheKeyPrefix + entry.getKey(), entry.getValue());
+            codes.add(entry.getKey());
         }
         cache.put(codesCacheKey, codes);
-        this.releaseObjects(cache, oldCodes, cacheKeyPrefix);
+        List<String> keysToRelease = oldCodes == null ? null :
+                oldCodes.stream().filter(c -> !objects.containsKey(c)).collect(Collectors.toList());
+        this.releaseObjects(cache, keysToRelease, cacheKeyPrefix);
     }
 
     private void releaseObjects(Cache cache, List<String> keysToRelease, String cacheKeyPrefix) {
@@ -119,7 +117,7 @@ public abstract class AbstractGenericCacheWrapper<O> extends AbstractCacheWrappe
             return;
         }
         Cache cache = this.getCache();
-        List<String> codes = (List<String>) this.get(cache, this.getCodesCacheKey(), List.class);
+        List<String> codes = this.getCopyOfListFromCache(cache, this.getCodesCacheKey());
         if (Action.ADD.equals(operation)) {
             if (!codes.contains(key)) {
                 codes.add(key);

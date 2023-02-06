@@ -37,6 +37,7 @@ import com.agiletec.aps.system.services.page.Page;
 import com.agiletec.aps.system.services.page.PageMetadata;
 import com.agiletec.aps.system.services.page.PageTestUtil;
 import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
@@ -115,7 +116,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
         assertEquals(page.getCode(), action.getPageCode());
         assertEquals(page.getParentCode(), action.getParentPageCode());
-        assertEquals(page.getModel().getCode(), action.getModel());
+        assertEquals(page.getModelCode(), action.getModel());
         assertEquals(page.getGroup(), action.getGroup());
         assertEquals(page.isShowable(), action.isShowable());
         assertEquals("Pagina 1", action.getTitles().getProperty("it"));
@@ -175,12 +176,13 @@ class TestPageAction extends ApsAdminBaseTestCase {
         PageAction action = (PageAction) this.getAction();
         assertEquals(ApsAdminSystemConstants.EDIT, action.getStrutsAction());
         assertEquals(customers_page.getCode(), action.getPageCode());
-        assertEquals(customers_page.getModel().getCode(), action.getModel());
+        assertEquals(customers_page.getModelCode(), action.getModel());
         assertTrue(action.isShowable());
         assertTrue(action.isGroupSelectLock());
-        Widget widget = customers_page.getWidgets()[customers_page.getModel().getMainFrame()];
+        PageModel pageModel = this._pageModelManager.getPageModel(customers_page.getMetadata().getModelCode());
+        Widget widget = customers_page.getWidgets()[pageModel.getMainFrame()];
         if (null != widget) {
-            assertEquals("content_viewer", widget.getType().getCode());
+            assertEquals("content_viewer", widget.getTypeCode());
             assertTrue(null != widget.getConfig() && !widget.getConfig().isEmpty());
         }
     }
@@ -240,14 +242,15 @@ class TestPageAction extends ApsAdminBaseTestCase {
 
         assertEquals(page.getCode(), pageToShow.getCode());
         assertEquals(page.getParentCode(), pageToShow.getParentCode());
-        assertEquals(page.getModel().getCode(), pageToShow.getModel().getCode());
+        assertEquals(page.getModelCode(), pageToShow.getModelCode());
         assertEquals(page.getGroup(), pageToShow.getGroup());
         assertEquals(page.isShowable(), pageToShow.isShowable());
         assertEquals("Publicazione Contenuto", pageToShow.getTitles().getProperty("it"));
         assertEquals("Content Publishing", pageToShow.getTitles().getProperty("en"));
-        Widget widget = page.getWidgets()[page.getModel().getMainFrame()];
+        PageModel pageModel = this._pageModelManager.getPageModel(page.getMetadata().getModelCode());
+        Widget widget = page.getWidgets()[pageModel.getMainFrame()];
         if (null != widget) {
-            assertEquals("formAction", widget.getType().getCode());
+            assertEquals("formAction", widget.getTypeCode());
             assertTrue(null != widget.getConfig() && !widget.getConfig().isEmpty());
         }
     }
@@ -265,7 +268,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         PageAction action = (PageAction) this.getAction();
         IPage pageToShow = action.getPageToShow();
         assertEquals(customers_page.getCode(), pageToShow.getCode());
-        assertEquals(customers_page.getModel().getCode(), pageToShow.getModel().getCode());
+        assertEquals(customers_page.getModelCode(), pageToShow.getModelCode());
     }
 
     private String executeActionOnPage(String selectedPageCode, String username, String actionName) throws Throwable {
@@ -366,7 +369,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals(action.getStrutsAction(), ApsAdminSystemConstants.PASTE);
         assertEquals(copied.getCode(), action.getCopyPageCode());
         assertEquals(copied.getCode(), action.getParentPageCode());
-        assertEquals(copied.getModel().getCode(), action.getModel());
+        assertEquals(copied.getModelCode(), action.getModel());
         assertEquals(copied.getGroup(), action.getGroup());
         assertEquals(copied.isShowable(), action.isShowable());
         assertNull(action.getTitles().getProperty("it"));
@@ -384,7 +387,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
         assertEquals(copied.getCode(), action.getCopyPageCode());
 
         assertEquals(copied.getCode(), action.getParentPageCode());
-        assertEquals(copied.getModel().getCode(), action.getModel());
+        assertEquals(copied.getModelCode(), action.getModel());
         assertEquals(copied.getGroup(), action.getGroup());
         assertEquals(copied.isShowable(), action.isShowable());
         assertNull(action.getTitles().getProperty("it"));
@@ -522,12 +525,13 @@ class TestPageAction extends ApsAdminBaseTestCase {
             assertNotNull(addedPage);
             assertEquals("Pagina Test 2", addedPage.getMetadata().getTitles().getProperty("it"));
             Widget[] showlets = addedPage.getWidgets();
-            assertEquals(addedPage.getMetadata().getModel().getFrames().length, showlets.length);
+            PageModel pageModel = this._pageModelManager.getPageModel(addedPage.getMetadata().getModelCode());
+            assertEquals(pageModel.getFrames().length, showlets.length);
             for (int i = 0; i < showlets.length; i++) {
                 Widget widget = showlets[i];
                 if (i == 3) {
                     assertNotNull(widget);
-                    WidgetType type = widget.getType();
+                    WidgetType type = this._widgetTypeManager.getWidgetType(widget.getTypeCode());
                     assertEquals("leftmenu", type.getCode());
                     assertEquals(1, type.getTypeParameters().size());
                     assertNull(type.getConfig());
@@ -823,13 +827,13 @@ class TestPageAction extends ApsAdminBaseTestCase {
     
     private void addPage(String pageCode) throws EntException {
         IPage parentPage = _pageManager.getOnlinePage("service");
-        PageModel pageModel = parentPage.getMetadata().getModel();
-        PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel, true, "pagina temporanea", null, null, false, null,
-                null);
-        ApsProperties config = PageTestUtil.createProperties("tempKey", "tempValue", "contentId", "ART1");
-        Widget widgetToAdd = PageTestUtil.createWidget("content_viewer", config, this._widgetTypeManager);
+        PageModel pageModel = this._pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
+        PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel, true, "pagina temporanea", null, null, false, null, null);
+        ApsProperties properties = new ApsProperties();
+		properties.setProperty("actionPath", "/path");
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", properties);
         Widget[] widgets = {widgetToAdd};
-        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), "free", metadata, widgets);
+        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), "free", pageModel, metadata, widgets);
         this._pageManager.addPage(pageToAdd);
     }
 
@@ -883,6 +887,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
     private void init() throws Exception {
         try {
             this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
+            this._pageModelManager = (IPageModelManager) this.getService(SystemConstants.PAGE_MODEL_MANAGER);
             this._widgetTypeManager = (IWidgetTypeManager) this.getService(SystemConstants.WIDGET_TYPE_MANAGER);
         } catch (Throwable t) {
             throw new Exception(t);
@@ -890,6 +895,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
     }
 
     private IPageManager _pageManager = null;
+    private IPageModelManager _pageModelManager = null;
     private IWidgetTypeManager _widgetTypeManager;
 
 }
