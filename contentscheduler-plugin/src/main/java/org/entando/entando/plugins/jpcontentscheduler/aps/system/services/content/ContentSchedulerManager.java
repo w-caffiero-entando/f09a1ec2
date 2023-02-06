@@ -21,7 +21,25 @@
  */
 package org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content;
 
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.common.AbstractService;
+import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
+import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
 import com.agiletec.aps.system.exception.ApsSystemException;
+import com.agiletec.aps.system.services.authorization.IApsAuthority;
+import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
+import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
+import com.agiletec.aps.system.services.keygenerator.IKeyGeneratorManager;
+import com.agiletec.aps.system.services.user.IUserManager;
+import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
+import com.agiletec.plugins.jacms.aps.system.services.cache.CmsCacheWrapperManager;
+import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
+import com.agiletec.plugins.jacms.aps.system.services.content.IContentSearcherDAO;
+import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
+import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,8 +47,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.entando.entando.aps.system.services.cache.CacheInfoEvict;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
 import org.entando.entando.ent.exception.EntException;
@@ -43,24 +59,8 @@ import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.conten
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.content.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.common.AbstractService;
-import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
-import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
-import com.agiletec.aps.system.services.authorization.IApsAuthority;
-import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
-import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
-import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
-import com.agiletec.aps.system.services.keygenerator.IKeyGeneratorManager;
-import com.agiletec.aps.system.services.user.IUserManager;
-import com.agiletec.aps.system.services.user.UserDetails;
-import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
-import com.agiletec.plugins.jacms.aps.system.services.content.IContentSearcherDAO;
-import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
-import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 
 /**
  * Classe che implementa i servizi da necessari al thread di
@@ -80,6 +80,8 @@ public class ContentSchedulerManager extends AbstractService implements IContent
     private IContentSchedulerDAO _contentSchedulerDAO;
 
     private IMailManager _mailManager;
+    
+    private transient ICacheInfoManager cacheInfoManager;
 
     @Override
     public void init() throws Exception {
@@ -453,8 +455,7 @@ public class ContentSchedulerManager extends AbstractService implements IContent
      * @throws EntException in case of error
      */
     @Override
-    @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "T(com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants).CONTENT_CACHE_PREFIX.concat(#content.id)", condition = "#content.id != null")
-    @CacheInfoEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, groups = "T(com.agiletec.plugins.jacms.aps.system.services.cache.CmsCacheWrapperManager).getContentCacheGroupsToEvictCsv(#content.id, #content.typeCode)")
+    @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'" + JacmsSystemConstants.CONTENT_CACHE_PREFIX + "'.concat(#content.id)", condition = "#content.id != null")
     public void removeOnLineContent(Content content, boolean updateLastModified) throws EntException {
         try {
             if (updateLastModified) {
@@ -467,10 +468,27 @@ public class ContentSchedulerManager extends AbstractService implements IContent
             this.getContentSchedulerDAO().unpublishOnLineContent(content);
             // this.notifyPublicContentChanging(content,
             // PublicContentChangedEvent.REMOVE_OPERATION_CODE);
+            this.flushGroups(content.getId(), content.getTypeCode());
         } catch (Throwable t) {
             ApsSystemUtils.logThrowable(t, this, "removeOnLineContent");
             throw new EntException("Error while removing onLine content", t);
         }
+    }
+
+    private void flushGroups(String contentId, String typeCode) {
+        String[] groups = (null != typeCode) ? CmsCacheWrapperManager.getContentCacheGroupsToEvict(contentId, typeCode) : CmsCacheWrapperManager.getContentCacheGroupsToEvict(contentId);
+        for (int i = 0; i < groups.length; i++) {
+            String groupCode = groups[i];
+            this.getCacheInfoManager().flushGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, groupCode);
+        }
+    }
+
+    protected ICacheInfoManager getCacheInfoManager() {
+        return this.cacheInfoManager;
+    }
+    @Autowired
+    public void setCacheInfoManager(ICacheInfoManager cacheInfoManager) {
+        this.cacheInfoManager = cacheInfoManager;
     }
 
 }

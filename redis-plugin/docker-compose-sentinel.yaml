@@ -35,6 +35,6 @@ services:
       - redis
       - redis-slave
     ports:
-      - '26379-26381:26379'
+      - '26379'
     networks:
       - app-tier

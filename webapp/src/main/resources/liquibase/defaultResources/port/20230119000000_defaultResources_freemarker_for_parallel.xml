@@ -1,0 +1,64 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+           http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="20230119000000_defaultResources_freemarker_for_paralell" author="entando" context="production">
+
+        <update tableName="guifragment">
+            <column name="gui" valueClobFile="clob/production/guifragment_4_1.ftl" />
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_5_1.ftl" />
+            <where>code='language'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="gui" valueClobFile="clob/production/guifragment_6_1.ftl" />
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_7_1.ftl" />
+            <where>code='keycloak-login'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="gui" valueClobFile="clob/production/guifragment_8_1.ftl" />
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_9_1.ftl" />
+            <where>code='navigation-menu'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_10_1.ftl" />
+            <where>code='sitemap'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_15_1.ftl" />
+            <where>code='legacy-navigation-menu'</where>
+        </update>
+
+        <update tableName="pagemodels">
+            <column name="templategui" valueClobFile="clob/production/pagemodels_2_1.ftl" />
+            <where>code='1-column'</where>
+        </update>
+
+        <update tableName="pagemodels">
+            <column name="templategui" valueClobFile="clob/production/pagemodels_4_1.ftl" />
+            <where>code='1-2x4-1-column'</where>
+        </update>
+
+        <update tableName="pagemodels">
+            <column name="templategui" valueClobFile="clob/production/pagemodels_6_1.ftl" />
+            <where>code='1-2-column'</where>
+        </update>
+
+        <update tableName="pagemodels">
+            <column name="templategui" valueClobFile="clob/production/pagemodels_8_1.ftl" />
+            <where>code='1-2x2-1-column'</where>
+        </update>
+
+        <update tableName="pagemodels">
+            <column name="templategui" valueClobFile="clob/production/pagemodels_10_1.ftl" />
+            <where>code='content-page'</where>
+        </update>
+
+    </changeSet>
+</databaseChangeLog>

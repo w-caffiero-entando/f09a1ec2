@@ -202,7 +202,11 @@ public class AbstractBaseEntityAttributeConfigAction extends BaseAction implemen
 	public IApsEntity getEntityType() {
 		return (IApsEntity) this.getRequest().getSession().getAttribute(IEntityTypeConfigAction.ENTITY_TYPE_ON_EDIT_SESSION_PARAM);
 	}
-	
+
+	public void updateEntityType(IApsEntity entity) {
+		this.getRequest().getSession().setAttribute(IEntityTypeConfigAction.ENTITY_TYPE_ON_EDIT_SESSION_PARAM, entity);
+	}
+
 	/**
 	 * Return the entity manager name that manages the current entity on edit.
 	 * @return The entity manager name.

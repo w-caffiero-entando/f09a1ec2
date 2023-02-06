@@ -14,6 +14,7 @@
 package com.agiletec.plugins.jacms.aps.system.services.searchengine;
 
 import com.agiletec.aps.system.common.entity.model.*;
+import com.agiletec.aps.system.common.entity.model.attribute.AbstractComplexAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
 import com.agiletec.aps.system.common.entity.model.attribute.DateAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.NumberAttribute;
@@ -33,6 +34,7 @@ import org.apache.lucene.store.*;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
+import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.util.BytesRef;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -133,6 +135,7 @@ public class IndexerDAO implements IIndexerDAO {
             for (int i = 0; i < langs.size(); i++) {
                 Lang currentLang = (Lang) langs.get(i);
                 this.indexAttribute(document, currentAttribute, currentLang);
+                this.scanComplexAttribute(document, currentAttribute, currentLang, true);
             }
         }
         List<Category> categories = ((Content) entity).getCategories();
@@ -149,24 +152,12 @@ public class IndexerDAO implements IIndexerDAO {
         attribute.setRenderingLang(lang.getCode());
         if (attribute instanceof IndexableAttributeInterface
                 || ((attribute instanceof DateAttribute || attribute instanceof NumberAttribute) && attribute.isSearchable())) {
-            String valueToIndex = null;
-            Long number = null;
-            boolean isDate = false;
-            if (attribute instanceof DateAttribute) {
-                Date date = ((DateAttribute) attribute).getDate();
-                number = (null != date) ? date.getTime() : null;
-                valueToIndex = (null != number) ? DateTools.timeToString(number, DateTools.Resolution.MINUTE) : valueToIndex;
-                isDate = true;
-            } else if (attribute instanceof NumberAttribute) {
-                BigDecimal value = ((NumberAttribute) attribute).getValue();
-                number = (null != value) ? value.longValue() : null;
-                valueToIndex = (null != number) ? String.valueOf(number) : valueToIndex;
-            } else {
-                valueToIndex = ((IndexableAttributeInterface) attribute).getIndexeableFieldValue();
-            }
-            if (null == valueToIndex) {
+            Object[] values = this.extractValuesToIndex(attribute);
+            if (null == values[0]) {
                 return;
             }
+            String valueToIndex = (String) values[0];
+            Long number = (Long) values[1];
             if (attribute instanceof IndexableAttributeInterface) {
                 // full text search
                 String indexingType = attribute.getIndexingType();
@@ -179,6 +170,7 @@ public class IndexerDAO implements IIndexerDAO {
                     document.add(new TextField(lang.getCode(), valueToIndex, Field.Store.YES));
                 }
             }
+            boolean isDate = (attribute instanceof DateAttribute);
             String fieldName = lang.getCode().toLowerCase() + "_" + attribute.getName();
             this.indexValue(document, fieldName, valueToIndex, number, isDate);
             if (null == attribute.getRoles()) {
@@ -189,6 +181,50 @@ public class IndexerDAO implements IIndexerDAO {
                 this.indexValue(document, roleFieldName, valueToIndex, number, isDate);
             }
         }
+    }
+    
+    protected void scanComplexAttribute(Document document, AttributeInterface attribute, Lang lang, boolean first) {
+        attribute.setRenderingLang(lang.getCode());
+        if (!first && attribute.isSimple()) {
+            String indexingType = attribute.getIndexingType();
+            boolean toIndex = ((attribute instanceof IndexableAttributeInterface) && 
+                    null != indexingType && !IndexableAttributeInterface.INDEXING_TYPE_NONE.equals(indexingType)); 
+            if (toIndex) {
+                Object[] values = this.extractValuesToIndex(attribute);
+                if (null == values[0]) {
+                    return;
+                }
+                String valueToIndex = (String) values[0];
+                Store store = (IndexableAttributeInterface.INDEXING_TYPE_TEXT.equalsIgnoreCase(indexingType)) ? Field.Store.YES : Field.Store.NO;
+                document.add(new TextField(lang.getCode(), valueToIndex, store));
+            }
+        } else if (!attribute.isSimple()) {
+            AbstractComplexAttribute complex = (AbstractComplexAttribute) attribute;
+            List<AttributeInterface> list = complex.getAttributes();
+            for (int i = 0; i < list.size(); i++) {
+                this.scanComplexAttribute(document, list.get(i), lang, false);
+            }
+        }
+    }
+    
+    protected Object[] extractValuesToIndex(AttributeInterface attribute) {
+        Object[] values = new Object[2];
+        String valueToIndex = null;
+        Long number = null;
+        if (attribute instanceof DateAttribute) {
+            Date date = ((DateAttribute) attribute).getDate();
+            number = (null != date) ? date.getTime() : null;
+            valueToIndex = (null != number) ? DateTools.timeToString(number, DateTools.Resolution.MINUTE) : valueToIndex;
+        } else if (attribute instanceof NumberAttribute) {
+            BigDecimal value = ((NumberAttribute) attribute).getValue();
+            number = (null != value) ? value.longValue() : null;
+            valueToIndex = (null != number) ? String.valueOf(number) : valueToIndex;
+        } else {
+            valueToIndex = ((IndexableAttributeInterface) attribute).getIndexeableFieldValue();
+        }
+        values[0] = valueToIndex;
+        values[1] = number;
+        return values;
     }
     
     private void indexValue(Document document, String fieldName, String valueToIndex, Long number, boolean isDate) {

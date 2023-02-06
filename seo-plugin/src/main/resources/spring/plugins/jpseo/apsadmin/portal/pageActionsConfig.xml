@@ -19,11 +19,6 @@
         <property name="hookPointKey"><value>core.entryPage.langElement</value></property>
     </bean>
     
-    <bean id="jpseoPageSettingsHookPoint" class="com.agiletec.apsadmin.system.plugin.HookPointElementContainer" >
-        <property name="filePath"><value>/WEB-INF/plugins/jpseo/apsadmin/jsp/portal/pageSettings-jack.jsp</value></property>
-        <property name="hookPointKey"><value>core.pageSettings</value></property>
-    </bean>
-    
     <bean id="jpseoPageAction" scope="prototype" 
           class="org.entando.entando.plugins.jpseo.apsadmin.portal.SeoPageAction" parent="abstractPortalAction">
         <property name="metatagCatalog" ref="jpseoSeoMetatagCatalog" />
@@ -41,16 +36,6 @@
         <property name="langManager" ref="LangManager" />
         <property name="seoMappingManager" ref="jpseoSeoMappingManager" />
         <property name="pageManager" ref="PageManager" />
-    </bean>
-    
-    <bean id="jpseoPageSettingsActionAspect" 
-              class="org.entando.entando.plugins.jpseo.apsadmin.portal.PageSettingsActionAspect">
-        <property name="storageManager" ref="StorageManager" />
-        <property name="pageManager" ref="PageManager" />
-    </bean>
-    
-    <bean id="jpseoPageSettingsAction" scope="prototype"
-              class="org.entando.entando.plugins.jpseo.apsadmin.portal.SeoPageSettingsAction" parent="baseAdminAction">
     </bean>
     
 </beans>

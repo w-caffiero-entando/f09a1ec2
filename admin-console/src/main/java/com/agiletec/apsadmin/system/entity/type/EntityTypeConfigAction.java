@@ -103,6 +103,10 @@ public class EntityTypeConfigAction extends AbstractEntityConfigAction implement
 	public IApsEntity getEntityType() {
 		return (IApsEntity) this.getRequest().getSession().getAttribute(ENTITY_TYPE_ON_EDIT_SESSION_PARAM);
 	}
+
+	public void updateEntityType(IApsEntity entity) {
+		this.getRequest().getSession().setAttribute(IEntityTypeConfigAction.ENTITY_TYPE_ON_EDIT_SESSION_PARAM, entity);
+	}
 	
 	public int getOperationId() {
 		return (Integer) this.getRequest().getSession().getAttribute(ENTITY_TYPE_OPERATION_ID_SESSION_PARAM);
@@ -113,7 +117,8 @@ public class EntityTypeConfigAction extends AbstractEntityConfigAction implement
 		if (this.getOperationId() == ApsAdminSystemConstants.ADD && null != this.getEntityTypeCode()) {
 			entityType.setTypeCode(this.getEntityTypeCode());
 		}
-		entityType.setTypeDescr(this.getEntityTypeDescription());
+		entityType.setTypeDescription(this.getEntityTypeDescription());
+		this.updateEntityType(entityType);
 		return entityType;
 	}
 	

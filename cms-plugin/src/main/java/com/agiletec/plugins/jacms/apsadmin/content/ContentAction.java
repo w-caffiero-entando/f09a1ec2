@@ -13,11 +13,14 @@
  */
 package com.agiletec.plugins.jacms.apsadmin.content;
 
+import org.entando.entando.aps.util.PageUtils;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.aps.util.SelectItem;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
@@ -37,6 +40,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 
 /**
  * Action principale per la redazione contenuti.
@@ -47,9 +51,11 @@ public class ContentAction extends AbstractContentAction {
 
     private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ContentAction.class);
 
-    private IPageManager pageManager;
-    private ConfigInterface configManager;
-    private IResourceManager resourceManager;
+    private transient IPageManager pageManager;
+    private transient IPageModelManager pageModelManager;
+    private transient ConfigInterface configManager;
+    private transient IResourceManager resourceManager;
+    private transient IWidgetTypeManager widgetTypeManager;
 
     private Map references;
 
@@ -134,8 +140,8 @@ public class ContentAction extends AbstractContentAction {
     }
 
     public String configureMainGroup() {
-        Content content = this.updateContentOnSession();
         try {
+            Content content = this.updateContentOnSession();
             if (null == content) {
                 _logger.warn("Null content on session");
                 return FAILURE;
@@ -144,6 +150,7 @@ public class ContentAction extends AbstractContentAction {
                 String mainGroup = this.getRequest().getParameter("mainGroup");
                 if (mainGroup != null && null != this.getGroupManager().getGroup(mainGroup)) {
                     content.setMainGroup(mainGroup);
+                    this.updateContent(content);
                 }
             }
         } catch (Throwable t) {
@@ -160,14 +167,15 @@ public class ContentAction extends AbstractContentAction {
      * @return Il codice del risultato dell'azione.
      */
     public String joinGroup() {
-        this.updateContentOnSession();
         try {
+            Content content = this.updateContentOnSession();
             for (String extraGroupName : extraGroupNames) {
                 Group group = this.getGroupManager().getGroup(extraGroupName);
                 if (null != group) {
-                    this.getContent().addGroup(extraGroupName);
+                    content.addGroup(extraGroupName);
                 }
             }
+            this.updateContent(content);
             // we want to clear the group selection after the join
             extraGroupNames.clear();
         } catch (Throwable t) {
@@ -184,15 +192,16 @@ public class ContentAction extends AbstractContentAction {
      * @return Il codice del risultato dell'azione.
      */
     public String removeGroup() {
-        this.updateContentOnSession();
         try {
+            Content content = this.updateContentOnSession();
             // NOTE: previously the extraGroupNames variable was reused
             // also for group removal. It is necessary to have a separate
             // variable for this, in order to avoid conflicting with the
             // joinGroup() method. See EN-2166.
             Group group = this.getGroupManager().getGroup(groupToRemove);
             if (null != group) {
-                this.getContent().getGroups().remove(group.getName());
+                content.getGroups().remove(group.getName());
+                this.updateContent(content);
             }
         } catch (Throwable t) {
             _logger.error("error in removeGroup", t);
@@ -218,6 +227,7 @@ public class ContentAction extends AbstractContentAction {
                     this.getContentManager().saveContent(currentContent);
                 }
             }
+            this.updateContent(currentContent);
         } catch (Throwable t) {
             _logger.error("error in saveAndContinue", t);
             return FAILURE;
@@ -334,7 +344,11 @@ public class ContentAction extends AbstractContentAction {
             Content content = this.getContent();
             if (null != content) {
                 IPage defaultViewerPage = this.getPageManager().getOnlinePage(content.getViewPage());
-                if (null != defaultViewerPage && CmsPageUtil.isOnlineFreeViewerPage(defaultViewerPage, null)) {
+                if (defaultViewerPage == null) {
+                    return pageItems;
+                }
+                PageModel model = this.getPageModelManager().getPageModel(defaultViewerPage.getMetadata().getModelCode());
+                if (PageUtils.isOnlineFreeViewerPage(defaultViewerPage, model, null, this.getWidgetTypeManager())) {
                     pageItems.add(new SelectItem("", this.getText("label.default")));
                 }
                 if (null == content.getId()) {
@@ -386,6 +400,14 @@ public class ContentAction extends AbstractContentAction {
         this.pageManager = pageManager;
     }
 
+    protected IPageModelManager getPageModelManager() {
+        return pageModelManager;
+    }
+    
+    public void setPageModelManager(IPageModelManager pageModelManager) {
+        this.pageModelManager = pageModelManager;
+    }
+
     protected ConfigInterface getConfigManager() {
         return configManager;
     }
@@ -400,6 +422,14 @@ public class ContentAction extends AbstractContentAction {
 
     public void setResourceManager(IResourceManager resourceManager) {
         this.resourceManager = resourceManager;
+    }
+
+    protected IWidgetTypeManager getWidgetTypeManager() {
+        return widgetTypeManager;
+    }
+    
+    public void setWidgetTypeManager(IWidgetTypeManager widgetTypeManager) {
+        this.widgetTypeManager = widgetTypeManager;
     }
 
     public String getContentId() {

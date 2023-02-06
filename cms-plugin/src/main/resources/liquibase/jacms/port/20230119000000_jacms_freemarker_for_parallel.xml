@@ -1,0 +1,51 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+           http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="20230119000000_jacms_freemarker_for_paralell" author="entando" context="production">
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_1_1.ftl" />
+            <where>code='search_form'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_5_1.ftl" />
+            <where>code='jacms_content_viewer_list_userfilters'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_10_1.ftl" />
+            <where>code='jacms_content_viewer_list'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_12_1.ftl" />
+            <where>code='jacms_content_viewer_list_userfilter_ent_Boolean'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_14_1.ftl" />
+            <where>code='jacms_content_viewer_list_userfilter_ent_CheckBox'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_15_1.ftl" />
+            <where>code='jacms_content_viewer_list_userfilter_ent_ThreeSt'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_16_1.ftl" />
+            <where>code='search_result'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_17_1.ftl" />
+            <where>code='jacms_row_content_viewer_list'</where>
+        </update>
+
+    </changeSet>
+</databaseChangeLog>

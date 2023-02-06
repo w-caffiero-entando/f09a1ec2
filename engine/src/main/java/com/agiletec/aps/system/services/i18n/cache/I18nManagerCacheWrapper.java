@@ -15,6 +15,7 @@ package com.agiletec.aps.system.services.i18n.cache;
 
 import java.util.Map;
 
+import java.util.Optional;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.cache.Cache;
@@ -52,7 +53,9 @@ public class I18nManagerCacheWrapper extends AbstractGenericCacheWrapper<ApsProp
 
     @Override
     public ApsProperties getLabelGroup(String key) {
-        return super.get(this.getCacheKeyPrefix() + key, ApsProperties.class);
+        return Optional.ofNullable(super.get(this.getCacheKeyPrefix() + key, ApsProperties.class))
+                .map(ApsProperties::clone)
+                .orElse(null);
     }
     
     @Override

@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
+import org.entando.entando.aps.util.PageUtils;
 import org.entando.entando.plugins.jacms.aps.util.CmsPageUtil;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -27,6 +28,7 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.PageUtilizer;
 import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
@@ -52,14 +54,16 @@ public class PageAction extends com.agiletec.apsadmin.portal.PageAction {
      * @return True if the page can publish a free content, else false.
      */
     public boolean isFreeViewerPage(IPage page) {
-        return CmsPageUtil.isDraftFreeViewerPage(page, this.getViewerWidgetCode());
+        PageModel model = this.getPageModelManager().getPageModel(page.getMetadata().getModelCode());
+        return PageUtils.isDraftFreeViewerPage(page, model, this.getViewerWidgetCode(), super.getWidgetTypeManager());
     }
 
     public String setViewerPageAPI() {
         IPage page = null;
         try {
             page = this.getPage(this.getPageCode());
-            int mainFrame = page.getMetadata().getModel().getMainFrame();
+            PageModel model = this.getPageModelManager().getPageModel(page.getMetadata().getModelCode());
+            int mainFrame = model.getMainFrame();
             if (mainFrame > -1) {
                 IWidgetTypeManager widgetTypeManager = (IWidgetTypeManager) ApsWebApplicationUtils.getBean(SystemConstants.WIDGET_TYPE_MANAGER, this.getRequest());
                 Widget viewer = new Widget();
@@ -69,7 +73,7 @@ public class PageAction extends com.agiletec.apsadmin.portal.PageAction {
                     logger.warn("No widget found for on-the-fly publishing config for page {}", page.getCode());
                     return SUCCESS;
                 }
-                viewer.setType(type);
+                viewer.setTypeCode(this.getViewerWidgetCode());
                 Widget[] widgets = page.getWidgets();
                 widgets[mainFrame] = viewer;
             }

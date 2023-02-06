@@ -1,0 +1,41 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+           http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="20230119000000_freemarker_for_paralell" author="entando" context="production">
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_1_1.ftl" />
+            <where>code='userprofile_editCurrentUser_profile'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_12_1.ftl" />
+            <where>code='userprofile_is_IteratorAttribute'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_14_1.ftl" />
+            <where>code='userprofile_is_front-MonolistAttribute'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_16_1.ftl" />
+            <where>code='userprofile_is_entryCurrentProfile'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_21_1.ftl" />
+            <where>code='userprofile_is_front-CompositeAttribute'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_25_1.ftl" />
+            <where>code='entandoapi_is_resource_detail'</where>
+        </update>
+        
+    </changeSet>
+</databaseChangeLog>

@@ -14,10 +14,11 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
 import io.lettuce.core.support.caching.CacheFrontend;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheWriter;
@@ -58,9 +59,10 @@ public class LettuceCache extends RedisCache {
         Object localCacheValue = this.getFromLocalCache(key);
         return toValueWrapper(localCacheValue);
     }
-    
+
     private Object getFromLocalCache(Object key) {
-        return this.frontendCache.get(super.getName() + "::" + key.toString());
+        Object value = this.frontendCache.get(super.getName() + "::" + key.toString());
+        return value;
     }
     
     @Override
@@ -68,5 +70,5 @@ public class LettuceCache extends RedisCache {
         logger.warn("Calling remote cache for key {}", key);
         return super.get(key, valueLoader);
     }
-    
+
 }

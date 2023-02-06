@@ -127,17 +127,6 @@
 			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
 		</action>
         
-		<action name="bulkOnGroups*" class="jacmsContentFinderAction" method="entryBulkActions" >
-        	<result name="input" type="chain">list</result>
-			<result type="chain">
-            	<param name="namespace">/do/jacms/Content/Group</param>
-    			<param name="actionName">entry</param>
-    			<param name="strutsAction">${strutsAction}</param>
-    			<param name="selectedIds">${selectedIds}</param>
-			</result>
-			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
-		</action>
-        
 		<action name="bulkOnCategories*" class="jacmsContentFinderAction" method="entryBulkActions" >
         	<result name="input" type="chain">list</result>
 			<result type="chain">
@@ -337,11 +326,19 @@
         <!-- ######## INIZIO GESTIONE ATTRIBUTI RISORSA ######## -->
         
         <action name="chooseResource*" class="jacmsResourceAttributeAction" method="chooseResource">
-            <result type="chain">
-            	<param name="namespace">/do/jacms/Content/Resource</param>
-    			<param name="actionName">findResource</param>
+			<result type="redirectAction">
+				<param name="namespace">/do/jacms/Content/Resource</param>
+				<param name="actionName">findResource</param>
+				<param name="attributeName">${attributeName}</param>
+				<param name="parentAttributeName">${parentAttributeName}</param>
+				<param name="elementIndex">${elementIndex}</param>
+				<param name="resourceTypeCode">${resourceTypeCode}</param>
+				<param name="resourceLangCode">${listLangCode}</param>
+				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
             </result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+			<interceptor-ref name="entandoDefaultStack">
+				<param name="requestAuth.requiredPermission">editContents</param>
+			</interceptor-ref>
         </action>
         
         <action name="removeResource*" class="jacmsResourceAttributeAction" method="removeResource">

@@ -92,6 +92,10 @@ public class WidgetsViewerAction extends AbstractPortalAction {
         return SUCCESS;
     }
 
+    public WidgetType getWidgetTypeDetailsJson() {
+        return this.getWidgetType(this.getWidgetTypeCode());
+    }
+    
     @Deprecated
     public String viewShowletUtilizers() {
         return viewWidgetUtilizers();
