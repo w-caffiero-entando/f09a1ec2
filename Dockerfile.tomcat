@@ -1,4 +1,4 @@
-FROM entando/entando-tomcat-base:7.1.2-ENG-4511-PR-15
+FROM entando/entando-tomcat-base:7.2.0-ENG-4471-PR-16
 ARG VERSION
 
 ### Required OpenShift Labels
