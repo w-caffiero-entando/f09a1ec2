@@ -14,135 +14,112 @@
 package org.entando.entando.aps.system.services.tenants;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author E.Santoboni
  */
 public class TenantConfig implements Serializable {
 
-    private String tenantCode;
-    private boolean kcEnabled;
-    private String kcAuthUrl;
-    private String kcRealm;
-    private String kcClientId;
-    private String kcClientSecret;
-    private String kcPublicClientId;
-    private String kcSecureUris;
-    private String kcDefaultAuthorizations;
+    public static final String TENANT_CODE_PROPERTY = "tenantCode";
+    public static final String KC_ENABLED_PROPERTY = "kcEnabled";
+    public static final String KC_AUTH_URL_PROPERTY = "kcAuthUrl";
+    public static final String KC_REALM_PROPERTY = "kcRealm";
+    public static final String KC_CLIENT_ID_PROPERTY = "kcClientId";
+    public static final String KC_CLIENT_SECRET_PROPERTY = "kcClientSecret";
+    public static final String KC_PUBLIC_CLIENT_PROPERTY = "kcPublicClientId";
+    public static final String KC_SECURE_URIS_PROPERTY = "kcSecureUris";
+    public static final String KC_DEFAULT_AUTH_PROPERTY = "kcDefaultAuthorizations";
+    public static final String DB_DRIVER_CLASS_NAME_PROPERTY = "dbDriverClassName";
+    public static final String DB_URL_PROPERTY = "dbUrl";
+    public static final String DB_USERNAME_PROPERTY = "dbUsername";
+    public static final String DB_PASSWORD_PROPERTY = "dbPassword";
 
-    private String dbDriverClassName;
-    private String dbUrl;
-    private String dbUsername;
-    private String dbPassword;
+    private Map<String, String> configs;
 
+    public TenantConfig(Map<String,String> c) {
+        configs = c;
+    }
+
+    public TenantConfig(TenantConfig t) {
+        configs = t.getAll();
+    }
+
+/*
     @Override
     public TenantConfig clone() {
         TenantConfig clone = new TenantConfig();
-        clone.setDbDriverClassName(this.getDbDriverClassName());
-        clone.setDbPassword(this.getDbPassword());
-        clone.setDbUrl(this.getDbUrl());
-        clone.setDbUsername(this.getDbUsername());
-        clone.setKcAuthUrl(this.getKcAuthUrl());
-        clone.setKcClientId(this.getKcClientId());
-        clone.setKcClientSecret(this.getKcClientSecret());
-        clone.setKcDefaultAuthorizations(this.getKcDefaultAuthorizations());
-        clone.setKcEnabled(this.isKcEnabled());
-        clone.setKcPublicClientId(this.getKcPublicClientId());
-        clone.setKcRealm(this.getKcRealm());
-        clone.setKcSecureUris(this.getKcSecureUris());
-        clone.setTenantCode(this.getTenantCode());
+        clone.putAll(configs);
         return clone;
     }
+*/
+
+    protected Map<String, String> getAll(){
+        return configs;
+    }
+
+    protected void putAll(Map<String,String> map){
+        configs = map;
+    }
+
 
     public String getTenantCode() {
-        return tenantCode;
-    }
-    public void setTenantCode(String tenantCode) {
-        this.tenantCode = tenantCode;
+        return configs.get(TENANT_CODE_PROPERTY);
     }
 
     public boolean isKcEnabled() {
-        return kcEnabled;
-    }
-    public void setKcEnabled(boolean kcEnabled) {
-        this.kcEnabled = kcEnabled;
+        String enabled = configs.get(KC_ENABLED_PROPERTY);
+        return BooleanUtils.toBoolean(enabled);
     }
 
     public String getKcAuthUrl() {
-        return kcAuthUrl;
-    }
-    public void setKcAuthUrl(String kcAuthUrl) {
-        this.kcAuthUrl = kcAuthUrl;
+        return configs.get(KC_AUTH_URL_PROPERTY);
     }
 
     public String getKcRealm() {
-        return kcRealm;
-    }
-    public void setKcRealm(String kcRealm) {
-        this.kcRealm = kcRealm;
+        return configs.get(KC_REALM_PROPERTY);
     }
 
     public String getKcClientId() {
-        return kcClientId;
-    }
-    public void setKcClientId(String kcClientId) {
-        this.kcClientId = kcClientId;
+        return configs.get(KC_CLIENT_ID_PROPERTY);
     }
 
     public String getKcClientSecret() {
-        return kcClientSecret;
-    }
-    public void setKcClientSecret(String kcClientSecret) {
-        this.kcClientSecret = kcClientSecret;
+        return configs.get(KC_CLIENT_SECRET_PROPERTY);
     }
 
     public String getKcPublicClientId() {
-        return kcPublicClientId;
-    }
-    public void setKcPublicClientId(String kcPublicClientId) {
-        this.kcPublicClientId = kcPublicClientId;
+        return configs.get(KC_PUBLIC_CLIENT_PROPERTY);
     }
 
     public String getKcSecureUris() {
-        return kcSecureUris;
-    }
-    public void setKcSecureUris(String kcSecureUris) {
-        this.kcSecureUris = kcSecureUris;
+        return configs.get(KC_SECURE_URIS_PROPERTY);
     }
 
     public String getKcDefaultAuthorizations() {
-        return kcDefaultAuthorizations;
-    }
-    public void setKcDefaultAuthorizations(String kcDefaultAuthorizations) {
-        this.kcDefaultAuthorizations = kcDefaultAuthorizations;
+        return configs.get(KC_DEFAULT_AUTH_PROPERTY);
     }
 
     public String getDbDriverClassName() {
-        return dbDriverClassName;
-    }
-    public void setDbDriverClassName(String dbDriverClassName) {
-        this.dbDriverClassName = dbDriverClassName;
+        return configs.get(DB_DRIVER_CLASS_NAME_PROPERTY);
     }
 
     public String getDbUrl() {
-        return dbUrl;
-    }
-    public void setDbUrl(String dbUrl) {
-        this.dbUrl = dbUrl;
+        return configs.get(DB_URL_PROPERTY);
     }
 
     public String getDbUsername() {
-        return dbUsername;
-    }
-    public void setDbUsername(String dbUsername) {
-        this.dbUsername = dbUsername;
+        return configs.get(DB_USERNAME_PROPERTY);
     }
 
     public String getDbPassword() {
-        return dbPassword;
-    }
-    public void setDbPassword(String dbPassword) {
-        this.dbPassword = dbPassword;
+        return configs.get(DB_PASSWORD_PROPERTY);
     }
 
+    public String getProperty(String name) {
+        return configs.get(name);
+    }
 }

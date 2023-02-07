@@ -48,8 +48,11 @@ public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<Tenan
         try {
             if (!StringUtils.isBlank(this.tenantsConfig)) {
                 Cache cache = this.getCache();
-                TenantConfig[] configArray = this.objectMapper.readValue(tenantsConfig, new TypeReference<TenantConfig[]>(){});
-                List<TenantConfig> list = Arrays.asList(configArray);
+                List<TenantConfig> list = this.objectMapper.readValue(tenantsConfig, new TypeReference<List<Map>>(){})
+                        .stream()
+                        .map(c -> new TenantConfig(c))
+                        .collect(Collectors.toList());
+
                 Map<String, TenantConfig> tenantsMap = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
                 this.insertAndCleanCache(cache, tenantsMap);
             }
@@ -63,7 +66,7 @@ public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<Tenan
     public TenantConfig getTenantConfig(String code) {
         TenantConfig config = this.get(this.getCache(), this.getCacheKeyPrefix() + code, TenantConfig.class);
         if (null != config) {
-            return config.clone();
+            return new TenantConfig(config);
         }
         return null;
     }
