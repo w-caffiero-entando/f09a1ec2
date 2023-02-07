@@ -23,7 +23,8 @@
 		</result-types>
     	
 		<interceptors>
-			
+
+			<interceptor name="tenant" class="org.entando.entando.apsadmin.system.MultitenancyInterceptor" />
 			<interceptor name="requestAuth" class="com.agiletec.apsadmin.system.InterceptorMadMax" />
 			<interceptor name="backofficeRequestAuth" class="com.agiletec.apsadmin.system.InterceptorMadMax2nd" />
 			<interceptor name="apsParams" class="org.entando.entando.apsadmin.system.ApsParametersInterceptor" />
@@ -34,6 +35,7 @@
 			<interceptor name="redirectMessage" class="org.entando.entando.apsadmin.system.RedirectMessageInterceptor" />
 			
 			<interceptor-stack name="entandoFreeStack">
+				<interceptor-ref name="tenant"/>
 				<interceptor-ref name="exception"/>
 				<interceptor-ref name="alias"/>
 				<interceptor-ref name="servletConfig"/>

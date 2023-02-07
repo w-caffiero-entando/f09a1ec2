@@ -109,7 +109,7 @@
             </div>                        
         </s:form>
             <legend><s:text name="title.editUserProfile" /></legend>
-                <s:action name="edit" namespace="/do/currentuser/profile" executeResult="true"></s:action>
+                <wpsa:action name="edit" namespace="/do/currentuser/profile" executeResult="true"></wpsa:action>
                 <wpsa:hookPoint key="core.userProfile.entry" objectName="hookPointElements_core_userProfile_entry">
                     <s:iterator value="#hookPointElements_core_userProfile_entry" var="hookPointElement">
                         <wpsa:include value="%{#hookPointElement.filePath}"></wpsa:include>

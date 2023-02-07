@@ -24,7 +24,7 @@
 
     <s:set var="breadcrumbs_pivotPageCode" value="selectedNode" />
     <s:include value="/WEB-INF/apsadmin/jsp/portal/include/pageInfo_breadcrumbs.jsp" />
-    <s:action  name="printPageDetails" executeResult="true" ignoreContextParams="true"><s:param name="selectedNode" value="selectedNode"></s:param></s:action>
+    <wpsa:action  name="printPageDetails" executeResult="true" ignoreContextParams="true"><s:param name="selectedNode" value="selectedNode"></s:param></wpsa:action>
 
     <wpsa:hookPoint key="core.detailPage" objectName="hookPointElements_core_detailPage">
         <s:iterator value="#hookPointElements_core_detailPage" var="hookPointElement">
