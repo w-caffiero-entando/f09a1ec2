@@ -10,7 +10,10 @@
         <property name="pageManager" ref="PageManager"/>
         <property name="urlManager" ref="URLManager"/>
     </bean>
-    
+
+    <bean id="TenantControlService" class="org.entando.entando.aps.system.services.controller.control.TenantController"
+            parent="abstractControlService" />
+
     <bean id="RequestValidatorControlService" class="com.agiletec.aps.system.services.controller.control.RequestValidator" 
               parent="abstractControlService" >
         <property name="langManager" ref="LangManager"/>

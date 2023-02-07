@@ -34,6 +34,7 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang.StringUtils;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,10 +73,14 @@ public abstract class AbstractWidgetExecutorService {
 			Widget[] widgets = page.getWidgets();
 			if (this.parallelWidgetRender) {
 				List<Widget> widgetList = Arrays.asList(widgets);
+				String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
 				widgetList.parallelStream().forEach(w -> {
 					EntThreadLocal.init();
 					int frame = widgetList.indexOf(w);
 					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
+					if (null != tenantCode) {
+						EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
+					}
 					Widget widget = widgets[frame];
 					try {
 						widgetOutput[frame] = this.buildWidgetOutput(reqCtx, widget, decorators);
