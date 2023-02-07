@@ -95,7 +95,12 @@ public class ApsWebApplicationUtils {
 		WebApplicationContext wac = getWebApplicationContext(request);
 		return wac.getBean(beanName);
 	}
-	
+
+	public static <T> T getBean(Class<T> type, HttpServletRequest request) {
+		WebApplicationContext wac = getWebApplicationContext(request);
+		return wac.getBean(type);
+	}
+
 	/**
 	 * Restituisce un bean di sistema.
 	 * Il seguente metodo è in uso ai tag jsp del sistema.
@@ -107,7 +112,12 @@ public class ApsWebApplicationUtils {
 		WebApplicationContext wac = getWebApplicationContext(pageContext.getServletContext());
 		return wac.getBean(beanName);
 	}
-	
+
+	public static <T> T getBean(Class<T> type, PageContext pageContext) {
+		WebApplicationContext wac = getWebApplicationContext(pageContext.getServletContext());
+		return wac.getBean(type);
+	}
+
 	/**
 	 * Restituisce il WebApplicationContext del sistema.
 	 * @param request La request.

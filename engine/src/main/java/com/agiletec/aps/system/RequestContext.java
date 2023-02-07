@@ -42,7 +42,7 @@ public class RequestContext {
 	 */
 	public Object getExtraParam(String name) {
 		if (isCurrentFrameOrCurrentWidget(name)) {
-			return ReqCtxThreadLocal.get(name);
+			return EntThreadLocal.get(name);
 		} else {
 			return _extraParams.get(name);
 		}
@@ -55,7 +55,7 @@ public class RequestContext {
 	 */
 	public void addExtraParam(String name, Object param) {
 		if (isCurrentFrameOrCurrentWidget(name)) {
-			ReqCtxThreadLocal.set(name, param);
+			EntThreadLocal.set(name, param);
 		} else {
 			this._extraParams.put(name, param);
 		}
@@ -67,7 +67,7 @@ public class RequestContext {
 	 */
 	public void removeExtraParam(String name) {
 		if (isCurrentFrameOrCurrentWidget(name)) {
-			ReqCtxThreadLocal.remove(name);
+			EntThreadLocal.remove(name);
 		} else {
 			this._extraParams.remove(name);
 		}

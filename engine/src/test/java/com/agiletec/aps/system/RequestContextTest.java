@@ -1,6 +1,5 @@
 package com.agiletec.aps.system;
 
-import org.apache.ws.commons.schema.constants.Constants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,16 +11,16 @@ class RequestContextTest {
         final String keyTest = "reqKeyTest";
         RequestContext reqCtx = new RequestContext();
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, paramValue);
-        Assertions.assertEquals(paramValue, ReqCtxThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
+        Assertions.assertEquals(paramValue, EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
         Assertions.assertEquals(paramValue, reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME));
 
         reqCtx.addExtraParam(keyTest, paramValue);
-        Assertions.assertNull(ReqCtxThreadLocal.get(keyTest));
+        Assertions.assertNull(EntThreadLocal.get(keyTest));
         Assertions.assertEquals(paramValue, reqCtx.getExtraParam(keyTest));
 
-        ReqCtxThreadLocal.init();
+        EntThreadLocal.init();
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_WIDGET, paramValue);
-        Assertions.assertEquals(paramValue, ReqCtxThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_WIDGET));
+        Assertions.assertEquals(paramValue, EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_WIDGET));
 
     }
 
@@ -31,11 +30,11 @@ class RequestContextTest {
         final String keyTest = "reqKeyTest";
         RequestContext reqCtx = new RequestContext();
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, paramValue);
-        Assertions.assertEquals(paramValue, ReqCtxThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
+        Assertions.assertEquals(paramValue, EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
         Assertions.assertEquals(paramValue, reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME));
 
         reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
-        Assertions.assertNull(ReqCtxThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
+        Assertions.assertNull(EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
 
         reqCtx.addExtraParam(keyTest, paramValue);
         reqCtx.removeExtraParam(keyTest);

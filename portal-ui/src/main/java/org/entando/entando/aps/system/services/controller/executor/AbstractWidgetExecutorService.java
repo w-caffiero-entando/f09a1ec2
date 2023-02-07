@@ -13,7 +13,7 @@
  */
 package org.entando.entando.aps.system.services.controller.executor;
 
-import com.agiletec.aps.system.ReqCtxThreadLocal;
+import com.agiletec.aps.system.EntThreadLocal;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -73,7 +73,7 @@ public abstract class AbstractWidgetExecutorService {
 			if (this.parallelWidgetRender) {
 				List<Widget> widgetList = Arrays.asList(widgets);
 				widgetList.parallelStream().forEach(w -> {
-					ReqCtxThreadLocal.init();
+					EntThreadLocal.init();
 					int frame = widgetList.indexOf(w);
 					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
 					Widget widget = widgets[frame];
@@ -82,16 +82,16 @@ public abstract class AbstractWidgetExecutorService {
 					} catch (Exception e) {
 						_logger.error("Error extracting output for frame " + frame, e);
 					}
-					ReqCtxThreadLocal.destroy();
+					EntThreadLocal.destroy();
 				});
 			} else {
-				ReqCtxThreadLocal.init();
+				EntThreadLocal.init();
 				for (int frame = 0; frame < widgets.length; frame++) {
 					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
 					Widget widget = widgets[frame];
 					widgetOutput[frame] = this.buildWidgetOutput(reqCtx, widget, decorators);
 				}
-				ReqCtxThreadLocal.destroy();
+				EntThreadLocal.destroy();
 			}
 		} catch (Throwable t) {
 			String msg = "Error detected during widget preprocessing";
