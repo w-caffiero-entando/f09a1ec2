@@ -14,16 +14,24 @@
 package org.entando.entando.aps.system.services.tenants;
 
 import com.agiletec.aps.system.common.AbstractService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.entando.entando.aps.system.services.tenants.caches.ITenantManagerCacheWrapper;
+import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
 
 /**
  * @author E.Santoboni
@@ -32,16 +40,20 @@ public class TenantManager extends AbstractService implements ITenantManager {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantManager.class);
 
+    @Value("${ENTANDO_TENANTS:}")
+    private String tenantsConfigAsString;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private Map<String, DataSource> dataSources = new HashMap<>();
 
-    private ITenantManagerCacheWrapper cacheWrapper;
-
-    //private Map<String, TenantConfig> configs = new HashMap<>();
+    private Map<String, TenantConfig> tenantsMap = new HashMap<>();
 
     @Override
     public void init() throws Exception {
         try {
-            this.getCacheWrapper().initCache();
+            this.initTenantsCodes();
         } catch (Exception e) {
             logger.error("Error extracting tenant configs", e);
         }
@@ -56,7 +68,7 @@ public class TenantManager extends AbstractService implements ITenantManager {
                 DataSource datasource = iter.next();
                 this.destroyDataSource(datasource);
             }
-            this.getCacheWrapper().initCache();
+            initTenantsCodes();
         } catch (Exception e) {
             logger.error("Error closing connection", e);
         }
@@ -76,7 +88,7 @@ public class TenantManager extends AbstractService implements ITenantManager {
 
     @Override
     public List<String> getCodes() {
-        return this.getCacheWrapper().getCodes();
+        return new ArrayList<>(tenantsMap.keySet());
     }
 
     @Override
@@ -106,18 +118,27 @@ public class TenantManager extends AbstractService implements ITenantManager {
 
     @Override
     public TenantConfig getConfig(String tenantCode) {
-        return this.getCacheWrapper().getTenantConfig(tenantCode);
+        return tenantsMap.get(tenantCode);
     }
 
     protected Map<String, DataSource> getDataSources() {
         return dataSources;
     }
 
-    protected ITenantManagerCacheWrapper getCacheWrapper() {
-        return cacheWrapper;
-    }
-    public void setCacheWrapper(ITenantManagerCacheWrapper cacheWrapper) {
-        this.cacheWrapper = cacheWrapper;
+    private void initTenantsCodes() throws EntException {
+        try {
+            if (!StringUtils.isBlank(this.tenantsConfigAsString)) {
+                List<TenantConfig> list = this.objectMapper.readValue(tenantsConfigAsString, new TypeReference<List<Map>>(){})
+                        .stream()
+                        .map(c -> new TenantConfig(c))
+                        .collect(Collectors.toList());
+
+                tenantsMap = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
+            }
+        } catch (Exception e) {
+            logger.error("Error extracting tenant configs", e);
+            throw new EntException("Error loading tenants", e);
+        }
     }
 
 }
