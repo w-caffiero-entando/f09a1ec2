@@ -16,8 +16,10 @@ package org.entando.entando.aps.system.services.tenants;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  * @author E.Santoboni
@@ -37,7 +39,11 @@ public class TenantConfig implements Serializable {
     public static final String DB_URL_PROPERTY = "dbUrl";
     public static final String DB_USERNAME_PROPERTY = "dbUsername";
     public static final String DB_PASSWORD_PROPERTY = "dbPassword";
-
+    public static final String DOMAIN_PREFIX_PROPERTY = "domainPrefix";
+    public static final String DB_MAX_TOTAL_PROPERTY = "dbMaxTotal";
+    public static final String DB_MAX_IDLE_PROPERTY = "dbMaxIdle";
+    public static final String DB_MAX_WAIT_MS_PROPERTY = "dbMaxWaitMillis";
+    public static final String DB_INITIAL_SIZE_PROPERTY = "dbInitialSize";
     private Map<String, String> configs;
 
     public TenantConfig(Map<String,String> c) {
@@ -119,7 +125,35 @@ public class TenantConfig implements Serializable {
         return configs.get(DB_PASSWORD_PROPERTY);
     }
 
-    public String getProperty(String name) {
-        return configs.get(name);
+    public String getDomainPrefix() {
+        return configs.get(DOMAIN_PREFIX_PROPERTY);
     }
+
+    public Optional<String> getProperty(String name) {
+        return Optional.ofNullable(configs.get(name));
+    }
+
+    public int getMaxTotal() {
+        return getDbConnectionParam(TenantConfig.DB_MAX_TOTAL_PROPERTY, ITenantManager.DEFAULT_DB_MAX_TOTAL);
+    }
+
+    public int getMaxIdle() {
+        return getDbConnectionParam(TenantConfig.DB_MAX_IDLE_PROPERTY, ITenantManager.DEFAULT_DB_MAX_IDLE);
+    }
+
+    public int getMaxWaitMillis() {
+        return getDbConnectionParam(TenantConfig.DB_MAX_WAIT_MS_PROPERTY, ITenantManager.DEFAULT_DB_MAX_WAIT_MS);
+    }
+
+    public int getInitialSize() {
+        return getDbConnectionParam(TenantConfig.DB_INITIAL_SIZE_PROPERTY, ITenantManager.DEFAULT_DB_INITIAL_SIZE);
+    }
+
+    private int getDbConnectionParam(String paramName, int defaultValue) {
+        return getProperty(paramName)
+                .filter(StringUtils::isNotBlank)
+                .map(i -> NumberUtils.toInt(i, defaultValue))
+                .orElse(defaultValue);
+    }
+
 }

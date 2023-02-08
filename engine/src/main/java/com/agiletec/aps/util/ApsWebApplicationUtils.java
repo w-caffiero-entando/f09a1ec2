@@ -22,6 +22,7 @@ import javax.servlet.jsp.PageContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.RefreshableBean;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -38,14 +39,15 @@ public class ApsWebApplicationUtils {
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ApsWebApplicationUtils.class);
 
 	public static String extractCurrentTenantCode(HttpServletRequest request) {
-		String tenantCode = request.getServerName().split("\\.")[0];
+		String domainPrefix = getDomainAndSkipWWWIfPresent(request);
 		ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, request);
-		if (tenantManager.exists(tenantCode)) {
-			return tenantCode;
-		}
-		return null;
+		return tenantManager.getTenantCodeByDomainPrefix(domainPrefix);
 	}
 
+	private static String getDomainAndSkipWWWIfPresent(HttpServletRequest request){
+		String[] domainSections = request.getServerName().split("\\.");
+		return ( "www".equalsIgnoreCase(domainSections[0])) ? domainSections[1] : domainSections[0];
+	}
 	/**
 	 * Resolve the given location pattern into Resource objects. 
 	 * @param locationPattern The location pattern to resolve.

@@ -21,14 +21,20 @@ import javax.sql.DataSource;
  */
 public interface ITenantManager {
 
-    public static final String THREAD_LOCAL_TENANT_CODE = "threadLocal_tenantCode";
+    static final String THREAD_LOCAL_TENANT_CODE = "threadLocal_tenantCode";
+    static final int DEFAULT_DB_MAX_TOTAL = 10;
+    static final int DEFAULT_DB_MAX_IDLE = 2;
+    static final int DEFAULT_DB_MAX_WAIT_MS = 20000;
+    static final int DEFAULT_DB_INITIAL_SIZE = 2;
+    boolean exists(String tenantCode);
 
-    public boolean exists(String tenantCode);
+    List<String> getCodes();
 
-    public List<String> getCodes();
+    DataSource getDatasource(String tenantCode);
 
-    public DataSource getDatasource(String tenantCode);
+    TenantConfig getConfig(String tenantCode);
 
-    public TenantConfig getConfig(String tenantCode);
+    TenantConfig getTenantConfigByDomainPrefix(String domainPrefix);
 
+    String getTenantCodeByDomainPrefix(String domainPrefix);
 }
