@@ -15,6 +15,7 @@ package com.agiletec.aps.util;
 
 import java.io.IOException;
 
+import java.util.Optional;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
@@ -22,8 +23,6 @@ import javax.servlet.jsp.PageContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.RefreshableBean;
-import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.core.io.Resource;
@@ -38,16 +37,6 @@ public class ApsWebApplicationUtils {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ApsWebApplicationUtils.class);
 
-	public static String extractCurrentTenantCode(HttpServletRequest request) {
-		String domainPrefix = getDomainAndSkipWWWIfPresent(request);
-		ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, request);
-		return tenantManager.getTenantCodeByDomainPrefix(domainPrefix);
-	}
-
-	private static String getDomainAndSkipWWWIfPresent(HttpServletRequest request){
-		String[] domainSections = request.getServerName().split("\\.");
-		return ( "www".equalsIgnoreCase(domainSections[0])) ? domainSections[1] : domainSections[0];
-	}
 	/**
 	 * Resolve the given location pattern into Resource objects. 
 	 * @param locationPattern The location pattern to resolve.
@@ -109,8 +98,7 @@ public class ApsWebApplicationUtils {
 	}
 
 	public static <T> T getBean(Class<T> type, HttpServletRequest request) {
-		WebApplicationContext wac = getWebApplicationContext(request);
-		return wac.getBean(type);
+		return getBean(type, request.getSession().getServletContext());
 	}
 
 	/**
@@ -126,8 +114,15 @@ public class ApsWebApplicationUtils {
 	}
 
 	public static <T> T getBean(Class<T> type, PageContext pageContext) {
-		WebApplicationContext wac = getWebApplicationContext(pageContext.getServletContext());
-		return wac.getBean(type);
+		return getBean(type, pageContext.getServletContext());
+	}
+
+	public static <T> T getBean(Class<T> type, ServletContext servCtx) {
+		return Optional.ofNullable(getWebApplicationContext(servCtx))
+				.map(wac -> wac.getBean(type))
+				.orElseThrow(() -> new IllegalArgumentException(
+						String.format("Error retrieving Bean of type '%s' from web application context",type.toString())));
+
 	}
 
 	/**
@@ -140,7 +135,7 @@ public class ApsWebApplicationUtils {
 		WebApplicationContext wac = getWebApplicationContext(svCtx);
 		return wac;
 	}
-	
+
 	private static WebApplicationContext getWebApplicationContext(ServletContext svCtx) {
 		return WebApplicationContextUtils.getWebApplicationContext(svCtx);
 	}

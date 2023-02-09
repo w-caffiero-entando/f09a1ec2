@@ -13,22 +13,21 @@
  */
 package org.entando.entando.aps.system.services.controller.control;
 
-import com.agiletec.aps.system.EntThreadLocal;
 import com.agiletec.aps.system.services.controller.control.*;
 
-import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.services.controller.ControllerManager;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.springframework.stereotype.Service;
 
-/**
- * @author E.Santoboni
- */
+@Service("TenantControlService")
 public class TenantController extends AbstractControlService {
+
     private static final Logger logger = LoggerFactory.getLogger(TenantController.class);
+
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.debug("{} ready", this.getClass().getName());
@@ -40,10 +39,9 @@ public class TenantController extends AbstractControlService {
         if (status == ControllerManager.ERROR) {
             return ControllerManager.INVALID_STATUS;
         }
-        String tenantCode = ApsWebApplicationUtils.extractCurrentTenantCode(reqCtx.getRequest());
-        if (null != tenantCode) {
-            EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
-        }
+
+        ApsTenantApplicationUtils.extractCurrentTenantCode(reqCtx.getRequest())
+                .ifPresent(ApsTenantApplicationUtils::setTenant);
         return ControllerManager.CONTINUE;
     }
 

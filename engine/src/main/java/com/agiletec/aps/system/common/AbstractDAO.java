@@ -13,7 +13,7 @@
  */
 package com.agiletec.aps.system.common;
 
-import com.agiletec.aps.system.EntThreadLocal;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,8 +38,8 @@ import java.sql.PreparedStatement;
 public abstract class AbstractDAO implements Serializable {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractDAO.class);
-	private DataSource _dataSource;
-	private ITenantManager tenantManager;
+	private transient DataSource dataSource;
+	private transient ITenantManager tenantManager;
 
 	/**
 	 * Traccia un'eccezione e rilancia una eccezione runtime 
@@ -63,14 +63,11 @@ public abstract class AbstractDAO implements Serializable {
 	protected Connection getConnection() throws EntException {
 		Connection conn = null;
 		try {
-			DataSource dataSource = null;
-			String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
-			if (null != tenantCode) {
-				dataSource = this.getTenantManager().getDatasource(tenantCode);
-			} else {
-				dataSource = this.getDataSource();
-			}
-			conn = dataSource.getConnection();
+			DataSource ds = ApsTenantApplicationUtils.getTenant()
+					.map(tenantCode -> getTenantManager().getDatasource(tenantCode))
+					.orElse(getDataSource());
+			conn = ds.getConnection();
+
 		} catch (SQLException e) {
 			_logger.error("Error getting connection to the datasource", e);
 			throw new EntException("Error getting connection to the datasource", e);
@@ -176,11 +173,11 @@ public abstract class AbstractDAO implements Serializable {
 	}
 	
 	protected DataSource getDataSource() {
-		return this._dataSource;
+		return this.dataSource;
 	}
 
 	public void setDataSource(DataSource dataSource) {
-		this._dataSource = dataSource;
+		this.dataSource = dataSource;
 	}
 
 	protected ITenantManager getTenantManager() {

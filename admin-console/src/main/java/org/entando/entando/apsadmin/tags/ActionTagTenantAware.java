@@ -13,32 +13,27 @@
  */
 package org.entando.entando.apsadmin.tags;
 
-import com.agiletec.aps.system.EntThreadLocal;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import javax.servlet.jsp.JspException;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 
-/**
- * @author E.Santoboni
- */
-public class ActionTag extends org.apache.struts2.views.jsp.ActionTag {
+public class ActionTagTenantAware extends org.apache.struts2.views.jsp.ActionTag {
 
     private String prevTenantCode;
 
     @Override
     public int doStartTag() throws JspException {
-        String prevTenant = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
-        if (!StringUtils.isBlank(prevTenant)) {
-            this.prevTenantCode = prevTenant;
-        }
+        ApsTenantApplicationUtils.getTenant()
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(tenantCode -> this.prevTenantCode = tenantCode);
         return super.doStartTag();
     }
 
     @Override
     public int doEndTag() throws JspException {
         int result = super.doEndTag();
-        if (!StringUtils.isBlank(this.prevTenantCode)) {
-            EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, this.prevTenantCode);
+        if (StringUtils.isNotBlank(this.prevTenantCode)) {
+            ApsTenantApplicationUtils.setTenant(this.prevTenantCode);
         }
         this.prevTenantCode = null;
         return result;

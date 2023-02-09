@@ -14,8 +14,8 @@
 package org.entando.entando.aps.servlet;
 
 import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.EntThreadLocal;
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import org.entando.entando.aps.system.exception.CSRFProtectionException;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
@@ -26,8 +26,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Init the system when the web application is started
@@ -73,15 +71,18 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
             LOGGER.warn("Content Security Policy (CSP) header is not enabled");
         }
 
-        WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(svCtx);
-        ITenantManager tenantManager = wac.getBean(ITenantManager.class);
+        ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, svCtx);
         tenantManager.getCodes().stream().forEach(tenantCode -> {
-            EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
+            // FIXME! or to review better, there is no use of tenant in system refresh
+            //  and bean are singleton so is not a best practice ...
+            ApsTenantApplicationUtils.setTenant(tenantCode);
             try {
                 ApsWebApplicationUtils.executeSystemRefresh(svCtx);
             } catch (Throwable t) {
-                LOGGER.error("Error initializing '{}' tentant", tenantCode, t);
+                LOGGER.error("Error initializing '{}' tenant", tenantCode, t);
             }
+            // FIXME remove and use slf4j with marker
+            // https://stackoverflow.com/questions/27547773/slf4j-logging-regardless-of-the-log-level
             String tenantMsg = this.getClass().getName() + ": Tenant '" + tenantCode + "' inizialized";
             ApsSystemUtils.directStdoutTrace(tenantMsg, true);
         });

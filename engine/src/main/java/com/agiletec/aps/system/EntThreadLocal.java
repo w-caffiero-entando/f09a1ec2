@@ -24,38 +24,34 @@ public final class EntThreadLocal {
         throw new IllegalStateException("EntThreadLocal is an Utility class");
     }
 
-    public static void init() {
-        Map<String, Object> map = sessionThreadLocal.get();
-        if (null != map) {
-            map.clear();
-        } else {
-            sessionThreadLocal.set(new HashMap<>());
-        }
+    public static void initOrClear() {
+        Map<String, Object> map = getOrCreate();
+        map.clear();
     }
 
     public static void destroy() {
-        Map<String, Object> map = sessionThreadLocal.get();
-        if (null != map) {
-            map.clear();
-        }
+        Map<String, Object> map = getOrCreate();
+        map.clear();
         sessionThreadLocal.remove();
     }
 
-    public static void set(String key, Object value) {
+    private static Map<String, Object> getOrCreate() {
         Map<String, Object> map = sessionThreadLocal.get();
         if (null == map) {
             sessionThreadLocal.set(new HashMap<>());
             map = sessionThreadLocal.get();
         }
+        return map;
+    }
+
+    public static void set(String key, Object value) {
+        Map<String, Object> map = getOrCreate();
         map.put(key, value);
     }
 
     public static Object get(String key) {
-        Map<String, Object> map = sessionThreadLocal.get();
-        if (null != map) {
-            return map.get(key);
-        }
-        return null;
+        Map<String, Object> map = getOrCreate();
+        return map.get(key);
     }
 
     public static void remove(String key) {

@@ -13,6 +13,7 @@
  */
 package com.agiletec.aps.system.common;
 
+import javax.annotation.PreDestroy;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -54,6 +55,7 @@ public abstract class AbstractService
 	 * This method can be override if the service has to release objects before the destroy of the service.
 	 */
 	@Override
+	@PreDestroy
 	public void destroy() {
 		//do nothing
 	}

@@ -14,32 +14,28 @@
 package org.entando.entando.apsadmin.system;
 
 import com.agiletec.aps.system.EntThreadLocal;
-import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.struts2.ServletActionContext;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 
-/**
- * @author E.Santoboni
- */
-public class MultitenancyInterceptor extends AbstractInterceptor {
+public class MultitenancyStrutsInterceptor extends AbstractInterceptor {
 
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
-        HttpServletRequest request = ServletActionContext.getRequest();
-        String tenantCode = request.getServerName().split("\\.")[0];
-        ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, request);
-        EntThreadLocal.init();
-        if (tenantManager.exists(tenantCode)) {
-            EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
-        } else {
-            EntThreadLocal.remove(ITenantManager.THREAD_LOCAL_TENANT_CODE);
-        }
-        String result = invocation.invoke();
-        EntThreadLocal.remove(ITenantManager.THREAD_LOCAL_TENANT_CODE);
-        return result;
-    }
 
+        try {
+            EntThreadLocal.initOrClear();
+
+            HttpServletRequest request = ServletActionContext.getRequest();
+            ApsTenantApplicationUtils.extractCurrentTenantCode(request)
+                    .ifPresentOrElse(ApsTenantApplicationUtils::setTenant,ApsTenantApplicationUtils::removeTenant);
+
+            return invocation.invoke();
+
+        } finally {
+            ApsTenantApplicationUtils.removeTenant();
+        }
+    }
 }

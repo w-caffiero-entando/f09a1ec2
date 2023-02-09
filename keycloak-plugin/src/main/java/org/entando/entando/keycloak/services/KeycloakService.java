@@ -30,13 +30,16 @@ import static org.entando.entando.KeycloakWiki.wiki;
 @Service
 public class KeycloakService {
 
-    private OpenIDConnectService oidcService;
-    private KeycloakConfiguration configuration;
+    private final OpenIDConnectService oidcService;
+    private final KeycloakConfiguration configuration;
+    private final RestTemplate restTemplate;
+
 
     @Autowired
-    public KeycloakService(final KeycloakConfiguration configuration, final OpenIDConnectService oidcService) {
+    public KeycloakService(final KeycloakConfiguration configuration, final OpenIDConnectService oidcService, final RestTemplate rest) {
         this.configuration = configuration;
         this.oidcService = oidcService;
+        this.restTemplate = rest;
     }
 
     public List<UserRepresentation> listUsers() {
@@ -51,8 +54,9 @@ public class KeycloakService {
         String token = this.extractToken();
         final ResponseEntity<UserRepresentation[]> response = this.executeRequest(token, url,
                 HttpMethod.GET, createEntity(token), UserRepresentation[].class, params);
-        List<UserRepresentation> list = response.getBody() != null ? Arrays.asList(response.getBody()) : Collections.emptyList();
-        return list;
+        return Optional.ofNullable(response.getBody())
+                .map(Arrays::asList)
+                .orElse(Collections.emptyList());
     }
 
     public void removeUser(final String uuid) {
@@ -110,7 +114,6 @@ public class KeycloakService {
 
     private <T, Y> ResponseEntity<Y> executeRequest(String token, final String url, final HttpMethod method, final HttpEntity<T> entity,
                                                     final Class<Y> result, final Map<String, String> params, int retryCount) {
-        final RestTemplate restTemplate = new RestTemplate();
         try {
             final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
             params.forEach(builder::queryParam);

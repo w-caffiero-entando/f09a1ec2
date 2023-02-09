@@ -24,30 +24,37 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-/**
- * @author E.Santoboni
- */
-public class TenantManager extends AbstractService implements ITenantManager {
+@Component
+public class TenantManager extends AbstractService implements ITenantManager, InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantManager.class);
 
-    @Value("${ENTANDO_TENANTS:}")
-    private String tenantsConfigAsString;
-    @Autowired
-    private ObjectMapper objectMapper;
-    private Map<String, DataSource> dataSources = new HashMap<>();
+
+    private final String tenantsConfigAsString;
+    private final ObjectMapper objectMapper;
+    private transient Map<String, DataSource> dataSources = new HashMap<>();
     private Map<String, TenantConfig> tenantsMap = new HashMap<>();
+
+    @Autowired
+    public TenantManager(@Value("${ENTANDO_TENANTS:}") String s, ObjectMapper o){
+        this.tenantsConfigAsString = s;
+        this.objectMapper = o;
+    }
 
     @Override
     public void init() throws Exception {
         try {
             this.initTenantsCodes();
+
+            // FIXME!  should init datasources map ?
+
         } catch (Exception e) {
             logger.error("Error extracting tenant configs", e);
         }
@@ -110,23 +117,18 @@ public class TenantManager extends AbstractService implements ITenantManager {
         return tenantsMap.get(tenantCode);
     }
 
-    protected Map<String, DataSource> getDataSources() {
+    private Map<String, DataSource> getDataSources() {
         return dataSources;
     }
 
-    private void initTenantsCodes() throws EntException {
-        try {
-            if (!StringUtils.isBlank(this.tenantsConfigAsString)) {
-                List<TenantConfig> list = this.objectMapper.readValue(tenantsConfigAsString, new TypeReference<List<Map>>(){})
-                        .stream()
-                        .map(c -> new TenantConfig(c))
-                        .collect(Collectors.toList());
+    private void initTenantsCodes() throws Exception {
+        if (!StringUtils.isBlank(this.tenantsConfigAsString)) {
+            List<TenantConfig> list = this.objectMapper.readValue(tenantsConfigAsString, new TypeReference<List<Map<String,String>>>(){})
+                    .stream()
+                    .map(TenantConfig::new)
+                    .collect(Collectors.toList());
 
-                tenantsMap = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
-            }
-        } catch (Exception e) {
-            logger.error("Error extracting tenant configs", e);
-            throw new EntException("Error loading tenants", e);
+            tenantsMap = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
         }
     }
 
@@ -146,5 +148,10 @@ public class TenantManager extends AbstractService implements ITenantManager {
         basicDataSource.setMaxWaitMillis(config.getMaxWaitMillis());
         basicDataSource.setInitialSize(config.getInitialSize());
         return basicDataSource;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        init();
     }
 }

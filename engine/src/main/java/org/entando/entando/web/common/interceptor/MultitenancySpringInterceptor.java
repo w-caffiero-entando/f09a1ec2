@@ -13,27 +13,17 @@
  */
 package org.entando.entando.web.common.interceptor;
 
-import com.agiletec.aps.system.EntThreadLocal;
-import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
 
-/**
- * @author E.Santoboni
- */
-public class MultitenancyInterceptor extends HandlerInterceptorAdapter {
+public class MultitenancySpringInterceptor implements AsyncHandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String tenantCode = ApsWebApplicationUtils.extractCurrentTenantCode(request);
-        if (tenantCode != null) {
-            EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
-        } else {
-            EntThreadLocal.remove(ITenantManager.THREAD_LOCAL_TENANT_CODE);
-        }
+        ApsTenantApplicationUtils.extractCurrentTenantCode(request)
+                .ifPresentOrElse(ApsTenantApplicationUtils::setTenant, ApsTenantApplicationUtils::removeTenant);
         return true;
     }
 
@@ -42,7 +32,7 @@ public class MultitenancyInterceptor extends HandlerInterceptorAdapter {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler, Exception ex) {
-        EntThreadLocal.remove(ITenantManager.THREAD_LOCAL_TENANT_CODE);
+        ApsTenantApplicationUtils.removeTenant();
     }
 
 }

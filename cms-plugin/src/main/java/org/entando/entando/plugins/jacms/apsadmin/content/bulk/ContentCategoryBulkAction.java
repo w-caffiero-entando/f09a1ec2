@@ -13,12 +13,13 @@
  */
 package org.entando.entando.plugins.jacms.apsadmin.content.bulk;
 
-import com.agiletec.aps.system.EntThreadLocal;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.plugins.jacms.apsadmin.content.bulk.util.ContentBulkActionSummary;
 import org.entando.entando.plugins.jacms.apsadmin.content.bulk.util.IContentBulkActionHelper;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -84,13 +85,13 @@ public class ContentCategoryBulkAction extends AbstractTreeAction {
 				if (categories == null) {
 					return INPUT;
 				} else {
-					String tenantCode = ApsWebApplicationUtils.extractCurrentTenantCode(this.getRequest());
+					Optional<String> tenantCode = ApsTenantApplicationUtils.extractCurrentTenantCode(this.getRequest());
 					BaseContentPropertyBulkCommand<Category> command = this.initBulkCommand(categories);
 					this.getSelectedIds().parallelStream().forEach(contentId -> {
 						try {
-							if (null != tenantCode) {
-								EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
-							}
+							tenantCode
+									.filter(StringUtils::isNotBlank)
+									.ifPresent(ApsTenantApplicationUtils::setTenant);
 							command.apply(contentId);
 						} catch (Exception e) {
 							_logger.error("Error executing " +command.getClass().getName() + " on contents ");

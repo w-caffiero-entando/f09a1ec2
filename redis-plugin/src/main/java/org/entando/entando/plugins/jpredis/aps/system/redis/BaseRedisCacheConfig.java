@@ -55,9 +55,9 @@ public class BaseRedisCacheConfig extends CachingConfigurerSupport {
         long ttlInSeconds = TimeUnit.HOURS.toSeconds(4);
 
         cacheConfigurations.put(ICacheInfoManager.DEFAULT_CACHE_NAME, createCacheConfiguration(ttlInSeconds));
-        tenantManager.getCodes().stream().forEach(c -> {
-            cacheConfigurations.put(c + "_" + ICacheInfoManager.DEFAULT_CACHE_NAME, createCacheConfiguration(4L * 60 * 60));
-        });
+        for(String tenant: tenantManager.getCodes()){
+            cacheConfigurations.put(tenant + "_" + ICacheInfoManager.DEFAULT_CACHE_NAME, createCacheConfiguration(4L * 60 * 60));
+        }
 
         CacheFrontend<String, Object> cacheFrontend = cacheFrontendManager.getCacheFrontend();
         return LettuceCacheManager.builder(redisConnectionFactory)

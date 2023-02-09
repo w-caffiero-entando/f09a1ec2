@@ -13,7 +13,7 @@
  */
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
-import com.agiletec.aps.system.EntThreadLocal;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import io.lettuce.core.support.caching.CacheFrontend;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.springframework.cache.Cache;
 import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
 import org.springframework.data.redis.cache.RedisCache;
@@ -262,8 +261,9 @@ public class LettuceCacheManager extends AbstractTransactionSupportingCacheManag
 
 	@Override
 	public Cache getCache(String name) {
-		String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
-		String prefix = (null != tenantCode) ? tenantCode + "_" : "";
+		String prefix = ApsTenantApplicationUtils.getTenant()
+				.map(tenantCode -> tenantCode + "_")
+				.orElse("");
 		return super.getCache(prefix + name);
 	}
 

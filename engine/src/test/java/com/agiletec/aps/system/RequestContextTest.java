@@ -18,7 +18,7 @@ class RequestContextTest {
         Assertions.assertNull(EntThreadLocal.get(keyTest));
         Assertions.assertEquals(paramValue, reqCtx.getExtraParam(keyTest));
 
-        EntThreadLocal.init();
+        EntThreadLocal.initOrClear();
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_WIDGET, paramValue);
         Assertions.assertEquals(paramValue, EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_WIDGET));
 

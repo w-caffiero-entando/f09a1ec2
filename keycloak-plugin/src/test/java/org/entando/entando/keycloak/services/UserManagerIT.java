@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class UserManagerIT {
@@ -36,7 +37,7 @@ class UserManagerIT {
     void setUp() {
         final KeycloakConfiguration configuration = KeycloakTestConfiguration.getConfiguration();
         final OpenIDConnectService oidcService = new OpenIDConnectService(configuration);
-        final KeycloakService keycloakService = new KeycloakService(configuration, oidcService);
+        final KeycloakService keycloakService = new KeycloakService(configuration, oidcService, new RestTemplate());
         userManager = new KeycloakUserManager(authorizationManager, keycloakService, oidcService);
 
         KeycloakTestConfiguration.deleteUsers();

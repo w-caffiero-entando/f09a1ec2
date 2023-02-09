@@ -16,16 +16,14 @@ package org.entando.entando.aps.system.services.tenants;
 import java.util.List;
 import javax.sql.DataSource;
 
-/**
- * @author E.Santoboni
- */
 public interface ITenantManager {
 
-    static final String THREAD_LOCAL_TENANT_CODE = "threadLocal_tenantCode";
-    static final int DEFAULT_DB_MAX_TOTAL = 10;
-    static final int DEFAULT_DB_MAX_IDLE = 2;
-    static final int DEFAULT_DB_MAX_WAIT_MS = 20000;
-    static final int DEFAULT_DB_INITIAL_SIZE = 2;
+    String THREAD_LOCAL_TENANT_CODE = "threadLocal_tenantCode";
+    int DEFAULT_DB_MAX_TOTAL = 10;
+    int DEFAULT_DB_MAX_IDLE = 2;
+    int DEFAULT_DB_MAX_WAIT_MS = 20000;
+    int DEFAULT_DB_INITIAL_SIZE = 2;
+
     boolean exists(String tenantCode);
 
     List<String> getCodes();

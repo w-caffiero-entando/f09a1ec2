@@ -102,7 +102,7 @@
     </bean>
 
     <bean id="tenantInterceptor"
-          class="org.entando.entando.web.common.interceptor.MultitenancyInterceptor" />
+          class="org.entando.entando.web.common.interceptor.MultitenancySpringInterceptor" />
     <bean id="entandoInterceptor"
           class="org.entando.entando.web.common.interceptor.EntandoOauth2Interceptor" />
     <bean id="activityStreamInterceptor"

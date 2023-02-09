@@ -9,7 +9,7 @@ import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
-import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.UUID;
@@ -26,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.KeycloakWiki;
 import org.entando.entando.aps.servlet.security.GuestAuthentication;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.keycloak.services.KeycloakAuthorizationManager;
 import org.entando.entando.keycloak.services.KeycloakConfiguration;
@@ -75,18 +74,19 @@ public class KeycloakFilter implements Filter {
     public void doFilter(final ServletRequest servletRequest,
                          final ServletResponse servletResponse,
                          final FilterChain chain) throws IOException, ServletException {
-        try {
-            if (!configuration.isEnabled()) {
-                chain.doFilter(servletRequest, servletResponse);
-                return;
-            }
+        if (!configuration.isEnabled()) {
+            chain.doFilter(servletRequest, servletResponse);
+            return;
+        }
 
-            EntThreadLocal.init();
+        try {
+            EntThreadLocal.initOrClear();
+
             final HttpServletRequest request = (HttpServletRequest) servletRequest;
-            String tenantCode = ApsWebApplicationUtils.extractCurrentTenantCode(request);
-            if (tenantCode != null) {
-                EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
-            }
+            ApsTenantApplicationUtils.extractCurrentTenantCode(request)
+                    .filter(StringUtils::isNotBlank)
+                    .ifPresent(ApsTenantApplicationUtils::setTenant);
+
             final HttpServletResponse response = (HttpServletResponse) servletResponse;
 
             if (!API_PATH.equals(request.getServletPath())) {
@@ -117,16 +117,10 @@ public class KeycloakFilter implements Filter {
                     chain.doFilter(request, response);
             }
 
-            // FIXME this must be in finally ?
+        } finally {
+            // moved here to clean context everytime also if we have an exception
             EntThreadLocal.destroy();
-        } catch (Exception ex) {
-            log.error("error keycloak filter",ex);
-            throw ex;
         }
-    }
-
-    protected String getFullResourcePath(HttpServletRequest request) {
-        return request.getServerName() + request.getServletPath() + request.getPathInfo();
     }
 
     private void handleLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -307,12 +301,13 @@ public class KeycloakFilter implements Filter {
                 ? session.getAttribute(SESSION_PARAM_REDIRECT).toString()
                 : "/do/main";
         String baseUrl = this.getBaseURL(request);
-        log.info("Redirecting user to {}", (baseUrl + request.getContextPath() + redirectPath));
+        String redirectUrl = baseUrl + request.getContextPath() + redirectPath;
+        log.info("Redirecting user to {}", redirectUrl);
         session.setAttribute(SESSION_PARAM_REDIRECT, null);
-        response.sendRedirect(baseUrl + request.getContextPath() + redirectPath);
+        response.sendRedirect(redirectUrl);
     }
 
-    protected String getBaseURL(HttpServletRequest request) {
+    private String getBaseURL(HttpServletRequest request) {
         StringBuilder link = new StringBuilder();
         String reqScheme = request.getHeader("X-Forwarded-Proto");
         if (StringUtils.isBlank(reqScheme)) {
@@ -334,6 +329,8 @@ public class KeycloakFilter implements Filter {
         if (!checkPort) {
             link.append(":").append(request.getServerPort());
         }
+        log.debug("Calculated baseURL:'{}' from reqScheme:'{}' serverName:'{} hostName:'{}''",
+                link, reqScheme, serverName, hostName);
         return link.toString();
     }
 

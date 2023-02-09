@@ -14,6 +14,7 @@
 package org.entando.entando.aps.system.services.controller.executor;
 
 import com.agiletec.aps.system.EntThreadLocal;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import java.util.Objects;
+import java.util.Optional;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -34,7 +36,6 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang.StringUtils;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,24 +74,25 @@ public abstract class AbstractWidgetExecutorService {
 			Widget[] widgets = page.getWidgets();
 			if (this.parallelWidgetRender) {
 				List<Widget> widgetList = Arrays.asList(widgets);
-				String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
+				Optional<String> tenantCode = ApsTenantApplicationUtils.extractCurrentTenantCode(reqCtx.getRequest());
 				widgetList.parallelStream().forEach(w -> {
-					EntThreadLocal.init();
 					int frame = widgetList.indexOf(w);
-					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
-					if (null != tenantCode) {
-						EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
-					}
-					Widget widget = widgets[frame];
 					try {
+						EntThreadLocal.initOrClear();
+						reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
+
+						tenantCode.ifPresent(ApsTenantApplicationUtils::setTenant);
+
+						Widget widget = widgets[frame];
 						widgetOutput[frame] = this.buildWidgetOutput(reqCtx, widget, decorators);
 					} catch (Exception e) {
 						_logger.error("Error extracting output for frame " + frame, e);
+					} finally {
+						EntThreadLocal.destroy();
 					}
-					EntThreadLocal.destroy();
 				});
 			} else {
-				EntThreadLocal.init();
+				EntThreadLocal.initOrClear();
 				for (int frame = 0; frame < widgets.length; frame++) {
 					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
 					Widget widget = widgets[frame];

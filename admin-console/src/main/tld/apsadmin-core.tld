@@ -9,7 +9,7 @@
 	<tag>
 		<description><![CDATA[Execute an action from within a view. Added tenant management]]></description>
 		<name>action</name>
-		<tag-class>org.entando.entando.apsadmin.tags.ActionTag</tag-class>
+		<tag-class>org.entando.entando.apsadmin.tags.ActionTagTenantAware</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description><![CDATA[Whether the result of this action (probably a view) should be executed/rendered]]></description>

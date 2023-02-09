@@ -1,6 +1,6 @@
 package org.entando.entando.keycloak.services;
 
-import com.agiletec.aps.system.EntThreadLocal;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
@@ -19,9 +19,6 @@ public class KeycloakConfiguration {
     private String secureUris;
     private String defaultAuthorizations;
 
-    protected ITenantManager getTenantManager() {
-        return tenantManager;
-    }
     @Autowired
     public void setTenantManager(ITenantManager tenantManager) {
         this.tenantManager = tenantManager;
@@ -39,6 +36,7 @@ public class KeycloakConfiguration {
     public String getAuthUrl() {
         return getCurrentConfig()
                 .map(TenantConfig::getKcAuthUrl)
+                .filter(StringUtils::isNotBlank)
                 .orElse(authUrl);
     }
     public void setAuthUrl(String authUrl) {
@@ -48,6 +46,7 @@ public class KeycloakConfiguration {
     public String getRealm() {
         return getCurrentConfig()
                 .map(TenantConfig::getKcRealm)
+                .filter(StringUtils::isNotBlank)
                 .orElse(realm);
     }
     public void setRealm(String realm) {
@@ -57,6 +56,8 @@ public class KeycloakConfiguration {
     public String getClientId() {
         return getCurrentConfig()
                 .map(TenantConfig::getKcClientId)
+                // FIXME we should fix for blank ...
+                .filter(StringUtils::isNotBlank)
                 .orElse(clientId);
     }
     public void setClientId(String clientId) {
@@ -66,6 +67,7 @@ public class KeycloakConfiguration {
     public String getClientSecret() {
         return getCurrentConfig()
                 .map(TenantConfig::getKcClientSecret)
+                .filter(StringUtils::isNotBlank)
                 .orElse(clientSecret);
     }
     public void setClientSecret(String clientSecret) {
@@ -75,6 +77,7 @@ public class KeycloakConfiguration {
     public String getPublicClientId() {
         return getCurrentConfig()
                 .map(TenantConfig::getKcPublicClientId)
+                .filter(StringUtils::isNotBlank)
                 .orElse(publicClientId);
     }
     public void setPublicClientId(String publicClientId) {
@@ -84,6 +87,7 @@ public class KeycloakConfiguration {
     public String getSecureUris() {
         return getCurrentConfig()
                 .map(TenantConfig::getKcSecureUris)
+                .filter(StringUtils::isNotBlank)
                 .orElse(secureUris);
     }
     public void setSecureUris(String secureUris) {
@@ -93,6 +97,7 @@ public class KeycloakConfiguration {
     public String getDefaultAuthorizations() {
         return getCurrentConfig()
                 .map(TenantConfig::getKcDefaultAuthorizations)
+                .filter(StringUtils::isNotBlank)
                 .orElse(defaultAuthorizations);
     }
     public void setDefaultAuthorizations(String defaultAuthorizations) {
@@ -100,7 +105,8 @@ public class KeycloakConfiguration {
     }
 
     private Optional<TenantConfig> getCurrentConfig() {
-        return Optional.ofNullable((String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE))
-                .filter(StringUtils::isNotBlank).map(tenantManager::getConfig);
+        return ApsTenantApplicationUtils.getTenant()
+                .filter(StringUtils::isNotBlank)
+                .map(tenantManager::getConfig);
     }
 }
