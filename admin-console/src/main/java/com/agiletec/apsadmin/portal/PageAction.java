@@ -484,7 +484,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
     }
 
     private void valueMetadataFromForm(PageMetadata metadata) {
-        if (null != this.getModel() && (metadata.getModelCode() == null || !metadata.getModelCode().equals(this.getModel()))) {
+        if (StringUtils.isNotBlank(this.getModel()) && (metadata.getModelCode() == null || !metadata.getModelCode().equals(this.getModel()))) {
             PageModel extractedModel = this.getPageModelManager().getPageModel(this.getModel());
             metadata.setModelCode(extractedModel.getCode());
         }
