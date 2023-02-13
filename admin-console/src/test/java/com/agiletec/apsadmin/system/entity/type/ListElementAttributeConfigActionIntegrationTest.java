@@ -32,7 +32,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ListElementAttributeConfigActionIntegrationTest extends ApsAdminBaseTestCase {
+class ListElementAttributeConfigActionIntegrationTest extends ApsAdminBaseTestCase {
 
 
     @Test
