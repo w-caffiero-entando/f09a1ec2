@@ -40,7 +40,7 @@ public class TenantManager extends AbstractService implements ITenantManager, In
     private final String tenantsConfigAsString;
     private final ObjectMapper objectMapper;
     private transient Map<String, DataSource> dataSources = new HashMap<>();
-    private Map<String, TenantConfig> tenantsMap = new HashMap<>();
+    private transient Map<String, TenantConfig> tenantsMap = new HashMap<>();
 
     @Autowired
     public TenantManager(@Value("${ENTANDO_TENANTS:}") String s, ObjectMapper o){
@@ -52,8 +52,6 @@ public class TenantManager extends AbstractService implements ITenantManager, In
     public void init() throws Exception {
         try {
             this.initTenantsCodes();
-
-            // FIXME!  should init datasources map ?
 
         } catch (Exception e) {
             logger.error("Error extracting tenant configs", e);
@@ -94,12 +92,17 @@ public class TenantManager extends AbstractService implements ITenantManager, In
 
     @Override
     public String getTenantCodeByDomainPrefix(String domainPrefix) {
-        return tenantsMap.values().stream()
+        String tenantCode =  tenantsMap.values().stream()
                 .filter(v -> StringUtils.equals(domainPrefix, v.getDomainPrefix()))
                 .map(tc -> tc.getTenantCode())
                 .filter(StringUtils::isNotBlank)
                 .findFirst()
                 .orElse(getCodes().stream().filter(code -> StringUtils.equals(code, domainPrefix)).findFirst().orElse(null));
+        if(logger.isDebugEnabled()) {
+            logger.debug("From domainPrefix:'{}' retrieved tenantCode:'{}' from codes:'{}'",
+                    domainPrefix, tenantCode, getCodes().stream().collect(Collectors.joining(",")));
+        }
+        return tenantCode;
     }
 
     @Override

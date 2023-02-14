@@ -16,8 +16,12 @@ package org.entando.entando.apsadmin.tags;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import javax.servlet.jsp.JspException;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ActionTagTenantAware extends org.apache.struts2.views.jsp.ActionTag {
+
+    private static Logger logger = LoggerFactory.getLogger(ActionTagTenantAware.class);
 
     private String prevTenantCode;
 
@@ -26,6 +30,7 @@ public class ActionTagTenantAware extends org.apache.struts2.views.jsp.ActionTag
         ApsTenantApplicationUtils.getTenant()
                 .filter(StringUtils::isNotBlank)
                 .ifPresent(tenantCode -> this.prevTenantCode = tenantCode);
+        logger.trace("Tag tenant aware start saved previous tenant code:'{}'", prevTenantCode);
         return super.doStartTag();
     }
 
@@ -34,6 +39,7 @@ public class ActionTagTenantAware extends org.apache.struts2.views.jsp.ActionTag
         int result = super.doEndTag();
         if (StringUtils.isNotBlank(this.prevTenantCode)) {
             ApsTenantApplicationUtils.setTenant(this.prevTenantCode);
+            logger.trace("Tag tenant aware end reset previous tenant code:'{}'", prevTenantCode);
         }
         this.prevTenantCode = null;
         return result;

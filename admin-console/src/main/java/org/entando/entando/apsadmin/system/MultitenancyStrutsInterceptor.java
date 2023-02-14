@@ -26,7 +26,7 @@ public class MultitenancyStrutsInterceptor extends AbstractInterceptor {
     public String intercept(ActionInvocation invocation) throws Exception {
 
         try {
-            EntThreadLocal.initOrClear();
+            EntThreadLocal.clear();
 
             HttpServletRequest request = ServletActionContext.getRequest();
             ApsTenantApplicationUtils.extractCurrentTenantCode(request)

@@ -17,8 +17,12 @@ import com.agiletec.aps.system.EntThreadLocal;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ApsTenantApplicationUtils {
+
+	private static Logger logger = LoggerFactory.getLogger(ApsTenantApplicationUtils.class);
 
 	private ApsTenantApplicationUtils(){}
 
@@ -29,8 +33,11 @@ public final class ApsTenantApplicationUtils {
 	}
 
 	private static String getDomainAndSkipWWWIfPresent(HttpServletRequest request){
-		String[] domainSections = request.getServerName().split("\\.");
-		return ( "www".equalsIgnoreCase(domainSections[0])) ? domainSections[1] : domainSections[0];
+		String serverName = request.getServerName();
+		String[] domainSections = serverName.split("\\.");
+		String domainPrefix = ( "www".equalsIgnoreCase(domainSections[0])) ? domainSections[1] : domainSections[0];
+		logger.debug("Retrieved from serverName:'{}' the domainPrefix:'{}'", serverName, domainPrefix);
+		return domainPrefix;
 	}
 
 	public static Optional<String> getTenant() {
@@ -38,6 +45,7 @@ public final class ApsTenantApplicationUtils {
 	}
 
 	public static void setTenant(String value) {
+		logger.debug("set tenant:'{}' into ThreadLocal", value);
 		EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, value);
 	}
 

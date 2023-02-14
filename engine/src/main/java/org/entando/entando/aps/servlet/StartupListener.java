@@ -38,6 +38,7 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
+        long startMs = System.currentTimeMillis();
         ServletContext svCtx = event.getServletContext();
         String msg = this.getClass().getName() + ": INIT " + svCtx.getServletContextName();
         ApsSystemUtils.directStdoutTrace(msg, true);
@@ -73,19 +74,22 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
 
         ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, svCtx);
         tenantManager.getCodes().stream().forEach(tenantCode -> {
-            // FIXME! or to review better, there is no use of tenant in system refresh
-            //  and bean are singleton so is not a best practice ...
+
             ApsTenantApplicationUtils.setTenant(tenantCode);
             try {
+                LOGGER.info("refresh bean for tenant:'{}'", tenantCode);
                 ApsWebApplicationUtils.executeSystemRefresh(svCtx);
             } catch (Throwable t) {
                 LOGGER.error("Error initializing '{}' tenant", tenantCode, t);
             }
-            // FIXME remove and use slf4j with marker
-            // https://stackoverflow.com/questions/27547773/slf4j-logging-regardless-of-the-log-level
             String tenantMsg = this.getClass().getName() + ": Tenant '" + tenantCode + "' inizialized";
             ApsSystemUtils.directStdoutTrace(tenantMsg, true);
         });
+        long endMs = System.currentTimeMillis();
+        String executionTimeMsg = String.format("%s: contextInitialized takes ms:'%s' of execution",
+                this.getClass().getName(), endMs - startMs);
+        ApsSystemUtils.directStdoutTrace(executionTimeMsg, true);
+
     }
 
 }

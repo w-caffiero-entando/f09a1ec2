@@ -19,10 +19,7 @@ import javax.sql.DataSource;
 public interface ITenantManager {
 
     String THREAD_LOCAL_TENANT_CODE = "threadLocal_tenantCode";
-    int DEFAULT_DB_MAX_TOTAL = 10;
-    int DEFAULT_DB_MAX_IDLE = 2;
-    int DEFAULT_DB_MAX_WAIT_MS = 20000;
-    int DEFAULT_DB_INITIAL_SIZE = 2;
+
 
     boolean exists(String tenantCode);
 

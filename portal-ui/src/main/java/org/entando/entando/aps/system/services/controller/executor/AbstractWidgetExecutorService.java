@@ -78,7 +78,7 @@ public abstract class AbstractWidgetExecutorService {
 				widgetList.parallelStream().forEach(w -> {
 					int frame = widgetList.indexOf(w);
 					try {
-						EntThreadLocal.initOrClear();
+						EntThreadLocal.clear();
 						reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
 
 						tenantCode.ifPresent(ApsTenantApplicationUtils::setTenant);
@@ -92,7 +92,7 @@ public abstract class AbstractWidgetExecutorService {
 					}
 				});
 			} else {
-				EntThreadLocal.initOrClear();
+				EntThreadLocal.clear();
 				for (int frame = 0; frame < widgets.length; frame++) {
 					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
 					Widget widget = widgets[frame];

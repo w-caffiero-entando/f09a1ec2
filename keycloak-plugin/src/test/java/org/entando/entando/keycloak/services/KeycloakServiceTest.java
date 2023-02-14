@@ -1,3 +1,16 @@
+/*
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.keycloak.services;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -5,16 +18,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import org.apache.http.util.Asserts;
-import org.assertj.core.api.Assertions;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.entando.entando.aps.system.services.tenants.TenantManager;
 import org.entando.entando.keycloak.services.oidc.OpenIDConnectService;
 import org.entando.entando.keycloak.services.oidc.exception.OidcException;
 import org.entando.entando.keycloak.services.oidc.model.AuthResponse;
 import org.entando.entando.keycloak.services.oidc.model.UserRepresentation;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +35,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -62,7 +71,7 @@ class KeycloakServiceTest {
         );
 
         List<UserRepresentation> users = keycloakService.listUsers();
-        Assertions.assertThat(users).isEmpty();
+        Assertions.assertTrue(users.isEmpty());
 
     }
 
@@ -74,7 +83,7 @@ class KeycloakServiceTest {
         Mockito.when(keycloakConfiguration.getRealm()).thenReturn("my-realm");
 
         Mockito.when(openIDConnectService.authenticateAPI()).thenThrow(new OidcException(new Exception("test-message")));
-        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () ->keycloakService.listUsers());
+        Assertions.assertThrows(RuntimeException.class, () ->keycloakService.listUsers());
 
         AuthResponse resp = new AuthResponse();
         resp.setAccessToken("access-token-fake");
@@ -84,12 +93,12 @@ class KeycloakServiceTest {
         Mockito.when(restTemplate.exchange(eq(uri), eq(HttpMethod.GET), any(), eq(UserRepresentation[].class))).thenThrow(
                 new HttpClientErrorException(HttpStatus.FORBIDDEN)
         );
-        org.junit.jupiter.api.Assertions.assertThrows(RestServerError.class, () ->keycloakService.listUsers());
+        Assertions.assertThrows(RestServerError.class, () ->keycloakService.listUsers());
 
         Mockito.reset(restTemplate);
         Mockito.when(restTemplate.exchange(eq(uri), eq(HttpMethod.GET), any(), eq(UserRepresentation[].class))).thenThrow(
                 new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR)
         );
-        org.junit.jupiter.api.Assertions.assertThrows(HttpClientErrorException.class, () ->keycloakService.listUsers());
+        Assertions.assertThrows(HttpClientErrorException.class, () ->keycloakService.listUsers());
     }
 }

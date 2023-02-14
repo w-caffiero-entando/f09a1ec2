@@ -1,3 +1,16 @@
+/*
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package com.agiletec.aps.util;
 
 import java.util.Optional;
@@ -46,16 +59,16 @@ class ApsTenantApplicationUtilsTest {
     @Test
     void shouldGetSetRemoveWorkCorrectTenantCodeWithEveryInput() {
 
-        Optional<String> tanant = ApsTenantApplicationUtils.getTenant();
-        Assertions.assertThat(tanant).isNotPresent();
+        Optional<String> tenant = ApsTenantApplicationUtils.getTenant();
+        Assertions.assertThat(tenant).isNotPresent();
 
         ApsTenantApplicationUtils.setTenant("tCode");
-        tanant = ApsTenantApplicationUtils.getTenant();
-        Assertions.assertThat(tanant.get()).isNotEmpty().isEqualTo("tCode");
+        tenant = ApsTenantApplicationUtils.getTenant();
+        Assertions.assertThat(tenant.get()).isNotEmpty().isEqualTo("tCode");
 
         ApsTenantApplicationUtils.removeTenant();
-        tanant = ApsTenantApplicationUtils.getTenant();
-        Assertions.assertThat(tanant).isNotPresent();
+        tenant = ApsTenantApplicationUtils.getTenant();
+        Assertions.assertThat(tenant).isNotPresent();
 
     }
 

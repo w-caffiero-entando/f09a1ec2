@@ -1,12 +1,25 @@
+/*
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.keycloak.services;
 
-import static org.mockito.ArgumentMatchers.any;
-
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
+import java.util.HashMap;
 import java.util.Map;
-import org.assertj.core.api.Assertions;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.entando.entando.aps.system.services.tenants.TenantManager;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -19,13 +32,22 @@ class KeycloakConfigurationTest {
     @Mock
     private TenantManager tenantManager;
 
+    @BeforeEach
+    void setUp(){
+        Mockito.reset(tenantManager);
+    }
+
     @Test
-    void shouldConfigManageDefaultAndTenants(){
+    void shouldConfigManageDefaultWhenTenantNotPresent() {
         KeycloakConfiguration kc = new KeycloakConfiguration();
         kc.setTenantManager(tenantManager);
 
         // we need this because there is no filter or http request
         ApsTenantApplicationUtils.setTenant("my-test-tenant");
+
+        Mockito.when(tenantManager.getConfig("my-test-tenant")).thenReturn(null);
+        kc.setTenantManager(tenantManager);
+
 
         kc.setEnabled(true);
         kc.setClientId("default-client-id");
@@ -36,30 +58,90 @@ class KeycloakConfigurationTest {
         kc.setRealm("default-realm");
         kc.setPublicClientId("default-public-client-id");
 
-        Assertions.assertThat(kc.isEnabled()).isTrue();
-        Assertions.assertThat(kc.getClientId()).isEqualTo("default-client-id");
-        Assertions.assertThat(kc.getClientSecret()).isEqualTo("default-client-secret");
-        Assertions.assertThat(kc.getAuthUrl()).isEqualTo("/default-auth-url");
-        Assertions.assertThat(kc.getSecureUris()).isEqualTo("/default-secure-uris");
-        Assertions.assertThat(kc.getDefaultAuthorizations()).isEqualTo("default-auths");
-        Assertions.assertThat(kc.getRealm()).isEqualTo("default-realm");
-        Assertions.assertThat(kc.getPublicClientId()).isEqualTo("default-public-client-id");
+        Assertions.assertTrue(kc.isEnabled());
+        Assertions.assertEquals("default-client-id", kc.getClientId());
+        Assertions.assertEquals("default-client-secret",kc.getClientSecret());
+        Assertions.assertEquals("/default-auth-url", kc.getAuthUrl());
+        Assertions.assertEquals("/default-secure-uris", kc.getSecureUris());
+        Assertions.assertEquals("default-auths", kc.getDefaultAuthorizations());
+        Assertions.assertEquals("default-realm", kc.getRealm());
+        Assertions.assertEquals("default-public-client-id", kc.getPublicClientId());
 
-        Map<String,String> map = Map.of("kcClientId","tenant-client-id",
-                "kcEnabled","False",
+    }
+    @Test
+    void shouldConfigManageTenantsOrThrows(){
+        Map<String,String> map = Map.of(
+                "kcEnabled","True",
                 "kcRealm","tenant-realm",
-                "kcClientSecret","",
+                "kcClientId","tenant-client-id",
+                "kcClientSecret","default-client-secret",
+                "kcPublicClientId","tenant-public-client-id",
                 "kcAuthUrl","/tenant-auth-url",
-                "kcSecureUris","/tenant-secure-uris");
+                "kcSecureUris","/tenant-secure-uris",
+                "kcDefaultAuthorizations", "tenant-default-auth");
 
+        ApsTenantApplicationUtils.setTenant("my-test-tenant");
+        KeycloakConfiguration kc = new KeycloakConfiguration();
         TenantConfig tc = new TenantConfig(map);
-        Mockito.when(tenantManager.getConfig(any())).thenReturn(tc);
-        Assertions.assertThat(kc.isEnabled()).isFalse();
-        Assertions.assertThat(kc.getClientId()).isEqualTo("tenant-client-id");
-        Assertions.assertThat(kc.getClientSecret()).isEqualTo("default-client-secret");
-        Assertions.assertThat(kc.getRealm()).isEqualTo("tenant-realm");
-        Assertions.assertThat(kc.getSecureUris()).isEqualTo("/tenant-secure-uris");
-        Assertions.assertThat(kc.getAuthUrl()).isEqualTo("/tenant-auth-url");
+        Mockito.when(tenantManager.getConfig("my-test-tenant")).thenReturn(tc);
+        kc.setTenantManager(tenantManager);
+
+        Assertions.assertTrue(kc.isEnabled());
+        Assertions.assertEquals("tenant-realm", kc.getRealm());
+        Assertions.assertEquals("tenant-client-id", kc.getClientId());
+        Assertions.assertEquals("default-client-secret", kc.getClientSecret());
+        Assertions.assertEquals("tenant-public-client-id", kc.getPublicClientId());
+        Assertions.assertEquals("tenant-client-id", kc.getClientId());
+        Assertions.assertEquals("/tenant-auth-url", kc.getAuthUrl());
+        Assertions.assertEquals("/tenant-secure-uris", kc.getSecureUris());
+        Assertions.assertEquals("tenant-default-auth", kc.getDefaultAuthorizations());
+
+    }
+
+    @Test
+    void shouldConfigManageThrows(){
+        ApsTenantApplicationUtils.setTenant("my-test-tenant");
+        KeycloakConfiguration kc = new KeycloakConfiguration();
+        TenantConfig tc = new TenantConfig(new HashMap<>());
+        Mockito.when(tenantManager.getConfig("my-test-tenant")).thenReturn(tc);
+        kc.setTenantManager(tenantManager);
+
+        Assertions.assertFalse(kc.isEnabled());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getRealm());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getClientId());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getClientSecret());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getPublicClientId());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getAuthUrl());
+        Assertions.assertNull(kc.getSecureUris());
+        Assertions.assertNull(kc.getDefaultAuthorizations());
+    }
+
+    @Test
+    void shouldConfigManageThrowsErrorWithConfigsEmpty(){
+        Map<String,String> map = Map.of(
+                "kcEnabled"," ",
+                "kcRealm","",
+                "kcClientId"," ",
+                "kcClientSecret","",
+                "kcPublicClientId"," ",
+                "kcAuthUrl","",
+                "kcSecureUris","",
+                "kcDefaultAuthorizations", "");
+
+        ApsTenantApplicationUtils.setTenant("my-test-tenant");
+        KeycloakConfiguration kc = new KeycloakConfiguration();
+        TenantConfig tc = new TenantConfig(map);
+        Mockito.when(tenantManager.getConfig("my-test-tenant")).thenReturn(tc);
+        kc.setTenantManager(tenantManager);
+
+        Assertions.assertFalse(kc.isEnabled());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getRealm());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getClientId());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getClientSecret());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getPublicClientId());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> kc.getAuthUrl());
+        Assertions.assertNull(kc.getSecureUris());
+        Assertions.assertNull(kc.getDefaultAuthorizations());
     }
 
 }

@@ -13,7 +13,6 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
@@ -40,6 +39,12 @@ public class TenantConfig {
     private static final String DB_MAX_IDLE_PROPERTY = "dbMaxIdle";
     private static final String DB_MAX_WAIT_MS_PROPERTY = "dbMaxWaitMillis";
     private static final String DB_INITIAL_SIZE_PROPERTY = "dbInitialSize";
+    private static final int DEFAULT_DB_MAX_TOTAL = 10;
+    private static final int DEFAULT_DB_MAX_IDLE = 2;
+    private static final int DEFAULT_DB_MAX_WAIT_MS = 20000;
+    private static final int DEFAULT_DB_INITIAL_SIZE = 2;
+
+
     private Map<String, String> configs;
 
     public TenantConfig(Map<String,String> c) {
@@ -121,19 +126,19 @@ public class TenantConfig {
     }
 
     public int getMaxTotal() {
-        return getIntegerValueOrDefault(TenantConfig.DB_MAX_TOTAL_PROPERTY, ITenantManager.DEFAULT_DB_MAX_TOTAL);
+        return getIntegerValueOrDefault(TenantConfig.DB_MAX_TOTAL_PROPERTY, DEFAULT_DB_MAX_TOTAL);
     }
 
     public int getMaxIdle() {
-        return getIntegerValueOrDefault(TenantConfig.DB_MAX_IDLE_PROPERTY, ITenantManager.DEFAULT_DB_MAX_IDLE);
+        return getIntegerValueOrDefault(TenantConfig.DB_MAX_IDLE_PROPERTY, DEFAULT_DB_MAX_IDLE);
     }
 
     public int getMaxWaitMillis() {
-        return getIntegerValueOrDefault(TenantConfig.DB_MAX_WAIT_MS_PROPERTY, ITenantManager.DEFAULT_DB_MAX_WAIT_MS);
+        return getIntegerValueOrDefault(TenantConfig.DB_MAX_WAIT_MS_PROPERTY, DEFAULT_DB_MAX_WAIT_MS);
     }
 
     public int getInitialSize() {
-        return getIntegerValueOrDefault(TenantConfig.DB_INITIAL_SIZE_PROPERTY, ITenantManager.DEFAULT_DB_INITIAL_SIZE);
+        return getIntegerValueOrDefault(TenantConfig.DB_INITIAL_SIZE_PROPERTY, DEFAULT_DB_INITIAL_SIZE);
     }
 
     private int getIntegerValueOrDefault(String paramName, int defaultValue) {

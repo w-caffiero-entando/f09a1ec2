@@ -80,7 +80,7 @@ public class KeycloakFilter implements Filter {
         }
 
         try {
-            EntThreadLocal.initOrClear();
+            EntThreadLocal.clear();
 
             final HttpServletRequest request = (HttpServletRequest) servletRequest;
             ApsTenantApplicationUtils.extractCurrentTenantCode(request)

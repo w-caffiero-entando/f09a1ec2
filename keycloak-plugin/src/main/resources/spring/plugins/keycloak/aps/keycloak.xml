@@ -19,13 +19,6 @@
         <property name="defaultAuthorizations" value="${keycloak.authenticated.user.default.authorizations:}" />
     </bean>
 
-    <!--
-    <bean id="keycloakService" class="org.entando.entando.keycloak.services.KeycloakService">
-        <constructor-arg index="0" ref="keycloakConfiguration"/>
-        <constructor-arg index="2" ref="keycloakRestTemplate"/>
-    </bean>
-    -->
-
     <bean id="AuthenticationProviderManager" primary="true" parent="abstractService"
           class="org.entando.entando.keycloak.adapter.AuthenticationProviderManagerAdapter">
 

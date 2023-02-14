@@ -45,7 +45,7 @@ class TestTenantController extends BaseTestCase {
 
     @Test
     void testService_1() throws EntException {
-        EntThreadLocal.initOrClear();
+        EntThreadLocal.clear();
         RequestContext reqCtx = this.createExtRequestContext("tenant1.test.serv.run", this.getApplicationContext());
         int status = this.tenantController.service(reqCtx, ControllerManager.CONTINUE);
         Assertions.assertEquals(ControllerManager.CONTINUE, status);
@@ -54,7 +54,7 @@ class TestTenantController extends BaseTestCase {
 
     @Test
     void testService_2() throws EntException {
-        EntThreadLocal.initOrClear();
+        EntThreadLocal.clear();
         RequestContext reqCtx = this.createExtRequestContext("test.serv.run", this.getApplicationContext());
         int status = this.tenantController.service(reqCtx, ControllerManager.CONTINUE);
         Assertions.assertEquals(ControllerManager.CONTINUE, status);

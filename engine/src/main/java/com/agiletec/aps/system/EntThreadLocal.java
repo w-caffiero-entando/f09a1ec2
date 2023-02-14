@@ -15,22 +15,27 @@ package com.agiletec.aps.system;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class EntThreadLocal {
 
+    private static Logger logger = LoggerFactory.getLogger(EntThreadLocal.class);
     private static final ThreadLocal<Map<String, Object>> sessionThreadLocal = new ThreadLocal<>();
 
     private EntThreadLocal() {
         throw new IllegalStateException("EntThreadLocal is an Utility class");
     }
 
-    public static void initOrClear() {
+    public static void clear() {
         Map<String, Object> map = getOrCreate();
+        logger.debug("clear map with num of elements:'{}'", map.size());
         map.clear();
     }
 
     public static void destroy() {
         Map<String, Object> map = getOrCreate();
+        logger.debug("destroy map with num of elements:'{}'", map.size());
         map.clear();
         sessionThreadLocal.remove();
     }
@@ -46,17 +51,20 @@ public final class EntThreadLocal {
 
     public static void set(String key, Object value) {
         Map<String, Object> map = getOrCreate();
+        logger.debug("set element in map with key:'{}'", key);
         map.put(key, value);
     }
 
     public static Object get(String key) {
         Map<String, Object> map = getOrCreate();
+        logger.debug("get element from map with key:'{}'", key);
         return map.get(key);
     }
 
     public static void remove(String key) {
         Map<String, Object> map = sessionThreadLocal.get();
         if (null != map) {
+            logger.debug("remove element from map with key:'{}'", key);
             map.remove(key);
         }
     }

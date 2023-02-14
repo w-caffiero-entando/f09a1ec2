@@ -406,9 +406,4 @@
         <property name="userPreferencesDAO" ref="UserPreferencesDAO" />
     </bean>
 
-    <!--
-    <bean id="TenantManager" class="org.entando.entando.aps.system.services.tenants.TenantManager" parent="abstractService" >
-    </bean>
-    -->
-
 </beans>

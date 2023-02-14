@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class KeycloakConfiguration {
 
+    private static final String MISSED_REQUIRED_TENANT_CONFIG_MSG = "Keycloak config from tenant missed tenant '%s' configuration";
     private ITenantManager tenantManager;
     private boolean enabled;
     private String authUrl;
@@ -33,31 +34,35 @@ public class KeycloakConfiguration {
         this.enabled = enabled;
     }
 
+    private String getFromTenantOrThrow(String value, String field){
+        return Optional.ofNullable(value)
+                .filter(StringUtils::isNotBlank)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(MISSED_REQUIRED_TENANT_CONFIG_MSG ,field)));
+    }
+
     public String getAuthUrl() {
         return getCurrentConfig()
-                .map(TenantConfig::getKcAuthUrl)
-                .filter(StringUtils::isNotBlank)
+                .map(tc -> getFromTenantOrThrow(tc.getKcAuthUrl(),"kcAuthUrl"))
                 .orElse(authUrl);
     }
+
     public void setAuthUrl(String authUrl) {
         this.authUrl = authUrl;
     }
 
     public String getRealm() {
         return getCurrentConfig()
-                .map(TenantConfig::getKcRealm)
-                .filter(StringUtils::isNotBlank)
+                .map(tc -> getFromTenantOrThrow(tc.getKcRealm(),"kcRealm"))
                 .orElse(realm);
     }
+
     public void setRealm(String realm) {
         this.realm = realm;
     }
 
     public String getClientId() {
         return getCurrentConfig()
-                .map(TenantConfig::getKcClientId)
-                // FIXME we should fix for blank ...
-                .filter(StringUtils::isNotBlank)
+                .map(tc -> getFromTenantOrThrow(tc.getKcClientId(),"kcClientId"))
                 .orElse(clientId);
     }
     public void setClientId(String clientId) {
@@ -66,40 +71,47 @@ public class KeycloakConfiguration {
 
     public String getClientSecret() {
         return getCurrentConfig()
-                .map(TenantConfig::getKcClientSecret)
-                .filter(StringUtils::isNotBlank)
+                .map(tc -> getFromTenantOrThrow(tc.getKcClientSecret(),"kcClientSecret"))
                 .orElse(clientSecret);
     }
+
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
     }
 
     public String getPublicClientId() {
         return getCurrentConfig()
-                .map(TenantConfig::getKcPublicClientId)
-                .filter(StringUtils::isNotBlank)
+                .map(tc -> getFromTenantOrThrow(tc.getKcPublicClientId(),"kcPublicClientId"))
                 .orElse(publicClientId);
     }
+
     public void setPublicClientId(String publicClientId) {
         this.publicClientId = publicClientId;
     }
 
     public String getSecureUris() {
-        return getCurrentConfig()
-                .map(TenantConfig::getKcSecureUris)
-                .filter(StringUtils::isNotBlank)
-                .orElse(secureUris);
+        try {
+            return getCurrentConfig()
+                    .map(tc -> getFromTenantOrThrow(tc.getKcSecureUris(),"kcSecureUris"))
+                    .orElse(secureUris);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
     public void setSecureUris(String secureUris) {
         this.secureUris = secureUris;
     }
 
     public String getDefaultAuthorizations() {
-        return getCurrentConfig()
-                .map(TenantConfig::getKcDefaultAuthorizations)
-                .filter(StringUtils::isNotBlank)
-                .orElse(defaultAuthorizations);
+        try {
+            return getCurrentConfig()
+                    .map(tc -> getFromTenantOrThrow(tc.getKcDefaultAuthorizations(),"kcDefaultAuthorizations"))
+                    .orElse(defaultAuthorizations);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
+
     public void setDefaultAuthorizations(String defaultAuthorizations) {
         this.defaultAuthorizations = defaultAuthorizations;
     }
