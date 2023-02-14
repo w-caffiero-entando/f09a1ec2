@@ -42,6 +42,6 @@ class RedisEnvironmentVariablesTest {
 
     @Test
     void testFrontEndCacheCheckDelay() {
-        Assertions.assertEquals(100, RedisEnvironmentVariables.frontEndCacheCheckDelay());
+        Assertions.assertEquals(30, RedisEnvironmentVariables.frontEndCacheCheckDelay());
     }
 }

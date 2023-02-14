@@ -121,8 +121,16 @@ public class UserAuthorizationAction extends BaseAction {
 				return USER_LIST;
 			}
 			if (null == this.getIndex()) return INPUT;
-			boolean result = this.getUserAuthsFormBean().removeAuthorization(this.getIndex());
-			if (!result) return INPUT;
+			UserAuthsFormBean authsBean = this.getUserAuthsFormBean();
+			boolean result = authsBean.removeAuthorization(this.getIndex());
+			if (!result) {
+				logger.debug("error removing user authorization with index:'{}' for user:'{}'",
+						getIndex(), authsBean.getUsername());
+				this.addActionError(this.getText("error.userAuthorization.invalidAuthIndex"));
+				return INPUT;
+			} else {
+				this.setUserAuthsFormBean(authsBean);
+			}
 		} catch (Throwable t) {
 			logger.error("error removing user authorization", t);
 			return FAILURE;

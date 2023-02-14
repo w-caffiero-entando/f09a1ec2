@@ -48,6 +48,10 @@ public class BaseCommonAction extends BaseAction {
 		}
 	}
 	
+	public String intro() {
+		return SUCCESS;
+	}
+	
 	public String editPassword() {
 		return SUCCESS;
 	}

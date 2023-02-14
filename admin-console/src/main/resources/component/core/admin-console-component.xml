@@ -8,11 +8,6 @@
         <version>${project.version}</version>
     </artifact>
     <installation>
-        <tableMapping>
-            <datasource name="servDataSource">
-                <table>authusershortcuts</table>
-            </datasource>
-        </tableMapping>
         <liquibase>
             <changeSet datasource="servDataSource" changeLogFile="classpath:liquibase/admin-console/changeSetServ.xml" />
         </liquibase>

@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import org.entando.entando.ent.exception.EntException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,6 +57,27 @@ import org.junit.jupiter.api.Test;
  * @author E.Santoboni
  */
 class TestPageAction extends ApsAdminBaseTestCase {
+
+    @Test
+    void shouldReturnErrorIfModelIsEmptyString() throws Throwable {
+        String selectedPageCode = "homepage";
+        this.setUserOnSession("admin");
+        this.initAction("/do/Page", "saveConfigure");
+        this.addParameter("selectedNode", selectedPageCode);
+        this.addParameter("pageCode", "page_code");
+        this.addParameter("model", ""); // this is an error
+        this.addParameter("group", "aaa");
+        this.addParameter("langit", "Pagina Test 1");
+        this.addParameter("langen", "Test Page 1");
+
+        String result = this.executeAction();
+
+        Map<String, List<String>> fieldErrors = this.getAction().getFieldErrors();
+        assertEquals(1, fieldErrors.size());
+        assertTrue(fieldErrors.containsKey("model"));
+
+        assertEquals(Action.INPUT, result);
+    }
 
     @Test
 	void testNewPage_1() throws Throwable {
