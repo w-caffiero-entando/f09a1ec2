@@ -47,7 +47,7 @@ public final class RedisEnvironmentVariables {
         try {
             return Integer.parseInt(System.getenv(REDIS_FEC_CHECK_DELAY_SEC));
         } catch (NumberFormatException ex) {
-            return 100;
+            return 30;
         }
     }
 

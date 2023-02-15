@@ -20,10 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +35,20 @@ import org.junit.jupiter.api.Test;
  * @author E.Santoboni
  */
 class TestBaseCommonAction extends ApsAdminBaseTestCase {
+    
+    @Test
+	void testIntro() throws Throwable {
+        this.initAction("/do", "main");
+        this.setUserOnSession("admin");
+        String result = super.executeAction();
+        assertEquals(Action.SUCCESS, result);
+        
+        ActionSupport action = this.getAction();
+        Assertions.assertTrue(action instanceof BaseCommonAction);
+        Lang currentLang = ((BaseCommonAction) action).getCurrentLang();
+        assertNotNull(currentLang);
+        assertEquals("en", currentLang.getCode());
+    }
 
     @Test
 	void testGoChangePasswordPage() throws Throwable {
