@@ -21,6 +21,7 @@
         <module>cms-plugin</module>
         <module>mail-plugin</module>
         <module>redis-plugin</module>
+        <module>cds-plugin</module>
         <module>seo-plugin</module>
         <module>versioning-plugin</module>
         <module>contentscheduler-plugin</module>
