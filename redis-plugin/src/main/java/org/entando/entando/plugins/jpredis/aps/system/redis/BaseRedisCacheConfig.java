@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
@@ -48,11 +49,16 @@ public class BaseRedisCacheConfig extends CachingConfigurerSupport {
     @Primary
     @Bean
     public CacheManager cacheManager(RedisClient redisClient, RedisConnectionFactory redisConnectionFactory,
-            CacheFrontendManager cacheFrontendManager) {
+            CacheFrontendManager cacheFrontendManager, ITenantManager tenantManager) {
         RedisCacheConfiguration redisCacheConfiguration = this.buildDefaultConfiguration();
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
         long ttlInSeconds = TimeUnit.HOURS.toSeconds(4);
+
         cacheConfigurations.put(ICacheInfoManager.DEFAULT_CACHE_NAME, createCacheConfiguration(ttlInSeconds));
+        for(String tenant: tenantManager.getCodes()){
+            cacheConfigurations.put(tenant + "_" + ICacheInfoManager.DEFAULT_CACHE_NAME, createCacheConfiguration(4L * 60 * 60));
+        }
+
         CacheFrontend<String, Object> cacheFrontend = cacheFrontendManager.getCacheFrontend();
         return LettuceCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration).cacheFrontend(cacheFrontend)

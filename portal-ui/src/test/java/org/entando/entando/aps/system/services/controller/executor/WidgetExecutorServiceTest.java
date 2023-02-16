@@ -1,5 +1,7 @@
 package org.entando.entando.aps.system.services.controller.executor;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.group.Group;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +39,8 @@ class WidgetExecutorServiceTest {
     private IWidgetTypeManager widgetTypeManager;
     @Mock
     private IGuiFragmentManager guiFragmentManager;
+    @Mock
+    private ITenantManager tenantManager;
 
     @Mock
     private RequestContext reqCtx;
@@ -90,7 +95,7 @@ class WidgetExecutorServiceTest {
         try (MockedConstruction<Template> construction = Mockito.mockConstruction(Template.class)) {
             service.buildWidgetOutput(reqCtx, widget, decorators);
             Template template = construction.constructed().get(0);
-            Mockito.verify(template).process(Mockito.any(), Mockito.any());
+            Mockito.verify(template).process(any(), any());
         }
     }
 
@@ -100,13 +105,15 @@ class WidgetExecutorServiceTest {
 
         IPage page = Mockito.mock(IPage.class);
         Mockito.when(page.getWidgets()).thenReturn(new Widget[]{widget});
+        Mockito.when(wac.getBean(ITenantManager.class)).thenReturn(tenantManager);
+        Mockito.when(tenantManager.getTenantCodeByDomainPrefix(any())).thenReturn(null);
 
         Mockito.when(wac.getBeanNamesForType(IFrameDecoratorContainer.class)).thenReturn(new String[]{});
 
         try (MockedConstruction<Template> construction = Mockito.mockConstruction(Template.class)) {
             service.buildWidgetsOutput(reqCtx, page, new String[]{null});
             Template template = construction.constructed().get(0);
-            Mockito.verify(template).process(Mockito.any(), Mockito.any());
+            Mockito.verify(template).process(any(), any());
         }
     }
 }

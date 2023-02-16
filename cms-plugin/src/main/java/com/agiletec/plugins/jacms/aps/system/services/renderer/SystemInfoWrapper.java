@@ -20,6 +20,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
+import org.entando.entando.aps.system.services.storage.IStorageManager;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
@@ -35,11 +36,22 @@ import com.agiletec.aps.util.ApsWebApplicationUtils;
 public class SystemInfoWrapper {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(SystemInfoWrapper.class);
-	
+	private RequestContext reqCtx;
+
 	public SystemInfoWrapper(RequestContext reqCtx) {
 		this.setReqCtx(reqCtx);
 	}
-	
+
+	public String getResourceRootUrl() {
+		try {
+			IStorageManager storageManager = (IStorageManager) ApsWebApplicationUtils.getBean(SystemConstants.STORAGE_MANAGER, this.getReqCtx().getRequest());
+			return storageManager.createFullPath("", false);
+		} catch (Exception e) {
+			_logger.error("Error extracting public resource rootUrl", e);
+			return null;
+		}
+	}
+
     /**
 	 * Return the value of a System parameter.
 	 * @param paramName The name of parameters
@@ -53,8 +65,6 @@ public class SystemInfoWrapper {
         } catch (Throwable t) {
         	
         	_logger.error("Error extracting config parameter - parameter ", paramName, t);
-        	
-            //ApsSystemUtils.logThrowable(t, this, "getConfigParameter", "Error extracting config parameter - parameter " + paramName);
 			return null;
         }
     }
@@ -65,7 +75,6 @@ public class SystemInfoWrapper {
             return page;
         } catch (Throwable t) {
         	_logger.error("Error getting current page", t);
-            //ApsSystemUtils.logThrowable(t, this, "getCurrentPage", "Error current page");
 			return null;
         }
     }
@@ -81,7 +90,6 @@ public class SystemInfoWrapper {
     		return page;
     	} catch (Throwable t) {
     		_logger.error("Error getting page with widget: {}", widgetCode, t);
-    		//ApsSystemUtils.logThrowable(t, this, "getPageWithWidget", "Error getting page with widget: " + widgetCode);
     		return null;
     	}
     }
@@ -132,12 +140,10 @@ public class SystemInfoWrapper {
 		}
 	
     protected RequestContext getReqCtx() {
-        return _reqCtx;
+        return reqCtx;
     }
     private void setReqCtx(RequestContext reqCtx) {
-        this._reqCtx = reqCtx;
+        this.reqCtx = reqCtx;
     }
     
-	private RequestContext _reqCtx;
-	
 }

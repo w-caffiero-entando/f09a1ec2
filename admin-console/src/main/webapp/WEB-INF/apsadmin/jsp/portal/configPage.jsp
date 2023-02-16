@@ -19,9 +19,9 @@
     <s:set var="breadcrumbs_pivotPageCode" value="currentPage.code" />
     <s:include value="/WEB-INF/apsadmin/jsp/portal/include/pageInfo_breadcrumbs.jsp" />
 
-    <s:action namespace="/do/Page" name="printPageDetails" executeResult="true" ignoreContextParams="true">
+    <wpsa:action namespace="/do/Page" name="printPageDetails" executeResult="true" ignoreContextParams="true">
         <s:param name="selectedNode" value="currentPage.code"></s:param>
-    </s:action>
+    </wpsa:action>
 
     <s:if test="currentPage.draftWidgets.length > 0">
 

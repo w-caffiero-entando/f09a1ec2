@@ -13,7 +13,8 @@
  */
 package org.entando.entando.aps.system.services.controller.executor;
 
-import com.agiletec.aps.system.ReqCtxThreadLocal;
+import com.agiletec.aps.system.EntThreadLocal;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import java.util.Objects;
+import java.util.Optional;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -72,26 +74,31 @@ public abstract class AbstractWidgetExecutorService {
 			Widget[] widgets = page.getWidgets();
 			if (this.parallelWidgetRender) {
 				List<Widget> widgetList = Arrays.asList(widgets);
+				Optional<String> tenantCode = ApsTenantApplicationUtils.extractCurrentTenantCode(reqCtx.getRequest());
 				widgetList.parallelStream().forEach(w -> {
-					ReqCtxThreadLocal.init();
 					int frame = widgetList.indexOf(w);
-					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
-					Widget widget = widgets[frame];
 					try {
+						EntThreadLocal.clear();
+						reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
+
+						tenantCode.ifPresent(ApsTenantApplicationUtils::setTenant);
+
+						Widget widget = widgets[frame];
 						widgetOutput[frame] = this.buildWidgetOutput(reqCtx, widget, decorators);
 					} catch (Exception e) {
 						_logger.error("Error extracting output for frame " + frame, e);
+					} finally {
+						EntThreadLocal.destroy();
 					}
-					ReqCtxThreadLocal.destroy();
 				});
 			} else {
-				ReqCtxThreadLocal.init();
+				EntThreadLocal.clear();
 				for (int frame = 0; frame < widgets.length; frame++) {
 					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
 					Widget widget = widgets[frame];
 					widgetOutput[frame] = this.buildWidgetOutput(reqCtx, widget, decorators);
 				}
-				ReqCtxThreadLocal.destroy();
+				EntThreadLocal.destroy();
 			}
 		} catch (Throwable t) {
 			String msg = "Error detected during widget preprocessing";

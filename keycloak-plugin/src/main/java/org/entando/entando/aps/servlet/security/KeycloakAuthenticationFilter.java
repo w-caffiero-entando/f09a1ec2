@@ -11,6 +11,7 @@ import com.agiletec.aps.system.services.role.Role;
 import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
@@ -18,6 +19,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.keycloak.services.KeycloakAuthorizationManager;
 import org.entando.entando.keycloak.services.KeycloakConfiguration;
@@ -71,6 +73,10 @@ public class KeycloakAuthenticationFilter extends AbstractAuthenticationProcessi
 
     @Override
     public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) throws AuthenticationException {
+        ApsTenantApplicationUtils.extractCurrentTenantCode(request)
+                .filter(StringUtils::isNotBlank)
+                .ifPresentOrElse(ApsTenantApplicationUtils::setTenant, ApsTenantApplicationUtils::removeTenant);
+
         final String authorization = request.getHeader("Authorization");
 
         if (authorization == null || !authorization.matches("^[Bb]earer .*")) {

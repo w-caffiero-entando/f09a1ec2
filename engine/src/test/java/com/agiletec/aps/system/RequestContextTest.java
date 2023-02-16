@@ -1,6 +1,18 @@
+/*
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package com.agiletec.aps.system;
 
-import org.apache.ws.commons.schema.constants.Constants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,16 +24,16 @@ class RequestContextTest {
         final String keyTest = "reqKeyTest";
         RequestContext reqCtx = new RequestContext();
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, paramValue);
-        Assertions.assertEquals(paramValue, ReqCtxThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
+        Assertions.assertEquals(paramValue, EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
         Assertions.assertEquals(paramValue, reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME));
 
         reqCtx.addExtraParam(keyTest, paramValue);
-        Assertions.assertNull(ReqCtxThreadLocal.get(keyTest));
+        Assertions.assertNull(EntThreadLocal.get(keyTest));
         Assertions.assertEquals(paramValue, reqCtx.getExtraParam(keyTest));
 
-        ReqCtxThreadLocal.init();
+        EntThreadLocal.clear();
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_WIDGET, paramValue);
-        Assertions.assertEquals(paramValue, ReqCtxThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_WIDGET));
+        Assertions.assertEquals(paramValue, EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_WIDGET));
 
     }
 
@@ -31,11 +43,11 @@ class RequestContextTest {
         final String keyTest = "reqKeyTest";
         RequestContext reqCtx = new RequestContext();
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, paramValue);
-        Assertions.assertEquals(paramValue, ReqCtxThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
+        Assertions.assertEquals(paramValue, EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
         Assertions.assertEquals(paramValue, reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME));
 
         reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
-        Assertions.assertNull(ReqCtxThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
+        Assertions.assertNull(EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_FRAME));
 
         reqCtx.addExtraParam(keyTest, paramValue);
         reqCtx.removeExtraParam(keyTest);

@@ -15,7 +15,10 @@ package org.entando.entando.aps.servlet;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
 import org.entando.entando.aps.system.exception.CSRFProtectionException;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -35,6 +38,7 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
+        long startMs = System.currentTimeMillis();
         ServletContext svCtx = event.getServletContext();
         String msg = this.getClass().getName() + ": INIT " + svCtx.getServletContextName();
         ApsSystemUtils.directStdoutTrace(msg, true);
@@ -67,6 +71,25 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
         } else {
             LOGGER.warn("Content Security Policy (CSP) header is not enabled");
         }
+
+        ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, svCtx);
+        tenantManager.getCodes().stream().forEach(tenantCode -> {
+
+            ApsTenantApplicationUtils.setTenant(tenantCode);
+            try {
+                LOGGER.info("refresh bean for tenant:'{}'", tenantCode);
+                ApsWebApplicationUtils.executeSystemRefresh(svCtx);
+            } catch (Throwable t) {
+                LOGGER.error("Error initializing '{}' tenant", tenantCode, t);
+            }
+            String tenantMsg = this.getClass().getName() + ": Tenant '" + tenantCode + "' inizialized";
+            ApsSystemUtils.directStdoutTrace(tenantMsg, true);
+        });
+        long endMs = System.currentTimeMillis();
+        String executionTimeMsg = String.format("%s: contextInitialized takes ms:'%s' of execution",
+                this.getClass().getName(), endMs - startMs);
+        ApsSystemUtils.directStdoutTrace(executionTimeMsg, true);
+
     }
 
 }

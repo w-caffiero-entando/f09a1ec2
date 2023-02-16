@@ -34,14 +34,10 @@ public class OpenIDConnectService {
     private static final Logger log = LoggerFactory.getLogger(OpenIDConnectService.class);
 
     private final KeycloakConfiguration configuration;
-    private final String authToken;
 
     @Autowired
     public OpenIDConnectService(final KeycloakConfiguration configuration) {
         this.configuration = configuration;
-
-        final String authData = configuration.getClientId() + ":" + configuration.getClientSecret();
-        authToken = Base64.getEncoder().encodeToString(authData.getBytes());
     }
 
     public AuthResponse login(final String username, final String password) throws OidcException {
@@ -125,9 +121,7 @@ public class OpenIDConnectService {
         body.add("password", password);
         body.add("grant_type", "password");
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Authorization", "Basic " + authToken);
+        HttpHeaders headers = this.getHttpHeaders();
         return new HttpEntity<>(body, headers);
     }
 
@@ -136,9 +130,7 @@ public class OpenIDConnectService {
         body.add("grant_type", "refresh_token");
         body.add("refresh_token", refreshToken);
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Authorization", "Basic " + authToken);
+        HttpHeaders headers = this.getHttpHeaders();
         return new HttpEntity<>(body, headers);
     }
 
@@ -146,9 +138,7 @@ public class OpenIDConnectService {
         final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "client_credentials");
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Authorization", "Basic " + authToken);
+        HttpHeaders headers = this.getHttpHeaders();
         return new HttpEntity<>(body, headers);
     }
 
@@ -179,9 +169,7 @@ public class OpenIDConnectService {
         body.add("redirect_uri", redirectUri);
         body.add("grant_type", "authorization_code");
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Authorization", "Basic " + authToken);
+        HttpHeaders headers = this.getHttpHeaders();
         return new HttpEntity<>(body, headers);
     }
 
@@ -202,5 +190,17 @@ public class OpenIDConnectService {
                 .append("/protocol/openid-connect/logout")
                 .append("?redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"))
                 .toString();
+    }
+
+    protected HttpHeaders getHttpHeaders() {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("Authorization", "Basic " + this.getAuthToken());
+        return headers;
+    }
+
+    protected String getAuthToken() {
+        String authData = configuration.getClientId() + ":" + configuration.getClientSecret();
+        return Base64.getEncoder().encodeToString(authData.getBytes());
     }
 }

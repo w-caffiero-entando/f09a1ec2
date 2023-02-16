@@ -5,7 +5,57 @@
 	<tlib-version>2.2</tlib-version>
 	<short-name>wpsa</short-name>
 	<uri>/apsadmin-core</uri>
-	
+
+	<tag>
+		<description><![CDATA[Execute an action from within a view. Added tenant management]]></description>
+		<name>action</name>
+		<tag-class>org.entando.entando.apsadmin.tags.ActionTagTenantAware</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description><![CDATA[Whether the result of this action (probably a view) should be executed/rendered]]></description>
+			<name>executeResult</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description><![CDATA[Whether the writer should be flush upon end of action component tag, default to true]]></description>
+			<name>flush</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description><![CDATA[Whether the request parameters are to be included when the action is invoked]]></description>
+			<name>ignoreContextParams</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description><![CDATA[Name of the action to be executed (without the extension suffix eg. .action)]]></description>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description><![CDATA[Namespace for action to call]]></description>
+			<name>namespace</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description><![CDATA[Whether an exception should be rethrown, if the target action throws an exception]]></description>
+			<name>rethrowException</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description><![CDATA[Name used to reference the value pushed into the Value Stack]]></description>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<dynamic-attributes>false</dynamic-attributes>
+	</tag>
+
 	<tag>
 		<description><![CDATA[Handles the submit in the administration interface,
 			building the name of the action with a defined sequence of parameters.<br/>

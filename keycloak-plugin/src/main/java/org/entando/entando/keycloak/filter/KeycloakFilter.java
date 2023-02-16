@@ -3,11 +3,13 @@ package org.entando.entando.keycloak.filter;
 import static org.entando.entando.KeycloakWiki.wiki;
 import static org.entando.entando.aps.servlet.security.KeycloakSecurityConfig.API_PATH;
 
+import com.agiletec.aps.system.EntThreadLocal;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.UUID;
@@ -41,20 +43,19 @@ import org.springframework.web.client.HttpClientErrorException;
 
 public class KeycloakFilter implements Filter {
 
-    private final KeycloakConfiguration configuration;
-    private final OpenIDConnectService oidcService;
-    private final IAuthenticationProviderManager providerManager;
-    private final KeycloakAuthorizationManager keycloakGroupManager;
-    private final IUserManager userManager;
-    private final ObjectMapper objectMapper;
-    private final KeycloakJson keycloakJson;
+    private static final Logger log = LoggerFactory.getLogger(KeycloakFilter.class);
 
     public static final String SESSION_PARAM_STATE = "keycloak-plugin-state";
     public static final String SESSION_PARAM_REDIRECT = "keycloak-plugin-redirectTo";
     public static final String SESSION_PARAM_ACCESS_TOKEN = "keycloak-plugin-access-token";
     public static final String SESSION_PARAM_REFRESH_TOKEN = "keycloak-plugin-refresh-token";
 
-    private static final Logger log = LoggerFactory.getLogger(KeycloakFilter.class);
+    private final KeycloakConfiguration configuration;
+    private final OpenIDConnectService oidcService;
+    private final IAuthenticationProviderManager providerManager;
+    private final KeycloakAuthorizationManager keycloakGroupManager;
+    private final IUserManager userManager;
+    private final ObjectMapper objectMapper;
 
     public KeycloakFilter(final KeycloakConfiguration configuration,
                           final OpenIDConnectService oidcService,
@@ -67,7 +68,6 @@ public class KeycloakFilter implements Filter {
         this.keycloakGroupManager = keycloakGroupManager;
         this.userManager = userManager;
         this.objectMapper = new ObjectMapper();
-        this.keycloakJson = new KeycloakJson(configuration);
     }
 
     @Override
@@ -79,35 +79,47 @@ public class KeycloakFilter implements Filter {
             return;
         }
 
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final HttpServletResponse response = (HttpServletResponse) servletResponse;
+        try {
+            EntThreadLocal.clear();
 
-        if (!API_PATH.equals(request.getServletPath())) {
-            final HttpSession session = request.getSession();
-            final String accessToken = (String) session.getAttribute(SESSION_PARAM_ACCESS_TOKEN);
+            final HttpServletRequest request = (HttpServletRequest) servletRequest;
+            ApsTenantApplicationUtils.extractCurrentTenantCode(request)
+                    .filter(StringUtils::isNotBlank)
+                    .ifPresent(ApsTenantApplicationUtils::setTenant);
 
-            if (accessToken != null && !isAccessTokenValid(accessToken) && !refreshToken(request)) {
-                invalidateSession(request);
+            final HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+            if (!API_PATH.equals(request.getServletPath())) {
+                final HttpSession session = request.getSession();
+                final String accessToken = (String) session.getAttribute(SESSION_PARAM_ACCESS_TOKEN);
+
+                if (accessToken != null && !isAccessTokenValid(accessToken) && !refreshToken(request)) {
+                    invalidateSession(request);
+                }
             }
-        }
 
-        switch (request.getServletPath()) {
-            case "/do/login":
-            case "/do/doLogin":
-            case "/do/login.action":
-            case "/do/doLogin.action":
-                doLogin(request, response, chain);
-                break;
-            case "/do/logout":
-            case "/do/logout.action":
-                doLogout(request, response);
-                break;
-            case "/keycloak.json":
-                returnKeycloakJson(response);
-                break;
-            default:
-                handleLoginRedirect(request, response);
-                chain.doFilter(request, response);
+            switch (request.getServletPath()) {
+                case "/do/login":
+                case "/do/doLogin":
+                case "/do/login.action":
+                case "/do/doLogin.action":
+                    doLogin(request, response, chain);
+                    break;
+                case "/do/logout":
+                case "/do/logout.action":
+                    doLogout(request, response);
+                    break;
+                case "/keycloak.json":
+                    returnKeycloakJson(response);
+                    break;
+                default:
+                    handleLoginRedirect(request, response);
+                    chain.doFilter(request, response);
+            }
+
+        } finally {
+            // moved here to clean context everytime also if we have an exception
+            EntThreadLocal.destroy();
         }
     }
 
@@ -138,7 +150,7 @@ public class KeycloakFilter implements Filter {
 
     private void returnKeycloakJson(final HttpServletResponse response) throws IOException {
         response.setHeader("Content-Type", "application/json");
-        objectMapper.writeValue(response.getOutputStream(), keycloakJson);
+        objectMapper.writeValue(response.getOutputStream(), new KeycloakJson(this.configuration));
     }
 
     private boolean isAccessTokenValid(final String accessToken) {
@@ -288,9 +300,38 @@ public class KeycloakFilter implements Filter {
         final String redirectPath = session.getAttribute(SESSION_PARAM_REDIRECT) != null
                 ? session.getAttribute(SESSION_PARAM_REDIRECT).toString()
                 : "/do/main";
-        log.info("Redirecting user to {}", (request.getContextPath() + redirectPath));
+        String baseUrl = this.getBaseURL(request);
+        String redirectUrl = baseUrl + request.getContextPath() + redirectPath;
+        log.info("Redirecting user to {}", redirectUrl);
         session.setAttribute(SESSION_PARAM_REDIRECT, null);
-        response.sendRedirect(request.getContextPath() + redirectPath);
+        response.sendRedirect(redirectUrl);
+    }
+
+    private String getBaseURL(HttpServletRequest request) {
+        StringBuilder link = new StringBuilder();
+        String reqScheme = request.getHeader("X-Forwarded-Proto");
+        if (StringUtils.isBlank(reqScheme)) {
+            reqScheme = request.getScheme();
+        }
+        link.append(reqScheme);
+        link.append("://");
+        String serverName = request.getServerName();
+        link.append(serverName);
+        boolean checkPort = false;
+        String hostName = request.getHeader("Host");
+        if (null != hostName && hostName.startsWith(serverName)) {
+            checkPort = true;
+            if (hostName.length() > serverName.length()) {
+                String encodedHostName = org.owasp.encoder.Encode.forHtmlContent(hostName);
+                link.append(encodedHostName.substring(serverName.length()));
+            }
+        }
+        if (!checkPort) {
+            link.append(":").append(request.getServerPort());
+        }
+        log.debug("Calculated baseURL:'{}' from reqScheme:'{}' serverName:'{} hostName:'{}''",
+                link, reqScheme, serverName, hostName);
+        return link.toString();
     }
 
     private boolean isInvalidCredentials(final HttpClientErrorException exception) {

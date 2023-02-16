@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class OpenIDConnectServiceIT {
@@ -40,7 +41,7 @@ class OpenIDConnectServiceIT {
     void setUp() {
         final KeycloakConfiguration configuration = KeycloakTestConfiguration.getConfiguration();
         oidcService = new OpenIDConnectService(configuration);
-        final KeycloakService keycloakService = new KeycloakService(configuration, oidcService);
+        final KeycloakService keycloakService = new KeycloakService(configuration, oidcService, new RestTemplate());
         userManager = new KeycloakUserManager(authorizationManager, keycloakService, oidcService);
 
         KeycloakTestConfiguration.deleteUsers();

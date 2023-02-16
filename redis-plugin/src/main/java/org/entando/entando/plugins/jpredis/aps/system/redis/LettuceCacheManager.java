@@ -13,6 +13,7 @@
  */
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import io.lettuce.core.support.caching.CacheFrontend;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.cache.Cache;
 import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
 import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -255,6 +257,14 @@ public class LettuceCacheManager extends AbstractTransactionSupportingCacheManag
 	 */
 	protected RedisCache createRedisCache(String name, @Nullable RedisCacheConfiguration cacheConfig) {
 		return new LettuceCache(name, cacheWriter, cacheConfig != null ? cacheConfig : defaultCacheConfig, this.cacheFrontend);
+	}
+
+	@Override
+	public Cache getCache(String name) {
+		String prefix = ApsTenantApplicationUtils.getTenant()
+				.map(tenantCode -> tenantCode + "_")
+				.orElse("");
+		return super.getCache(prefix + name);
 	}
 
 	/**

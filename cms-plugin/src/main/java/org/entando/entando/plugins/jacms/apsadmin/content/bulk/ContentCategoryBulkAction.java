@@ -13,10 +13,13 @@
  */
 package org.entando.entando.plugins.jacms.apsadmin.content.bulk;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.plugins.jacms.apsadmin.content.bulk.util.ContentBulkActionSummary;
 import org.entando.entando.plugins.jacms.apsadmin.content.bulk.util.IContentBulkActionHelper;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -82,9 +85,13 @@ public class ContentCategoryBulkAction extends AbstractTreeAction {
 				if (categories == null) {
 					return INPUT;
 				} else {
+					Optional<String> tenantCode = ApsTenantApplicationUtils.extractCurrentTenantCode(this.getRequest());
 					BaseContentPropertyBulkCommand<Category> command = this.initBulkCommand(categories);
 					this.getSelectedIds().parallelStream().forEach(contentId -> {
 						try {
+							tenantCode
+									.filter(StringUtils::isNotBlank)
+									.ifPresent(ApsTenantApplicationUtils::setTenant);
 							command.apply(contentId);
 						} catch (Exception e) {
 							_logger.error("Error executing " +command.getClass().getName() + " on contents ");

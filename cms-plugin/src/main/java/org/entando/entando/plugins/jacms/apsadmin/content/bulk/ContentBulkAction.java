@@ -13,8 +13,11 @@
  */
 package org.entando.entando.plugins.jacms.apsadmin.content.bulk;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
+import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.web.context.WebApplicationContext;
@@ -57,9 +60,11 @@ public class ContentBulkAction extends BaseAction {
 			if (!this.checkAllowedContents()) {
 				return "list";
 			} else {
+				Optional<String> tenantCode = ApsTenantApplicationUtils.extractCurrentTenantCode(this.getRequest());
 				BaseContentBulkCommand<ContentBulkCommandContext> command = this.initBulkCommand(commandBeanName);
 				this.getSelectedIds().parallelStream().forEach(id -> {
 					try {
+						tenantCode.filter(StringUtils::isNotBlank).ifPresent(ApsTenantApplicationUtils::setTenant);
 						command.apply(id);
 					} catch (Exception e) {
 						_logger.error("Error executing " + command.getClass().getName() + " on content " + id);

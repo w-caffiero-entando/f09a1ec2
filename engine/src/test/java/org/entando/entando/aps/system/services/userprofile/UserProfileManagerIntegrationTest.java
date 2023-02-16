@@ -48,7 +48,7 @@ class UserProfileManagerIntegrationTest extends BaseTestCase {
 
     private IUserProfileManager profileManager;
     private IUserManager userManager;
-    private CacheInfoManager cacheInfoManager;
+    private ICacheInfoManager cacheInfoManager;
 
     @Test
     void testInitialize() {

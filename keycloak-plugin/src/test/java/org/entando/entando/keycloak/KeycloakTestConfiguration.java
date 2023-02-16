@@ -18,6 +18,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.web.client.RestTemplate;
 
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
@@ -66,7 +67,7 @@ public class KeycloakTestConfiguration {
 
         final OpenIDConnectService oidcService = new OpenIDConnectService(configuration);
 
-        keycloakService = new KeycloakService(configuration, oidcService);
+        keycloakService = new KeycloakService(configuration, oidcService, new RestTemplate());
     }
 
     private static void assignRoleRealmAdmin(final RealmResource resource, final ClientResource clientResource) {

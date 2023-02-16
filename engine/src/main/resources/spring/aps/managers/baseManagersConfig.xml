@@ -14,7 +14,7 @@
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 			http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <context:component-scan base-package="org.entando.entando.aps.util.crypto" />
+    <context:component-scan base-package="org.entando.entando.aps.util.crypto,org.entando.entando.aps.system.services.tenants" />
     
     <cache:annotation-driven cache-manager="springCacheManager" />
     <aop:aspectj-autoproxy proxy-target-class="true" />

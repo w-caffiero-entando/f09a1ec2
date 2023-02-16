@@ -26,6 +26,7 @@ import com.agiletec.aps.system.services.controller.ControllerManager;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Classe di utilità che implementa un metodo per impostare una redirezione ed
@@ -108,6 +109,7 @@ public abstract class AbstractControlService implements ControlServiceInterface 
 	protected IURLManager getUrlManager() {
 		return urlManager;
 	}
+	@Autowired
 	public void setUrlManager(IURLManager urlManager) {
 		this.urlManager = urlManager;
 	}
@@ -115,6 +117,7 @@ public abstract class AbstractControlService implements ControlServiceInterface 
 	protected IPageManager getPageManager() {
 		return pageManager;
 	}
+	@Autowired
 	public void setPageManager(IPageManager pageManager) {
 		this.pageManager = pageManager;
 	}

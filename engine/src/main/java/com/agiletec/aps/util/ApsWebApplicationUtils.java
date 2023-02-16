@@ -15,6 +15,7 @@ package com.agiletec.aps.util;
 
 import java.io.IOException;
 
+import java.util.Optional;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
@@ -35,7 +36,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ApsWebApplicationUtils {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ApsWebApplicationUtils.class);
-	
+
 	/**
 	 * Resolve the given location pattern into Resource objects. 
 	 * @param locationPattern The location pattern to resolve.
@@ -95,7 +96,11 @@ public class ApsWebApplicationUtils {
 		WebApplicationContext wac = getWebApplicationContext(request);
 		return wac.getBean(beanName);
 	}
-	
+
+	public static <T> T getBean(Class<T> type, HttpServletRequest request) {
+		return getBean(type, request.getSession().getServletContext());
+	}
+
 	/**
 	 * Restituisce un bean di sistema.
 	 * Il seguente metodo è in uso ai tag jsp del sistema.
@@ -107,7 +112,19 @@ public class ApsWebApplicationUtils {
 		WebApplicationContext wac = getWebApplicationContext(pageContext.getServletContext());
 		return wac.getBean(beanName);
 	}
-	
+
+	public static <T> T getBean(Class<T> type, PageContext pageContext) {
+		return getBean(type, pageContext.getServletContext());
+	}
+
+	public static <T> T getBean(Class<T> type, ServletContext servCtx) {
+		return Optional.ofNullable(getWebApplicationContext(servCtx))
+				.map(wac -> wac.getBean(type))
+				.orElseThrow(() -> new IllegalArgumentException(
+						String.format("Error retrieving Bean of type '%s' from web application context",type.toString())));
+
+	}
+
 	/**
 	 * Restituisce il WebApplicationContext del sistema.
 	 * @param request La request.
@@ -118,7 +135,7 @@ public class ApsWebApplicationUtils {
 		WebApplicationContext wac = getWebApplicationContext(svCtx);
 		return wac;
 	}
-	
+
 	private static WebApplicationContext getWebApplicationContext(ServletContext svCtx) {
 		return WebApplicationContextUtils.getWebApplicationContext(svCtx);
 	}

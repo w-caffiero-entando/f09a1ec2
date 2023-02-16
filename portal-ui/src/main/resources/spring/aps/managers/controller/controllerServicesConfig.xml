@@ -4,14 +4,16 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-    
+
+    <context:component-scan base-package="org.entando.entando.aps.system.services.controller.control"/>
+
     <bean id="abstractControlService" abstract="true" 
               class="com.agiletec.aps.system.services.controller.control.AbstractControlService">
         <property name="pageManager" ref="PageManager"/>
         <property name="urlManager" ref="URLManager"/>
     </bean>
-    
-    <bean id="RequestValidatorControlService" class="com.agiletec.aps.system.services.controller.control.RequestValidator" 
+
+    <bean id="RequestValidatorControlService" class="com.agiletec.aps.system.services.controller.control.RequestValidator"
               parent="abstractControlService" >
         <property name="langManager" ref="LangManager"/>
     </bean>
