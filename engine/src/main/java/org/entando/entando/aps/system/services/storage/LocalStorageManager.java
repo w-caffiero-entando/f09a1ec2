@@ -307,8 +307,7 @@ public class LocalStorageManager implements IStorageManager {
 		return withValidResourcePath(subPath, isProtectedResource, (basePath, fullPath) -> fullPath);
 	}
 
-	@Override
-	public <T> T withValidResourcePath(String resourceRelativePath, boolean isProtectedResource,
+	private <T> T withValidResourcePath(String resourceRelativePath, boolean isProtectedResource,
 									   BiFunction<String, String, T> bip) {
 		//-
 		resourceRelativePath = (resourceRelativePath == null) ? "" : resourceRelativePath;

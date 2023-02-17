@@ -15,7 +15,7 @@
             <meta charset="UTF-8">
             <meta http-equiv="X-UA-Compatible" content="IE=Edge">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="shortcut icon" href="<wp:resourceURL />administration/img/favicon-entando.png">
+            <link rel="shortcut icon" href="<wp:resourceURL ignoreTenant="true" />administration/img/favicon-entando.png">
 
         <jsp:include page="/WEB-INF/apsadmin/jsp/common/inc/header-include.jsp" />
 

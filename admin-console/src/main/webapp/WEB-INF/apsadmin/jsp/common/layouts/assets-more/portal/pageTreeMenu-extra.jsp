@@ -2,16 +2,16 @@
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
-<link rel="stylesheet" type="text/css" href="<wp:resourceURL />administration/css/entando.grid-generator.css"/>
-<link rel="stylesheet" type="text/css" href="<wp:resourceURL />administration/css/pages/pageTreeMenu.css"/>
-<link rel="stylesheet" type="text/css" href="<wp:resourceURL />administration/css/jquery-confirm.min.css"/>
+<link rel="stylesheet" type="text/css" href="<wp:resourceURL ignoreTenant="true" />administration/css/entando.grid-generator.css"/>
+<link rel="stylesheet" type="text/css" href="<wp:resourceURL ignoreTenant="true" />administration/css/pages/pageTreeMenu.css"/>
+<link rel="stylesheet" type="text/css" href="<wp:resourceURL ignoreTenant="true" />administration/css/jquery-confirm.min.css"/>
 
-<script src="<wp:resourceURL />administration/js/entando.alert.js"></script>
-<script src="<wp:resourceURL />administration/js/jquery.xml2json.js"></script>
-<script src="<wp:resourceURL />administration/js/lodash.js"></script>
-<script src="<wp:resourceURL />administration/js/entando.grid-generator.js"></script>
-<script src="<wp:resourceURL />administration/js/jquery-ui-dragndrop.min.js"></script>
-<script src="<wp:resourceURL />administration/js/jquery-confirm.min.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/entando.alert.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/jquery.xml2json.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/lodash.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/entando.grid-generator.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/jquery-ui-dragndrop.min.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/jquery-confirm.min.js"></script>
 
 <script>
     
@@ -40,7 +40,7 @@
         };
 
 </script>
-<script src="<wp:resourceURL />administration/js/pages/pageTreeMenu.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/pages/pageTreeMenu.js"></script>
 <script>
         $(document).ready(function () {
             // Show/Hide Notifications Drawer

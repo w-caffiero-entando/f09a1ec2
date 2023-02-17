@@ -11,7 +11,10 @@
 			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
 			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd 
 			http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
-    
+
+    <context:component-scan base-package="org.entando.entando.plugins.jpcds.aps.system.storage" />
+
+    <!--
     <bean id="StorageManager" class="org.entando.entando.plugins.jpcds.aps.system.storage.CdsStorageManager">
         <property name="baseURL" ><value>${resourceRootURL}</value></property>
         <property name="baseDiskRoot" ><value>${resourceDiskRootFolder}</value></property>
@@ -26,5 +29,6 @@
         <property name="kcClientId" value="${keycloak.client.id:entando-app}" />
         <property name="kcClientSecret" value="${keycloak.client.secret:}" />
     </bean>
-    
+    -->
+
 </beans>

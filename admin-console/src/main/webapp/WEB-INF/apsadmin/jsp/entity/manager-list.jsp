@@ -70,21 +70,21 @@
                     <s:if test="getEntityManagerStatus(#entityManager) == 1">
                         <a href="
                            <s:url action="viewManagers" namespace="/do/Entity" anchor="%{#entityAnchor}" />
-                           " title="<s:text name="label.references.status.wip" />"><img src="<wp:resourceURL />administration/common/img/icons/generic-status-wip.png" alt="<s:text name="label.references.status.wip" />" /></a>
+                           " title="<s:text name="label.references.status.wip" />"><img src="<wp:resourceURL ignoreTenant="true" />administration/common/img/icons/generic-status-wip.png" alt="<s:text name="label.references.status.wip" />" /></a>
                         </s:if>
                         <s:elseif test="getEntityManagerStatus(#entityManager) == 2">
                         <a href="
                            <s:url action="reloadEntityManagerReferences" namespace="/do/Entity" anchor="%{#entityAnchor}">
                                <s:param name="entityManagerName" value="#entityManager" />
                            </s:url>
-                           " title="<s:text name="label.references.status.ko" />"><img src="<wp:resourceURL />administration/common/img/icons/generic-status-ko.png" alt="<s:text name="label.references.status.ko" />" /></a>
+                           " title="<s:text name="label.references.status.ko" />"><img src="<wp:resourceURL ignoreTenant="true" />administration/common/img/icons/generic-status-ko.png" alt="<s:text name="label.references.status.ko" />" /></a>
                         </s:elseif>
                         <s:elseif test="getEntityManagerStatus(#entityManager) == 0">
                         <a href="
                            <s:url action="reloadEntityManagerReferences" namespace="/do/Entity" anchor="%{#entityAnchor}">
                                <s:param name="entityManagerName" value="#entityManager" />
                            </s:url>
-                           " title="<s:text name="label.references.status.ok" />"><img src="<wp:resourceURL />administration/common/img/icons/generic-status-ok.png" alt="<s:text name="label.references.status.ok" />" /></a>
+                           " title="<s:text name="label.references.status.ok" />"><img src="<wp:resourceURL ignoreTenant="true" />administration/common/img/icons/generic-status-ok.png" alt="<s:text name="label.references.status.ok" />" /></a>
                         </s:elseif>
                 </td>
             </tr>

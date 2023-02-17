@@ -78,7 +78,6 @@ public abstract class AbstractWidgetExecutorService {
 				widgetList.parallelStream().forEach(w -> {
 					int frame = widgetList.indexOf(w);
 					try {
-						EntThreadLocal.clear();
 						reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
 
 						tenantCode.ifPresent(ApsTenantApplicationUtils::setTenant);
@@ -88,17 +87,16 @@ public abstract class AbstractWidgetExecutorService {
 					} catch (Exception e) {
 						_logger.error("Error extracting output for frame " + frame, e);
 					} finally {
-						EntThreadLocal.destroy();
+						reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
 					}
 				});
 			} else {
-				EntThreadLocal.clear();
 				for (int frame = 0; frame < widgets.length; frame++) {
 					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
 					Widget widget = widgets[frame];
 					widgetOutput[frame] = this.buildWidgetOutput(reqCtx, widget, decorators);
+					reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
 				}
-				EntThreadLocal.destroy();
 			}
 		} catch (Throwable t) {
 			String msg = "Error detected during widget preprocessing";

@@ -11,11 +11,12 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package com.agiletec.aps.tags;
+package org.entando.entando.aps.tags;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -34,32 +35,51 @@ import com.agiletec.aps.util.ApsWebApplicationUtils;
 @SuppressWarnings("serial")
 public class ResourceURLTag extends TagSupport {
 
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ResourceURLTag.class);
-	
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ResourceURLTag.class);
+
+	private boolean ignoreTenant;
+	private String root;
+	private String folder;
+
 	public int doEndTag() throws JspException {
 		try {
-			if (null == _root) {
-				ConfigInterface configService = (ConfigInterface) ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, this.pageContext);
-				_root = configService.getParam(SystemConstants.PAR_RESOURCES_ROOT_URL);
+			if (null == root) {
+				if (this.isIgnoreTenant()) {
+					ConfigInterface configService = ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, ConfigInterface.class, this.pageContext);
+					this.root = configService.getParam(SystemConstants.PAR_RESOURCES_ROOT_URL);
+				} else {
+					IStorageManager storageManager = ApsWebApplicationUtils.getBean(SystemConstants.STORAGE_MANAGER, IStorageManager.class, this.pageContext);
+					this.root = storageManager.getResourceUrl("", false);
+				}
+				if (!this.root.endsWith("/")) {
+					this.root += "/";
+				}
 			}
-			if (null == _folder) {
-				_folder = "";
+			if (null == folder) {
+				folder = "";
 			}
-			pageContext.getOut().print(_root + _folder);
-		} catch (Throwable t) {
-			_logger.error("Error closing the tag", t);
-			//ApsSystemUtils.logThrowable(t, this, "doEndTag");
-			throw new JspException("Error closing the tag", t);
+			pageContext.getOut().print(this.getRoot() + this.getFolder());
+		}  catch (Exception e) {
+			logger.error("Error closing the tag", e);
+			throw new JspException("Error closing the tag", e);
 		}
 		return EVAL_PAGE;
 	}
-	
+
+	public boolean isIgnoreTenant() {
+		return ignoreTenant;
+	}
+
+	public void setIgnoreTenant(boolean ignoreTenant) {
+		this.ignoreTenant = ignoreTenant;
+	}
+
 	/**
 	 * Return the root folder
 	 * @return The root.
 	 */
 	public String getRoot() {
-		return _root;
+		return root;
 	}
 
 	/**
@@ -67,7 +87,7 @@ public class ResourceURLTag extends TagSupport {
 	 * @param root La root.
 	 */
 	public void setRoot(String root) {
-		this._root = root;
+		this.root = root;
 	}
 	
 	/**
@@ -75,7 +95,7 @@ public class ResourceURLTag extends TagSupport {
 	 * @return Il folder.
 	 */
 	public String getFolder() {
-		return _folder;
+		return folder;
 	}
 
 	/**
@@ -83,10 +103,7 @@ public class ResourceURLTag extends TagSupport {
 	 * @param folder The folder
 	 */
 	public void setFolder(String folder) {
-		this._folder = folder;
+		this.folder = folder;
 	}
 	
-	private String _root;
-	private String _folder;
-
 }

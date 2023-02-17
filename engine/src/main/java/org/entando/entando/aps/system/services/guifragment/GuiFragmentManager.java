@@ -177,7 +177,8 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     }
 
     @Override
-    @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'GuiFragment_uniqueByWidgetType_'.concat(#widgetTypeCode)")
+    @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME,
+            key = "'GuiFragment_uniqueByWidgetType_'.concat(#widgetTypeCode)", condition = "null != #result")
     public GuiFragment getUniqueGuiFragmentByWidgetType(String widgetTypeCode) throws EntException {
         GuiFragment guiFragment = null;
         try {

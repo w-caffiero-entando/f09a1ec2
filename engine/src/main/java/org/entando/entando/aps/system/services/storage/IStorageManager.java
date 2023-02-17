@@ -24,7 +24,7 @@ import java.util.function.BiFunction;
  * @author E.Santoboni
  */
 public interface IStorageManager extends Serializable {
-	
+
 	public void saveFile(String subPath, boolean isProtectedResource, InputStream is) throws EntException, IOException;
 	
 	public boolean deleteFile(String subPath, boolean isProtectedResource) throws EntException;
@@ -38,7 +38,7 @@ public interface IStorageManager extends Serializable {
 	public InputStream getStream(String subPath, boolean isProtectedResource) throws EntException;
 	
 	public String getResourceUrl(String subPath, boolean isProtectedResource);
-	
+
 	public boolean exists(String subPath, boolean isProtectedResource) throws EntException;
 	
 	public BasicFileAttributeView getAttributes(String subPath, boolean isProtectedResource) throws EntException;
@@ -60,8 +60,5 @@ public interface IStorageManager extends Serializable {
 	public void editFile(String subPath, boolean isProtectedResource, InputStream is) throws EntException;
 
 	public String createFullPath(String subPath, boolean isProtectedResource) throws EntException;
-
-	public <T> T withValidResourcePath(String resourceRelativePath, boolean isProtectedResource,
-									   BiFunction<String, String, T> bip);
 
 }

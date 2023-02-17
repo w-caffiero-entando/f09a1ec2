@@ -34,27 +34,42 @@ import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * @author S.Loru - E.Santoboni
  */
+@ExtendWith(MockitoExtension.class)
 class CdsStorageManagerIntegrationTest extends BaseTestCase {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CdsStorageManagerIntegrationTest.class);
     private IStorageManager cdsStorageManager;
+    private MockedStatic<CdsEnvironmentVariables> mockedCdsEnvironment;
 
     @BeforeEach
     private void init() throws Exception {
         try {
+            mockedCdsEnvironment = Mockito.mockStatic(CdsEnvironmentVariables.class);
+            mockedCdsEnvironment.when(() -> CdsEnvironmentVariables.active()).thenReturn(true);
+
             cdsStorageManager = this.getApplicationContext().getBean(IStorageManager.class);
         } catch (Throwable t) {
             logger.error("error on init", t);
         }
     }
 
+    @AfterEach
+    public void afterAll() throws Exception {
+        mockedCdsEnvironment.close();
+    }
 
     @Test
     void testInitialize() {

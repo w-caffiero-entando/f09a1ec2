@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ * Copyright 2022-Present Entando S.r.l. (http://www.entando.com) All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -11,13 +11,18 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package com.agiletec.aps.tags;
+package org.entando.entando.plugins.jpcds.aps.system.storage;
 
-/**
- * Tag for the "External Framework" showlet.
- * @author M.Casari - E.Santoboni
- * @deprecated use InternalServletTag instead
- */
-public class ExternalFrameworkTag extends InternalServletTag {
-	
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.context.annotation.Conditional;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@Conditional(CdsActiveCondition.class)
+public @interface CdsActive {
+
+    boolean value();
 }

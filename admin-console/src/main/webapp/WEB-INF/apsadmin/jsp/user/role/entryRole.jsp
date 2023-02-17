@@ -5,7 +5,7 @@
 
 <s:if test="strutsAction != 2">
     <script
-            src="<wp:resourceURL />administration/js/generate-code-from-title.js"></script>
+            src="<wp:resourceURL ignoreTenant="true" />administration/js/generate-code-from-title.js"></script>
     <script>
         $(document).ready(function () {
             generateCodeFromTitle('description', 'name');

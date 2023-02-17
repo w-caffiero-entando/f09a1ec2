@@ -18,6 +18,7 @@ import com.agiletec.aps.util.FileTextReader;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -52,65 +54,50 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * @author E.Santoboni
- */
-public class CdsStorageManager extends LocalStorageManager implements IStorageManager {
+@Service("StorageManager")
+@CdsActive(true)
+public class CdsStorageManager implements IStorageManager {
     
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CdsStorageManager.class);
-    
-    private static final String PRIMARY_CODE = "PRIMARY_CODE";
     
     private static final String CDS_PUBLIC_URL_TENANT_PARAM = "cdsPublicUrl";
     private static final String CDS_PRIVATE_URL_TENANT_PARAM = "cdsPrivateUrl";
     private static final String CDS_PATH_TENANT_PARAM = "cdsPath";
-    
     private static final String URL_SEP = "/";
-    
     private static final String SECTION_PUBLIC = "public";
     private static final String SECTION_PRIVATE = "protected";
-    
-    private boolean enabled;        
-    private String cdsPublicUrl;
-    private String cdpPrivateUrl;
-    private String cdsPath;
-    private String kcAuthUrl;
-    private String kcRealm;
-    private String kcClientId;
-    private String kcClientSecret;
-    
+    private final ITenantManager tenantManager;
+    private final CdsConfiguration configuration;
+    private final CdsRemoteCaller caller;
+
+
     @Autowired
-    private ObjectMapper objectMapper;
-    
-    private Map<String, String> tenantsToken = new HashMap<>();
-    
-    private ITenantManager tenantManager;
-    
+    public CdsStorageManager(CdsRemoteCaller caller, ITenantManager tenantManager, CdsConfiguration configuration) {
+        this.caller = caller;
+        this.tenantManager = tenantManager;
+        this.configuration = configuration;
+    }
+
+
+
     @Override
     public void createDirectory(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            super.createDirectory(subPath, isProtectedResource);
-            return;
-        }
         this.create(subPath, isProtectedResource, null);
     }
     
     @Override
     public void saveFile(String subPath, boolean isProtectedResource, InputStream is) throws EntException, IOException {
-        if (!this.isEnabled()) {
-            super.saveFile(subPath, isProtectedResource, is);
-            return;
-        }
         this.create(subPath, isProtectedResource, is);
     }
     
-    protected void create(String subPath, boolean isProtectedResource, InputStream is) {
+    private void create(String subPath, boolean isProtectedResource, InputStream is) {
         try {
             Optional<TenantConfig> config = getTenantConfig();
             this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
@@ -135,11 +122,10 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
             }
             
             String url = String.format("%s/upload/", this.extractInternalCdsBaseUrl(config, true));
-            String result = this.executePostCall(url, body, config, false);
-            ObjectMapper mapper = new ObjectMapper();
-            CdsCreateResponse[] response = mapper.readValue(result, new TypeReference<CdsCreateResponse[]>(){});
+            CdsCreateResponse[] response = caller.executePostCall(url, body, config, false);
+
             if (!"OK".equalsIgnoreCase(response[0].getStatus())) {
-                throw new EntRuntimeException("Invalid status - Response " + result);
+                throw new EntRuntimeException("Invalid status - Response " + response[0].getStatus());
             }
         } catch (EntRuntimeException ert) {
             throw ert;
@@ -149,36 +135,16 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
         }
     }
     
-    private String executePostCall(String url, MultiValueMap<String, Object> body, Optional<TenantConfig> config, boolean force) {
-        try {
-            HttpHeaders headers = this.getBaseHeader(Arrays.asList(MediaType.ALL), config, force);
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-            return responseEntity.getBody();
-        } catch (HttpClientErrorException e) {
-            if (!force && (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED))) {
-                return this.executePostCall(url, body, config, true);
-            } else {
-                throw new EntRuntimeException("Invalid POST, response status " + e.getStatusCode() + " - url " + url);
-            }
-        }
-    }
 
     @Override
     public boolean deleteFile(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.deleteFile(subPath, isProtectedResource);
-        }
         try {
             Optional<TenantConfig> config = getTenantConfig();
             this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
             String section = this.getInternalSection(isProtectedResource);
             String subPathFixed = (!StringUtils.isBlank(subPath)) ? (subPath.trim().startsWith(URL_SEP) ? subPath.trim().substring(1) : subPath) : "";
             String url = String.format("%s/delete/%s/%s", this.extractInternalCdsBaseUrl(config, true), section, subPathFixed);
-            String result = this.executeDeleteCall(url, config, false);
-            Map<String, String> map = new ObjectMapper().readValue(result, new TypeReference<HashMap<String, String>>(){});
+            Map<String, String> map = caller.executeDeleteCall(url, config, false);
             return ("OK".equalsIgnoreCase(map.get("status")));
         } catch (EntRuntimeException ert) {
             throw ert;
@@ -188,36 +154,13 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
         }
     }
     
-    private String executeDeleteCall(String url, Optional<TenantConfig> config, boolean force) {
-        try {
-            HttpHeaders headers = this.getBaseHeader(null, config, force);
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
-            return responseEntity.getBody();
-        } catch (HttpClientErrorException e) {
-            if (!force && e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
-                return this.executeDeleteCall(url, config, true);
-            } else {
-                throw new EntRuntimeException("Invalid DELETE, response status " + e.getStatusCode() + " - url " + url);
-            }
-        }
-    }
-
     @Override
     public void deleteDirectory(String subPath, boolean isProtectedResource) throws EntException {
-        if (!this.isEnabled()) {
-            super.deleteDirectory(subPath, isProtectedResource);
-            return;
-        }
         this.deleteFile(subPath, isProtectedResource); //same behavior
     }
 
     @Override
     public InputStream getStream(String subPath, boolean isProtectedResource) throws EntException {
-        if (!this.isEnabled()) {
-            return super.getStream(subPath, isProtectedResource);
-        }
         String url = null;
         try {
             Optional<TenantConfig> config = getTenantConfig();
@@ -228,14 +171,7 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
                     this.getCheckedBaseUrl(config, isProtectedResource);
             String subPathFixed = (!StringUtils.isBlank(subPath)) ? (subPath.trim().startsWith(URL_SEP) ? subPath.trim().substring(1) : subPath) : "";
             url = baseUrl + URL_SEP + section + URL_SEP + subPathFixed;
-            byte[] bytes = null;
-            if (isProtectedResource) {
-                bytes = this.executeGetCall(url, null, config, false, byte[].class);
-            } else {
-                RestTemplate restTemplate = new RestTemplate();
-                bytes = restTemplate.getForObject(url, byte[].class);
-            }
-            return (null != bytes) ? new ByteArrayInputStream(bytes) : null;
+            return caller.getFile(url,config, isProtectedResource);
         } catch (EntRuntimeException ert) {
             throw ert;
         } catch (HttpClientErrorException e) {
@@ -254,11 +190,8 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
     @Override
     public String getResourceUrl(String subPath, boolean isProtectedResource) {
         try {
-            if (this.isEnabled() && !isProtectedResource) {
-                Optional<TenantConfig> config = getTenantConfig();
-                return this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
-            }
-            return super.getResourceUrl(subPath, isProtectedResource); // protected resources are serverd everytime from de-app
+            Optional<TenantConfig> config = getTenantConfig();
+            return this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
         } catch (Exception e) {
             logger.error("Error extracting resource url", e);
             throw new EntRuntimeException("Error extracting resource url", e);
@@ -267,9 +200,6 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
 
     @Override
     public boolean exists(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.exists(subPath, isProtectedResource);
-        }
         String[] sections = this.extractSections(subPath);
         String[] filenames = this.list(sections[0], isProtectedResource);
         return (null != filenames && Arrays.asList(filenames).contains(sections[1]));
@@ -277,9 +207,6 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
 
     @Override
     public BasicFileAttributeView getAttributes(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.getAttributes(subPath, isProtectedResource);
-        }
         String[] sections = this.extractSections(subPath);
         BasicFileAttributeView[] attributs = this.listAttributes(sections[0], isProtectedResource);
         if (null == attributs) {
@@ -307,25 +234,16 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
 
     @Override
     public String[] list(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.list(subPath, isProtectedResource);
-        }
         return this.listString(subPath, isProtectedResource, null);
     }
 
     @Override
     public String[] listDirectory(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.listDirectory(subPath, isProtectedResource);
-        }
         return this.listString(subPath, isProtectedResource, false);
     }
 
     @Override
     public String[] listFile(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.listFile(subPath, isProtectedResource);
-        }
         return this.listString(subPath, isProtectedResource, true);
     }
     
@@ -338,40 +256,27 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
     
     @Override
     public BasicFileAttributeView[] listAttributes(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.listAttributes(subPath, isProtectedResource);
-        }
         return this.listAttributes(subPath, isProtectedResource, null);
     }
     
     @Override
     public BasicFileAttributeView[] listDirectoryAttributes(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.listDirectoryAttributes(subPath, isProtectedResource);
-        }
         return this.listAttributes(subPath, isProtectedResource, false);
     }
 
     @Override
     public BasicFileAttributeView[] listFileAttributes(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.listFileAttributes(subPath, isProtectedResource);
-        }
         return this.listAttributes(subPath, isProtectedResource, true);
     }
     
-    protected BasicFileAttributeView[] listAttributes(String subPath, boolean isProtectedResource, Boolean file) {
+    private BasicFileAttributeView[] listAttributes(String subPath, boolean isProtectedResource, Boolean file) {
         try {
             Optional<TenantConfig> config = this.getTenantConfig();
             this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
             String subPathFixed = (!StringUtils.isBlank(subPath)) ? (subPath.trim().startsWith(URL_SEP) ? subPath.trim().substring(1) : subPath) : "";
             String section = this.getInternalSection(isProtectedResource);
             String url = String.format("%s/list/%s/%s", this.extractInternalCdsBaseUrl(config, true), section, subPathFixed);
-            String responseString = this.executeGetCall(url, Arrays.asList(MediaType.APPLICATION_JSON), config, false, String.class);
-            if (null == responseString) {
-                return new BasicFileAttributeView[0];
-            }
-            CdsFileAttributeView[] cdsFileList = this.objectMapper.readValue(responseString, new TypeReference<CdsFileAttributeView[]>() {});
+            CdsFileAttributeView[] cdsFileList = caller.getFileAttributeView(url, config);
             List<BasicFileAttributeView> list = Arrays.asList(cdsFileList).stream()
                     .filter(csdf -> (null != file) ? ((file) ? !csdf.getDirectory() : csdf.getDirectory()) : true)
                     .map(csdf -> {
@@ -392,41 +297,9 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
         }
     }
     
-    private <T> T executeGetCall(String url, List<MediaType> acceptableMediaTypes, Optional<TenantConfig> config, boolean force, Class<T> expectedType) {
-        try {
-            HttpHeaders headers = this.getBaseHeader(acceptableMediaTypes, config, force);
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<T> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, expectedType);
-            return responseEntity.getBody();
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                logger.info("File Not found - uri {}", url);
-                return null;
-            }
-            if (!force && e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
-                return this.executeGetCall(url, acceptableMediaTypes, config, true, expectedType);
-            } else {
-                throw new EntRuntimeException("Invalid GET, response status " + e.getStatusCode() + " - url " + url);
-            }
-        }
-    }
-    
-    private HttpHeaders getBaseHeader(List<MediaType> acceptableMediaTypes, Optional<TenantConfig> config, boolean forceToken) {
-        String token = this.extractToken(config, forceToken);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + token);
-        if (null != acceptableMediaTypes) {
-            headers.setAccept(acceptableMediaTypes);
-        }
-        return headers;
-    }
 
     @Override
     public String readFile(String subPath, boolean isProtectedResource) throws EntException {
-        if (!this.isEnabled()) {
-            return super.readFile(subPath, isProtectedResource);
-        }
         try {
             InputStream stream = this.getStream(subPath, isProtectedResource);
             return FileTextReader.getText(stream);
@@ -440,10 +313,6 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
 
     @Override
     public void editFile(String subPath, boolean isProtectedResource, InputStream is) throws EntException {
-        if (!this.isEnabled()) {
-            super.editFile(subPath, isProtectedResource, is);
-            return;
-        }
         try {
             this.saveFile(subPath, isProtectedResource, is);
         } catch (EntRuntimeException ert) {
@@ -456,68 +325,22 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
 
     @Override
     public String createFullPath(String subPath, boolean isProtectedResource) {
-        if (!this.isEnabled()) {
-            return super.createFullPath(subPath, isProtectedResource);
-        }
         return this.validateAndReturnResourcePath(this.getTenantConfig(), subPath, isProtectedResource);
     }
     
     private Optional<TenantConfig> getTenantConfig() {
         return ApsTenantApplicationUtils.getTenant()
                 .filter(StringUtils::isNotBlank)
-                .map(getTenantManager()::getConfig);
+                .map(tenantManager::getConfig);
     }
     
     private String getInternalSection(boolean isProtectedResource) {
         return (isProtectedResource) ? SECTION_PRIVATE : SECTION_PUBLIC;
     } 
-    
-    private String extractToken(Optional<TenantConfig> config, boolean force) {
-        return config.map(c -> getTenantToken(c,force)).orElse(getPrimaryToken(force));
-    }
 
-    private String getTenantToken(TenantConfig config, boolean force){
-        String token = this.tenantsToken.get(config.getTenantCode());
-        if (force || StringUtils.isBlank(token)) {
-            token = this.extractToken(config.getKcAuthUrl(), config.getKcRealm(), config.getKcClientId(), config.getKcClientSecret());
-            this.tenantsToken.put(config.getTenantCode(), token);
-        }
-        return token;
-    }
-
-    private String getPrimaryToken(boolean force){
-        String token = this.tenantsToken.get(PRIMARY_CODE);
-        if (force || StringUtils.isBlank(token)) {
-            token = this.extractToken(this.getKcAuthUrl(), this.getKcRealm(), this.getKcClientId(), this.getKcClientSecret());
-            this.tenantsToken.put(PRIMARY_CODE, token);
-        }
-        return token;
-    }
-    private String extractToken(String kcUrl, String kcRealm, String clientId, String clientSecret) {
-        RestTemplate restTemplate = new RestTemplate();
-        final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        CloseableHttpClient httpClient = HttpClientBuilder.create()
-                .setRedirectStrategy(new LaxRedirectStrategy()).build();
-        factory.setHttpClient(httpClient);
-        restTemplate.setRequestFactory(factory);
-        String encodedClientData = Base64Utils.encodeToString((clientId + ":" + clientSecret).getBytes());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Authorization", "Basic " + encodedClientData);
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add(OAuth2Utils.GRANT_TYPE, "client_credentials");
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-        String url = String.format("%s/realms/%s/protocol/openid-connect/token", kcUrl, kcRealm);
-        ResponseEntity<Map> responseEntity = restTemplate.postForEntity(url, request, Map.class);
-        if (!responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-            throw new EntRuntimeException("Token api - invalid response status " + responseEntity.getStatusCode() + " - KC url " + kcUrl + " - realm " + kcRealm + " - client " + clientId);
-        }
-        return responseEntity.getBody().get(OAuth2AccessToken.ACCESS_TOKEN).toString();
-    }
-    
     private String extractInternalCdsBaseUrl(Optional<TenantConfig> config, boolean privateUrl) {
         String baseUrl = this.getCheckedBaseUrl(config, privateUrl);
-        String path = config.flatMap(c -> c.getProperty(CDS_PATH_TENANT_PARAM)).orElse(this.getCdsPath());
+        String path = config.flatMap(c -> c.getProperty(CDS_PATH_TENANT_PARAM)).orElse(configuration.getCdsPath());
         path = (path.startsWith(URL_SEP)) ? path : URL_SEP + path;
         String cdsBaseUrl = baseUrl + path;
         return (cdsBaseUrl.endsWith(URL_SEP)) ? cdsBaseUrl.substring(0, cdsBaseUrl.length() - 2) : cdsBaseUrl;
@@ -540,8 +363,8 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
     }
     
     private String getCheckedBaseUrl(Optional<TenantConfig> config, boolean usePrivateUrl) {
-        String privateUrl = config.flatMap(c -> c.getProperty(CDS_PRIVATE_URL_TENANT_PARAM)).orElse(getCdpPrivateUrl());
-        String publicUrl = config.flatMap(c -> c.getProperty(CDS_PUBLIC_URL_TENANT_PARAM)).orElse(getCdsPublicUrl());
+        String privateUrl = config.flatMap(c -> c.getProperty(CDS_PRIVATE_URL_TENANT_PARAM)).orElse(configuration.getCdpPrivateUrl());
+        String publicUrl = config.flatMap(c -> c.getProperty(CDS_PUBLIC_URL_TENANT_PARAM)).orElse(configuration.getCdsPublicUrl());
 
         String baseUrl = usePrivateUrl ? privateUrl : publicUrl;
 
@@ -569,68 +392,61 @@ public class CdsStorageManager extends LocalStorageManager implements IStorageMa
 		);
 	}
 
-    protected boolean isEnabled() {
-        return enabled;
-    }
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+
+
+
+
+
+
+
+
+    // FIXME ereditato da LocalStorageManager
+    @Override
+    public boolean isDirectory(String subPath, boolean isProtectedResource) {
+        Boolean isDir = withValidResourcePath(subPath, isProtectedResource, (basePath, fullPath) -> {
+            File dir = new File(fullPath);
+            if (dir != null) {
+                return dir.isDirectory();
+            }
+            return false;
+        });
+        return isDir;
     }
 
-    public String getCdsPublicUrl() {
-        return cdsPublicUrl;
-    }
-    public void setCdsPublicUrl(String cdsPublicUrl) {
-        this.cdsPublicUrl = cdsPublicUrl;
-    }
-
-    public String getCdpPrivateUrl() {
-        return cdpPrivateUrl;
-    }
-    public void setCdpPrivateUrl(String cdpPrivateUrl) {
-        this.cdpPrivateUrl = cdpPrivateUrl;
-    }
-
-    public String getCdsPath() {
-        return cdsPath;
-    }
-    public void setCdsPath(String cdsPath) {
-        this.cdsPath = cdsPath;
+    private <T> T withValidResourcePath(String resourceRelativePath, boolean isProtectedResource,
+            BiFunction<String, String, T> bip) {
+        //-
+        resourceRelativePath = (resourceRelativePath == null) ? "" : resourceRelativePath;
+        String basePath = (!isProtectedResource) ? configuration.getBaseDiskRoot() : configuration.getProtectedBaseDiskRoot();
+        String fullPath = this.createPath(basePath, resourceRelativePath, false);
+        try {
+            if (StorageManagerUtil.doesPathContainsPath(basePath, fullPath, true)) {
+                return bip.apply(basePath, fullPath);
+            } else {
+                throw mkPathValidationErr(basePath, fullPath);
+            }
+        } catch (IOException ex) {
+            throw mkPathValidationErr(basePath, fullPath);
+        }
     }
 
-    public String getKcAuthUrl() {
-        return kcAuthUrl;
-    }
-    public void setKcAuthUrl(String kcAuthUrl) {
-        this.kcAuthUrl = kcAuthUrl;
-    }
+    private static final String UNIX_SEP = "/";
+    private static final String WINDOWS_SEP = "\\";
 
-    public String getKcRealm() {
-        return kcRealm;
+    private String createPath(String basePath, String subPath, boolean isUrlPath) {
+        subPath = (null == subPath) ? "" : subPath;
+        String separator = (isUrlPath) ? URL_SEP : File.separator;
+        boolean baseEndWithSlash = basePath.endsWith(separator) ||
+                basePath.endsWith(UNIX_SEP) ||
+                basePath.endsWith(WINDOWS_SEP);
+        boolean subPathStartWithSlash = subPath.startsWith(separator);
+        if ((baseEndWithSlash && !subPathStartWithSlash) || (!baseEndWithSlash && subPathStartWithSlash)) {
+            return basePath + subPath;
+        } else if (!baseEndWithSlash && !subPathStartWithSlash) {
+            return basePath + separator + subPath;
+        } else {
+            String base = basePath.substring(0, basePath.length() - File.separator.length());
+            return base + subPath;
+        }
     }
-    public void setKcRealm(String kcRealm) {
-        this.kcRealm = kcRealm;
-    }
-
-    public String getKcClientId() {
-        return kcClientId;
-    }
-    public void setKcClientId(String kcClientId) {
-        this.kcClientId = kcClientId;
-    }
-
-    public String getKcClientSecret() {
-        return kcClientSecret;
-    }
-    public void setKcClientSecret(String kcClientSecret) {
-        this.kcClientSecret = kcClientSecret;
-    }
-
-    protected ITenantManager getTenantManager() {
-        return tenantManager;
-    }
-    @Autowired
-    public void setTenantManager(ITenantManager tenantManager) {
-        this.tenantManager = tenantManager;
-    }
-    
 }

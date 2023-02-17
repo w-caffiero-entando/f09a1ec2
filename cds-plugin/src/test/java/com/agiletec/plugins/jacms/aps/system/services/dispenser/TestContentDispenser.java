@@ -32,15 +32,43 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.agiletec.aps.system.services.user.IUserManager;
+import org.entando.entando.aps.system.services.storage.IStorageManager;
+import org.entando.entando.plugins.jpcds.aps.system.storage.CdsEnvironmentVariables;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 /**
  * @author W.Ambu - E.Santoboni
  */
 class TestContentDispenser extends BaseTestCase {
+
+    private MockedStatic<CdsEnvironmentVariables> mockedCdsEnvironment;
+
+    @BeforeEach
+    private void init() throws Exception {
+        try {
+            mockedCdsEnvironment = Mockito.mockStatic(CdsEnvironmentVariables.class);
+            mockedCdsEnvironment.when(() -> CdsEnvironmentVariables.active()).thenReturn(true);
+
+            this._contentDispenser = (IContentDispenser) this.getService(JacmsSystemConstants.CONTENT_DISPENSER_MANAGER);
+            this._contentManager = (IContentManager) this.getService(JacmsSystemConstants.CONTENT_MANAGER);
+            this._contentModelManager = (IContentModelManager) this.getService(JacmsSystemConstants.CONTENT_MODEL_MANAGER);
+            this._cacheInfoManager = (CacheInfoManager) this.getService(SystemConstants.CACHE_INFO_MANAGER);
+        } catch (Throwable t) {
+            throw new Exception(t);
+        }
+    }
+
+    @AfterEach
+    public void afterAll() throws Exception {
+        mockedCdsEnvironment.close();
+    }
+
 
     //FIXME @Test
     void testGetRenderedContent_1() throws Throwable {
@@ -304,17 +332,6 @@ class TestContentDispenser extends BaseTestCase {
         return input;
     }
     
-    @BeforeEach
-    private void init() throws Exception {
-        try {
-            this._contentDispenser = (IContentDispenser) this.getService(JacmsSystemConstants.CONTENT_DISPENSER_MANAGER);
-            this._contentManager = (IContentManager) this.getService(JacmsSystemConstants.CONTENT_MANAGER);
-            this._contentModelManager = (IContentModelManager) this.getService(JacmsSystemConstants.CONTENT_MODEL_MANAGER);
-            this._cacheInfoManager = (CacheInfoManager) this.getService(SystemConstants.CACHE_INFO_MANAGER);
-        } catch (Throwable t) {
-            throw new Exception(t);
-        }
-    }
 
     private IContentDispenser _contentDispenser = null;
     private IContentManager _contentManager = null;
