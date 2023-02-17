@@ -190,7 +190,7 @@ public class PageActionAspect {
                 }
             }
             if (currentCodes.contains(code)) {
-                action.addFieldError(PARAM_FRIENDLY_CODES, action.getText("jpseo.error.page.duplicateFriendlyCode"));
+                action.addFieldError(PARAM_FRIENDLY_CODES, action.getText("jpseo.error.page.noUniqueFriendlyCode"));
             }
             currentCodes.add(code);
         }
