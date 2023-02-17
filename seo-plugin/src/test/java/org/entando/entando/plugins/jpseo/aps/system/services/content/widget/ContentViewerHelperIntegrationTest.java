@@ -33,7 +33,6 @@ import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.plugins.jacms.aps.system.services.content.widget.IContentViewerHelper;
 import com.agiletec.plugins.jacms.aps.system.services.Jdk11CompatibleDateFormatter;
-import com.agiletec.plugins.jacms.aps.system.services.searchengine.ICmsSearchEngineManager;
 import javax.servlet.ServletContext;
 import org.entando.entando.plugins.jpseo.aps.JpseoConfigTestUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -66,7 +65,6 @@ public class ContentViewerHelperIntegrationTest {
     private IPageManager pageManager;
     private IContentViewerHelper helper;
     
-    
     @BeforeAll
     public static void setUp() throws Exception {
         try {
@@ -75,9 +73,6 @@ public class ContentViewerHelperIntegrationTest {
             reqCtx = BaseTestCase.createRequestContext(applicationContext, srvCtx);
             MockHttpServletRequest request = BaseTestCase.createRequest();
             reqCtx.setRequest(request);
-            ICmsSearchEngineManager extractedService = applicationContext.getBean(ICmsSearchEngineManager.class);
-            Thread thread = extractedService.startReloadContentsReferences();
-            thread.join();
         } catch (Exception e) {
             throw e;
         }

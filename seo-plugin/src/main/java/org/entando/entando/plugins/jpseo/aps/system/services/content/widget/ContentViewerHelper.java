@@ -33,28 +33,28 @@ import com.agiletec.aps.util.ApsProperties;
  * @author E.Santoboni
  */
 public class ContentViewerHelper extends com.agiletec.plugins.jacms.aps.system.services.content.widget.ContentViewerHelper {
-	
-	@Override
-	protected String extractContentId(String contentId, ApsProperties widgetConfig, RequestContext reqCtx) {
-		String extractedContentId = super.extractContentId(contentId, widgetConfig, reqCtx);
-		if (this.isCurrentFrameMain(reqCtx)) {
-			String extractedId = reqCtx != null ? (String) reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID) : null;
-			if (extractedId != null) {
-				extractedContentId = extractedId;
-			}
-		}
-		return extractedContentId;
-	}
-	
-	protected boolean isCurrentFrameMain(RequestContext reqCtx) {
-		Integer currentFrame = (Integer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
+
+    @Override
+    protected String extractContentId(String contentId, ApsProperties widgetConfig, RequestContext reqCtx) {
+        String extractedContentId = super.extractContentId(contentId, widgetConfig, reqCtx);
+        if (this.isCurrentFrameMain(reqCtx)) {
+            String extractedId = reqCtx != null ? (String) reqCtx.getExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID) : null;
+            if (extractedId != null) {
+                extractedContentId = extractedId;
+            }
+        }
+        return extractedContentId;
+    }
+
+    protected boolean isCurrentFrameMain(RequestContext reqCtx) {
+        Integer currentFrame = (Integer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
         if (null == currentFrame) {
             return false;
         }
-		IPage currentPage = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+        IPage currentPage = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
         PageModel model = super.getPageModelManager().getPageModel(currentPage.getMetadata().getModelCode());
-		int mainFrame = model.getMainFrame();
-		return (currentFrame.intValue() == mainFrame);
-	}
-	
+        int mainFrame = model.getMainFrame();
+        return (currentFrame.intValue() == mainFrame);
+    }
+
 }
