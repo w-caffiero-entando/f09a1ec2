@@ -82,7 +82,7 @@ class WidgetExecutorServiceTest {
 
         ExecutorBeanContainer ebc = Mockito.mock(ExecutorBeanContainer.class);
         Mockito.when(ebc.getTemplateModel()).thenReturn(Mockito.mock(TemplateModel.class));
-        Mockito.when(reqCtx.getExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER)).thenReturn(ebc);
+        Mockito.when(reqCtx.getExecutorBeanContainer()).thenReturn(ebc);
         Mockito.when(reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME)).thenReturn(0);
         Mockito.when(reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_WIDGET)).thenReturn(widget);
     }

@@ -13,24 +13,31 @@
  */
 package org.entando.entando.aps.system.init;
 
-import org.entando.entando.ent.exception.EntException;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.aps.util.DateConverter;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import javax.sql.DataSource;
 import org.entando.entando.aps.system.init.model.Component;
 import org.entando.entando.aps.system.init.model.DataSourceDumpReport;
 import org.entando.entando.aps.system.init.model.SystemInstallationReport;
 import org.entando.entando.aps.system.init.model.TableDumpReport;
 import org.entando.entando.aps.system.init.util.TableDataUtils;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.BeansException;
-
-import javax.sql.DataSource;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author E.Santoboni
@@ -72,15 +79,18 @@ public class DatabaseDumper extends AbstractDatabaseUtils {
         }
         try {
             String[] dataSourceNames = this.extractBeanNames(DataSource.class);
-            for (int j = 0; j < dataSourceNames.length; j++) {
-                String dataSourceName = dataSourceNames[j];
+            for (String dataSourceName : dataSourceNames) {
                 List<String> tableNames = tableMapping.get(dataSourceName);
                 if (null == tableNames || tableNames.isEmpty()) {
                     continue;
                 }
-                DataSource dataSource = (DataSource) this.getBeanFactory().getBean(dataSourceName);
-                for (int k = 0; k < tableNames.size(); k++) {
-                    String tableName = tableNames.get(k);
+                DataSource dataSource = ApsTenantApplicationUtils.getTenant()
+                        .map(tenantCode -> {
+                            ITenantManager tenantManager = this.getBeanFactory().getBean(ITenantManager.class);
+                            return tenantManager.getDatasource(tenantCode);
+                        })
+                        .orElse((DataSource) this.getBeanFactory().getBean(dataSourceName));
+                for (String tableName : tableNames) {
                     this.dumpTableData(tableName, dataSourceName, dataSource, report, backupSubFolder);
                 }
             }

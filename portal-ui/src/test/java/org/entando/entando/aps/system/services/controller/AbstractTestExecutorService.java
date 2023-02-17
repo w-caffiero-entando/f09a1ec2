@@ -14,8 +14,6 @@
 package org.entando.entando.aps.system.services.controller;
 
 import com.agiletec.aps.BaseTestCase;
-import com.agiletec.aps.system.SystemConstants;
-
 import freemarker.ext.jsp.TaglibFactory;
 import freemarker.ext.servlet.AllHttpScopesHashModel;
 import freemarker.ext.servlet.FreemarkerServlet;
@@ -26,15 +24,12 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModel;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.entando.entando.aps.servlet.ControllerServlet;
 import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanContainer;
 import org.junit.jupiter.api.BeforeAll;
-
 import org.springframework.mock.web.MockServletConfig;
 
 /**
@@ -53,7 +48,7 @@ public abstract class AbstractTestExecutorService extends BaseTestCase {
 			config.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
 			TemplateModel templateModel = createModel(wrapper);
 			ExecutorBeanContainer ebc = new ExecutorBeanContainer(config, templateModel);
-			getRequestContext().addExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER, ebc);
+			getRequestContext().setExecutorBeanContainer(ebc);
 		} catch (Throwable t) {
 			throw new Exception(t);
 		}

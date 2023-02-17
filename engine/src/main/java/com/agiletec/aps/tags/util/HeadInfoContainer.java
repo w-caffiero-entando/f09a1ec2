@@ -13,6 +13,7 @@
  */
 package com.agiletec.aps.tags.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,44 +21,35 @@ import java.util.Map;
 
 /**
  * Contenitore di informazioni da inserire nella testata della pagina html.
+ *
  * @author W.Ambu
  */
-public class HeadInfoContainer {
-	
-	/**
-	 * Inizializzazione del container.
-	 */
-	public HeadInfoContainer(){
-		this._container = new HashMap<String, List<Object>>();
-	}
-	
-	/**
-	 * Inserisce nel contenitore un'informazione di un dato tipo.
-	 * Nel caso dei fogli di stile, il tipo è "StyleSheet" e l'informazione
-	 * è una stringa contenente il nome del foglio di stile.
-	 * @param type Il tipo di informazione da aggiungere.
-	 * @param info L'informazione da aggiungere.
-	 */
-	public void addInfo(String type, Object info){
-		List<Object> infos = this._container.get(type);
-		if (infos == null) {
-			infos = new ArrayList<Object>();
-			this._container.put(type, infos);
-		}
-		if (!infos.contains(info)) {
-			infos.add(info);
-		}
-	}
-	
-	/**
-	 * Restituisce una collezione di informazioni in base al tipo.
-	 * @param type Il tipo delle informazioni richieste.
-	 * @return Una collezione di informazioni.
-	 */
-	public List<Object> getInfos(String type) {
-		return this._container.get(type);
-	}
-	
-	private Map<String, List<Object>> _container;
-	
+public class HeadInfoContainer implements Serializable {
+
+    private final Map<String, List<String>> container = new HashMap<>();
+
+    /**
+     * Inserisce nel contenitore un'informazione di un dato tipo. Nel caso dei fogli di stile, il tipo è "StyleSheet" e
+     * l'informazione è una stringa contenente il nome del foglio di stile.
+     *
+     * @param type Il tipo di informazione da aggiungere.
+     * @param info L'informazione da aggiungere.
+     */
+    public void addInfo(String type, String info) {
+        List<String> infos = this.container.computeIfAbsent(type, t -> new ArrayList<>());
+        if (!infos.contains(info)) {
+            infos.add(info);
+        }
+    }
+
+    /**
+     * Restituisce una collezione di informazioni in base al tipo.
+     *
+     * @param type Il tipo delle informazioni richieste.
+     * @return Una collezione di informazioni.
+     */
+    public List<String> getInfos(String type) {
+        return this.container.get(type);
+    }
+
 }

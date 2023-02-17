@@ -14,6 +14,7 @@
 package com.agiletec.plugins.jacms.aps.system.services.contentpagemapper;
 
 import com.agiletec.aps.system.common.AbstractCacheWrapper;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -69,6 +70,10 @@ public class ContentPageMapperManager extends AbstractService implements IConten
 
 	@Override
 	public void updateFromPageChanged(PageChangedEvent event) {
+		if (_logger.isDebugEnabled()) {
+			_logger.debug("END - EVENT -> {} - tenant {}", event.getClass(),
+					ApsTenantApplicationUtils.getTenant().orElse("primary"));
+		}
 		try {
 			this.reloadContentPageMapper();
 			String pagecode = (null != event.getPage()) ? event.getPage().getCode() : "*undefined*";

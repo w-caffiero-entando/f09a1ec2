@@ -24,45 +24,51 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.tags.util.HeadInfoContainer;
 
 /**
- * Utility tag for the compilation of the header informations.
- * It verifies the availability of the informations of the specified type.
- * 
+ * Utility tag for the compilation of the header informations. It verifies the availability of the informations of the
+ * specified type.
+ *
  * @author E.Santoboni
  */
 public class CheckHeadInfoOutputterTag extends TagSupport {
 
-	public int doStartTag() throws JspException {
-		ServletRequest request =  this.pageContext.getRequest();
-		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
-		HeadInfoContainer headInfo = (HeadInfoContainer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_HEAD_INFO_CONTAINER);
-		List<Object> infos = headInfo.getInfos(this.getType());
-		if (infos == null || infos.size() == 0) {
-			return SKIP_BODY;
-		} else {
-			return EVAL_BODY_INCLUDE;
-		}
-	}
+    private String type;
 
-	public void release() {
-		this._type = null;
-	}
+    @Override
+    public int doStartTag() throws JspException {
+        ServletRequest request = this.pageContext.getRequest();
+        RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
+        HeadInfoContainer headInfo = (HeadInfoContainer) reqCtx.getExtraParam(
+                SystemConstants.EXTRAPAR_HEAD_INFO_CONTAINER);
+        List<String> infos = headInfo.getInfos(this.getType());
+        if (infos == null || infos.isEmpty()) {
+            return SKIP_BODY;
+        } else {
+            return EVAL_BODY_INCLUDE;
+        }
+    }
 
-	/**
-	 * Return the type of the information being verified.
-	 * @return The information type.
-	 */
-	public String getType() {
-		return _type;
-	}
+    @Override
+    public void release() {
+        this.type = null;
+    }
 
-	/**
-	 * Set the type of the information being verified.
-	 * @param type The information type.
-	 */
-	public void setType(String type) {
-		this._type = type;
-	}
+    /**
+     * Return the type of the information being verified.
+     *
+     * @return The information type.
+     */
+    public String getType() {
+        return type;
+    }
 
-	private String _type;
+    /**
+     * Set the type of the information being verified.
+     *
+     * @param type The information type.
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
 
 }

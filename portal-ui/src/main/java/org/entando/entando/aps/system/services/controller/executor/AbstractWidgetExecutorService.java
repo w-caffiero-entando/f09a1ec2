@@ -228,7 +228,7 @@ public abstract class AbstractWidgetExecutorService {
 				_logger.info("The fragment '{}' is not available", fragment.getCode());
 				return "";
 			}
-			ExecutorBeanContainer ebc = (ExecutorBeanContainer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER);
+			ExecutorBeanContainer ebc = reqCtx.getExecutorBeanContainer();
 			Integer frame = (Integer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
 			Widget currentWidget = (Widget) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_WIDGET);
 			StringBuilder templateName = new StringBuilder(String.valueOf(frame)).append("_").append(fragment.getCode());

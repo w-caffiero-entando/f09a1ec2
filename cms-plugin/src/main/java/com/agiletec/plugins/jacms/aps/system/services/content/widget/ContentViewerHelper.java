@@ -13,6 +13,7 @@
  */
 package com.agiletec.plugins.jacms.aps.system.services.content.widget;
 
+import java.io.Serializable;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -146,7 +147,7 @@ public class ContentViewerHelper implements IContentViewerHelper {
         Integer currentFrame = (Integer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
         PageModel pageModel = this.getPageModelManager().getPageModel(page.getMetadata().getModelCode());
         if (currentFrame == pageModel.getMainFrame() && null != renderInfo) {
-            Object extraTitle = renderInfo.getAttributeValues().get(JacmsSystemConstants.ATTRIBUTE_ROLE_TITLE);
+            Serializable extraTitle = (Serializable) renderInfo.getAttributeValues().get(JacmsSystemConstants.ATTRIBUTE_ROLE_TITLE);
             if (null != extraTitle) {
                 reqCtx.addExtraParam(SystemConstants.EXTRAPAR_EXTRA_PAGE_TITLES, extraTitle);
             }

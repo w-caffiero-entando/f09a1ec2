@@ -86,7 +86,7 @@ public class GuiFragmentTag extends ExtendedTagSupport {
 			if (null == guiFragment || StringUtils.isBlank(guiFragment.getCurrentGui())) {
 				return null;
 			}
-			ExecutorBeanContainer ebc = (ExecutorBeanContainer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER);
+			ExecutorBeanContainer ebc = reqCtx.getExecutorBeanContainer();
 			Writer out = new OutputStreamWriter(baos);
 			Template template = new Template(this.getCode(), new StringReader(guiFragment.getCurrentGui()), ebc.getConfiguration());
 			template.process(ebc.getTemplateModel(), out);

@@ -69,7 +69,7 @@ public class PageExecutorService implements ExecutorServiceInterface {
                 RequestDispatcher dispatcher = request.getSession().getServletContext().getRequestDispatcher(jspPath);
                 dispatcher.forward(request, response);
             } else {
-                ExecutorBeanContainer ebc = (ExecutorBeanContainer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER);
+                ExecutorBeanContainer ebc = reqCtx.getExecutorBeanContainer();
                 Template template = new Template(page.getCode(), new StringReader(model.getTemplate()), ebc.getConfiguration());
                 try {
                     template.process(ebc.getTemplateModel(), response.getWriter());

@@ -17,7 +17,6 @@ import static javax.servlet.jsp.tagext.Tag.EVAL_BODY_INCLUDE;
 import static org.mockito.Mockito.when;
 
 import com.agiletec.aps.system.RequestContext;
-import com.agiletec.aps.system.SystemConstants;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ class FreemarkerTemplateParameterTagTest {
         MockitoAnnotations.initMocks(this);
         when(pageContext.getRequest()).thenReturn(this.servletRequest);
         when(servletRequest.getAttribute(RequestContext.REQCTX)).thenReturn(this.reqCtx);
-        when(reqCtx.getExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER)).thenReturn(executorBeanContainer);
+        when(reqCtx.getExecutorBeanContainer()).thenReturn(executorBeanContainer);
         Mockito.lenient().when(pageContext.getOut()).thenReturn(this.writer);
         this.freemarkerTemplate.release();
     }
