@@ -14,19 +14,21 @@
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-/**
- * @author E.Santoboni
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CdsCreateResponse implements Serializable {
+@EqualsAndHashCode
+@ToString
+public class CdsCreateRowResponseDto implements Serializable {
     
     private String status;
     private String filename;
     private Long date;
     private String path;
-    private boolean is_protected_file;
+    private boolean protectedFile;
 
     public String getStatus() {
         return status;
@@ -60,12 +62,14 @@ public class CdsCreateResponse implements Serializable {
         this.path = path;
     }
 
-    public boolean isIs_protected_file() {
-        return is_protected_file;
+    @JsonProperty("is_protected_file")
+    public boolean isProtectedFile() {
+        return protectedFile;
     }
 
-    public void setIs_protected_file(boolean is_protected_file) {
-        this.is_protected_file = is_protected_file;
+    @JsonProperty("is_protected_file")
+    public void setProtectedFile(boolean protectedFile) {
+        this.protectedFile = protectedFile;
     }
 
 }

@@ -13,24 +13,29 @@
  */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @author E.Santoboni
- */
-public class CdsFileAttributeView implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode
+@ToString
+public class CdsFileAttributeViewDto implements Serializable {
     
     public static final String LONG_TIME_PARAM_NAME = "secs_since_epoch";
     
     private String name;
-	private Map<String,String> last_modified_time;
+	private Map<String,String> lastModifiedTime;
 	private Long size;
 	private Boolean directory;
 	private String path;
-	private Boolean protected_folder;
+	private Boolean protectedFolder;
 
     public String getName() {
         return name;
@@ -39,18 +44,23 @@ public class CdsFileAttributeView implements Serializable {
         this.name = name;
     }
 
-    public Map<String, String> getLast_modified_time() {
-        return last_modified_time;
+    @JsonProperty("last_modified_time")
+    public Map<String, String> getLastModifiedTime() {
+        return lastModifiedTime;
     }
 
-    public void setLast_modified_time(Map<String, String> last_modified_time) {
-        this.last_modified_time = last_modified_time;
+    @JsonProperty("last_modified_time")
+    public void setLastModifiedTime(Map<String, String> lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime;
     }
-    
+
+    @JsonIgnore
     public Date getDate() {
-        String timeString = this.getLast_modified_time().get(LONG_TIME_PARAM_NAME);
-        if (!StringUtils.isBlank(timeString)) {
-            return new Date(Long.valueOf(timeString)*1000);
+        if(lastModifiedTime != null) {
+            String timeString = lastModifiedTime.get(LONG_TIME_PARAM_NAME);
+            if (!StringUtils.isBlank(timeString)) {
+                return new Date(Long.valueOf(timeString) * 1000);
+            }
         }
         return null;
     }
@@ -76,11 +86,14 @@ public class CdsFileAttributeView implements Serializable {
         this.path = path;
     }
 
-    public Boolean getProtected_folder() {
-        return protected_folder;
+    @JsonProperty("protected_folder")
+    public Boolean getProtectedFolder() {
+        return protectedFolder;
     }
-    public void setProtected_folder(Boolean protectedFolder) {
-        this.protected_folder = protectedFolder;
+
+    @JsonProperty("protected_folder")
+    public void setProtectedFolder(Boolean protectedFolder) {
+        this.protectedFolder = protectedFolder;
     }
     
 }

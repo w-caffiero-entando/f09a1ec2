@@ -38,7 +38,7 @@ public class CdsConfiguration {
     @Value("${cds.public.url:https://cds.entando.org}")
     private String cdsPublicUrl;
     @Value("${cds.private.url:https://cds.entando.org}")
-    private String cdpPrivateUrl;
+    private String cdsPrivateUrl;
     @Value("${cds.path:/api/v1}")
     private String cdsPath;
     @Value("${keycloak.auth.url:http://localhost:8081/auth}")

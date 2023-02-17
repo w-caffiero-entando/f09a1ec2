@@ -180,18 +180,6 @@ class CdsStorageManagerIntegrationTest extends BaseTestCase {
     }
 
     //FIXME @Test
-    void testGetStream_ShouldBlockPathTraversal() throws Throwable {
-        String testFilePath = "../testfolder/test.txt";
-        try {
-            cdsStorageManager.getStream(testFilePath, false);
-        } catch (EntRuntimeException e) {
-            assertThat(e.getMessage(), CoreMatchers.startsWith("Path validation failed"));
-        } catch (Throwable t) {
-            fail("Shouldn't reach this point");
-        }
-    }
-
-    //FIXME @Test
     void testSaveEditDeleteFile() throws Throwable {
         this.executeTestSaveEditDeleteFile(false);
         this.executeTestSaveEditDeleteFile(true);
