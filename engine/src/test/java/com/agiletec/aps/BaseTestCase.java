@@ -72,6 +72,7 @@ public class BaseTestCase {
                 ApsWebApplicationUtils.executeSystemRefresh(request);
                 waitNotifyingThread();
             } catch (Throwable e) {
+                System.out.println("BeforeAll setUp error: "+e.getMessage());
             }
         }
     }

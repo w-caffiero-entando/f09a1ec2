@@ -12,6 +12,7 @@
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd" >
 
     <context:annotation-config />
+    <context:component-scan base-package="org.entando.entando.aps.system.services.tenants" />
 
     <jee:jndi-lookup id="portDataSource" jndi-name="${portdb.jndi:java:comp/env/jdbc/portDataSource}"/>
 
