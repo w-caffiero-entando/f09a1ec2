@@ -13,23 +13,16 @@
  */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -44,7 +37,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.stereotype.Component;
@@ -53,14 +45,14 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
+import org.entando.entando.aps.system.services.storage.CdsActive;
 
 @Component
 @CdsActive(true)
 public class CdsRemoteCaller  {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CdsRemoteCaller.class);
-    private static final String REST_ERROR_MSG = "Invalid operation '%s', response status:'%' for url:'%s'";
+    private static final String REST_ERROR_MSG = "Invalid operation '%s', response status:'%s' for url:'%s'";
     private static final String SAVE_ERROR_MSG = "Error saving file/directory";
     private static final String PRIMARY_CODE = "PRIMARY_CODE";
     private static final String CDS_RETURN_STATE_OK = "OK";
@@ -113,6 +105,7 @@ public class CdsRemoteCaller  {
 
             return response;
         } catch (HttpClientErrorException e) {
+            // FIXME max 5 times
             if (!force && (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED))) {
                 return this.executePostCall(url, subPath, isProtectedResource, fileInputStream, config, true);
             } else {
@@ -256,7 +249,7 @@ public class CdsRemoteCaller  {
                 .setRedirectStrategy(new LaxRedirectStrategy()).build();
         factory.setHttpClient(httpClient);
         restTemplate.setRequestFactory(factory);
-         */
+        */
         String encodedClientData = Base64Utils.encodeToString((clientId + ":" + clientSecret).getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

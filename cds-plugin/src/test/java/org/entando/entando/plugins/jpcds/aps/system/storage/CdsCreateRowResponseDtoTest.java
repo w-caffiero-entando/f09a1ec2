@@ -36,4 +36,25 @@ public class CdsCreateRowResponseDtoTest {
         Assertions.assertThat(exp.getDate()).isEqualTo(1234);
         Assertions.assertThat(exp.isProtectedFile()).isFalse();
     }
+
+    @Test
+    public void shouldWorkFineWithHashEqualsAndToString() {
+
+        CdsCreateRowResponseDto dtoObject1 = new CdsCreateRowResponseDto();
+        dtoObject1.setProtectedFile(true);
+        dtoObject1.setStatus("OK");
+        dtoObject1.setFilename("nome_file");
+        dtoObject1.setPath("/mypath");
+
+        CdsCreateRowResponseDto dtoObject2 = new CdsCreateRowResponseDto();
+        dtoObject2.setProtectedFile(true);
+        dtoObject2.setStatus("OK");
+        dtoObject2.setFilename("nome_file");
+        dtoObject2.setPath("/mypath");
+
+        Assertions.assertThat(dtoObject2.toString()).contains("nome_file","/mypath","OK");
+        Assertions.assertThat(dtoObject2.hashCode()).isEqualTo(dtoObject1.hashCode());
+        Assertions.assertThat(dtoObject2.equals(dtoObject1)).isTrue();
+    }
+
 }

@@ -13,18 +13,22 @@
  */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
+import org.entando.entando.ent.exception.EntRuntimeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +42,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,7 +65,7 @@ class CdsRemoteCallerTest {
 
 
     @Test
-    void shouldCreateDirectory() throws Exception {
+    void shouldCreateDirectoryForTenant() throws Exception {
         Map<String,String> configMap = Map.of("cdsPublicUrl","http://my-server/tenant1/cms-resources",
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1",
@@ -118,5 +123,108 @@ class CdsRemoteCallerTest {
                 .postForEntity(eq(authPrimary.toString()), any(), eq(Map.class));
     }
 
+    @Test
+    void shouldManageErrorInExecutePostCall() throws Exception {
+
+        Map<String,String> configMap = Map.of("cdsPublicUrl","http://my-server/tenant1/cms-resources",
+                "cdsPrivateUrl","http://cds-kube-service:8081/",
+                "cdsPath","/mytenant/api/v1",
+                "kcAuthUrl", "http://tenant1.server.com/auth",
+                "kcRealm", "tenant1",
+                "kcClientId", "id",
+                "kcClientSecret", "secret",
+                "tenantCode", "my-tenant1");
+        TenantConfig tc = new TenantConfig(configMap);
+        ApsTenantApplicationUtils.setTenant("my-tenant");
+
+        Mockito.when(cdsConfiguration.getKcAuthUrl()).thenReturn("http://auth.server.com/auth");
+        Mockito.when(cdsConfiguration.getKcRealm()).thenReturn("primary");
+        Mockito.when(cdsConfiguration.getKcClientId()).thenReturn("sec1");
+        Mockito.when(cdsConfiguration.getKcClientSecret()).thenReturn("sec");
+
+        URI url = URI.create("http://cds-kube-service:8081/mytenant/api/v1/upload/");
+        Mockito.when(restTemplate.exchange(eq(url),eq(HttpMethod.POST),any(), eq(new ParameterizedTypeReference<List<CdsCreateRowResponseDto>>(){})))
+                .thenThrow(new RuntimeException());
+
+        Exception ex = assertThrows(EntRuntimeException.class,
+        () -> cdsRemoteCaller.executePostCall(url,
+                "/sub-path-testy",
+                false,
+                Optional.empty(),
+                Optional.ofNullable(tc),
+                false)
+        );
+        assertEquals("Error saving file/directory", ex.getMessage());
+
+        Mockito.reset(restTemplate);
+        Mockito.when(restTemplate.exchange(eq(url),eq(HttpMethod.POST),any(), eq(new ParameterizedTypeReference<List<CdsCreateRowResponseDto>>(){})))
+                .thenThrow(new HttpClientErrorException(HttpStatus.BAD_GATEWAY));
+        URI auth = URI.create("http://tenant1.server.com/auth/realms/tenant1/protocol/openid-connect/token");
+        Mockito.when(restTemplate.postForEntity(eq(auth.toString()), any(), eq(Map.class))).thenReturn(
+                ResponseEntity.status(HttpStatus.OK).body(Map.of(OAuth2AccessToken.ACCESS_TOKEN,"xxxxxx")));
+
+        ex = assertThrows(EntRuntimeException.class,
+                () -> cdsRemoteCaller.executePostCall(url,
+                        "/sub-path-testy",
+                        false,
+                        Optional.empty(),
+                        Optional.ofNullable(tc),
+                        false)
+        );
+        Assertions.assertEquals(
+                "Invalid operation 'POST', response status:'502 BAD_GATEWAY' for url:'http://cds-kube-service:8081/mytenant/api/v1/upload/'",
+                ex.getMessage());
+
+    }
+
+    @Test
+    void shouldCreateFileForPrimary() throws Exception {
+        Map<String,String> configMap = Map.of("cdsPublicUrl","http://my-server/tenant1/cms-resources",
+                "cdsPrivateUrl","http://cds-kube-service:8081/",
+                "cdsPath","/mytenant/api/v1",
+                "kcAuthUrl", "http://tenant1.server.com/auth",
+                "kcRealm", "tenant1",
+                "kcClientId", "id",
+                "kcClientSecret", "secret",
+                "tenantCode", "my-tenant1");
+
+        TenantConfig tc = new TenantConfig(configMap);
+        Mockito.when(cdsConfiguration.getKcAuthUrl()).thenReturn("http://auth.server.com/auth");
+        Mockito.when(cdsConfiguration.getKcRealm()).thenReturn("primary");
+        Mockito.when(cdsConfiguration.getKcClientId()).thenReturn("sec1");
+        Mockito.when(cdsConfiguration.getKcClientSecret()).thenReturn("sec");
+
+        CdsCreateRowResponseDto resp = new CdsCreateRowResponseDto();
+        resp.setStatus("OK");
+        List <CdsCreateRowResponseDto> list = new ArrayList<>();
+        list.add(resp);
+        URI url = URI.create("http://cds-kube-service:8081/mytenant/api/v1/upload/");
+        Mockito.when(restTemplate.exchange(eq(url),eq(HttpMethod.POST),any(), eq(new ParameterizedTypeReference<List<CdsCreateRowResponseDto>>(){})))
+                .thenReturn(ResponseEntity.ok(list));
+        /*
+        URI auth = URI.create("http://tenant1.server.com/auth/realms/tenant1/protocol/openid-connect/token");
+        Mockito.when(restTemplate.postForEntity(eq(auth.toString()), any(), eq(Map.class))).thenReturn(
+                ResponseEntity.status(HttpStatus.OK).body(Map.of(OAuth2AccessToken.ACCESS_TOKEN,"xxxxxx")));
+        */
+        URI authPrimary = URI.create("http://auth.server.com/auth/realms/primary/protocol/openid-connect/token");
+        Mockito.when(restTemplate.postForEntity(eq(authPrimary.toString()), any(), eq(Map.class))).thenReturn(
+                ResponseEntity.status(HttpStatus.OK).body(Map.of(OAuth2AccessToken.ACCESS_TOKEN,"entando")));
+
+        InputStream is = new ByteArrayInputStream("testo a casos".getBytes(StandardCharsets.UTF_8));
+        CdsCreateResponseDto ret = cdsRemoteCaller.executePostCall(url,
+                "/sub-path-testy",
+                false,
+                Optional.ofNullable(is),
+                Optional.empty(),
+                false);
+
+        Assertions.assertTrue(ret.isStatusOk());
+
+
+        Assertions.assertTrue(ret.isStatusOk());
+
+        Mockito.verify(restTemplate, Mockito.times(1))
+                .postForEntity(eq(authPrimary.toString()), any(), eq(Map.class));
+    }
 
 }

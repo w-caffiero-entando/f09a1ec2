@@ -1,4 +1,4 @@
-package org.entando.entando.plugins.jpcds.aps.system.storage;
+package org.entando.entando.aps.system.services.storage;
 
 import org.apache.commons.lang3.BooleanUtils;
 

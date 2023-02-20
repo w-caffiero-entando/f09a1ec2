@@ -55,4 +55,27 @@ public class CdsFileAttributeViewDtoTest {
         Assertions.assertThat(exp.getLastModifiedTime().get("secs_since_epoch")).isEqualTo("1676592000");
 
     }
+
+    @Test
+    public void shouldWorkFineWithHashEqualsAndToString() {
+
+        CdsFileAttributeViewDto dtoObject1 = new CdsFileAttributeViewDto();
+        dtoObject1.setDirectory(false);
+        dtoObject1.setSize(1024L);
+        dtoObject1.setProtectedFolder(true);
+        dtoObject1.setName("myname");
+        dtoObject1.setPath("/mypath");
+
+        CdsFileAttributeViewDto dtoObject2 = new CdsFileAttributeViewDto();
+        dtoObject2.setDirectory(false);
+        dtoObject2.setSize(1024L);
+        dtoObject2.setProtectedFolder(true);
+        dtoObject2.setName("myname");
+        dtoObject2.setPath("/mypath");
+
+        Assertions.assertThat(dtoObject2.toString()).contains("myname","/mypath","1024");
+        Assertions.assertThat(dtoObject2.hashCode()).isEqualTo(dtoObject1.hashCode());
+        Assertions.assertThat(dtoObject2.equals(dtoObject1)).isTrue();
+    }
+
 }

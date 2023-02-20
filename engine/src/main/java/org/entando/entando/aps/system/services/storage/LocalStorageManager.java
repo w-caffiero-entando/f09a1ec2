@@ -24,25 +24,36 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import static org.entando.entando.aps.system.services.storage.StorageManagerUtil.isSamePath;
 
-public class LocalStorageManager implements IStorageManager {
+@Service("StorageManager")
+@CdsActive(false)
+public class LocalStorageManager implements IStorageManager, InitializingBean {
 
-	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(LocalStorageManager.class);
+	private static final Logger logger = LoggerFactory.getLogger(LocalStorageManager.class);
 	private static final String ERROR_EXTRACTING_STREAM_DESC = "Error extracting stream";
 	private static final String UNIX_SEP = "/";
 	private static final String URL_SEP = "/";
 	private static final String WINDOWS_SEP = "\\";
 
+	@Value("${resourceRootURL}")
 	private String baseURL;
+	@Value("${resourceDiskRootFolder}")
 	private String baseDiskRoot;
+	@Value("${protectedResourceDiskRootFolder}")
 	private String protectedBaseDiskRoot;
+	@Value("${protectedResourceRootURL}")
 	private String protectedBaseURL;
 	private String allowedEditExtensions;
 
 
-	public void init() throws Exception {
+	public void afterPropertiesSet() throws Exception {
 		logger.debug("{} ready", this.getClass().getName());
 	}
 

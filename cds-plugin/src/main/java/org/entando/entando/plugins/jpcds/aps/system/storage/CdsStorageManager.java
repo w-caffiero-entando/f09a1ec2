@@ -20,13 +20,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.Builder;
-import lombok.Data;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.storage.BasicFileAttributeView;
@@ -41,12 +37,10 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.CdsUrlBuilder;
 import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.EntSubPath;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.entando.entando.aps.system.services.storage.CdsActive;
 
 @Service("StorageManager")
 @CdsActive(true)

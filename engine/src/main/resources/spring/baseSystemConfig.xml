@@ -12,7 +12,8 @@
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd" >
 
     <context:annotation-config />
-    <context:component-scan base-package="org.entando.entando.aps.system.services.tenants" />
+    <context:component-scan base-package="org.entando.entando.aps.system.services.tenants,
+       org.entando.entando.aps.system.services.storage" />
 
     <jee:jndi-lookup id="portDataSource" jndi-name="${portdb.jndi:java:comp/env/jdbc/portDataSource}"/>
 
@@ -29,6 +30,7 @@
         </property>
     </bean>
 
+    <!--
     <bean id="StorageManager" class="org.entando.entando.aps.system.services.storage.LocalStorageManager"
           init-method="init" >
         <property name="baseURL" >
@@ -44,6 +46,7 @@
             <value>${protectedResourceRootURL}</value>
         </property>
     </bean>
+    -->
 
     <bean id="LocalStorageManagerInterface" class="org.entando.entando.aps.system.services.storage.api.LocalStorageManagerInterface" >
         <property name="storageManager" ref="StorageManager" />

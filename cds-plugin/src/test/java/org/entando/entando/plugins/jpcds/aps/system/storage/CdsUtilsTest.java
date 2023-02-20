@@ -78,4 +78,16 @@ class CdsUtilsTest {
 
     }
 
+    @Test
+    public void shouldWorkFineWithHashEqualsAndToString() {
+
+        EntSubPath subPath1 = new EntSubPath("","my-filename");
+
+        EntSubPath subPath2 = new EntSubPath("","my-filename");
+
+        org.assertj.core.api.Assertions.assertThat(subPath2.toString()).contains("my-filename");
+        org.assertj.core.api.Assertions.assertThat(subPath2.hashCode()).isEqualTo(subPath1.hashCode());
+        org.assertj.core.api.Assertions.assertThat(subPath2.equals(subPath1)).isTrue();
+    }
+
 }

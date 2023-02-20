@@ -32,8 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.agiletec.aps.system.services.user.IUserManager;
-import org.entando.entando.aps.system.services.storage.IStorageManager;
-import org.entando.entando.plugins.jpcds.aps.system.storage.CdsEnvironmentVariables;
+import org.entando.entando.aps.system.services.storage.CdsEnvironmentVariables;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
