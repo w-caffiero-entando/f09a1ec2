@@ -62,6 +62,12 @@ public class RequestContext {
 		}
 	}
 
+	/**
+	 * WARNING: This method is a special case for the ExecutorBeanContainer and should be used only by the
+	 * ControllerServlet, during the initialization of Freemarker. All the other extra parameters should
+	 * implement Serializable and should be added using the addExtraParam method.
+	 * @param param
+	 */
 	public void setExecutorBeanContainer(ExecutorBeanContainer param) {
 		this._extraParams.put(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER, param);
 	}
