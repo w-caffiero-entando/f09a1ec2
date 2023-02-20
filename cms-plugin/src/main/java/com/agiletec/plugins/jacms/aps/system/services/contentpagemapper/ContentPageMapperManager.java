@@ -14,16 +14,16 @@
 package com.agiletec.plugins.jacms.aps.system.services.contentpagemapper;
 
 import com.agiletec.aps.system.common.AbstractCacheWrapper;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
 import com.agiletec.aps.system.common.AbstractService;
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.events.PageChangedEvent;
 import com.agiletec.aps.system.services.page.events.PageChangedObserver;
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.plugins.jacms.aps.system.services.contentpagemapper.cache.IContentMapperCacheWrapper;
+import org.entando.entando.ent.exception.EntException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servizio gestore della mappa dei contenuti pubblicati nelle pagine. Il
@@ -34,7 +34,7 @@ import com.agiletec.plugins.jacms.aps.system.services.contentpagemapper.cache.IC
  */
 public class ContentPageMapperManager extends AbstractService implements IContentPageMapperManager, PageChangedObserver {
 
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ContentPageMapperManager.class);
+	private static final Logger logger = LoggerFactory.getLogger(ContentPageMapperManager.class);
 
 	private transient IPageManager pageManager;
 	private transient IPageModelManager pageModelManager;
@@ -43,7 +43,7 @@ public class ContentPageMapperManager extends AbstractService implements IConten
 	@Override
 	public void init() throws Exception {
 		this.getCacheWrapper().initCache(this.getPageManager(), this.getPageModelManager());
-		_logger.debug("{} ready.", this.getClass().getName());
+		logger.debug("{} ready.", this.getClass().getName());
 	}
     
     @Override
@@ -69,12 +69,16 @@ public class ContentPageMapperManager extends AbstractService implements IConten
 
 	@Override
 	public void updateFromPageChanged(PageChangedEvent event) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("END - EVENT -> {} - tenant {}", event.getClass(),
+					ApsTenantApplicationUtils.getTenant().orElse("primary"));
+		}
 		try {
 			this.reloadContentPageMapper();
 			String pagecode = (null != event.getPage()) ? event.getPage().getCode() : "*undefined*";
-			_logger.debug("Notified page change event for page '{}'", pagecode);
+			logger.debug("Notified page change event for page '{}'", pagecode);
 		} catch (Throwable t) {
-			_logger.error("Error notifying event", t);
+			logger.error("Error notifying event", t);
 		}
 	}
 

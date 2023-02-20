@@ -13,6 +13,8 @@
  */
 package com.agiletec.aps.system;
 
+import com.agiletec.aps.system.services.category.Category;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +46,55 @@ class EntThreadLocalTest {
 
         EntThreadLocal.set(keytest, valuetest);
         Assertions.assertEquals(valuetest, EntThreadLocal.get(keytest));
+    }
 
+    @Test
+    void mapShouldBeInheritedByChildThreadMakingSimpleCopyForStringValues() throws Exception {
+        final String keyString = "keyString";
+        final String valueString = "valueString";
+        EntThreadLocal.set(keyString, valueString);
+
+        AtomicReference<String> childThreadString = new AtomicReference<>();
+        Thread thread = new Thread(() -> {
+            childThreadString.set((String) EntThreadLocal.get(keyString));
+            EntThreadLocal.set(keyString, "updatedValue");
+        });
+        thread.start();
+        thread.join();
+
+        Assertions.assertEquals(valueString, childThreadString.get());
+        Assertions.assertEquals(valueString, EntThreadLocal.get(keyString));
+    }
+
+    @Test
+    void mapShouldBeInheritedByChildThreadMakingDeepCopyForNonStringValues() throws Exception {
+        final String keyCategory = "keyCategory";
+        final Category valueCategory = new Category();
+        valueCategory.setCode("categoryCode");
+        EntThreadLocal.set(keyCategory, valueCategory);
+
+        AtomicReference<Category> childThreadCategory = new AtomicReference<>();
+        Thread thread = new Thread(() -> {
+            Category copiedCategory = (Category) EntThreadLocal.get(keyCategory);
+            copiedCategory.setCode("updatedCode");
+            childThreadCategory.set(copiedCategory);
+        });
+        thread.start();
+        thread.join();
+
+        Assertions.assertEquals("categoryCode", ((Category) EntThreadLocal.get(keyCategory)).getCode());
+        Assertions.assertEquals("updatedCode", childThreadCategory.get().getCode());
+    }
+
+    @Test
+    void inheritanceShouldHandleNullValuesInMap() throws Exception {
+        final String key = "testNullValue";
+        EntThreadLocal.set(key, null);
+        Thread thread = new Thread(() -> {
+            EntThreadLocal.set(key, "value");
+        });
+        thread.start();
+        thread.join();
+        Assertions.assertNull(EntThreadLocal.get(key));
     }
 }

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.entando.entando.aps.system.services.tenants.TenantManager;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,11 @@ class KeycloakConfigurationTest {
     @BeforeEach
     void setUp(){
         Mockito.reset(tenantManager);
+    }
+
+    @AfterAll
+    public static void tearDown(){
+        ApsTenantApplicationUtils.removeTenant();
     }
 
     @Test

@@ -13,11 +13,12 @@
  */
 package com.agiletec.aps.system;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanContainer;
 
 /**
  * Rappresenta il contesto relativo ad una richiesta del client.
@@ -53,12 +54,26 @@ public class RequestContext {
 	 * @param name Il nome del parametro
 	 * @param param Il parametro da aggiungere
 	 */
-	public void addExtraParam(String name, Object param) {
+	public void addExtraParam(String name, Serializable param) {
 		if (isCurrentFrameOrCurrentWidget(name)) {
 			EntThreadLocal.set(name, param);
 		} else {
 			this._extraParams.put(name, param);
 		}
+	}
+
+	/**
+	 * WARNING: This method is a special case for the ExecutorBeanContainer and should be used only by the
+	 * ControllerServlet, during the initialization of Freemarker. All the other extra parameters should
+	 * implement Serializable and should be added using the addExtraParam method.
+	 * @param param
+	 */
+	public void setExecutorBeanContainer(ExecutorBeanContainer param) {
+		this._extraParams.put(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER, param);
+	}
+
+	public ExecutorBeanContainer getExecutorBeanContainer() {
+		return (ExecutorBeanContainer) this._extraParams.get(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER);
 	}
 
 	/**

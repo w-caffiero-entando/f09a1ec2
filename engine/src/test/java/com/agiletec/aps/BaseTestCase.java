@@ -14,6 +14,7 @@
 package com.agiletec.aps;
 
 import com.agiletec.ConfigTestUtils;
+import com.agiletec.aps.system.EntThreadLocal;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.IManager;
@@ -50,6 +51,7 @@ public class BaseTestCase {
     @BeforeAll
     public static void setUp() throws Exception {
         boolean refresh = false;
+        EntThreadLocal.clear();
         if (null == applicationContext) {
             // Link the servlet context and the Spring context
             servletContext = new MockServletContext("", new FileSystemResourceLoader());

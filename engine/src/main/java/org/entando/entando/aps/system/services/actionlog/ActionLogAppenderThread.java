@@ -14,33 +14,32 @@
 package org.entando.entando.aps.system.services.actionlog;
 
 import org.entando.entando.aps.system.services.actionlog.model.ActionLogRecord;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author E.Santoboni
  */
 public class ActionLogAppenderThread extends Thread {
 
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ActionLogAppenderThread.class);
-	
-	public ActionLogAppenderThread(ActionLogRecord actionRecordToAdd, 
-			ActionLogManager actionLogManager) {
-		this._actionLogManager = actionLogManager;
-		this._actionRecordToAdd = actionRecordToAdd;
-	}
-	
-	@Override
-	public void run() {
-		try {
-			this._actionLogManager.addActionRecordByThread(this._actionRecordToAdd);
-		} catch (Throwable t) {
-			_logger.error("error in run", t);
-			//ApsSystemUtils.logThrowable(t, this, "run");
-		}
-	}
-	
-	private ActionLogRecord _actionRecordToAdd;
-	private ActionLogManager _actionLogManager;
-	
+    private static final Logger logger = LoggerFactory.getLogger(ActionLogAppenderThread.class);
+
+    private final ActionLogRecord actionRecordToAdd;
+    private final ActionLogManager actionLogManager;
+
+    public ActionLogAppenderThread(ActionLogRecord actionRecordToAdd,
+            ActionLogManager actionLogManager) {
+        this.actionLogManager = actionLogManager;
+        this.actionRecordToAdd = actionRecordToAdd;
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.actionLogManager.addActionRecordByThread(this.actionRecordToAdd);
+        } catch (Throwable t) {
+            logger.error("error in run", t);
+        }
+    }
+
 }

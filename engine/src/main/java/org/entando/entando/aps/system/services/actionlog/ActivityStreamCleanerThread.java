@@ -13,42 +13,37 @@
  */
 package org.entando.entando.aps.system.services.actionlog;
 
-import java.util.Iterator;
 import java.util.Set;
-
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author E.Santoboni
  */
 public class ActivityStreamCleanerThread extends Thread {
-	
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ActivityStreamCleanerThread.class);
-	
-	public ActivityStreamCleanerThread(Integer maxActivitySizeByGroup, IActionLogManager actionLogManager) {
-		this._maxActivitySizeByGroup = maxActivitySizeByGroup;
-		this._actionLogManager = actionLogManager;
-	}
-	
-	@Override
-	public void run() {
-		try {
-			Set<Integer> ids = this._actionLogManager.extractOldRecords(this._maxActivitySizeByGroup);
-			if (null != ids) {
-				Iterator<Integer> iter = ids.iterator();
-				while (iter.hasNext()) {
-					Integer id = iter.next();
-					this._actionLogManager.deleteActionRecord(id);
-				}
-			}
-		} catch (Throwable t) {
-			_logger.error("Error in run ", t);
-			//ApsSystemUtils.logThrowable(t, this, "run");
-		}
-	}
-	
-	private Integer _maxActivitySizeByGroup;
-	private IActionLogManager _actionLogManager;
-	
+
+    private static final Logger logger = LoggerFactory.getLogger(ActivityStreamCleanerThread.class);
+
+    private final Integer maxActivitySizeByGroup;
+    private final IActionLogManager actionLogManager;
+
+    public ActivityStreamCleanerThread(Integer maxActivitySizeByGroup, IActionLogManager actionLogManager) {
+        this.maxActivitySizeByGroup = maxActivitySizeByGroup;
+        this.actionLogManager = actionLogManager;
+    }
+
+    @Override
+    public void run() {
+        try {
+            Set<Integer> ids = this.actionLogManager.extractOldRecords(this.maxActivitySizeByGroup);
+            if (null != ids) {
+                for (int id : ids) {
+                    this.actionLogManager.deleteActionRecord(id);
+                }
+            }
+        } catch (Throwable t) {
+            logger.error("Error in run ", t);
+        }
+    }
+
 }

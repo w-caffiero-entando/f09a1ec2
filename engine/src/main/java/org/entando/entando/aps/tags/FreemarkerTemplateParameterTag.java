@@ -51,7 +51,7 @@ public class FreemarkerTemplateParameterTag extends TagSupport {
 		ServletRequest request = this.pageContext.getRequest();
 		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
 		try {
-			ExecutorBeanContainer ebc = (ExecutorBeanContainer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER);
+			ExecutorBeanContainer ebc = reqCtx.getExecutorBeanContainer();
 			TemplateModel templateModel = ebc.getTemplateModel();
 			if (!(templateModel instanceof AllHttpScopesHashModel)) {
 				return EVAL_BODY_INCLUDE;
@@ -87,7 +87,7 @@ public class FreemarkerTemplateParameterTag extends TagSupport {
 			ServletRequest request = this.pageContext.getRequest();
 			RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
 			try {
-				ExecutorBeanContainer ebc = (ExecutorBeanContainer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER);
+				ExecutorBeanContainer ebc = reqCtx.getExecutorBeanContainer();
 				TemplateModel templateModel = ebc.getTemplateModel();
 				if (templateModel instanceof AllHttpScopesHashModel) {
 					AllHttpScopesHashModel hashModel = (AllHttpScopesHashModel) templateModel;

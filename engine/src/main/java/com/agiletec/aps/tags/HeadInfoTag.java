@@ -16,46 +16,42 @@ package com.agiletec.aps.tags;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.tags.util.HeadInfoContainer;
-
 import freemarker.core.Environment;
 import freemarker.ext.beans.StringModel;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * Tag for the declaration of the informations to insert in the header of the HTML page
  */
 public class HeadInfoTag extends TagSupport {
 
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(HeadInfoTag.class);
-	
+	private String variable;
+	private String info;
+	private String type;
+
 	@Override
 	public int doEndTag() throws JspException {
 		ServletRequest request =  this.pageContext.getRequest();
 		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
 		try {
 			HeadInfoContainer headInfo  = (HeadInfoContainer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_HEAD_INFO_CONTAINER);
-			if (_type != null && (_info != null || _var != null)){
-				Object info = _info;
-				if(_info != null) {
-					info = _info;
+			if (type != null && (info != null || variable != null)){
+				String infoValue;
+				if (this.info != null) {
+					infoValue = this.info;
 				} else {
-					info = this.extractAttribute();
+					infoValue = this.extractAttribute();
 				}
-				headInfo.addInfo(_type, info);
+				headInfo.addInfo(type, infoValue);
 			}
-		} catch (Throwable t) {
-			_logger.error("Error closing tag", t);
+		} catch (Exception t) {
 			throw new JspException("Error closing tag ", t);
 		}
 		return super.doEndTag();
 	}
-	
+
     private String extractAttribute() throws JspException {
 		if (null == this.getVar()) {
 			return null;
@@ -79,43 +75,38 @@ public class HeadInfoTag extends TagSupport {
 			if (null != object) {
 				objectToString = object.toString();
 			}
-        } catch (Throwable t) {
-        	_logger.error("error extracting freemarker attribute", t);
-            throw new JspException("Error extracting freemarker attribute", t);
+        } catch (Exception ex) {
+            throw new JspException("Error extracting freemarker attribute", ex);
         }
 		return objectToString;
     }
-	
+
 	@Override
 	public void release() {
-		_type = null;
-		_var = null;
-		_info = null;
+		type = null;
+		variable = null;
+		info = null;
 	}
-	
+
 	public String getInfo() {
-		return _info;
+		return info;
 	}
 	public void setInfo(String info) {
-		this._info = info;
+		this.info = info;
 	}
-	
-	public void setVar(String var) {
-		this._var = var;
+
+	public void setVar(String variable) {
+		this.variable = variable;
 	}
 	public String getVar() {
-		return _var;
+		return variable;
 	}
-	
+
 	public String getType() {
-		return _type;
+		return type;
 	}
 	public void setType(String type) {
-		this._type = type;
+		this.type = type;
 	}
-	
-	private String _var;
-	private String _info;
-	private String _type;
-	
+
 }

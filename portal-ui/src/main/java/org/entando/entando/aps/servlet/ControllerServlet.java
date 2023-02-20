@@ -13,27 +13,13 @@
  */
 package org.entando.entando.aps.servlet;
 
-import freemarker.core.TemplateClassResolver;
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanContainer;
-import org.entando.entando.aps.system.services.controller.executor.ExecutorServiceInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.controller.ControllerManager;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import freemarker.cache.TemplateLoader;
-
+import freemarker.core.TemplateClassResolver;
 import freemarker.ext.jsp.TaglibFactory;
 import freemarker.ext.servlet.AllHttpScopesHashModel;
 import freemarker.ext.servlet.ServletContextHashModel;
@@ -43,12 +29,22 @@ import freemarker.template.ObjectWrapper;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.security.SecureRandom;
+import java.util.List;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanContainer;
+import org.entando.entando.aps.system.services.controller.executor.ExecutorServiceInterface;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servlet di controllo, punto di ingresso per le richieste di pagine del portale.
@@ -60,7 +56,7 @@ public class ControllerServlet extends freemarker.ext.servlet.FreemarkerServlet 
 	private static final Logger _logger = LoggerFactory.getLogger(ControllerServlet.class);
 
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) 
+	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		RequestContext reqCtx = this.initRequestContext(request, response);
@@ -143,7 +139,7 @@ public class ControllerServlet extends freemarker.ext.servlet.FreemarkerServlet 
 		config.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
 		TemplateModel templateModel = this.createModel(wrapper, this.getServletContext(), request, response);
 		ExecutorBeanContainer ebc = new ExecutorBeanContainer(config, templateModel);
-		reqCtx.addExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER, ebc);
+		reqCtx.setExecutorBeanContainer(ebc);
 	}
 
 	protected void executePage(HttpServletRequest request, RequestContext reqCtx) {
@@ -155,7 +151,7 @@ public class ControllerServlet extends freemarker.ext.servlet.FreemarkerServlet 
 	}
 
 	@Override
-	protected TemplateModel createModel(ObjectWrapper wrapper, ServletContext servletContext, 
+	protected TemplateModel createModel(ObjectWrapper wrapper, ServletContext servletContext,
 			HttpServletRequest request, HttpServletResponse response) throws TemplateModelException {
 		TemplateModel template = super.createModel(wrapper, servletContext, request, response);
 		if (template instanceof AllHttpScopesHashModel) {

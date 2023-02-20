@@ -13,8 +13,12 @@
  */
 package com.agiletec.aps.system;
 
+import freemarker.template.Configuration;
+import freemarker.template.TemplateModel;
+import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class RequestContextTest {
 
@@ -34,7 +38,6 @@ class RequestContextTest {
         EntThreadLocal.clear();
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_WIDGET, paramValue);
         Assertions.assertEquals(paramValue, EntThreadLocal.get(SystemConstants.EXTRAPAR_CURRENT_WIDGET));
-
     }
 
     @Test
@@ -52,6 +55,14 @@ class RequestContextTest {
         reqCtx.addExtraParam(keyTest, paramValue);
         reqCtx.removeExtraParam(keyTest);
         Assertions.assertNull(reqCtx.getExtraParam(keyTest));
+    }
 
+    @Test
+    void shouldSetExecutorBeanContainer() {
+        RequestContext reqCtx = new RequestContext();
+        ExecutorBeanContainer ebc = new ExecutorBeanContainer(
+                Mockito.mock(Configuration.class), Mockito.mock(TemplateModel.class));
+        reqCtx.setExecutorBeanContainer(ebc);
+        Assertions.assertEquals(ebc, reqCtx.getExecutorBeanContainer());
     }
 }

@@ -18,33 +18,34 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateModel;
 
 /**
- * Object that contains helpers, template service objects (and so on) 
- * used by the executors services.
+ * Object that contains helpers, template service objects (and so on) used by the executors services.
+ *
  * @author E.Santoboni
  */
 public class ExecutorBeanContainer {
-	
-	public ExecutorBeanContainer(Configuration configuration, TemplateModel templateModel) {
-		configuration.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
-		this.setConfiguration(configuration);
-		this.setTemplateModel(templateModel);
-	}
-	
-	public Configuration getConfiguration() {
-		return _configuration;
-	}
-	protected void setConfiguration(Configuration configuration) {
-		this._configuration = configuration;
-	}
-	
-	public TemplateModel getTemplateModel() {
-		return _templateModel;
-	}
-	protected void setTemplateModel(TemplateModel templateModel) {
-		this._templateModel = templateModel;
-	}
-	
-	private Configuration _configuration;
-	private TemplateModel _templateModel;
-	
+
+    private final Configuration configuration;
+    private final TemplateModel templateModel;
+
+    public ExecutorBeanContainer(Configuration configuration, TemplateModel templateModel) {
+        configuration.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
+        this.configuration = configuration;
+        this.templateModel = templateModel;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    /**
+     * WARNING: As stated in FreeMarker documentation, Template instances and data-models should be handled as immutable
+     * (read-only) objects, so the model retrieved using this method should be used only by the template.process()
+     * method and its properties mustn't be updated after its creation.
+     *
+     * @return the template model
+     * @see https://freemarker.apache.org/docs/pgui_misc_multithreading.html
+     */
+    public TemplateModel getTemplateModel() {
+        return templateModel;
+    }
 }

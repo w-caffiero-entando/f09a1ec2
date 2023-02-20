@@ -24,63 +24,64 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.tags.util.HeadInfoContainer;
 
 /**
- * Iterates over various information in HTML header displaying them.
- * It retrieves data from a "HeadInfoContainer" object located in the
- * RequestContext.
- * This tag works in conjunction with other sub-tag specific to the information
- * type
- * Please note that the body can contain only a sub-tag, or information, at once.<br/>
- * This tag must be used <b>only</b> in a page template. 
+ * Iterates over various information in HTML header displaying them. It retrieves data from a "HeadInfoContainer" object
+ * located in the RequestContext. This tag works in conjunction with other sub-tag specific to the information type
+ * Please note that the body can contain only a sub-tag, or information, at once.<br/> This tag must be used <b>only</b>
+ * in a page template.
  */
 @SuppressWarnings("serial")
 public class HeadInfoOutputterTag extends TagSupport {
-	
-	public int doStartTag() throws JspException {
-		ServletRequest request =  this.pageContext.getRequest();
-		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
-		HeadInfoContainer headInfo = (HeadInfoContainer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_HEAD_INFO_CONTAINER);
-		int retVal;
-		List<Object> infos = headInfo.getInfos(this.getType());
-		if (infos != null) {
-			this._infos = infos;
-			this._index = 0;
-			retVal = EVAL_BODY_INCLUDE;
-		} else {
-			retVal = SKIP_BODY;
-		}
-		return retVal;
-	}
-	
-	public int doAfterBody() throws JspException {
-		int retVal;
-		this._index++;
-		if (this._index >= this._infos.size()) {
-			retVal = SKIP_BODY;
-		} else {
-			retVal = EVAL_BODY_AGAIN;
-		}
-		return retVal;
-	}
-	
-	public Object getCurrentInfo() {
-		return this._infos.get(this._index);
-	}
-	
-	public void release() {
-		this._type = null;
-		this._infos = null;
-	}
-	
-	public String getType() {
-		return _type;
-	}
-	
-	public void setType(String type) {
-		this._type = type;
-	}
-	
-	private List<Object> _infos;
-	private String _type;
-	private int _index;
-	
+
+    private List<String> infos;
+    private String type;
+    private int index;
+
+    @Override
+    public int doStartTag() throws JspException {
+        ServletRequest request = this.pageContext.getRequest();
+        RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
+        HeadInfoContainer headInfo = (HeadInfoContainer) reqCtx.getExtraParam(
+                SystemConstants.EXTRAPAR_HEAD_INFO_CONTAINER);
+        int retVal;
+        List<String> infoValues = headInfo.getInfos(this.getType());
+        if (infoValues != null) {
+            this.infos = infoValues;
+            this.index = 0;
+            retVal = EVAL_BODY_INCLUDE;
+        } else {
+            retVal = SKIP_BODY;
+        }
+        return retVal;
+    }
+
+    @Override
+    public int doAfterBody() throws JspException {
+        int retVal;
+        this.index++;
+        if (this.index >= this.infos.size()) {
+            retVal = SKIP_BODY;
+        } else {
+            retVal = EVAL_BODY_AGAIN;
+        }
+        return retVal;
+    }
+
+    public String getCurrentInfo() {
+        return this.infos.get(this.index);
+    }
+
+    @Override
+    public void release() {
+        this.type = null;
+        this.infos = null;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
 }

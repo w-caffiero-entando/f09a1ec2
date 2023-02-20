@@ -125,7 +125,7 @@ public class GuiFragmentResult extends ServletDispatcherResult {
 				}
 			}
 			RequestContext reqCtx = (RequestContext) req.getAttribute(RequestContext.REQCTX);
-			ExecutorBeanContainer ebc = (ExecutorBeanContainer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_EXECUTOR_BEAN_CONTAINER);
+			ExecutorBeanContainer ebc = reqCtx.getExecutorBeanContainer();
 			Writer writer = this.getWriter();
 			Template template = new Template(code, new StringReader(output), ebc.getConfiguration());
 			template.process(ebc.getTemplateModel(), writer);

@@ -13,30 +13,29 @@
  */
 package org.entando.entando.aps.system.init;
 
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author E.Santoboni
  */
 public class DatabaseDumperThread extends Thread {
 
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(DatabaseDumperThread.class);
-	
-	public DatabaseDumperThread(DatabaseManager manager) {
-		this._manager = manager;
-	}
-	
-	@Override
-	public void run() {
-		try {
-			this._manager.executeBackup();
-		} catch (Throwable t) {
-			_logger.error("error in run", t);
-			//ApsSystemUtils.logThrowable(t, this, "run");
-		}
-	}
-	
-	private DatabaseManager _manager;
-	
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseDumperThread.class);
+
+    private final DatabaseManager manager;
+
+    public DatabaseDumperThread(DatabaseManager manager) {
+        this.manager = manager;
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.manager.executeBackup();
+        } catch (Throwable t) {
+            logger.error("error in run", t);
+        }
+    }
+
 }

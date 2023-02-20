@@ -21,6 +21,7 @@
  */
 package org.entando.entando.plugins.jpseo.aps.tags;
 
+import java.io.Serializable;
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 
@@ -64,7 +65,7 @@ public class ContentTag extends com.agiletec.plugins.jacms.aps.tags.ContentTag {
 					this.pageContext.setAttribute(this.getAttributeValuesByRoleVar(), renderInfo.getAttributeValues());
 				}
 				if (this.isPublishExtraDescription() && null != renderInfo.getAttributeValues()) {
-					Object values = renderInfo.getAttributeValues().get(JpseoSystemConstants.ATTRIBUTE_ROLE_DESCRIPTION);
+					Serializable values = (Serializable) renderInfo.getAttributeValues().get(JpseoSystemConstants.ATTRIBUTE_ROLE_DESCRIPTION);
 					if (null != values) {
 						reqCtx.addExtraParam(JpseoSystemConstants.EXTRAPAR_EXTRA_PAGE_DESCRIPTIONS, values);
 					}
