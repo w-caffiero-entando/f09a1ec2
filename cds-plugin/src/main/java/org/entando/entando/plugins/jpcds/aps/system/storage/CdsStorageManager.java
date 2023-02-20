@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.storage.BasicFileAttributeView;
@@ -32,8 +33,6 @@ import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.CdsUrlBuilder;
 import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.EntSubPath;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +41,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.entando.entando.aps.system.services.storage.CdsActive;
 
+@Slf4j
 @Service("StorageManager")
 @CdsActive(true)
 public class CdsStorageManager implements IStorageManager {
-    
-    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CdsStorageManager.class);
-    
-    private final ITenantManager tenantManager;
-    private final CdsConfiguration configuration;
-    private final CdsRemoteCaller caller;
+
+    private static final String ERROR_VALIDATING_PATH_MSG = "Error validating path";
+    private final transient ITenantManager tenantManager;
+    private final transient CdsConfiguration configuration;
+    private final transient CdsRemoteCaller caller;
 
 
     @Autowired
@@ -74,7 +73,7 @@ public class CdsStorageManager implements IStorageManager {
         try {
             Optional<TenantConfig> config = getTenantConfig();
             if(StringUtils.isBlank(subPath)){
-                throw new EntRuntimeException("Error validating path");
+                throw new EntRuntimeException(ERROR_VALIDATING_PATH_MSG);
             }
 
             this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
@@ -93,7 +92,6 @@ public class CdsStorageManager implements IStorageManager {
         } catch (EntRuntimeException ert) {
             throw ert;
         } catch (Exception e) {
-            logger.error("Error saving file/directory", e);
             throw new EntRuntimeException("Error saving file/directory", e);
         }
     }
@@ -108,7 +106,7 @@ public class CdsStorageManager implements IStorageManager {
         try {
             Optional<TenantConfig> config = getTenantConfig();
             if(StringUtils.isBlank(subPath)){
-                throw new EntRuntimeException("Error validating path");
+                throw new EntRuntimeException(ERROR_VALIDATING_PATH_MSG);
             }
 
             this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
@@ -125,7 +123,6 @@ public class CdsStorageManager implements IStorageManager {
         } catch (EntRuntimeException ert) {
             throw ert;
         } catch (Exception e) {
-            logger.error("Error deleting file", e);
             throw new EntRuntimeException("Error deleting file", e);
         }
     }
@@ -137,7 +134,7 @@ public class CdsStorageManager implements IStorageManager {
         try {
             Optional<TenantConfig> config = getTenantConfig();
             if(StringUtils.isBlank(subPath)){
-                throw new EntRuntimeException("Error validating path");
+                throw new EntRuntimeException(ERROR_VALIDATING_PATH_MSG);
             }
 
             this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
@@ -152,19 +149,17 @@ public class CdsStorageManager implements IStorageManager {
                     .path(subPath).build();
 
             Optional<ByteArrayInputStream> is = caller.getFile(url, config, isProtectedResource);
-            return is.orElseThrow(() -> new IOException());
+            return is.orElseThrow(IOException::new);
 
         } catch (EntRuntimeException ert) {
             throw ert;
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                logger.info("File Not found - uri {}", url);
+                log.info("File Not found - uri {}", url);
                 return null;
             }  
-            logger.error(ERROR_EXTRACTING_FILE, e);
             throw new EntException(ERROR_EXTRACTING_FILE, e);
         } catch (Exception e) {
-            logger.error(ERROR_EXTRACTING_FILE, e);
             throw new EntException(ERROR_EXTRACTING_FILE, e);
         }
     }
@@ -175,7 +170,6 @@ public class CdsStorageManager implements IStorageManager {
             Optional<TenantConfig> config = getTenantConfig();
             return this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
         } catch (Exception e) {
-            logger.error("Error extracting resource url", e);
             throw new EntRuntimeException("Error extracting resource url", e);
         }
     }
@@ -234,7 +228,6 @@ public class CdsStorageManager implements IStorageManager {
     }
     
     private List<BasicFileAttributeView> listAttributes(String subPath, boolean isProtectedResource, CdsFilter filter) {
-        //try {
         Optional<TenantConfig> config = this.getTenantConfig();
         this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
 
@@ -248,18 +241,10 @@ public class CdsStorageManager implements IStorageManager {
         Optional<CdsFileAttributeViewDto[]> cdsFileList = caller.getFileAttributeView(apiUrl, config);
 
         return remapAndSort(cdsFileList, filter);
-
-        /*} catch (EntRuntimeException ert) {
-            throw ert;
-        } catch (Exception e) {
-            logger.error("Error on list attributes", e);
-            throw new EntRuntimeException("Error on list attributes", e);
-        }
-        */
     }
 
     private List<BasicFileAttributeView> remapAndSort(Optional<CdsFileAttributeViewDto[]> cdsFileList, CdsFilter filter){
-        List<BasicFileAttributeView> list = Arrays.asList(cdsFileList.orElse(new CdsFileAttributeViewDto[]{})).stream()
+        return Arrays.asList(cdsFileList.orElse(new CdsFileAttributeViewDto[]{})).stream()
                 .filter(cds -> cdsTypeFilter(filter, cds))
                 .map(cdsFileAttribute -> {
                     BasicFileAttributeView bfa = new BasicFileAttributeView();
@@ -269,7 +254,6 @@ public class CdsStorageManager implements IStorageManager {
                     bfa.setSize(cdsFileAttribute.getSize());
                     return bfa;
                 }).sorted().collect(Collectors.toList());
-        return list;
     }
 
     private boolean cdsTypeFilter(CdsFilter filter, CdsFileAttributeViewDto obj) {
@@ -288,14 +272,12 @@ public class CdsStorageManager implements IStorageManager {
     public String readFile(String subPath, boolean isProtectedResource) throws EntException {
         try {
             InputStream stream = this.getStream(subPath, isProtectedResource);
-            // this add new line FIXME
-            //return FileTextReader.getText(stream);
-            // faster way https://stackoverflow.com/questions/309424/how-do-i-read-convert-an-inputstream-into-a-string-in-java
+            // remove the use of FileTextReader (it add a newline)
+            // used a faster way https://stackoverflow.com/questions/309424/how-do-i-read-convert-an-inputstream-into-a-string-in-java
             return IOUtils.toString(stream, StandardCharsets.UTF_8);
         } catch (EntRuntimeException ert) {
             throw ert;
         } catch (IOException ex) {
-            logger.error("Error extracting text", ex);
             throw new EntException("Error extracting text", ex);
         }
     }
@@ -335,8 +317,7 @@ public class CdsStorageManager implements IStorageManager {
 
             return fullPath;
         } catch (IOException e) {
-            logger.error("Error validating path", e);
-            throw new EntRuntimeException("Error validating path", e);
+            throw new EntRuntimeException(ERROR_VALIDATING_PATH_MSG, e);
         }
     }
 
@@ -346,7 +327,6 @@ public class CdsStorageManager implements IStorageManager {
 		);
 	}
 
-    // FIXMe ask to Eugenio, it was from localStorage ... why ???
     @Override
     public boolean isDirectory(String subPath, boolean isProtectedResource) {
         EntSubPath entSubPathParse = CdsUrlUtils.extractPathAndFilename(subPath);

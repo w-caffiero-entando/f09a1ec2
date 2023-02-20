@@ -1,10 +1,23 @@
+/*
+ * Copyright 2022-Present Entando S.r.l. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 
-public class CdsConfigurationTest {
+class CdsConfigurationTest {
 
     @Test
     void shouldDtoWork(){
@@ -29,7 +42,7 @@ public class CdsConfigurationTest {
 
 
     @Test
-    public void shouldWorkFineWithHashEqualsAndToString() {
+    void shouldWorkFineWithToString() {
 
         CdsConfiguration config1 = new CdsConfiguration();
         config1.setBaseURL("");
@@ -60,8 +73,7 @@ public class CdsConfigurationTest {
         config2.setKcClientSecret("secret");
 
         Assertions.assertThat(config2.toString()).contains("https://cds.entando.org","https://cds.entando.org","entando");
-        Assertions.assertThat(config2.hashCode()).isEqualTo(config1.hashCode());
-        Assertions.assertThat(config2.equals(config1)).isTrue();
+        Assertions.assertThat(config1).hasToString(config2.toString());
     }
 
 }

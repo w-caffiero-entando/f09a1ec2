@@ -19,8 +19,9 @@ package org.entando.entando.aps.tags;
  */
 public class CssURLTag extends ResourceURLTag {
 
-	private final String CSS_FOLDER = "static/css/";
+	private static final String CSS_FOLDER = "static/css/";
 
+	@Override
 	public int doStartTag() throws javax.servlet.jsp.JspException {
 		this.setFolder(CSS_FOLDER);
 		return EVAL_BODY_INCLUDE;

@@ -20,6 +20,7 @@ public class ImgURLTag extends ResourceURLTag {
 
 	private static final String IMG_FOLDER = "static/img/";
 
+	@Override
 	public int doStartTag() throws javax.servlet.jsp.JspException {
 		this.setFolder(IMG_FOLDER);
 		return EVAL_BODY_INCLUDE;

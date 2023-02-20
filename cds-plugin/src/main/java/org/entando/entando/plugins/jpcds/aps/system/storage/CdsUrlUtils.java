@@ -1,3 +1,16 @@
+/*
+ * Copyright 2022-Present Entando S.r.l. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
 import java.net.URI;
@@ -7,11 +20,11 @@ import java.util.List;
 import java.util.Optional;
 import javax.ws.rs.core.UriBuilder;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 public final class CdsUrlUtils {
 
@@ -53,12 +66,6 @@ public final class CdsUrlUtils {
     }
 
     public static EntSubPath extractPathAndFilename(String subPath) {
-        /*
-        return EntSubPath.builder()
-                .path(FilenameUtils.getPath(subPath))
-                .fileName(FilenameUtils.getName(subPath))
-                .build();
-        */
         if(StringUtils.isBlank(subPath)){
             subPath = "";
         }
@@ -116,7 +123,9 @@ public final class CdsUrlUtils {
     }
 
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
     @Builder
     public static class EntSubPath {
         private String path;

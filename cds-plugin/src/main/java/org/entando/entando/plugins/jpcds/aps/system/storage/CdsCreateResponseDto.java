@@ -14,18 +14,12 @@
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@EqualsAndHashCode
-@ToString
 @Data
 public class CdsCreateResponseDto implements Serializable {
 

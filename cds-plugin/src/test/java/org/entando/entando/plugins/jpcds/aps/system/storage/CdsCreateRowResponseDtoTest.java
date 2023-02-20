@@ -1,3 +1,16 @@
+/*
+ * Copyright 2022-Present Entando S.r.l. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
 
@@ -7,11 +20,11 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CdsCreateRowResponseDtoTest {
+class CdsCreateRowResponseDtoTest {
 
 
     @Test
-    public void shouldMarshallingAndUnmarshallingUseTheCorrectFieldsName()
+    void shouldMarshallingAndUnmarshallingUseTheCorrectFieldsName()
             throws JsonParseException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         CdsCreateRowResponseDto dtoObject = new CdsCreateRowResponseDto();
@@ -22,11 +35,12 @@ public class CdsCreateRowResponseDtoTest {
 
         String dtoAsString = mapper.writeValueAsString(dtoObject);
 
-        Assertions.assertThat(dtoAsString).contains("\"status\":\"OK\"");
-        Assertions.assertThat(dtoAsString).contains("\"is_protected_file\":true");
-        Assertions.assertThat(dtoAsString).contains("\"filename\":\"nome_file\"");
-        Assertions.assertThat(dtoAsString).contains("\"path\":\"/mypath\"");
-        Assertions.assertThat(dtoAsString).contains("\"date\":null");
+        Assertions.assertThat(dtoAsString)
+                .contains("\"status\":\"OK\"")
+                .contains("\"is_protected_file\":true")
+                .contains("\"filename\":\"nome_file\"")
+                .contains("\"path\":\"/mypath\"")
+                .contains("\"date\":null");
 
         String test = "{\"status\":\"OK\",\"filename\":\"nome_file\",\"date\":1234,\"path\":\"/her_path\",\"is_protected_file\":false}";
         CdsCreateRowResponseDto exp = mapper.readValue(test, CdsCreateRowResponseDto.class);
@@ -38,7 +52,7 @@ public class CdsCreateRowResponseDtoTest {
     }
 
     @Test
-    public void shouldWorkFineWithHashEqualsAndToString() {
+    void shouldWorkFineWithHashEqualsAndToString() {
 
         CdsCreateRowResponseDto dtoObject1 = new CdsCreateRowResponseDto();
         dtoObject1.setProtectedFile(true);
@@ -53,7 +67,7 @@ public class CdsCreateRowResponseDtoTest {
         dtoObject2.setPath("/mypath");
 
         Assertions.assertThat(dtoObject2.toString()).contains("nome_file","/mypath","OK");
-        Assertions.assertThat(dtoObject2.hashCode()).isEqualTo(dtoObject1.hashCode());
+        Assertions.assertThat(dtoObject2).hasSameHashCodeAs(dtoObject1);
         Assertions.assertThat(dtoObject2.equals(dtoObject1)).isTrue();
     }
 

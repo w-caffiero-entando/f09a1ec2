@@ -29,6 +29,8 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.EntSubPath;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
@@ -53,19 +55,21 @@ public class CdsRemoteCaller  {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CdsRemoteCaller.class);
     private static final String REST_ERROR_MSG = "Invalid operation '%s', response status:'%s' for url:'%s'";
-    private static final String SAVE_ERROR_MSG = "Error saving file/directory";
+    private static final String GENERIC_REST_ERROR_MSG = "Generic error in a rest call for url:'%s'";
     private static final String PRIMARY_CODE = "PRIMARY_CODE";
     private static final String CDS_RETURN_STATE_OK = "OK";
     private final RestTemplate restTemplate;
+    private final RestTemplate restTemplateWithRedirect;
     private final CdsConfiguration configuration;
 
-    // FIXME talk with Eugenio
+    // used weak map to skip excessive growth
     private Map<String, String> tenantsToken = new WeakHashMap<>();
 
-
     @Autowired
-    public CdsRemoteCaller(RestTemplate restTemplate, CdsConfiguration configuration) {
+    public CdsRemoteCaller(@Qualifier("keycloakRestTemplate")RestTemplate restTemplate,@Qualifier("keycloakRestTemplateWithRedirect")RestTemplate restTemplateWithRedirect,
+            CdsConfiguration configuration) {
         this.restTemplate = restTemplate;
+        this.restTemplateWithRedirect = restTemplateWithRedirect;
         this.configuration = configuration;
     }
 
@@ -74,10 +78,10 @@ public class CdsRemoteCaller  {
             boolean isProtectedResource,
             Optional<InputStream> fileInputStream ,
             Optional<TenantConfig> config,
-            boolean force) {
+            boolean forceTokenRetrieve) {
 
         try {
-            HttpHeaders headers = this.getBaseHeader(Arrays.asList(MediaType.ALL), config, force);
+            HttpHeaders headers = this.getBaseHeader(Arrays.asList(MediaType.ALL), config, forceTokenRetrieve);
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             MultiValueMap<String, Object> body = fileInputStream
@@ -105,15 +109,13 @@ public class CdsRemoteCaller  {
 
             return response;
         } catch (HttpClientErrorException e) {
-            // FIXME max 5 times
-            if (!force && (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED))) {
+            if (!forceTokenRetrieve && (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED))) {
                 return this.executePostCall(url, subPath, isProtectedResource, fileInputStream, config, true);
             } else {
                 throw buildExceptionWithMessage("POST", e.getStatusCode() , url.toString());
             }
         } catch(Exception ex){
-            logger.error("Error saving file/directory", ex);
-            throw new EntRuntimeException("Error saving file/directory", ex);
+            throw new EntRuntimeException(String.format(GENERIC_REST_ERROR_MSG, url.toString()), ex);
         }
     }
 
@@ -138,22 +140,26 @@ public class CdsRemoteCaller  {
     }
 
 
-    public boolean executeDeleteCall(URI url, Optional<TenantConfig> config, boolean force) {
+    public boolean executeDeleteCall(URI url, Optional<TenantConfig> config, boolean forceTokenRetrieve) {
         try {
-            HttpHeaders headers = this.getBaseHeader(null, config, force);
+            HttpHeaders headers = this.getBaseHeader(null, config, forceTokenRetrieve);
             HttpEntity<String> entity = new HttpEntity<>(headers);
             ResponseEntity<Map<String,String>> responseEntity = restTemplate
                     .exchange(url, HttpMethod.DELETE, entity, new ParameterizedTypeReference<Map<String, String>>(){});
 
-            return (CDS_RETURN_STATE_OK.equalsIgnoreCase(responseEntity.getBody().get("status")));
+            return fetchDeleteStatus(responseEntity.getBody());
 
         } catch (HttpClientErrorException e) {
-            if (!force && e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+            if (!forceTokenRetrieve && e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
                 return this.executeDeleteCall(url, config, true);
             } else {
                 throw buildExceptionWithMessage("DELETE", e.getStatusCode() , url.toString());
             }
         }
+    }
+
+    private boolean fetchDeleteStatus(Map<String,String> body) {
+        return body != null && CDS_RETURN_STATE_OK.equalsIgnoreCase(body.get("status"));
     }
 
     public Optional<CdsFileAttributeViewDto[]> getFileAttributeView(URI url, Optional<TenantConfig> config) {
@@ -165,18 +171,29 @@ public class CdsRemoteCaller  {
     }
 
     public Optional<ByteArrayInputStream> getFile(URI url, Optional<TenantConfig> config, boolean isProtectedResource){
-        Optional<byte[]> bytes = null;
+        Optional<byte[]> bytes;
         if (isProtectedResource) {
-            bytes = executeGetCall(url, null, config, false, new ParameterizedTypeReference<byte[]>(){});
+            bytes = executeGetCall(url, null, config,  false, new ParameterizedTypeReference<byte[]>(){});
         } else {
-            bytes = Optional.ofNullable(restTemplate.getForObject(url, byte[].class));
+            try {
+                bytes = Optional.ofNullable(restTemplate.getForObject(url, byte[].class));
+            } catch (HttpClientErrorException e) {
+                if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                    logger.info("File Not found - uri {}", url);
+                    return Optional.empty();
+                }
+                throw buildExceptionWithMessage("GET", e.getStatusCode(), url.toString());
+            }
+
         }
         return bytes.map(ByteArrayInputStream::new);
     }
 
-    private <T> Optional<T> executeGetCall(URI url, List<MediaType> acceptableMediaTypes, Optional<TenantConfig> config, boolean force, ParameterizedTypeReference<T> responseType) {
+    private <T> Optional<T> executeGetCall(URI url, List<MediaType> acceptableMediaTypes, Optional<TenantConfig> config,
+            boolean forceTokenRetrieve,
+            ParameterizedTypeReference<T> responseType) {
         try {
-            HttpHeaders headers = this.getBaseHeader(acceptableMediaTypes, config, force);
+            HttpHeaders headers = this.getBaseHeader(acceptableMediaTypes, config, forceTokenRetrieve);
             HttpEntity<String> entity = new HttpEntity<>(headers);
             ResponseEntity<T> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, responseType);
             return Optional.ofNullable(responseEntity.getBody());
@@ -186,7 +203,7 @@ public class CdsRemoteCaller  {
                 logger.info("File Not found - uri {}", url);
                 return Optional.empty();
             }
-            if (!force && e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+            if (!forceTokenRetrieve && e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
                 return this.executeGetCall(url, acceptableMediaTypes, config, true, responseType);
             } else {
                 throw buildExceptionWithMessage("GET", e.getStatusCode(), url.toString());
@@ -213,14 +230,11 @@ public class CdsRemoteCaller  {
     private String extractToken(Optional<TenantConfig> config, boolean force) {
          TenantConfig tc = config.orElse(null);
          if(tc!= null){
-             String token = getTenantToken(tc, force);
-             return token;
+             return getTenantToken(tc, force);
          } else {
             return getPrimaryToken(force);
          }
-         // FIXME doesn't work
-         //return config.map(tc -> getTenantToken(tc,force)).orElse(getPrimaryToken(force));
-
+         // FIXME doesn't work => return config.map(tc -> getTenantToken(tc,force)).orElse(getPrimaryToken(force));
     }
 
     private String getTenantToken(TenantConfig config, boolean force){
@@ -241,27 +255,24 @@ public class CdsRemoteCaller  {
         return token;
     }
     private String extractToken(String kcUrl, String kcRealm, String clientId, String clientSecret) {
-        //FIXME why we use this ???
-        /*
-        RestTemplate restTemplate = new RestTemplate();
-        final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        CloseableHttpClient httpClient = HttpClientBuilder.create()
-                .setRedirectStrategy(new LaxRedirectStrategy()).build();
-        factory.setHttpClient(httpClient);
-        restTemplate.setRequestFactory(factory);
-        */
         String encodedClientData = Base64Utils.encodeToString((clientId + ":" + clientSecret).getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("Authorization", "Basic " + encodedClientData);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add(OAuth2Utils.GRANT_TYPE, "client_credentials");
+        map.add("grant_type", "client_credentials");
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
         String url = String.format("%s/realms/%s/protocol/openid-connect/token", kcUrl, kcRealm);
-        ResponseEntity<Map> responseEntity = restTemplate.postForEntity(url, request, Map.class);
-        if (!responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-            throw new EntRuntimeException("Token api - invalid response status " + responseEntity.getStatusCode() + " - KC url " + kcUrl + " - realm " + kcRealm + " - client " + clientId);
-        }
-        return responseEntity.getBody().get(OAuth2AccessToken.ACCESS_TOKEN).toString();
+
+        ResponseEntity<Map<String,Object>> responseEntity =
+                restTemplateWithRedirect.exchange(url, HttpMethod.POST, request, new ParameterizedTypeReference<Map<String,Object>>(){});
+
+        return Optional.ofNullable(responseEntity).filter(r -> HttpStatus.OK.equals(r.getStatusCode()))
+                .map(r -> r.getBody())
+                .map(b -> (String)b.get("access_token"))
+                .orElseThrow(() -> new EntRuntimeException(String.format(
+                        "Call to '%s' result in response code:'%s' when use clientId:'%s'",
+                        url, responseEntity.getStatusCode().value(), clientId)));
     }
+
 }

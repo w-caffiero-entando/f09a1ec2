@@ -53,12 +53,6 @@
             </resource>
         </resources>
         <plugins>
-        <!-- used to generate jar now it's not usefull ?
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-            </plugin>
--->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -91,62 +85,15 @@
 ]]>
                         </ENTANDO_TENANTS>
                         <CDS_ENABLED>true</CDS_ENABLED>
-                        <CDS_PUBLIC_URL>http://cds.10-219-168-112.nip.io/primary</CDS_PUBLIC_URL>
-                        <CDS_PRIVATE_URL>http://cds.10-219-168-112.nip.io</CDS_PRIVATE_URL>
                         <CDS_PATH>/api/v1</CDS_PATH>
-                        <KEYCLOAK_AUTH_URL>http://10-219-168-112.nip.io/auth</KEYCLOAK_AUTH_URL>
                         <KEYCLOAK_REALM>entando</KEYCLOAK_REALM>
                         <KEYCLOAK_CLIENT_ID>quickstart</KEYCLOAK_CLIENT_ID>
-                        <KEYCLOAK_CLIENT_SECRET>2837772a-f583-4dd5-8d89-9147a89dc60e</KEYCLOAK_CLIENT_SECRET>
-                        <LOG_LEVEL>INFO</LOG_LEVEL>
                     </environmentVariables>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <!--
-    <profiles>
-        <profile>
-            <id>pre-deployment-verification</id>
-            <properties>
-                <skipPreDeploymentTests>false</skipPreDeploymentTests>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-project-info-reports-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
--->
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -283,5 +230,4 @@
             <scope>test</scope>
         </dependency>        
     </dependencies>
-
 </project>

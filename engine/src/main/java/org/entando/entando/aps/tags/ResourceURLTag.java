@@ -41,6 +41,7 @@ public class ResourceURLTag extends TagSupport {
 	private String root;
 	private String folder;
 
+	@Override
 	public int doEndTag() throws JspException {
 		try {
 			if (null == root) {

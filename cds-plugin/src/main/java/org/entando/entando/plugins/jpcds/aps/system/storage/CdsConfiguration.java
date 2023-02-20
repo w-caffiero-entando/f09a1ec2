@@ -13,12 +13,16 @@
  */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.entando.entando.aps.system.services.storage.CdsActive;
 
-@Data
+@ToString
+@Setter
+@Getter
 @Component
 @CdsActive(true)
 public class CdsConfiguration {

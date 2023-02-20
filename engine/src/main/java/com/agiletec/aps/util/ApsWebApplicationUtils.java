@@ -102,10 +102,7 @@ public class ApsWebApplicationUtils {
 	}
 
 	public static <T> T getBean(String beanName, Class<T> type, HttpServletRequest request) {
-		// FIXME ask to Eugenio
-		//return getBean(beanName, type, request.getServletContext());
 		return getBean(beanName, type, request.getSession().getServletContext());
-
 	}
 
 	/**
