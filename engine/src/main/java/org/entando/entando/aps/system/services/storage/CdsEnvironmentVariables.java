@@ -13,16 +13,20 @@
  */
 package org.entando.entando.aps.system.services.storage;
 
+import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public final class CdsEnvironmentVariables {
 
-    private static final String CDS_ACTIVE = "cds.enabled";
+    private static final String CDS_ACTIVE = "CDS_ENABLED";
     private CdsEnvironmentVariables() {
     }
 
     public static boolean active() {
-        return BooleanUtils.toBoolean(System.getProperty(CDS_ACTIVE,"false"));
+        return BooleanUtils.toBoolean(Optional.ofNullable(System.getenv(CDS_ACTIVE))
+                .filter(StringUtils::isNotBlank)
+                .orElse("false"));
     }
 
 }

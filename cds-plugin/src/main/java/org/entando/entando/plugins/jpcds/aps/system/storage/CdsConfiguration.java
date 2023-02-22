@@ -35,21 +35,21 @@ public class CdsConfiguration {
     private String protectedBaseDiskRoot;
     @Value("${protectedResourceRootURL}")
     private String protectedBaseURL;
-    @Value("${cds.enabled:false}")
+    @Value("${CDS_ENABLED:false}")
     private boolean enabled;
-    @Value("${cds.public.url:https://cds.entando.org}")
+    @Value("${CDS_PUBLIC_URL:https://cds.entando.org}")
     private String cdsPublicUrl;
-    @Value("${cds.private.url:https://cds.entando.org}")
+    @Value("${CDS_PRIVATE_URL:https://cds.entando.org}")
     private String cdsPrivateUrl;
-    @Value("${cds.path:/api/v1}")
+    @Value("${CDS_PATH:/api/v1}")
     private String cdsPath;
-    @Value("${keycloak.auth.url:http://localhost:8081/auth}")
+    @Value("${KEYCLOAK_AUTH_URL:http://localhost:8081/auth}")
     private String kcAuthUrl;
-    @Value("${keycloak.realm:entando}")
+    @Value("${KEYCLOAK_REALM:entando}")
     private String kcRealm;
-    @Value("${keycloak.client.id:entando-app}")
+    @Value("${KEYCLOAK_CLIENT_ID:entando-app}")
     private String kcClientId;
-    @Value("${keycloak.client.secret:}")
+    @Value("${KEYCLOAK_CLIENT_SECRET:}")
     private String kcClientSecret;
 
 

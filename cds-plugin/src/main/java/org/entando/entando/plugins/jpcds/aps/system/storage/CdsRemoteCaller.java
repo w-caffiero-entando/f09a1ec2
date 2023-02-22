@@ -57,7 +57,7 @@ public class CdsRemoteCaller  {
     private static final String REST_ERROR_MSG = "Invalid operation '%s', response status:'%s' for url:'%s'";
     private static final String GENERIC_REST_ERROR_MSG = "Generic error in a rest call for url:'%s'";
     private static final String PRIMARY_CODE = "PRIMARY_CODE";
-    private static final String CDS_RETURN_STATE_OK = "OK";
+    private static final String CDS_RETURN_STATE_OK = "Ok";
     private final RestTemplate restTemplate;
     private final RestTemplate restTemplateWithRedirect;
     private final CdsConfiguration configuration;
@@ -102,7 +102,7 @@ public class CdsRemoteCaller  {
             CdsCreateResponseDto response = new CdsCreateResponseDto();
             response.setStatusOk(responseList.stream()
                     .map(CdsCreateRowResponseDto::getStatus)
-                    .map(CDS_RETURN_STATE_OK::equals)
+                    .map(CDS_RETURN_STATE_OK::equalsIgnoreCase)
                     .findFirst()
                     .orElse(false));
             response.setList(responseList);

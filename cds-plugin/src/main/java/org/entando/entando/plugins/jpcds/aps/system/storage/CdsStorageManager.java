@@ -54,6 +54,7 @@ public class CdsStorageManager implements IStorageManager {
 
     @Autowired
     public CdsStorageManager(CdsRemoteCaller caller, ITenantManager tenantManager, CdsConfiguration configuration) {
+        log.info("** Enabled CDS Storage Manager **");
         this.caller = caller;
         this.tenantManager = tenantManager;
         this.configuration = configuration;

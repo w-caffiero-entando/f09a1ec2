@@ -54,7 +54,7 @@ public class LocalStorageManager implements IStorageManager, InitializingBean {
 
 
 	public void afterPropertiesSet() throws Exception {
-		logger.debug("{} ready", this.getClass().getName());
+		logger.info("** Enabled Local Storage Manager **");
 	}
 
 	@Override
