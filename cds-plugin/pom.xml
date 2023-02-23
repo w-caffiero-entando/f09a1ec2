@@ -169,7 +169,6 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <!-- xkè ??? -->
         <dependency>
             <groupId>org.entando.entando.plugins</groupId>
             <artifactId>entando-plugin-jacms</artifactId>

@@ -304,7 +304,7 @@ public class CdsStorageManager implements IStorageManager {
         try {
             String baseUrl = CdsUrlBuilder.builder()
                     .url(CdsUrlUtils.fetchBaseUrl(config, configuration, privateUrl))
-                    .path(CdsUrlUtils.getInternalSection(privateUrl)) // << this is part of bash url because we want check path traversal!!
+                    .path(CdsUrlUtils.getInternalSection(privateUrl)) // << this is part of base url because we want check path traversal!!
                     .build().toString();
 
             String fullPath = CdsUrlBuilder.builder()

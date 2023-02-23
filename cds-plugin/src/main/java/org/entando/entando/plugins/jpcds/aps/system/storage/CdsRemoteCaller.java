@@ -25,12 +25,11 @@ import java.util.WeakHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.entando.entando.ent.exception.EntRuntimeException;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.EntSubPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
@@ -39,8 +38,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -53,7 +50,7 @@ import org.entando.entando.aps.system.services.storage.CdsActive;
 @CdsActive(true)
 public class CdsRemoteCaller  {
 
-    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CdsRemoteCaller.class);
+    private static final Logger logger = LoggerFactory.getLogger(CdsRemoteCaller.class);
     private static final String REST_ERROR_MSG = "Invalid operation '%s', response status:'%s' for url:'%s'";
     private static final String GENERIC_REST_ERROR_MSG = "Generic error in a rest call for url:'%s'";
     private static final String PRIMARY_CODE = "PRIMARY_CODE";
@@ -81,12 +78,19 @@ public class CdsRemoteCaller  {
             boolean forceTokenRetrieve) {
 
         try {
+            logger.debug("Trying to call POST on url:'{}' with isProtectedResource:'{}' forceTokenRetrieve:'{}' isFile:'{}' and is config tenant empty:'{}'",
+                    url,
+                    isProtectedResource,
+                    forceTokenRetrieve,
+                    fileInputStream.isPresent(),
+                    config.isEmpty());
+
             HttpHeaders headers = this.getBaseHeader(Arrays.asList(MediaType.ALL), config, forceTokenRetrieve);
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             MultiValueMap<String, Object> body = fileInputStream
                     .map(is -> buildFileBodyRequest(subPath, isProtectedResource, is))
-                    .orElse(buildDirectoryBodyRequest(subPath, isProtectedResource));
+                    .orElseGet(() -> buildDirectoryBodyRequest(subPath, isProtectedResource));
 
             HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
 
@@ -142,6 +146,11 @@ public class CdsRemoteCaller  {
 
     public boolean executeDeleteCall(URI url, Optional<TenantConfig> config, boolean forceTokenRetrieve) {
         try {
+            logger.debug("Trying to call Delete on url:'{}' with forceTokenRetrieve:'{}' and is config tenant empty:'{}'",
+                    url,
+                    forceTokenRetrieve,
+                    config.isEmpty());
+
             HttpHeaders headers = this.getBaseHeader(null, config, forceTokenRetrieve);
             HttpEntity<String> entity = new HttpEntity<>(headers);
             ResponseEntity<Map<String,String>> responseEntity = restTemplate
@@ -163,6 +172,10 @@ public class CdsRemoteCaller  {
     }
 
     public Optional<CdsFileAttributeViewDto[]> getFileAttributeView(URI url, Optional<TenantConfig> config) {
+        logger.debug("Trying to call GET (getFileAttributeView) on url:'{}' and is config tenant empty:'{}'",
+                url,
+                config.isEmpty());
+
         return this.executeGetCall(url,
                 Arrays.asList(MediaType.APPLICATION_JSON),
                 config,
@@ -171,6 +184,11 @@ public class CdsRemoteCaller  {
     }
 
     public Optional<ByteArrayInputStream> getFile(URI url, Optional<TenantConfig> config, boolean isProtectedResource){
+        logger.debug("Trying to call GET (getFile) on url:'{}' with isProtectedResource:'{}' and is config tenant empty:'{}'",
+                url,
+                isProtectedResource,
+                config.isEmpty());
+
         Optional<byte[]> bytes;
         if (isProtectedResource) {
             bytes = executeGetCall(url, null, config,  false, new ParameterizedTypeReference<byte[]>(){});
@@ -225,35 +243,35 @@ public class CdsRemoteCaller  {
         return headers;
     }
 
-
-
     private String extractToken(Optional<TenantConfig> config, boolean force) {
-         TenantConfig tc = config.orElse(null);
-         if(tc!= null){
-             return getTenantToken(tc, force);
-         } else {
-            return getPrimaryToken(force);
-         }
-         // FIXME doesn't work => return config.map(tc -> getTenantToken(tc,force)).orElse(getPrimaryToken(force));
+        return config.map(tc -> getTenantToken(tc,force))
+                .orElseGet(() -> getPrimaryToken(force));
     }
 
     private String getTenantToken(TenantConfig config, boolean force){
+        logger.debug("Trying to retrieve token for tenantCode:'{}' with force:'{}'", config.getTenantCode(), force);
         String token = tenantsToken.get(config.getTenantCode());
         if (force || StringUtils.isBlank(token)) {
+            logger.debug("Retrieve token from auth server, not from internal map");
             token = this.extractToken(config.getKcAuthUrl(), config.getKcRealm(), config.getKcClientId(), config.getKcClientSecret());
             tenantsToken.put(config.getTenantCode(), ""+token);
         }
+        logger.trace("For tenantCode:'{}' retrieved token:'{}'", config.getTenantCode(), token);
         return token;
     }
 
     private String getPrimaryToken(boolean force){
+        logger.debug("Trying to retrieve token for primary with force:'{}'", force);
         String token = this.tenantsToken.get(PRIMARY_CODE);
         if (force || StringUtils.isBlank(token)) {
+            logger.debug("Retrieve token from auth server, not from internal map");
             token = this.extractToken(configuration.getKcAuthUrl(), configuration.getKcRealm(), configuration.getKcClientId(), configuration.getKcClientSecret());
             this.tenantsToken.put(PRIMARY_CODE, token);
         }
+        logger.trace("For primary retrieved token:'{}'",token);
         return token;
     }
+
     private String extractToken(String kcUrl, String kcRealm, String clientId, String clientSecret) {
         String encodedClientData = Base64Utils.encodeToString((clientId + ":" + clientSecret).getBytes());
         HttpHeaders headers = new HttpHeaders();
@@ -264,6 +282,7 @@ public class CdsRemoteCaller  {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
         String url = String.format("%s/realms/%s/protocol/openid-connect/token", kcUrl, kcRealm);
 
+        logger.debug("Trying to call POST on url:'{}' with clientId:'{}'", url, clientId);
         ResponseEntity<Map<String,Object>> responseEntity =
                 restTemplateWithRedirect.exchange(url, HttpMethod.POST, request, new ParameterizedTypeReference<Map<String,Object>>(){});
 

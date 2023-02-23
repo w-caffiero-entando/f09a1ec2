@@ -30,24 +30,6 @@
         </property>
     </bean>
 
-    <!--
-    <bean id="StorageManager" class="org.entando.entando.aps.system.services.storage.LocalStorageManager"
-          init-method="init" >
-        <property name="baseURL" >
-            <value>${resourceRootURL}</value>
-        </property>
-        <property name="baseDiskRoot" >
-            <value>${resourceDiskRootFolder}</value>
-        </property>
-        <property name="protectedBaseDiskRoot" >
-            <value>${protectedResourceDiskRootFolder}</value>
-        </property>
-        <property name="protectedBaseURL" >
-            <value>${protectedResourceRootURL}</value>
-        </property>
-    </bean>
-    -->
-
     <bean id="LocalStorageManagerInterface" class="org.entando.entando.aps.system.services.storage.api.LocalStorageManagerInterface" >
         <property name="storageManager" ref="StorageManager" />
     </bean>

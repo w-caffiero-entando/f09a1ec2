@@ -27,19 +27,20 @@ import org.apache.commons.lang3.StringUtils;
 @EqualsAndHashCode
 @ToString
 public class CdsFileAttributeViewDto implements Serializable {
-    
+
     public static final String LONG_TIME_PARAM_NAME = "secs_since_epoch";
-    
+
     private String name;
-	private Map<String,String> lastModifiedTime;
-	private Long size;
-	private Boolean directory;
-	private String path;
-	private Boolean protectedFolder;
+    private Map<String, String> lastModifiedTime;
+    private Long size;
+    private Boolean directory;
+    private String path;
+    private Boolean protectedFolder;
 
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -56,7 +57,7 @@ public class CdsFileAttributeViewDto implements Serializable {
 
     @JsonIgnore
     public Date getDate() {
-        if(lastModifiedTime != null) {
+        if (lastModifiedTime != null) {
             String timeString = lastModifiedTime.get(LONG_TIME_PARAM_NAME);
             if (!StringUtils.isBlank(timeString)) {
                 return new Date(Long.valueOf(timeString) * 1000);
@@ -68,6 +69,7 @@ public class CdsFileAttributeViewDto implements Serializable {
     public Long getSize() {
         return size;
     }
+
     public void setSize(Long size) {
         this.size = size;
     }
@@ -75,6 +77,7 @@ public class CdsFileAttributeViewDto implements Serializable {
     public Boolean getDirectory() {
         return directory;
     }
+
     public void setDirectory(Boolean directory) {
         this.directory = directory;
     }
@@ -82,6 +85,7 @@ public class CdsFileAttributeViewDto implements Serializable {
     public String getPath() {
         return path;
     }
+
     public void setPath(String path) {
         this.path = path;
     }
@@ -95,5 +99,5 @@ public class CdsFileAttributeViewDto implements Serializable {
     public void setProtectedFolder(Boolean protectedFolder) {
         this.protectedFolder = protectedFolder;
     }
-    
+
 }

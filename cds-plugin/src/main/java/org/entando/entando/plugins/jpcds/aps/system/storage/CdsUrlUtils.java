@@ -23,9 +23,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
 
+@Slf4j
 public final class CdsUrlUtils {
 
     private static final String CDS_PUBLIC_URL_TENANT_PARAM = "cdsPublicUrl";
@@ -43,6 +45,11 @@ public final class CdsUrlUtils {
     }
 
     public static URI buildCdsExternalPublicResourceUrl(Optional<TenantConfig> config, CdsConfiguration configuration, String ... paths){
+        log.debug("Trying to build CDS external public url with  is tenant config empty:'{}', CDS primary configuration public url:'{}' and paths:'{}'",
+                config.isEmpty(),
+                configuration.getCdsPublicUrl(),
+                paths);
+
         String publicUrl = config.flatMap(c -> c.getProperty(CDS_PUBLIC_URL_TENANT_PARAM)).orElse(configuration.getCdsPublicUrl());
 
         return CdsUrlBuilder.builder().url(publicUrl).paths(paths).build();
@@ -50,6 +57,12 @@ public final class CdsUrlUtils {
     }
 
     public static URI buildCdsInternalApiUrl(Optional<TenantConfig> config, CdsConfiguration configuration, String ... paths){
+        log.debug("Trying to build CDS internal api url with is tenant config empty:'{}', CDS primary configuration private url:'{}' and path:'{}' and paths:'{}'",
+                config.isEmpty(),
+                configuration.getCdsPrivateUrl(),
+                configuration.getCdsPath(),
+                paths);
+
         String apiUrl = config.flatMap(c -> c.getProperty(CDS_PRIVATE_URL_TENANT_PARAM)).orElse(configuration.getCdsPrivateUrl());
         String basePath = config.flatMap(c -> c.getProperty(CDS_PATH_TENANT_PARAM)).orElse(configuration.getCdsPath());
 
@@ -57,6 +70,12 @@ public final class CdsUrlUtils {
     }
 
     public static String fetchBaseUrl(Optional<TenantConfig> config, CdsConfiguration configuration, boolean usePrivateUrl) {
+        log.debug("Trying to fetch base CDS url with is tenant config empty:'{}', CDS primary configuration private url:'{}' public url:'{}' and usePrivateUrl:'{}'",
+                config.isEmpty(),
+                configuration.getCdsPrivateUrl(),
+                configuration.getCdsPublicUrl(),
+                usePrivateUrl);
+
         String privateUrl = config.flatMap(c -> c.getProperty(CDS_PRIVATE_URL_TENANT_PARAM)).orElse(configuration.getCdsPrivateUrl());
         String publicUrl = config.flatMap(c -> c.getProperty(CDS_PUBLIC_URL_TENANT_PARAM)).orElse(configuration.getCdsPublicUrl());
 
