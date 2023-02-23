@@ -55,14 +55,10 @@ import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
 
 /**
  * @author E.Santoboni
  */
-@Service
-@Primary
 public class SolrSearchEngineManager extends SearchEngineManager
         implements ISolrSearchEngineManager, PublicContentChangedObserver, EntityTypesChangingObserver {
 

@@ -7,4 +7,11 @@
 
     <context:component-scan base-package="org.entando.entando.plugins.jpsolr"/>
 
+    <bean id="jacmsSearchEngineManager"
+            class="org.entando.entando.plugins.jpsolr.aps.system.solr.SolrSearchEngineManager"
+            parent="abstractService" primary="true">
+        <property name="factory" ref="solrSearchEngineDAOFactory"/>
+        <property name="contentManager" ref="jacmsContentManager"/>
+    </bean>
+
 </beans>

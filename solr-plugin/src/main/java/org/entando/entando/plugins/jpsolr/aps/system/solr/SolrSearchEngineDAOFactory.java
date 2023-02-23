@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
  *
  * @author E.Santoboni
  */
-@Component
+@Component("solrSearchEngineDAOFactory")
 public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
 
     private static final String SOLR_ADDRESS_TENANT_PARAM = "solrAddress";
