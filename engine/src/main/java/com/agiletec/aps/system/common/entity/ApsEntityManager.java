@@ -102,19 +102,21 @@ public abstract class ApsEntityManager extends AbstractService
     private String attributeDisablingCodesFileName;
 
     private IEntityManagerCacheWrapper cacheWrapper;
-
+    
     @Override
     public void init() throws Exception {
         this.entityDom.setRootElementName(this.getXmlAttributeRootElementName());
         this.getCacheWrapper().initCache(super.getName());
-        logger.debug("{} : inizializated", this.getName());
+        AttributeRolesLoader loader = new AttributeRolesLoader();
+        Map<String, AttributeRole> attributeRoles = loader.extractAttributeRoles(this.getRolesConfigItemName(), this.getAttributeRolesFileName(), super.getBeanFactory(), this);
+        this.getCacheWrapper().updateRoles(attributeRoles);
+        logger.info("{} : inizializated", this.getName());
     }
 
     @Override
     public void refresh() throws Throwable {
         super.refresh();
         this.attributeDisablingCodes = null;
-        this.getCacheWrapper().updateRoles(null);
     }
 
     @Override
@@ -135,21 +137,12 @@ public abstract class ApsEntityManager extends AbstractService
     public List<AttributeRole> getAttributeRoles() {
         Map<String, AttributeRole> attributeRoles = this.getCacheWrapper().getRoles();
         if (null != attributeRoles) {
-            //roles already loaded
-            return this.getOrderedAttributeRoles(attributeRoles);
+            List<AttributeRole> list = attributeRoles.values().stream()
+                    .map(v -> v.clone()).collect(Collectors.toList());
+            list.sort(Comparator.comparing(AttributeRole::getName));
+            return list;
         }
-        //roles not loaded yet
-        AttributeRolesLoader loader = new AttributeRolesLoader();
-        attributeRoles = loader.extractAttributeRoles(this.getRolesConfigItemName(), this.getAttributeRolesFileName(), super.getBeanFactory(), this);
-        this.getCacheWrapper().updateRoles(attributeRoles);
-        return this.getOrderedAttributeRoles(attributeRoles);
-    }
-    
-    private List<AttributeRole> getOrderedAttributeRoles(Map<String, AttributeRole> attributeRoles) {
-        List<AttributeRole> list = attributeRoles.values().stream()
-                .map(v -> v.clone()).collect(Collectors.toList());
-        list.sort(Comparator.comparing(AttributeRole::getName));
-        return list;
+        return null;
     }
     
     @Override

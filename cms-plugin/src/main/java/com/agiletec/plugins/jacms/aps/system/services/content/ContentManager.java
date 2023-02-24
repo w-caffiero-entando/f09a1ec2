@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
@@ -77,6 +78,14 @@ public class ContentManager extends ApsEntityManager
         return JacmsSystemConstants.CONFIG_ITEM_CONTENT_TYPES;
     }
 
+    @Override
+    protected String getRolesConfigItemName() {
+        if (StringUtils.isBlank(super.getRolesConfigItemName())) {
+            return JacmsSystemConstants.CONFIG_ITEM_CONTENT_TYPES_ROLES;
+        }
+        return super.getRolesConfigItemName();
+    }
+    
     /**
      * Create a new instance of the requested content. The new content is forked
      * (or cloned) from the corresponding prototype, and it's returned empty.

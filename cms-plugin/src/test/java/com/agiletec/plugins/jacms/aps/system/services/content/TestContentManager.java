@@ -34,6 +34,7 @@ import com.agiletec.aps.system.common.entity.ApsEntityManager;
 import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
 import com.agiletec.aps.system.common.entity.model.attribute.BooleanAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.CheckBoxAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.CompositeAttribute;
@@ -1787,6 +1788,16 @@ class TestContentManager extends BaseTestCase {
                 this._contentManager.deleteContent(content);
             }
         }
+    }
+    
+    @Test
+    void testLoadRoles() throws Exception {
+        List<AttributeRole> roles = this._contentManager.getAttributeRoles();
+        assertEquals(4, roles.size());
+        AttributeRole role = this._contentManager.getAttributeRole("social:image");
+        assertNotNull(role);
+        assertEquals(1, role.getAllowedAttributeTypes().size());
+        assertEquals("Image", role.getAllowedAttributeTypes().get(0));
     }
 
     @BeforeEach

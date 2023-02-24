@@ -74,6 +74,8 @@ public interface JacmsSystemConstants {
 
     public static final String CONFIG_ITEM_CONTENT_TYPES = "contentTypes";
 
+    public static final String CONFIG_ITEM_CONTENT_TYPES_ROLES = "contentTypesRoles";
+
     public static final String CONFIG_ITEM_IMAGE_DIMENSIONS = "imageDimensions";
 
     public static final String CONFIG_ITEM_RESOURCE_METADATA_MAPPING = "jacms_resourceMetadataMapping";

@@ -17,4 +17,6 @@
 
     <include file="port/20230119000000_jacms_freemarker_for_parallel.xml" relativeToChangelogFile="true" />
 
+    <include file="port/20230224000000_jacms_social_tag_roles.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>

@@ -1,0 +1,17 @@
+<roles>
+    <role>
+        <name>social:title</name>
+        <description>The Attribute that contains the social title</description>
+        <allowedTypes>Text,Monotext,Longtext</allowedTypes>
+    </role>
+    <role>
+        <name>social:description</name>
+        <description>The Attribute that contains the social description</description>
+        <allowedTypes>Text,Monotext,Longtext</allowedTypes>
+    </role>
+    <role>
+        <name>social:image</name>
+        <description>The Attribute that contains the social image</description>
+        <allowedTypes>Image</allowedTypes>
+    </role>
+</roles>
