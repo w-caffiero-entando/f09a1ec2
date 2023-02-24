@@ -19,6 +19,7 @@ import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.plugins.jacms.aps.system.services.content.widget.UserFilterOptionBean;
+import com.agiletec.plugins.jacms.aps.system.services.searchengine.ICmsSearchEngineManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,9 +29,10 @@ import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.searchengine.FacetedContentsResult;
 import org.entando.entando.aps.system.services.searchengine.SearchEngineFilter;
 import org.entando.entando.ent.exception.EntException;
-import org.entando.entando.plugins.jpsolr.aps.system.solr.SolrSearchEngineManager;
+import org.entando.entando.plugins.jpsolr.aps.system.solr.ISolrSearchEngineManager;
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrFacetedContentsResult;
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrSearchEngineFilter;
+import org.entando.entando.plugins.jpsolr.conditions.SolrActive;
 import org.entando.entando.plugins.jpsolr.web.content.model.AdvRestContentListRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,15 +41,16 @@ import org.springframework.stereotype.Service;
  * @author E.Santoboni
  */
 @Service
+@SolrActive(true)
 public class AdvContentFacetManager implements IAdvContentFacetManager {
 
     private final ICategoryManager categoryManager;
-    private final SolrSearchEngineManager searchEngineManager;
+    private final ICmsSearchEngineManager searchEngineManager;
     private final IAuthorizationManager authorizationManager;
     private final ILangManager langManager;
 
     @Autowired
-    public AdvContentFacetManager(ICategoryManager categoryManager, SolrSearchEngineManager searchEngineManager,
+    public AdvContentFacetManager(ICategoryManager categoryManager, ICmsSearchEngineManager searchEngineManager,
             IAuthorizationManager authorizationManager, ILangManager langManager) {
         this.categoryManager = categoryManager;
         this.searchEngineManager = searchEngineManager;
@@ -113,7 +116,7 @@ public class AdvContentFacetManager implements IAdvContentFacetManager {
             }
             SolrSearchEngineFilter[] categorySearchFilters = requestList.extractCategoryFilters();
             List<String> userGroupCodes = this.getAllowedGroups(user);
-            facetedResult = this.searchEngineManager.searchFacetedEntities(
+            facetedResult = ((ISolrSearchEngineManager) this.searchEngineManager).searchFacetedEntities(
                     doubleFilters, categorySearchFilters, userGroupCodes);
         } catch (EntException ex) {
             throw new RestServerError("error in search contents", ex);

@@ -23,38 +23,26 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.exception.EntException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
 
 /**
  * Classe factory degli elementi ad uso del SearchEngine.
  *
  * @author E.Santoboni
  */
-@Component("solrSearchEngineDAOFactory")
 public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
 
     private static final String SOLR_ADDRESS_TENANT_PARAM = "solrAddress";
     private static final String SOLR_CORE_TENANT_PARAM = "solrCore";
 
-    @Value("${SOLR_ADDRESS:http://localhost:8983/solr}")
-    private String solrAddress;
-
-    @Value("${SOLR_CORE:entando}")
-    private String solrCore;
-
     private final ILangManager langManager;
     private final ICategoryManager categoryManager;
     private final ITenantManager tenantManager;
 
-    @Autowired
     public SolrSearchEngineDAOFactory(ILangManager langManager, ICategoryManager categoryManager,
             ITenantManager tenantManager) {
         this.langManager = langManager;
@@ -93,7 +81,6 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
     private final Map<String, SolrDAOResources> tenantDAOResources = new ConcurrentHashMap<>();
 
     @Override
-    @PostConstruct
     public void init() throws Exception {
         this.primaryDAOResources = newSolrDAOResources();
     }
@@ -102,7 +89,7 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
         return new SolrDAOResources(this.getSolrAddress(), this.getSolrCore(), this.langManager, this.categoryManager);
     }
 
-    @PreDestroy
+    @Override
     public void close() throws IOException {
         this.primaryDAOResources.close();
         for (SolrDAOResources tenantResources : tenantDAOResources.values()) {
@@ -178,11 +165,11 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
     }
 
     public String getSolrAddress() {
-        return this.getTenantParameter(SOLR_ADDRESS_TENANT_PARAM, this.solrAddress);
+        return this.getTenantParameter(SOLR_ADDRESS_TENANT_PARAM, SolrEnvironmentVariables.solrAddress());
     }
 
     public String getSolrCore() {
-        return this.getTenantParameter(SOLR_CORE_TENANT_PARAM, this.solrCore);
+        return this.getTenantParameter(SOLR_CORE_TENANT_PARAM, SolrEnvironmentVariables.solrCore());
     }
 
     private String getTenantParameter(String paramName, String defaultValue) {

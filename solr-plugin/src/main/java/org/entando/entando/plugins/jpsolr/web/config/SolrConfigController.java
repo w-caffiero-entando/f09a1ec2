@@ -14,11 +14,13 @@
 package org.entando.entando.plugins.jpsolr.web.config;
 
 import com.agiletec.aps.system.services.role.Permission;
+import com.agiletec.plugins.jacms.aps.system.services.searchengine.ICmsSearchEngineManager;
 import java.util.List;
 import java.util.Map;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.plugins.jpsolr.aps.system.solr.ISolrSearchEngineManager;
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.ContentTypeSettings;
+import org.entando.entando.plugins.jpsolr.conditions.SolrActive;
 import org.entando.entando.web.common.annotation.RestAccessControl;
 import org.entando.entando.web.common.model.SimpleRestResponse;
 import org.slf4j.Logger;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author E.Santoboni
  */
+@SolrActive(true)
 @RestController
 @RequestMapping(value = "/plugins/solr")
 public class SolrConfigController {
@@ -44,15 +47,15 @@ public class SolrConfigController {
 
     public static final String CONTENT_TYPE_CODE = "contentTypeCode";
 
-    @Autowired
-    private ISolrSearchEngineManager solrSearchEngineManager;
+    private final ICmsSearchEngineManager solrSearchEngineManager;
 
-    protected ISolrSearchEngineManager getSolrSearchEngineManager() {
-        return solrSearchEngineManager;
+    @Autowired
+    public SolrConfigController(ICmsSearchEngineManager solrSearchEngineManager) {
+        this.solrSearchEngineManager = solrSearchEngineManager;
     }
 
-    public void setSolrSearchEngineManager(ISolrSearchEngineManager solrSearchEngineManager) {
-        this.solrSearchEngineManager = solrSearchEngineManager;
+    private ISolrSearchEngineManager getSolrSearchEngineManager() {
+        return (ISolrSearchEngineManager) solrSearchEngineManager;
     }
 
     @RestAccessControl(permission = {Permission.SUPERUSER})
@@ -69,7 +72,8 @@ public class SolrConfigController {
 
     @RestAccessControl(permission = Permission.SUPERUSER)
     @PostMapping("/config/{contentTypeCode}")
-    public ResponseEntity<SimpleRestResponse<Map<String, String>>> reloadReferences(@PathVariable String contentTypeCode) {
+    public ResponseEntity<SimpleRestResponse<Map<String, String>>> reloadReferences(
+            @PathVariable String contentTypeCode) {
         logger.debug("REST request - reload content type references {}", contentTypeCode);
         try {
             this.getSolrSearchEngineManager().refreshContentType(contentTypeCode);

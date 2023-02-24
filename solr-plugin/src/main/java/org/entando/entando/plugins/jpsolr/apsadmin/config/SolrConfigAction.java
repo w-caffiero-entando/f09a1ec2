@@ -37,7 +37,7 @@ public class SolrConfigAction extends BaseAction {
     
     private int refreshResult = -1;
     
-    private transient ISolrSearchEngineManager solrSearchEngineManager;
+    private transient ICmsSearchEngineManager solrSearchEngineManager;
 
     public List<ContentTypeSettings> getContentTypesSettings() {
         try {
@@ -101,11 +101,11 @@ public class SolrConfigAction extends BaseAction {
         return this.getSolrSearchEngineManager().getStatus();
     }
     
-    protected ISolrSearchEngineManager getSolrSearchEngineManager() {
-        return solrSearchEngineManager;
+    private ISolrSearchEngineManager getSolrSearchEngineManager() {
+        return (ISolrSearchEngineManager) solrSearchEngineManager;
     }
 
-    public void setSolrSearchEngineManager(ISolrSearchEngineManager solrSearchEngineManager) {
+    public void setSolrSearchEngineManager(ICmsSearchEngineManager solrSearchEngineManager) {
         this.solrSearchEngineManager = solrSearchEngineManager;
     }
     

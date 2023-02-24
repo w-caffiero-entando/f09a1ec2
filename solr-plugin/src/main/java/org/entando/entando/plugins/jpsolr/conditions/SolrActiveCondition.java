@@ -20,7 +20,7 @@ public class SolrActiveCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        MultiValueMap<String, Object> attrs = metadata.getAllAnnotationAttributes(SolrActiveCondition.class.getName());
+        MultiValueMap<String, Object> attrs = metadata.getAllAnnotationAttributes(SolrActive.class.getName());
         boolean active = false;
         if (attrs != null) {
             active = (boolean) attrs.getFirst("value");

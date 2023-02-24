@@ -1,5 +1,7 @@
 package org.entando.entando.plugins.jpsolr;
 
+import java.lang.reflect.Field;
+import java.util.Map;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.GenericContainer;
@@ -21,13 +23,25 @@ public class SolrTestExtension implements BeforeAllCallback {
                     .withCommand("solr-precreate", SOLR_CORE);
             solrContainer.start();
 
-            System.setProperty("SOLR_ADDRESS", "http://localhost:" + solrContainer.getMappedPort(SOLR_PORT) + "/solr");
-            System.setProperty("SOLR_CORE", SOLR_CORE);
+            updateEnv("SOLR_ADDRESS", "http://localhost:" + solrContainer.getMappedPort(SOLR_PORT) + "/solr");
         }
 
         if (extensionContext.getTags().contains(RECREATE_CORE)) {
             solrContainer.execInContainer("bin/solr", "delete", "-c", SOLR_CORE);
             solrContainer.execInContainer("bin/solr", "create_core", "-c", SOLR_CORE);
         }
+    }
+
+    /**
+     * Some tests that use this extension start instances of NotifyingThread where we need to override the SOLR_ADDRESS
+     * value. Unfortunately Mockito.mockStatic doesn't work in secondary threads, so we can't mock
+     * SolrEnvironmentVariables static methods as done in RedisTestExtension. The following method is a workaround that
+     * manipulates the env map directly.
+     */
+    private static void updateEnv(String name, String val) throws Exception {
+        Map<String, String> env = System.getenv();
+        Field field = env.getClass().getDeclaredField("m");
+        field.setAccessible(true);
+        ((Map<String, String>) field.get(env)).put(name, val);
     }
 }

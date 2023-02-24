@@ -42,7 +42,6 @@ import org.entando.entando.aps.system.services.searchengine.SearchEngineFilter;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Servizio detentore delle operazioni di indicizzazione di oggetti ricercabili
@@ -74,6 +73,7 @@ public class SearchEngineManager extends AbstractService
     public void init() throws Exception {
         this.setIndexerDao(this.getFactory().getIndexer());
         this.setSearcherDao(this.getFactory().getSearcher());
+        logger.info("** Default Search Engine active **");
     }
 
     @Override
@@ -377,7 +377,6 @@ public class SearchEngineManager extends AbstractService
         return contentManager;
     }
 
-    @Autowired
     public void setContentManager(IContentManager contentManager) {
         this.contentManager = contentManager;
     }

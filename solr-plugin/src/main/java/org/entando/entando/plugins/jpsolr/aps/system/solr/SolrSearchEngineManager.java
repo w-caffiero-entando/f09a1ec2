@@ -44,7 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+import lombok.Setter;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.searchengine.SearchEngineFilter;
 import org.entando.entando.ent.exception.EntException;
@@ -54,7 +54,6 @@ import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrFacetedConte
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author E.Santoboni
@@ -66,23 +65,41 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     private static final Logger logger = LoggerFactory.getLogger(SolrSearchEngineManager.class);
 
-    @Autowired
+    @Setter
     private transient ILangManager langManager;
-    @Autowired
+    @Setter
     private transient ICacheInfoManager cacheInfoManager;
-    @Autowired
     private transient ISolrSearchEngineDAOFactory factory;
 
     @Override
-    @PostConstruct
     public void init() throws Exception {
-        logger.debug("{} ready. Initialized", this.getClass().getName());
+        this.factory.init();
+        logger.info("** Solr Search Engine active **");
+    }
+
+    @Override
+    public void destroy() {
+        try {
+            this.factory.close();
+        } catch (Exception ex) {
+            throw new EntRuntimeException("Exception in destroy", ex);
+        }
+    }
+
+    @Override
+    public void setFactory(ISearchEngineDAOFactory factory) {
+        this.factory = (ISolrSearchEngineDAOFactory) factory;
+    }
+
+    @Override
+    protected ISearchEngineDAOFactory getFactory() {
+        return this.factory;
     }
 
     @Override
     protected ISearcherDAO getSearcherDao() {
         try {
-            return this.factory.getSearcher();
+            return this.getFactory().getSearcher();
         } catch (Exception e) {
             throw new EntRuntimeException("Error extracting searcher", e);
         }
@@ -91,15 +108,10 @@ public class SolrSearchEngineManager extends SearchEngineManager
     @Override
     protected IIndexerDAO getIndexerDao() {
         try {
-            return this.factory.getIndexer();
+            return this.getFactory().getIndexer();
         } catch (Exception e) {
             throw new EntRuntimeException("Error extracting indexer", e);
         }
-    }
-
-    @Override
-    protected ISearchEngineDAOFactory getFactory() {
-        return this.factory;
     }
 
     @Override
@@ -292,7 +304,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public Thread startReloadContentsReferences() throws EntException {
-        ((ISolrSearchEngineDAOFactory) this.factory).deleteAllDocuments();
+        this.factory.deleteAllDocuments();
         return this.startReloadContentsReferencesPrivate(null);
     }
 
@@ -334,7 +346,8 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public LastReloadInfo getLastReloadInfo() {
-        return (SolrLastReloadInfo) this.cacheInfoManager.getFromCache(ICacheInfoManager.DEFAULT_CACHE_NAME, this.getLastReloadCacheKey());
+        return (SolrLastReloadInfo) this.cacheInfoManager.getFromCache(ICacheInfoManager.DEFAULT_CACHE_NAME,
+                this.getLastReloadCacheKey());
     }
 
     private String getLastReloadCacheKey() {

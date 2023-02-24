@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletContext;
 import org.entando.entando.plugins.jpsolr.CustomConfigTestUtils;
+import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
 import org.entando.entando.plugins.jpsolr.SolrTestExtension;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -60,8 +61,8 @@ class TestSolrSchemaClient {
         applicationContext = new CustomConfigTestUtils().createApplicationContext(srvCtx);
         setApplicationContext(applicationContext);
 
-        solrAddress = applicationContext.getEnvironment().getProperty("SOLR_ADDRESS");
-        solrCore = applicationContext.getEnvironment().getProperty("SOLR_CORE");
+        solrAddress = SolrEnvironmentVariables.solrAddress();
+        solrCore = SolrEnvironmentVariables.solrCore();
     }
 
     @AfterAll
