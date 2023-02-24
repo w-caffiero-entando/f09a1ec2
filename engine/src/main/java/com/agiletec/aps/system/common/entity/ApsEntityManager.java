@@ -51,7 +51,9 @@ import com.agiletec.aps.system.common.entity.parse.IEntityTypeDOM;
 import com.agiletec.aps.system.common.entity.parse.IEntityTypeFactory;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.DateConverter;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.commons.beanutils.BeanComparator;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -83,6 +85,8 @@ public abstract class ApsEntityManager extends AbstractService
 
     private String configItemName;
 
+    private String rolesConfigItemName;
+
     private IEntityTypeDOM entityTypeDom;
 
     private EntityHandler entityHandler;
@@ -90,8 +94,6 @@ public abstract class ApsEntityManager extends AbstractService
     private String xmlAttributeRootElementName;
 
     private IApsEntityDOM entityDom;
-
-    private Map<String, AttributeRole> attributeRoles = null;
 
     private Map<String, String> attributeDisablingCodes = null;
 
@@ -112,7 +114,7 @@ public abstract class ApsEntityManager extends AbstractService
     public void refresh() throws Throwable {
         super.refresh();
         this.attributeDisablingCodes = null;
-        this.attributeRoles = null;
+        this.getCacheWrapper().updateRoles(null);
     }
 
     @Override
@@ -131,43 +133,28 @@ public abstract class ApsEntityManager extends AbstractService
 
     @Override
     public List<AttributeRole> getAttributeRoles() {
-        if (null != this.attributeRoles) {
+        Map<String, AttributeRole> attributeRoles = this.getCacheWrapper().getRoles();
+        if (null != attributeRoles) {
             //roles already loaded
-            return this.getOrderedAttributeRoles();
+            return this.getOrderedAttributeRoles(attributeRoles);
         }
         //roles not loaded yet
-        this.initAttributeRoles();
-        return this.getOrderedAttributeRoles();
-    }
-
-    protected void initAttributeRoles() {
-        this.attributeRoles = new HashMap<>();
         AttributeRolesLoader loader = new AttributeRolesLoader();
-        this.attributeRoles = loader.extractAttributeRoles(this.getAttributeRolesFileName(), super.getBeanFactory(), this);
+        attributeRoles = loader.extractAttributeRoles(this.getRolesConfigItemName(), this.getAttributeRolesFileName(), super.getBeanFactory(), this);
+        this.getCacheWrapper().updateRoles(attributeRoles);
+        return this.getOrderedAttributeRoles(attributeRoles);
     }
-
-    private List<AttributeRole> getOrderedAttributeRoles() {
-        List<AttributeRole> roles = new ArrayList<>(this.attributeRoles.size());
-        Iterator<AttributeRole> iter = this.attributeRoles.values().iterator();
-        while (iter.hasNext()) {
-            AttributeRole role = iter.next();
-            roles.add(role.clone());
-        }
-        BeanComparator comparator = new BeanComparator("name");
-        Collections.sort(roles, comparator);
-        return roles;
+    
+    private List<AttributeRole> getOrderedAttributeRoles(Map<String, AttributeRole> attributeRoles) {
+        List<AttributeRole> list = attributeRoles.values().stream()
+                .map(v -> v.clone()).collect(Collectors.toList());
+        list.sort(Comparator.comparing(AttributeRole::getName));
+        return list;
     }
-
+    
     @Override
     public AttributeRole getAttributeRole(String roleName) {
-        if (null == this.attributeRoles) {
-            this.initAttributeRoles();
-        }
-        AttributeRole role = this.attributeRoles.get(roleName);
-        if (null != role) {
-            return role.clone();
-        }
-        return null;
+        return this.getCacheWrapper().getRole(roleName);
     }
 
     /**
@@ -472,6 +459,13 @@ public abstract class ApsEntityManager extends AbstractService
         this.configItemName = confItemName;
     }
 
+    protected String getRolesConfigItemName() {
+        return rolesConfigItemName;
+    }
+    public void setRolesConfigItemName(String rolesConfigItemName) {
+        this.rolesConfigItemName = rolesConfigItemName;
+    }
+    
     protected IEntityTypeDOM getEntityTypeDom() {
         return this.entityTypeDom;
     }
