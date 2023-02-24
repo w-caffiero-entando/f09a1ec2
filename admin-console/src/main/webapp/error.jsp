@@ -9,14 +9,13 @@
 		Object exceptionType = request.getAttribute("javax.servlet.error.exception_type");
 		Object message = request.getAttribute("javax.servlet.error.message");
 %>
-<wp:contentNegotiation mimeType="text/html" charset="utf-8"/>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<title>Entando - Error</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta charset="utf-8" />
-		<link rel="stylesheet" href="<wp:resourceURL />administration/bootstrap/css/bootstrap.min.css" media="screen" />
+		<link rel="stylesheet" href="<wp:resourceURL ignoreTenant="true" />administration/bootstrap/css/bootstrap.min.css" media="screen" />
 	</head>
 	<body>
 		<div class="container">

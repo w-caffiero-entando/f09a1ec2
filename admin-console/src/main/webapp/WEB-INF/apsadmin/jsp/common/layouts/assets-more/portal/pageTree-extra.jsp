@@ -1,11 +1,11 @@
 <%@ taglib prefix="wp" uri="/aps-core" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
-<script src="<wp:resourceURL />administration/js/entando.alert.js"></script>
-<script src="<wp:resourceURL />administration/js/jquery.xml2json.js"></script>
-<script src="<wp:resourceURL />administration/js/lodash.js"></script>
-<script src="<wp:resourceURL />administration/js/jquery-ui-dragndrop.min.js"></script>
-<script src="<wp:resourceURL />administration/js/jquery-confirm.min.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/entando.alert.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/jquery.xml2json.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/lodash.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/jquery-ui-dragndrop.min.js"></script>
+<script src="<wp:resourceURL ignoreTenant="true" />administration/js/jquery-confirm.min.js"></script>
 
 
 <script type="text/javascript">

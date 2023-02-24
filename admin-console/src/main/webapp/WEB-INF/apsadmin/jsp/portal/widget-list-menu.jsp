@@ -3,7 +3,7 @@
 <%@ taglib prefix="wp" uri="/aps-core" %>
 <%@ taglib uri="/apsadmin-core" prefix="wpsa" %>
 
-<link rel="stylesheet" type="text/css" href="<wp:resourceURL />administration/css/entando-widget-icons.css"/>
+<link rel="stylesheet" type="text/css" href="<wp:resourceURL ignoreTenant="true" />administration/css/entando-widget-icons.css"/>
 
 <div class="right-menu-title">
     <s:text name="title.widgetlist" /><span class="pull-right drawer-pf-icons-right-menu"><i id="widgetGrid" class="fa fa-th-large pointer" aria-hidden="true"></i>&nbsp;&nbsp;<i id="widgetList" class="fa fa-th-list pointer"  aria-hidden="true"></i></span>

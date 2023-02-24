@@ -86,7 +86,7 @@
                 <wp:info key="systemParam" paramName="treeStyle_category" />
             </s:set>
 
-            <script src="<wp:resourceURL />administration/js/entando-typeahead-tree.js"></script>
+            <script src="<wp:resourceURL ignoreTenant="true"/>administration/js/entando-typeahead-tree.js"></script>
 
             <div class="table-responsive overflow-visible">
                 <table id="categoryTree"

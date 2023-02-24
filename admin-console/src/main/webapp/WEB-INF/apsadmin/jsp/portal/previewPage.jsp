@@ -4,8 +4,8 @@
 <s:set var="currentSize" value="screenSize" />
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="<wp:resourceURL />administration/patternfly/css/patternfly.min.css"/>
-    <link rel="stylesheet" type="text/css" href="<wp:resourceURL />administration/css/pages/previewPage.css"/>
+    <link rel="stylesheet" type="text/css" href="<wp:resourceURL ignoreTenant="true" />administration/patternfly/css/patternfly.min.css"/>
+    <link rel="stylesheet" type="text/css" href="<wp:resourceURL ignoreTenant="true" />administration/css/pages/previewPage.css"/>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script>
@@ -18,7 +18,7 @@
             previewHeight: '<s:property value="#currentSize.width" />'
         };
     </script>
-    <script src="<wp:resourceURL />administration/js/pages/previewPage.js"></script>
+    <script src="<wp:resourceURL ignoreTenant="true" />administration/js/pages/previewPage.js"></script>
 </head>
 <body>
     <div class="main-container">

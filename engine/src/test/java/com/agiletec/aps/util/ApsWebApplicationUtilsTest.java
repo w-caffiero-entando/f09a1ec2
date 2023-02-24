@@ -42,7 +42,7 @@ class ApsWebApplicationUtilsTest {
     private PageContext pageContext;
 
     @Test
-    void shouldExtractBeanFromDifferentContextAndManageError(){
+    void shouldExtractBeanWithTypeFromDifferentContextAndManageError(){
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> {ApsWebApplicationUtils.getBean(TenantManager.class, servletContext);});
 
@@ -67,8 +67,34 @@ class ApsWebApplicationUtilsTest {
         Mockito.when(httpSession.getServletContext()).thenReturn(servletContext);
         tm = ApsWebApplicationUtils.getBean(TenantManager.class, httpServletRequest);
         Assertions.assertNotNull(tm);
+    }
 
+    @Test
+    void shouldExtractBeanWithNameAndTypeFromDifferentContextAndManageError(){
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> {ApsWebApplicationUtils.getBean("tenantManager", TenantManager.class, servletContext);});
 
+        Mockito.when(servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE))
+                .thenReturn(wac);
+
+        Mockito.when(wac.getBean("tenantManager", TenantManager.class))
+                .thenReturn(null);
+
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> {ApsWebApplicationUtils.getBean("tenantManager", TenantManager.class, servletContext);});
+
+        Mockito.when(wac.getBean("tenantManager", TenantManager.class)).thenReturn(new TenantManager("{}", new ObjectMapper()));
+        TenantManager tm = ApsWebApplicationUtils.getBean("tenantManager", TenantManager.class, servletContext);
+        Assertions.assertNotNull(tm);
+
+        Mockito.when(pageContext.getServletContext()).thenReturn(servletContext);
+        tm = ApsWebApplicationUtils.getBean("tenantManager", TenantManager.class, pageContext);
+        Assertions.assertNotNull(tm);
+
+        Mockito.when(httpServletRequest.getSession()).thenReturn(httpSession);
+        Mockito.when(httpSession.getServletContext()).thenReturn(servletContext);
+        tm = ApsWebApplicationUtils.getBean("tenantManager", TenantManager.class, httpServletRequest);
+        Assertions.assertNotNull(tm);
     }
 
 }

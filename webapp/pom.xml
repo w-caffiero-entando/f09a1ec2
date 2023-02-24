@@ -116,6 +116,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.entando.entando.plugins</groupId>
+            <artifactId>entando-plugin-jpcds</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-keycloak-auth</artifactId>
             <version>${project.version}</version>
@@ -845,6 +850,9 @@
                                 </resource>
                                 <resource>
                                     <directory>${basedir}/../redis-plugin/src/main/webapp</directory>
+                                </resource>
+                                <resource>
+                                    <directory>${basedir}/../cds-plugin/src/main/webapp</directory>
                                 </resource>
                                 <resource>
                                     <directory>${basedir}/../versioning-plugin/src/main/webapp</directory>

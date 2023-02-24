@@ -16,6 +16,7 @@ package org.entando.entando.keycloak.services;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +40,23 @@ public class KeycloakRestTemplateConfiguration {
     @Bean(name="keycloakRestTemplate")
     public RestTemplate keycloakRestTemplate() {
         HttpClientBuilder builder = HttpClients.custom()
+                .setMaxConnPerRoute(maxConnPerRoute)
+                .setMaxConnTotal(maxConnTotal)
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setConnectionRequestTimeout(connReqTimeout)
+                        .setConnectTimeout(connTimeout)
+                        .setSocketTimeout(connSocketTimeout).build());
+
+        HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setHttpClient(builder.build());
+
+        return new RestTemplate(httpRequestFactory);
+    }
+
+    @Bean(name="keycloakRestTemplateWithRedirect")
+    public RestTemplate keycloakRestTemplateWithRedirect() {
+        HttpClientBuilder builder = HttpClients.custom()
+                .setRedirectStrategy(new LaxRedirectStrategy())
                 .setMaxConnPerRoute(maxConnPerRoute)
                 .setMaxConnTotal(maxConnTotal)
                 .setDefaultRequestConfig(RequestConfig.custom()
