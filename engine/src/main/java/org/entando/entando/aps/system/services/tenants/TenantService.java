@@ -49,12 +49,12 @@ public class TenantService implements ITenantService {
     public Optional<TenantDto> getTenant(String tenantCode) {
         return tenantManager.getConfig(tenantCode)
                 .map(this::mapTenantToTenantDto).or(() -> Optional.ofNullable(tenantCode)
-                        .filter(tc -> PRIMARY_CODE.equals(tc)).map(t -> mapPrimaryToTenantDto()));
+                        .filter(PRIMARY_CODE::equals).map(t -> mapPrimaryToTenantDto()));
     }
 
     public List<TenantDto> getTenants() {
         List<TenantDto> tenants = tenantManager.getCodes().stream()
-                .map(c -> tenantManager.getConfig(c))
+                .map(tenantManager::getConfig)
                 .flatMap(Optional::stream)
                 .map(this::mapTenantToTenantDto).collect(Collectors.toList());
 
