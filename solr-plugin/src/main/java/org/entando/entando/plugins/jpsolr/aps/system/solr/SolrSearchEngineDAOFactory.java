@@ -174,7 +174,7 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
 
     private String getTenantParameter(String paramName, String defaultValue) {
         return ApsTenantApplicationUtils.getTenant()
-                .flatMap(tenantCode -> tenantManager.getConfig(tenantCode))
+                .flatMap(tenantManager::getConfig)
                 .flatMap(tenantConfig -> tenantConfig.getProperty(paramName))
                 .orElse(defaultValue);
     }
