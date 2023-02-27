@@ -122,14 +122,14 @@ public class PageURL implements Serializable {
 	}
 	
 	/**
-	 * Repaat the parameters extracted from the request.
+	 * Repeat the parameters extracted from the request.
 	 */
 	public void setParamRepeat() {
 		this.setParamRepeat(null);
 	}
 	
 	/**
-	 * Repaat the parameters extracted from the request.
+	 * Repeat the parameters extracted from the request.
 	 * @param parametersToExclude The parameters to exclude.
 	 */
 	public void setParamRepeat(List<String> parametersToExclude) {

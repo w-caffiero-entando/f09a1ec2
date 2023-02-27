@@ -3,10 +3,12 @@ package org.entando.entando.plugins.jpsolr.web.content.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.EqualsAndHashCode;
 import org.entando.entando.web.common.model.PagedMetadata;
 
 @JsonPropertyOrder({"page", "pageSize", "lastPage", "totalItems",
         "csvCategories", "includeAttachments", "filters", "doubleFilters"})
+@EqualsAndHashCode
 public class SolrContentPagedMetadata<T> extends PagedMetadata<T> {
 
     @JsonInclude(Include.NON_NULL)

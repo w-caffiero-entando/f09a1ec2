@@ -91,7 +91,7 @@ public class SolrIndexLoaderThread extends Thread {
                             }
                         })
                         .filter(Objects::nonNull));
-        logger.info("Indicizzazione effettuata");
+        logger.info("Indexing completed");
     }
 
     private String typeCode;

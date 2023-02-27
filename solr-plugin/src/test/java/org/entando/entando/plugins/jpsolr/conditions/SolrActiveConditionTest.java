@@ -12,7 +12,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.LinkedMultiValueMap;
 
 @ExtendWith(MockitoExtension.class)
-public class SolrActiveConditionTest {
+class SolrActiveConditionTest {
 
     @Mock
     ConditionContext context;
