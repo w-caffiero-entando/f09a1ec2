@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -402,16 +403,15 @@ public class ContentListViewerWidgetAction extends SimpleWidgetConfigAction {
 	}
 
 	@Override
-	protected void createValuedShowlet() throws Exception {
+	protected void createValuedShowlet() {
 		try {
 			super.createValuedShowlet();
 			ApsProperties config = this.getWidget().getConfig();
 			this.extractFiltersProperties(config);
 			this.extractUserFiltersProperties(config);
 			this.extractCategories(config);
-		} catch (Throwable t) {
-			_logger.error("Error creating user filter", t);
-			throw new EntException("Error creating user filter", t);
+		} catch (RuntimeException ex) {
+			throw new EntRuntimeException("Error creating user filter", ex);
 		}
 	}
 

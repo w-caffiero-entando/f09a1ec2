@@ -126,6 +126,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.entando.entando.plugins</groupId>
+            <artifactId>entando-plugin-jpsolr</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <scope>provided</scope>
@@ -856,6 +861,9 @@
                                 </resource>
                                 <resource>
                                     <directory>${basedir}/../versioning-plugin/src/main/webapp</directory>
+                                </resource>
+                                <resource>
+                                    <directory>${basedir}/../solr-plugin/src/main/webapp</directory>
                                 </resource>
                             </resources>
                         </configuration>

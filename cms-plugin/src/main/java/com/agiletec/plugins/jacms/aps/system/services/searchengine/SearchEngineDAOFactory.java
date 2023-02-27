@@ -32,9 +32,6 @@ public class SearchEngineDAOFactory implements ISearchEngineDAOFactory {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(SearchEngineDAOFactory.class);
 
-    private String indexerClassName;
-    private String searcherClassName;
-
     private String indexDiskRootFolder;
     private String subDirectory;
 
@@ -48,6 +45,11 @@ public class SearchEngineDAOFactory implements ISearchEngineDAOFactory {
         if (this.subDirectory == null) {
             throw new EntException("Item configurazione assente: " + JacmsSystemConstants.CONFIG_ITEM_CONTENT_INDEX_SUB_DIR);
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        // nothing to do
     }
 
     @Override
@@ -72,33 +74,19 @@ public class SearchEngineDAOFactory implements ISearchEngineDAOFactory {
 
     @Override
     public IIndexerDAO getIndexer(String subDir) throws EntException {
-        IIndexerDAO indexerDao = null;
-        try {
-            Class indexerClass = Class.forName(this.getIndexerClassName());
-            indexerDao = (IIndexerDAO) indexerClass.newInstance();
-            indexerDao.setLangManager(this.getLangManager());
-            indexerDao.setTreeNodeManager(this.getCategoryManager());
-            indexerDao.init(this.getDirectory(subDir));
-        } catch (Throwable t) {
-            logger.error("Error getting indexer", t);
-            throw new EntException("Error creating new indexer", t);
-        }
+        IIndexerDAO indexerDao = new IndexerDAO();
+        indexerDao.setLangManager(this.getLangManager());
+        indexerDao.setTreeNodeManager(this.getCategoryManager());
+        indexerDao.init(this.getDirectory(subDir));
         return indexerDao;
     }
 
     @Override
     public ISearcherDAO getSearcher(String subDir) throws EntException {
-        ISearcherDAO searcherDao = null;
-        try {
-            Class searcherClass = Class.forName(this.getSearcherClassName());
-            searcherDao = (ISearcherDAO) searcherClass.newInstance();
-            searcherDao.init(this.getDirectory(subDir));
-            searcherDao.setTreeNodeManager(this.getCategoryManager());
-            searcherDao.setLangManager(this.getLangManager());
-        } catch (Throwable t) {
-            logger.error("Error creating new searcher", t);
-            throw new EntException("Error creating new searcher", t);
-        }
+        ISearcherDAO searcherDao = new SearcherDAO();
+        searcherDao.init(this.getDirectory(subDir));
+        searcherDao.setTreeNodeManager(this.getCategoryManager());
+        searcherDao.setLangManager(this.getLangManager());
         return searcherDao;
     }
 
@@ -152,22 +140,6 @@ public class SearchEngineDAOFactory implements ISearchEngineDAOFactory {
                 logger.debug("Deleted subfolder {}", subDirectory);
             }
         }
-    }
-
-    public String getIndexerClassName() {
-        return indexerClassName;
-    }
-
-    public void setIndexerClassName(String indexerClassName) {
-        this.indexerClassName = indexerClassName;
-    }
-
-    public String getSearcherClassName() {
-        return searcherClassName;
-    }
-
-    public void setSearcherClassName(String searcherClassName) {
-        this.searcherClassName = searcherClassName;
     }
 
     protected String getIndexDiskRootFolder() {

@@ -22,11 +22,7 @@ import org.entando.entando.ent.exception.EntException;
  * @author E.Santoboni
  */
 public interface ISearchEngineManager {
-	
-	public List<String> searchId(String sectionCode, 
-			String langCode, String word, Collection<String> allowedGroups) throws EntException;
-	/*
-	public List<String> searchId(String sectionCode, 
-			SearchEngineFilter[] filters, Collection<String> allowedGroups) throws ApsSystemException;
-	*/
+
+    List<String> searchId(String sectionCode,
+            String langCode, String word, Collection<String> allowedGroups) throws EntException;
 }

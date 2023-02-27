@@ -25,6 +25,7 @@
         <module>seo-plugin</module>
         <module>versioning-plugin</module>
         <module>contentscheduler-plugin</module>
+        <module>solr-plugin</module>
         <module>webapp</module>
     </modules>
 
@@ -191,6 +192,7 @@
         <junrar.version>7.4.1</junrar.version>
         <netty-common.version>4.1.77.Final</netty-common.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
+        <solr-solrj.version>8.11.1</solr-solrj.version>
     </properties>
     <issueManagement>
         <system>Github</system>
