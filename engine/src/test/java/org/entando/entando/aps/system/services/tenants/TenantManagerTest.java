@@ -13,6 +13,7 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -71,6 +72,21 @@ class TenantManagerTest {
             + "    \"customField2\": \"custom_value_2\""
             + "}]";
 
+    private String tenantWithPrimaryCodeConfigs="[{\n"
+            + "    \"tenantCode\": \"primary\",\n"
+            + "    \"kcEnabled\": true,\n"
+            + "    \"kcAuthUrl\": \"http://tenant2.test.nip.io/auth\",\n"
+            + "    \"kcRealm\": \"tenant2\",\n"
+            + "    \"kcClientId\": \"quickstart\",\n"
+            + "    \"kcClientSecret\": \"secret2\",\n"
+            + "    \"kcPublicClientId\": \"entando-web\",\n"
+            + "    \"kcSecureUris\": \"\",\n"
+            + "    \"kcDefaultAuthorizations\": \"\",\n"
+            + "    \"dbDriverClassName\": \"org.postgresql.Driver\",\n"
+            + "    \"dbUrl\": \"jdbc:postgresql://testDbServer:5432/tenantDb2\",\n"
+            + "    \"dbUsername\": \"db_user_1\",\n"
+            + "    \"dbPassword\": \"db_password_1\"\n"
+            + "}]\n";
 
     @Test
     void shouldAllOperationWorkFineWithConfigMapsWithCustomFields() throws Throwable {
@@ -110,7 +126,8 @@ class TenantManagerTest {
     @Test
     void shouldAllOperationWorkFineWithBadInput() throws Throwable {
         TenantManager tm = new TenantManager("[\"pippo\"pippo]", new ObjectMapper());
-        tm.refresh();
+        Assertions.catchThrowableOfType(() -> tm.refresh(), JsonMappingException.class);
+
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
         Assertions.assertThat(otc).isEmpty();
 
@@ -119,6 +136,22 @@ class TenantManagerTest {
 
         BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant_not_found");
         Assertions.assertThat(ds).isNull();
-
     }
+
+    @Test
+    void shouldInitThroExceptionWithTenantCodeWithValuePrimary() throws Throwable {
+        TenantManager tm = new TenantManager(tenantWithPrimaryCodeConfigs, new ObjectMapper());
+        RuntimeException ex = Assertions.catchThrowableOfType(() -> tm.refresh(), RuntimeException.class);
+        Assertions.assertThat(ex.getMessage()).isEqualTo("You cannot use 'primary' as tenant code");
+
+        Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
+        Assertions.assertThat(otc).isEmpty();
+
+        otc = tm.getTenantConfigByDomainPrefix("tenant1");
+        Assertions.assertThat(otc).isEmpty();
+
+        BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant_not_found");
+        Assertions.assertThat(ds).isNull();
+    }
+
 }

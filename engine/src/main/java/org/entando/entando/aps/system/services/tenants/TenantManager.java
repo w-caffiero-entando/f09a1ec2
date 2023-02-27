@@ -51,12 +51,7 @@ public class TenantManager extends AbstractService implements ITenantManager, In
 
     @Override
     public void init() throws Exception {
-        try {
-            this.initTenantsCodes();
-
-        } catch (Exception e) {
-            logger.error("Error extracting tenant configs", e);
-        }
+        this.initTenantsCodes();
     }
 
     @Override
@@ -131,6 +126,11 @@ public class TenantManager extends AbstractService implements ITenantManager, In
                     .stream()
                     .map(TenantConfig::new)
                     .collect(Collectors.toList());
+
+            list.stream().filter(tc -> PRIMARY_CODE.equalsIgnoreCase(tc.getTenantCode())).findFirst().ifPresent(tc -> {
+                logger.error("You cannot use 'primary' as tenant code");
+                throw new RuntimeException("You cannot use 'primary' as tenant code");
+            });
 
             tenantsMap = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
         }
