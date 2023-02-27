@@ -86,7 +86,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         CdsCreateResponseDto ret = new CdsCreateResponseDto();
         ret.setStatusOk(true);
@@ -122,7 +122,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
         ApsTenantApplicationUtils.setTenant("my-tenant");
 
         Assertions.assertThatThrownBy(
@@ -163,7 +163,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         CdsCreateResponseDto ret = new CdsCreateResponseDto();
         ret.setStatusOk(true);
@@ -195,7 +195,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
         ApsTenantApplicationUtils.setTenant("my-tenant");
 
         Assertions.assertThatThrownBy(
@@ -226,7 +226,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         ApsTenantApplicationUtils.setTenant("my-tenant");
 
@@ -244,7 +244,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         Mockito.when(cdsRemoteCaller.getFile(any(),
                 any(),
@@ -288,7 +288,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         Mockito.when(cdsRemoteCaller.getFile(eq(URI.create("http://my-server/tenant1/cms-resources/public/test-folder/test.txt")),
                 any(),
@@ -318,7 +318,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-tenant1-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         ApsTenantApplicationUtils.setTenant("my-tenant");
         String resourceUrl = cdsStorageManager.getResourceUrl(testFilePath,false);
@@ -338,7 +338,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-tenant1-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         ApsTenantApplicationUtils.setTenant("my-tenant");
 
@@ -355,7 +355,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-tenant1-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         ApsTenantApplicationUtils.setTenant("my-tenant");
 
@@ -386,7 +386,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-tenant1-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         ApsTenantApplicationUtils.setTenant("my-tenant");
 
@@ -422,7 +422,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-tenant1-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         ApsTenantApplicationUtils.setTenant("my-tenant");
 
@@ -462,7 +462,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         Mockito.when(cdsRemoteCaller.getFile(any(),
                 any(),
@@ -483,7 +483,7 @@ class CdsStorageManagerTest {
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
 
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
         Mockito.when(cdsRemoteCaller.getFile(any(),
                 any(),
                 eq(false))).thenReturn(Optional.ofNullable(new ByteArrayInputStream("text random".getBytes(StandardCharsets.UTF_8))));
@@ -513,7 +513,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         CdsCreateResponseDto ret = new CdsCreateResponseDto();
         ret.setStatusOk(true);
@@ -553,7 +553,7 @@ class CdsStorageManagerTest {
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
-        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(tc);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
         ApsTenantApplicationUtils.setTenant("my-tenant");
 

@@ -15,23 +15,14 @@ package org.entando.entando.aps.system.services.tenants;
 
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
+import org.entando.entando.web.tenant.model.TenantDto;
 
-public interface ITenantManager {
+public interface ITenantService {
 
-    String THREAD_LOCAL_TENANT_CODE = "threadLocal_tenantCode";
-    String PRIMARY_CODE = "primary";
+    TenantDto getCurrentTenant();
 
+    Optional<TenantDto> getTenant(String tenantCode);
 
-    boolean exists(String tenantCode);
+    List<TenantDto> getTenants();
 
-    List<String> getCodes();
-
-    DataSource getDatasource(String tenantCode);
-
-    Optional<TenantConfig> getConfig(String tenantCode);
-
-    Optional<TenantConfig> getTenantConfigByDomainPrefix(String domainPrefix);
-
-    String getTenantCodeByDomainPrefix(String domainPrefix);
 }

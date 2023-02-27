@@ -296,7 +296,7 @@ public class CdsStorageManager implements IStorageManager {
     private Optional<TenantConfig> getTenantConfig() {
         return ApsTenantApplicationUtils.getTenant()
                 .filter(StringUtils::isNotBlank)
-                .map(tenantManager::getConfig);
+                .flatMap(tenantManager::getConfig);
     }
     
 

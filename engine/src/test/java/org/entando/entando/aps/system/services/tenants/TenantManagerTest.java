@@ -76,8 +76,9 @@ class TenantManagerTest {
     void shouldAllOperationWorkFineWithConfigMapsWithCustomFields() throws Throwable {
         TenantManager tm = new TenantManager(tenantConfigsWithCustomFields, new ObjectMapper());
         tm.refresh();
-        TenantConfig tc = tm.getConfig("TE_nant1");
-        Assertions.assertThat(tc).isNotNull();
+        Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
+        Assertions.assertThat(otc).isNotEmpty();
+        TenantConfig tc = otc.get();
         Optional<String> customValue1 = tc.getProperty("customField1");
         Optional<String> customValue2 = tc.getProperty("customField2");
         Optional<String> customValue3 = tc.getProperty("customField3");
@@ -89,9 +90,13 @@ class TenantManagerTest {
     void shouldAllOperationWorkFineWithCorrectInput() throws Throwable {
         TenantManager tm = new TenantManager(tenantConfigs, new ObjectMapper());
         tm.refresh();
-        TenantConfig tc = tm.getConfig("TE_nant1");
+        Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
+        Assertions.assertThat(otc).isNotEmpty();
+        TenantConfig tc = otc.get();
         Assertions.assertThat(tc.isKcEnabled()).isTrue();
-        tc = tm.getTenantConfigByDomainPrefix("tenant1");
+        otc = tm.getTenantConfigByDomainPrefix("tenant1");
+        Assertions.assertThat(otc).isNotEmpty();
+        tc = otc.get();
         Assertions.assertThat(tc.getDomainPrefix()).isEqualTo("tenant1");
         BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant1");
         Assertions.assertThat(ds.getDriverClassName()).isEqualTo("org.postgresql.Driver");
@@ -106,11 +111,11 @@ class TenantManagerTest {
     void shouldAllOperationWorkFineWithBadInput() throws Throwable {
         TenantManager tm = new TenantManager("[\"pippo\"pippo]", new ObjectMapper());
         tm.refresh();
-        TenantConfig tc = tm.getConfig("TE_nant1");
-        Assertions.assertThat(tc).isNull();
+        Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
+        Assertions.assertThat(otc).isEmpty();
 
-        tc = tm.getTenantConfigByDomainPrefix("tenant1");
-        Assertions.assertThat(tc).isNull();
+        otc = tm.getTenantConfigByDomainPrefix("tenant1");
+        Assertions.assertThat(otc).isEmpty();
 
         BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant_not_found");
         Assertions.assertThat(ds).isNull();
