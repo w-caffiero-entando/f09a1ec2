@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import java.util.Calendar;
@@ -28,14 +29,19 @@ import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
 
 import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
 import com.agiletec.aps.system.common.entity.model.ApsEntityRecord;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
 import com.agiletec.aps.system.common.entity.model.attribute.DateAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoTextAttribute;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.entando.entando.aps.system.services.cache.CacheInfoManager;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -268,9 +274,80 @@ class UserProfileManagerIntegrationTest extends BaseTestCase {
             assertEquals(order[i], record.getId());
         }
     }
-
+    
+    @Test
+    void testLoadRoles() throws Exception {
+        List<AttributeRole> roles = this.profileManager.getAttributeRoles();
+        assertEquals(8, roles.size());
+        AttributeRole role1 = this.profileManager.getAttributeRole("userprofile:surname");
+        assertNotNull(role1);
+        assertEquals(1, role1.getAllowedAttributeTypes().size());
+        assertEquals("Monotext", role1.getAllowedAttributeTypes().get(0));
+        assertFalse(role1.isLocal());
+        
+        AttributeRole localRole = this.profileManager.getAttributeRole("userprofile:role1");
+        assertNotNull(localRole);
+        List<String> allowedTypes = localRole.getAllowedAttributeTypes();
+        assertEquals(3, allowedTypes.size());
+        assertTrue(allowedTypes.contains("Text") && allowedTypes.contains("Monotext") && allowedTypes.contains("Longtext"));
+        assertTrue(localRole.isLocal());
+    }
+    
+    @Test
+    void testAddUpdateRole() throws Exception {
+        List<AttributeRole> roles = this.profileManager.getAttributeRoles();
+        Map<String, AttributeRole> initMap = roles.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.clone()));
+        Map<String, AttributeRole> map = roles.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.clone()));
+        int initSize = roles.size();
+        String testRole1 = "testrole1";
+        String testRole2 = "testrole2";
+        assertNull(this.profileManager.getAttributeRole(testRole1));
+        try {
+            AttributeRole newRole1 = new AttributeRole(testRole1, "Description", Arrays.asList("Text", "Monotext"));
+            map.put(testRole1, newRole1);
+            ((IEntityTypesConfigurer) this.profileManager).updateRoleAttributes(map);
+            
+            roles = this.profileManager.getAttributeRoles();
+            assertEquals(initSize + 1, roles.size());
+            AttributeRole extractedRole1 = this.profileManager.getAttributeRole(testRole1);
+            assertNotNull(extractedRole1);
+            assertEquals("Description", extractedRole1.getDescription());
+            assertEquals(2, extractedRole1.getAllowedAttributeTypes().size());
+            
+            AttributeRole newRole2 = new AttributeRole(testRole2, "Description 2", Arrays.asList("Text", "Monotext", "Image"));
+            map.put(testRole2, newRole2);
+            newRole1 = new AttributeRole(testRole1, "Description modified", Arrays.asList("Enumerator"));
+            map.put(testRole1, newRole1);
+            map.remove("userprofile:surname");
+            assertNull(map.get("userprofile:surname"));
+            ((IEntityTypesConfigurer) this.profileManager).updateRoleAttributes(map);
+            
+            roles = this.profileManager.getAttributeRoles();
+            assertEquals(initSize + 2, roles.size());
+            extractedRole1 = this.profileManager.getAttributeRole(testRole1);
+            assertNotNull(extractedRole1);
+            assertEquals("Description modified", extractedRole1.getDescription());
+            assertEquals(1, extractedRole1.getAllowedAttributeTypes().size());
+            assertEquals("Enumerator", extractedRole1.getAllowedAttributeTypes().get(0));
+            assertNotNull(this.profileManager.getAttributeRole(testRole2));
+            assertNotNull(this.profileManager.getAttributeRole("userprofile:surname"));
+            
+            map.remove(testRole2);
+            ((IEntityTypesConfigurer) this.profileManager).updateRoleAttributes(map);
+            roles = this.profileManager.getAttributeRoles();
+            assertEquals(initSize + 1, roles.size());
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            ((IEntityTypesConfigurer) this.profileManager).updateRoleAttributes(initMap);
+            assertNull(this.profileManager.getAttributeRole(testRole1));
+            assertNull(this.profileManager.getAttributeRole(testRole2));
+        }
+    }
+    
+    
     @BeforeEach
-    private void init() throws Exception {
+    void init() throws Exception {
         try {
             this.profileManager = (IUserProfileManager) this.getService(SystemConstants.USER_PROFILE_MANAGER);
             this.userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);

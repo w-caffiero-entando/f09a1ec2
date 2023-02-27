@@ -69,8 +69,8 @@ import org.xml.sax.SAXException;
  *
  * @author E.Santoboni
  */
-public abstract class ApsEntityManager extends AbstractService
-                                       implements IEntityManager, IEntityTypesConfigurer, ReloadingEntitiesReferencesObserver {
+public abstract class ApsEntityManager extends AbstractService 
+        implements IEntityManager, IEntityTypesConfigurer, ReloadingEntitiesReferencesObserver {
 
     /**
      * Prefix of the thread used for references reloading.
@@ -107,10 +107,14 @@ public abstract class ApsEntityManager extends AbstractService
     public void init() throws Exception {
         this.entityDom.setRootElementName(this.getXmlAttributeRootElementName());
         this.getCacheWrapper().initCache(super.getName());
+        this.refreshAttributeRoles();
+        logger.info("{} : inizializated", this.getName());
+    }
+    
+    protected void refreshAttributeRoles() {
         AttributeRolesLoader loader = new AttributeRolesLoader();
         Map<String, AttributeRole> attributeRoles = loader.extractAttributeRoles(this.getRolesConfigItemName(), this.getAttributeRolesFileName(), super.getBeanFactory(), this);
         this.getCacheWrapper().updateRoles(attributeRoles);
-        logger.info("{} : inizializated", this.getName());
     }
 
     @Override
@@ -148,6 +152,16 @@ public abstract class ApsEntityManager extends AbstractService
     @Override
     public AttributeRole getAttributeRole(String roleName) {
         return this.getCacheWrapper().getRole(roleName);
+    }
+
+    @Override
+    public void updateRoleAttributes(Map<String, AttributeRole> roles) throws EntException {
+        List<String> defaultRoles = this.getAttributeRoles().stream().filter(a -> !a.isLocal()).map(e -> e.getName()).collect(Collectors.toList());
+        // save only local roles
+        Map<String, AttributeRole> rolesToSave = roles.entrySet()
+                .stream().filter(e -> !defaultRoles.contains(e.getKey())).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().clone()));
+        this.getEntityTypeFactory().updateAttributeRoles(this.getRolesConfigItemName(), rolesToSave);
+        this.refreshAttributeRoles();
     }
 
     /**

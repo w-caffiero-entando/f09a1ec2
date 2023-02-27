@@ -89,6 +89,7 @@ public class AttributeRolesLoader {
 					defaultCollection.put(role.getName(), role);
 					_logger.info("Added new attribute role : {} - {}",role.getName(), role.getDescription());
 				}
+                role.setLocal(true);
 			}
 		} catch (EntException | BeansException e) {
 			_logger.error("Error loading local attribute Roles", e);

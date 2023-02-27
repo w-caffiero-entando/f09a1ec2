@@ -20,6 +20,7 @@
     <bean id="UserProfileManager" class="org.entando.entando.aps.system.services.userprofile.UserProfileManager" parent="abstractEntityManager" >
         <property name="entityClassName" value="org.entando.entando.aps.system.services.userprofile.model.UserProfile"/>
         <property name="configItemName" value="userProfileTypes" />
+        <property name="rolesConfigItemName" value="userProfileTypesRoles" />
         <property name="xmlAttributeRootElementName" value="profile" />
         <property name="entityTypeDom" ref="UserProfileEntityTypeDom" />
         <property name="profileDAO" >

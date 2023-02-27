@@ -23,12 +23,21 @@ import org.jdom.Element;
 
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
 import org.entando.entando.ent.exception.EntException;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Dom class parser of Attribute Role definitions.
  * @author E.Santoboni
  */
 public class AttributeRoleDOM extends AbstractAttributeSupportObjectDOM {
+    
+    public static final String ROOT_ELEMENT = "roles";
+	public static final String ROLE_ELEMENT = "role";
+	public static final String NAME_ELEMENT = "name";
+	public static final String DESCRIPTION_ELEMENT = "description";
+	public static final String ALLOWED_TYPES_ELEMENT = "allowedTypes";
+	public static final String FORM_FIELD_TYPE_ELEMENT = "formFieldType";
 	
 	public Map<String, AttributeRole> extractRoles(String xml, String definitionPath) throws EntException {
 		this.validate(xml, definitionPath);
@@ -43,16 +52,16 @@ public class AttributeRoleDOM extends AbstractAttributeSupportObjectDOM {
 	
 	private Map<String, AttributeRole> extractRoles(Document document) {
 		Map<String, AttributeRole> roles = new HashMap<>();
-		List<Element> roleElements = document.getRootElement().getChildren("role");
+		List<Element> roleElements = document.getRootElement().getChildren(ROLE_ELEMENT);
 		for (int i=0; i<roleElements.size(); i++) {
 			Element roleElement = roleElements.get(i);
-			String name = roleElement.getChildText("name");
-			String description = roleElement.getChildText("description");
-			String allowedTypesCSV = roleElement.getChildText("allowedTypes");
+			String name = roleElement.getChildText(NAME_ELEMENT);
+			String description = roleElement.getChildText(DESCRIPTION_ELEMENT);
+			String allowedTypesCSV = roleElement.getChildText(ALLOWED_TYPES_ELEMENT);
 			String[] array = allowedTypesCSV.split(",");
 			List<String> allowedTypes = Arrays.asList(array);
 			AttributeRole role = new AttributeRole(name, description, allowedTypes);
-			String formFieldTypeText = roleElement.getChildText("formFieldType");
+			String formFieldTypeText = roleElement.getChildText(FORM_FIELD_TYPE_ELEMENT);
 			if (null != formFieldTypeText) {
 				role.setFormFieldType(Enum.valueOf(AttributeRole.FormFieldTypes.class, formFieldTypeText.toUpperCase()));
 			}
@@ -60,5 +69,32 @@ public class AttributeRoleDOM extends AbstractAttributeSupportObjectDOM {
 		}
 		return roles;
 	}
-	
+    
+    public String getXml(Map<String, AttributeRole> roles) {
+        XMLOutputter out = new XMLOutputter();
+        Document document = new Document();
+        Element rootElement = new Element(ROOT_ELEMENT);
+        document.setRootElement(rootElement);
+        roles.values().stream().forEach(r -> {
+            Element roleElement = new Element(ROLE_ELEMENT);
+            rootElement.addContent(roleElement);
+            this.addElement(NAME_ELEMENT, r.getName(), roleElement);
+            this.addElement(DESCRIPTION_ELEMENT, r.getDescription(), roleElement);
+            this.addElement(ALLOWED_TYPES_ELEMENT, String.join(",", r.getAllowedAttributeTypes()), roleElement);
+            if (null != r.getFormFieldType()) {
+                this.addElement(FORM_FIELD_TYPE_ELEMENT, r.getFormFieldType().toString(), roleElement);
+            }
+        });
+        Format format = Format.getPrettyFormat();
+        format.setIndent("\t");
+        out.setFormat(format);
+        return out.outputString(document);
+    }
+    
+    private void addElement(String name, String text, Element parent) {
+        Element newElement = new Element(name);
+        newElement.setText(text);
+        parent.addContent(newElement);
+    }
+    
 }

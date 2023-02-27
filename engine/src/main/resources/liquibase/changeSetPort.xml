@@ -19,4 +19,6 @@
     
     <include file="port/20230119000000_freemarker_for_parallel.xml" relativeToChangelogFile="true" />
 
+    <include file="port/20230224000000_default_profile_roles.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>
