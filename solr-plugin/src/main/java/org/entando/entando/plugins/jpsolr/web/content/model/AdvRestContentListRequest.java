@@ -241,30 +241,6 @@ public class AdvRestContentListRequest extends RestEntityListRequest {
         return newFilters.toArray(new SolrFilter[newFilters.size()]);
     }
 
-    /**
-     * Set the filters
-     *
-     * @param filters the filters to set.
-     * @deprecated Wrong name for an array, use setFilters method
-     */
-    @Deprecated
-    @Override
-    public void setFilter(Filter[] filters) {
-        this.setFilters(filters);
-    }
-
-    /**
-     * Return the filters.
-     *
-     * @return the filters.
-     * @deprecated Wrong name for an array, use getFilters method.
-     */
-    @Deprecated
-    @Override
-    public Filter[] getFilter() {
-        return this.getFilters();
-    }
-
     public SolrFilter[][] getDoubleFilters() {
         return doubleFilters;
     }

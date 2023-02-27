@@ -28,13 +28,29 @@ class PageURLTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(reqCtx.getRequest()).thenReturn(request);
         Mockito.when(request.getParameterMap()).thenReturn(
-                Map.of("param1", new String[]{}, "param2", new String[]{})
+                Map.of("param1", new String[]{}, "param2", new String[]{}, "param3", new String[]{})
         );
         Mockito.when(request.getParameter("param2")).thenReturn("value2");
+        Mockito.when(request.getParameter("param3")).thenReturn("value3");
 
         pageURL.setParamRepeat(List.of("param1"));
 
-        Assertions.assertEquals(1, pageURL.getParams().size());
+        Assertions.assertEquals(2, pageURL.getParams().size());
         Assertions.assertEquals("value2", pageURL.getParams().get("param2"));
+        Assertions.assertEquals("value3", pageURL.getParams().get("param3"));
+    }
+
+    @Test
+    void shouldNotAddParamWithoutName() {
+        pageURL.addParam(null, "value1");
+        Assertions.assertNull(pageURL.getParams());
+    }
+
+    @Test
+    void shouldHandleNullParametersMap() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(reqCtx.getRequest()).thenReturn(request);
+        pageURL.setParamRepeat();
+        Assertions.assertNull(pageURL.getParams());
     }
 }
