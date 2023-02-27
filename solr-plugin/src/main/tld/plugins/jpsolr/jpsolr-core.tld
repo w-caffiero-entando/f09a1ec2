@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
+    <description><![CDATA["jpfacetnav core tag library"]]></description>
+    <display-name>jpsolr core tag library</display-name>
+    <tlib-version>2.3</tlib-version>
+    <short-name>wpso</short-name>
+    <uri>/jpsolr-core</uri>
+
+    <tag>
+        <description><![CDATA[Include the content only if Solr is active]]></description>
+        <name>if-active</name>
+        <tag-class>org.entando.entando.plugins.jpsolr.apsadmin.tags.IfSolrActiveTag</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+</taglib>
