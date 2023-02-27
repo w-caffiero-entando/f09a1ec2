@@ -58,7 +58,6 @@ public class EntityManagerCacheWrapper extends AbstractGenericCacheWrapper<Attri
 
     @Override
     public void updateRoles(Map<String, AttributeRole> roles) {
-        Cache cache = this.getCache();
         super.insertAndCleanCache(super.getCache(), roles);
     }
 
