@@ -47,7 +47,7 @@ public class AttributeRoleDOM extends AbstractAttributeSupportObjectDOM {
 	
 	@Override
 	protected String getSchemaFileName() {
-		return "attributeRoles-4.0.xsd";
+		return "attributeRoles-7.0.xsd";
 	}
 	
 	private Map<String, AttributeRole> extractRoles(Document document) {
