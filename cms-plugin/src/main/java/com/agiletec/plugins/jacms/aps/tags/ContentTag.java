@@ -21,10 +21,16 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.RequestContext;
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.widget.IContentViewerHelper;
 import com.agiletec.plugins.jacms.aps.system.services.dispenser.ContentRenderizationInfo;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Displays the content given its ID.
@@ -52,8 +58,11 @@ public class ContentTag extends TagSupport {
             } else {
                 this.pageContext.getOut().print(renderedContent);
             }
-            if (null != renderInfo && null != this.getAttributeValuesByRoleVar()) {
-                this.pageContext.setAttribute(this.getAttributeValuesByRoleVar(), renderInfo.getAttributeValues());
+            if (null != renderInfo) {
+                this.manageAttributeWithRoles(renderInfo, reqCtx);
+                if (null != this.getAttributeValuesByRoleVar()) {
+                    this.pageContext.setAttribute(this.getAttributeValuesByRoleVar(), renderInfo.getAttributeValues());
+                }
             }
         } catch (Throwable t) {
             _logger.error("error in doStartTag", t);
@@ -61,7 +70,23 @@ public class ContentTag extends TagSupport {
         }
         return EVAL_PAGE;
     }
-
+    
+    protected void manageAttributeWithRoles(ContentRenderizationInfo renderInfo, RequestContext reqCtx) {
+        if (null == renderInfo.getAttributeValues()) {
+            return;
+        }
+        IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+        Integer currentFrame = (Integer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
+        IPageModelManager pageModelManager = ApsWebApplicationUtils.getBean(IPageModelManager.class, this.pageContext);
+        PageModel currentModel = pageModelManager.getPageModel(page.getMetadata().getModelCode());
+        if (null != currentFrame && currentFrame == currentModel.getMainFrame()) {
+            Map<String, Object> attributeValues = renderInfo.getAttributeValues();
+            attributeValues.entrySet().stream().forEach(e -> {
+                reqCtx.addExtraParam(JacmsSystemConstants.ATTRIBUTE_WITH_ROLE_CTX_PREFIX + e.getKey(), (Serializable) e.getValue());
+            });
+        }
+    }
+    
     @Override
     public void release() {
         this.setContentId(null);

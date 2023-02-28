@@ -140,5 +140,7 @@ public interface JacmsSystemConstants {
     public static final String SEARCH_ENGINE_EVENT_CHANNEL = "cms-searchengine";
     
     public static final String RESOURCE_EVENT_CHANNEL = "cms-resource";
+    
+    public static final String ATTRIBUTE_WITH_ROLE_CTX_PREFIX = "ctx-attribute-";
 
 }

@@ -32,14 +32,20 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.PageMetadata;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
+import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
+import java.io.Serializable;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.tags.ExtendedTagSupport;
+import org.entando.entando.plugins.jpseo.aps.system.services.metatag.Metatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 
@@ -69,38 +75,70 @@ public class SeoMetatagTag extends ExtendedTagSupport {
                 ApsProperties friendlyCodes = ((SeoPageMetadata) pageMetadata).getFriendlyCodes();
                 this.setSeoValue(friendlyCodes, currentLang);
             } else {
-                Map<String, Map<String, PageMetatag>> complexParameters = ((SeoPageMetadata) pageMetadata).getComplexParameters();
-                if (null != complexParameters) {
-                    Map<String, PageMetatag> mapvalue = complexParameters.get(currentLang.getCode());
-                    Map<String, PageMetatag> defaultMapvalue = complexParameters.get("default");
-                    if (null == defaultMapvalue) {
-                        ILangManager langManager = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);
-                        Lang defaultLang = langManager.getDefaultLang();
-                        defaultMapvalue = complexParameters.get(defaultLang.getCode());
-                    }
-                    if (null != mapvalue) {
-                        PageMetatag pageMetatag = mapvalue.get(this.getKey());
-                        if (null != pageMetatag && !pageMetatag.isUseDefaultLangValue() && !StringUtils.isBlank(pageMetatag.getValue())) {
-                            this.setValue(pageMetatag.getValue());
-                        }
-                    }
-                    if (null == this.getValue() && null != defaultMapvalue) {
-                        PageMetatag pageMetatag = defaultMapvalue.get(this.getKey());
-                        if (null != pageMetatag && !StringUtils.isBlank(pageMetatag.getValue())) {
-                            this.setValue(pageMetatag.getValue());
-                        }
-                    }
+                ILangManager langManager = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);
+                IContentManager contentManager = (IContentManager) ApsWebApplicationUtils.getBean(JacmsSystemConstants.CONTENT_MANAGER, this.pageContext);
+                List<AttributeRole> roles = contentManager.getAttributeRoles();
+                AttributeRole role = roles.stream().filter(r -> r.getName().equals(this.getKey())).findFirst().orElse(null);
+                if (null != role) {
+                    this.manageAttributeWithRole(currentLang, langManager, reqCtx);
+                } else {
+                    this.manageComplexParameters(currentLang, langManager, pageMetadata);
                 }
             }
             if (null != this.getValue()) {
                 this.evalValue();
             }
-        } catch (Throwable t) {
-            _logger.error("error in doStartTag", t);
-            throw new JspException("Error during tag initialization ", t);
+        } catch (Exception t) {
+            _logger.error("error in doEndTag", t);
+            throw new JspException("Error in doEndTag", t);
         }
         this.release();
         return EVAL_PAGE;
+    }
+    
+    protected void manageAttributeWithRole(Lang currentLang, ILangManager langManager, RequestContext reqCtx) throws Exception {
+        Serializable value = (Serializable) reqCtx.getExtraParam(JacmsSystemConstants.ATTRIBUTE_WITH_ROLE_CTX_PREFIX + this.getKey());
+        if (null != value) {
+            if (value instanceof Map) {
+                Object elementValue = ((Map) value).get(currentLang.getCode());
+                if (null == elementValue) {
+                    Lang defaultLang = langManager.getDefaultLang();
+                    elementValue = ((Map) value).get(defaultLang.getCode());
+                }
+                if (null != elementValue) {
+                    this.setValue(elementValue);
+                }
+            } else {
+                this.setValue(value);
+            }
+            this.setAttributeName(Metatag.ATTRIBUTE_NAME_NAME);
+        }
+    }
+    
+    protected void manageComplexParameters(Lang currentLang, ILangManager langManager, PageMetadata pageMetadata) throws Exception {
+        Map<String, Map<String, PageMetatag>> complexParameters = ((SeoPageMetadata) pageMetadata).getComplexParameters();
+        if (null != complexParameters) {
+            Map<String, PageMetatag> mapvalue = complexParameters.get(currentLang.getCode());
+            Map<String, PageMetatag> defaultMapvalue = complexParameters.get("default");
+            if (null == defaultMapvalue) {
+                Lang defaultLang = langManager.getDefaultLang();
+                defaultMapvalue = complexParameters.get(defaultLang.getCode());
+            }
+            if (null != mapvalue) {
+                PageMetatag pageMetatag = mapvalue.get(this.getKey());
+                if (null != pageMetatag && !pageMetatag.isUseDefaultLangValue() && !StringUtils.isBlank(pageMetatag.getValue())) {
+                    this.setValue(pageMetatag.getValue());
+                    this.setAttributeName(pageMetatag.getKeyAttribute());
+                }
+            }
+            if (null == this.getValue() && null != defaultMapvalue) {
+                PageMetatag pageMetatag = defaultMapvalue.get(this.getKey());
+                if (null != pageMetatag && !StringUtils.isBlank(pageMetatag.getValue())) {
+                    this.setValue(pageMetatag.getValue());
+                    this.setAttributeName(pageMetatag.getKeyAttribute());
+                }
+            }
+        }
     }
 
     protected void setSeoValue(ApsProperties properties, Lang currentLang) {
@@ -119,6 +157,9 @@ public class SeoMetatagTag extends ExtendedTagSupport {
     protected void evalValue() throws JspException {
         if (this.getVar() != null) {
             this.pageContext.setAttribute(this.getVar(), this.getValue());
+            if (null != this.getAttributeName()) {
+                this.pageContext.setAttribute(this.getKey()+"_attribute", this.getAttributeName());
+            }
         } else {
             try {
                 if (this.getEscapeXml()) {
@@ -138,6 +179,7 @@ public class SeoMetatagTag extends ExtendedTagSupport {
         this._key = null;
         this._var = null;
         this._value = null;
+        this.attributeName = null;
         super.setEscapeXml(true);
     }
 
@@ -157,17 +199,26 @@ public class SeoMetatagTag extends ExtendedTagSupport {
         return _var;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return _value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Object value) {
         this._value = value;
+    }
+
+    public String getAttributeName() {
+        return attributeName;
+    }
+
+    public void setAttributeName(String attributeName) {
+        this.attributeName = attributeName;
     }
 
     private String _key;
 
     private String _var;
-    private String _value;
+    private Object _value;
+    private String attributeName;
 
 }

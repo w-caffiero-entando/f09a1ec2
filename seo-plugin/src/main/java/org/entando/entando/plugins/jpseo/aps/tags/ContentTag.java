@@ -61,6 +61,7 @@ public class ContentTag extends com.agiletec.plugins.jacms.aps.tags.ContentTag {
 				this.pageContext.getOut().print(renderedContent);
 			}
 			if (null != renderInfo) {
+                this.manageAttributeWithRoles(renderInfo, reqCtx);
 				if (null != this.getAttributeValuesByRoleVar()) {
 					this.pageContext.setAttribute(this.getAttributeValuesByRoleVar(), renderInfo.getAttributeValues());
 				}
@@ -94,7 +95,7 @@ public class ContentTag extends com.agiletec.plugins.jacms.aps.tags.ContentTag {
 	
 	/**
 	 * Specify if the extra descriptions will be insert into Request Context.
-	 * @param publishExtraTitle The property to set.
+	 * @param publishExtraDescription The property to set.
 	 */
 	public void setPublishExtraDescription(boolean publishExtraDescription) {
 		this._publishExtraDescription = publishExtraDescription;
