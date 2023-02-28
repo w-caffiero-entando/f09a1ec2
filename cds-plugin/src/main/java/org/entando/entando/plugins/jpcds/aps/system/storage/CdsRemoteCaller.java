@@ -13,6 +13,8 @@
  */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
+import static org.entando.entando.aps.system.services.tenants.ITenantManager.PRIMARY_CODE;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
@@ -53,7 +55,6 @@ public class CdsRemoteCaller  {
     private static final Logger logger = LoggerFactory.getLogger(CdsRemoteCaller.class);
     private static final String REST_ERROR_MSG = "Invalid operation '%s', response status:'%s' for url:'%s'";
     private static final String GENERIC_REST_ERROR_MSG = "Generic error in a rest call for url:'%s'";
-    private static final String PRIMARY_CODE = "PRIMARY_CODE";
     private static final String CDS_RETURN_STATE_OK = "Ok";
     private final RestTemplate restTemplate;
     private final RestTemplate restTemplateWithRedirect;

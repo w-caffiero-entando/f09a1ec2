@@ -119,6 +119,6 @@ public class KeycloakConfiguration {
     private Optional<TenantConfig> getCurrentConfig() {
         return ApsTenantApplicationUtils.getTenant()
                 .filter(StringUtils::isNotBlank)
-                .map(tenantManager::getConfig);
+                .flatMap(tenantManager::getConfig);
     }
 }

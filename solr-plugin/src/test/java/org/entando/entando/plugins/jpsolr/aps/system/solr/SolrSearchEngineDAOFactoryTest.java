@@ -76,6 +76,6 @@ class SolrSearchEngineDAOFactoryTest {
         TenantConfig tenantConfig = Mockito.mock(TenantConfig.class);
         Mockito.when(tenantConfig.getProperty("solrAddress")).thenReturn(Optional.of("http://localhost:9999/solr"));
         Mockito.when(tenantConfig.getProperty("solrCore")).thenReturn(Optional.of(TENANT_1));
-        Mockito.when(tenantManager.getConfig(TENANT_1)).thenReturn(tenantConfig);
+        Mockito.when(tenantManager.getConfig(TENANT_1)).thenReturn(Optional.of(tenantConfig));
     }
 }

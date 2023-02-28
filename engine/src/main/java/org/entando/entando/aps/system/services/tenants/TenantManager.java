@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -50,12 +51,7 @@ public class TenantManager extends AbstractService implements ITenantManager, In
 
     @Override
     public void init() throws Exception {
-        try {
-            this.initTenantsCodes();
-
-        } catch (Exception e) {
-            logger.error("Error extracting tenant configs", e);
-        }
+        this.initTenantsCodes();
     }
 
     @Override
@@ -106,7 +102,7 @@ public class TenantManager extends AbstractService implements ITenantManager, In
     }
 
     @Override
-    public TenantConfig getTenantConfigByDomainPrefix(String domainPrefix) {
+    public Optional<TenantConfig> getTenantConfigByDomainPrefix(String domainPrefix) {
         return this.getConfig(this.getTenantCodeByDomainPrefix(domainPrefix));
     }
 
@@ -116,8 +112,8 @@ public class TenantManager extends AbstractService implements ITenantManager, In
     }
 
     @Override
-    public TenantConfig getConfig(String tenantCode) {
-        return tenantsMap.get(tenantCode);
+    public Optional<TenantConfig> getConfig(String tenantCode) {
+        return Optional.ofNullable(tenantsMap.get(tenantCode));
     }
 
     private Map<String, DataSource> getDataSources() {
@@ -131,26 +127,32 @@ public class TenantManager extends AbstractService implements ITenantManager, In
                     .map(TenantConfig::new)
                     .collect(Collectors.toList());
 
+            list.stream().filter(tc -> PRIMARY_CODE.equalsIgnoreCase(tc.getTenantCode())).findFirst().ifPresent(tc -> {
+                logger.error("You cannot use 'primary' as tenant code");
+                throw new RuntimeException("You cannot use 'primary' as tenant code");
+            });
+
             tenantsMap = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
         }
     }
 
     private BasicDataSource createDataSource(String tenantCode){
-        TenantConfig config = this.getConfig(tenantCode);
-        if (null == config) {
+        return getConfig(tenantCode).map(config -> {
+                BasicDataSource basicDataSource = new BasicDataSource();
+                basicDataSource.setDriverClassName(config.getDbDriverClassName());
+                basicDataSource.setUsername(config.getDbUsername());
+                basicDataSource.setPassword(config.getDbPassword());
+                basicDataSource.setUrl(config.getDbUrl());
+                basicDataSource.setMaxTotal(config.getMaxTotal());
+                basicDataSource.setMaxIdle(config.getMaxIdle());
+                basicDataSource.setMaxWaitMillis(config.getMaxWaitMillis());
+                basicDataSource.setInitialSize(config.getInitialSize());
+                return basicDataSource;
+        }).orElseGet(() -> {
             logger.warn("No tenant for code '{}'", tenantCode);
             return null;
-        }
-        BasicDataSource basicDataSource = new BasicDataSource();
-        basicDataSource.setDriverClassName(config.getDbDriverClassName());
-        basicDataSource.setUsername(config.getDbUsername());
-        basicDataSource.setPassword(config.getDbPassword());
-        basicDataSource.setUrl(config.getDbUrl());
-        basicDataSource.setMaxTotal(config.getMaxTotal());
-        basicDataSource.setMaxIdle(config.getMaxIdle());
-        basicDataSource.setMaxWaitMillis(config.getMaxWaitMillis());
-        basicDataSource.setInitialSize(config.getInitialSize());
-        return basicDataSource;
+        });
+
     }
 
     @Override
