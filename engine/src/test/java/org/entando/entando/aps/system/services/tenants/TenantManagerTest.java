@@ -104,6 +104,7 @@ class TenantManagerTest {
     }
     @Test
     void shouldAllOperationWorkFineWithCorrectInput() throws Throwable {
+
         TenantManager tm = new TenantManager(tenantConfigs, new ObjectMapper());
         tm.refresh();
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");

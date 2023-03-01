@@ -93,7 +93,6 @@ public class TenantManager extends AbstractService implements ITenantManager, In
                 .map(tc -> tc.getTenantCode())
                 .filter(StringUtils::isNotBlank)
                 .findFirst()
-                //FIXME must be possibile code == fqdn ???
                 .orElse(getCodes().stream().filter(code -> StringUtils.equals(code, domain)).findFirst().orElse(null));
         if(logger.isDebugEnabled()) {
             logger.debug("From domain:'{}' retrieved tenantCode:'{}' from codes:'{}'",

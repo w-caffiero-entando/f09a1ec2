@@ -13,8 +13,6 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
