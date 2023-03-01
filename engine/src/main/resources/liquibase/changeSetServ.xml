@@ -15,4 +15,6 @@
 
     <changeSet id="00000000000001_dataServ_restore" author="entando" context="restore" />
 
+    <include file="serv/20230228000000_unused_permission.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>
