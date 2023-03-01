@@ -25,6 +25,7 @@ class TenantManagerTest {
     private String tenantConfigs="[{\n"
             + "    \"tenantCode\": \"TE_nant1\",\n"
             + "    \"kcEnabled\": true,\n"
+            + "    \"fqdns\": \"tenant1.com,tenant2.com\",\n"
             + "    \"kcAuthUrl\": \"http://tenant1.test.nip.io/auth\",\n"
             + "    \"kcRealm\": \"tenant1\",\n"
             + "    \"kcClientId\": \"quickstart\",\n"
@@ -35,8 +36,7 @@ class TenantManagerTest {
             + "    \"dbDriverClassName\": \"org.postgresql.Driver\",\n"
             + "    \"dbUrl\": \"jdbc:postgresql://testDbServer:5432/tenantDb1\",\n"
             + "    \"dbUsername\": \"db_user_2\",\n"
-            + "    \"dbPassword\": \"db_password_2\",\n"
-            + "    \"domainPrefix\": \"tenant1\"\n"
+            + "    \"dbPassword\": \"db_password_2\"\n"
             + "}, {\n"
             + "    \"tenantCode\": \"tenant2\",\n"
             + "    \"kcEnabled\": true,\n"
@@ -67,7 +67,7 @@ class TenantManagerTest {
             + "    \"dbUrl\": \"jdbc:postgresql://testDbServer:5432/tenantDb1\",\n"
             + "    \"dbUsername\": \"db_user_2\",\n"
             + "    \"dbPassword\": \"db_password_2\",\n"
-            + "    \"domainPrefix\": \"tenant1\"\n,"
+            + "    \"fqdns\": \"tenant1.com\"\n,"
             + "    \"customField1\": \"custom_value_1\"\n,"
             + "    \"customField2\": \"custom_value_2\""
             + "}]";
@@ -110,10 +110,10 @@ class TenantManagerTest {
         Assertions.assertThat(otc).isNotEmpty();
         TenantConfig tc = otc.get();
         Assertions.assertThat(tc.isKcEnabled()).isTrue();
-        otc = tm.getTenantConfigByDomainPrefix("tenant1");
+        otc = tm.getTenantConfigByDomain("tenant1.com");
         Assertions.assertThat(otc).isNotEmpty();
         tc = otc.get();
-        Assertions.assertThat(tc.getDomainPrefix()).isEqualTo("tenant1");
+        Assertions.assertThat(tc.getFqdns()).contains("tenant1.com");
         BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant1");
         Assertions.assertThat(ds.getDriverClassName()).isEqualTo("org.postgresql.Driver");
         Assertions.assertThat(tm.exists("pippo")).isFalse();
@@ -131,7 +131,7 @@ class TenantManagerTest {
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
         Assertions.assertThat(otc).isEmpty();
 
-        otc = tm.getTenantConfigByDomainPrefix("tenant1");
+        otc = tm.getTenantConfigByDomain("tenant2.com");
         Assertions.assertThat(otc).isEmpty();
 
         BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant_not_found");
@@ -147,7 +147,7 @@ class TenantManagerTest {
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
         Assertions.assertThat(otc).isEmpty();
 
-        otc = tm.getTenantConfigByDomainPrefix("tenant1");
+        otc = tm.getTenantConfigByDomain("tenant2.com");
         Assertions.assertThat(otc).isEmpty();
 
         BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant_not_found");

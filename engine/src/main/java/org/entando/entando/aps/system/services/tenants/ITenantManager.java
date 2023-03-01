@@ -31,7 +31,7 @@ public interface ITenantManager {
 
     Optional<TenantConfig> getConfig(String tenantCode);
 
-    Optional<TenantConfig> getTenantConfigByDomainPrefix(String domainPrefix);
+    Optional<TenantConfig> getTenantConfigByDomain(String domain);
 
-    String getTenantCodeByDomainPrefix(String domainPrefix);
+    String getTenantCodeByDomain(String domain);
 }

@@ -13,12 +13,19 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
+@Slf4j
 public class TenantConfig {
 
     private static final String TENANT_CODE_PROPERTY = "tenantCode";
@@ -34,7 +41,7 @@ public class TenantConfig {
     private static final String DB_URL_PROPERTY = "dbUrl";
     private static final String DB_USERNAME_PROPERTY = "dbUsername";
     private static final String DB_PASSWORD_PROPERTY = "dbPassword";
-    private static final String DOMAIN_PREFIX_PROPERTY = "domainPrefix";
+    private static final String FQDNS_PROPERTY = "fqdns";
     private static final String DB_MAX_TOTAL_PROPERTY = "dbMaxTotal";
     private static final String DB_MAX_IDLE_PROPERTY = "dbMaxIdle";
     private static final String DB_MAX_WAIT_MS_PROPERTY = "dbMaxWaitMillis";
@@ -117,8 +124,10 @@ public class TenantConfig {
         return configs.get(DB_PASSWORD_PROPERTY);
     }
 
-    public String getDomainPrefix() {
-        return configs.get(DOMAIN_PREFIX_PROPERTY);
+    public List<String> getFqdns() {
+        return Optional.ofNullable(configs.get(FQDNS_PROPERTY))
+                .map(s -> s.split(","))
+                .map(Arrays::asList).orElse(new ArrayList<>());
     }
 
     public Optional<String> getProperty(String name) {

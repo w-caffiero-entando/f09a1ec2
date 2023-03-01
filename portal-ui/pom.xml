@@ -115,6 +115,7 @@
                             <![CDATA[
 [{
     "tenantCode": "tenant1",
+    "fqdns": "tenant1.test.serv.run",
     "kcEnabled": true,
     "kcAuthUrl": "http://tenant1.test.nip.io/auth",
     "kcRealm": "tenant1",
