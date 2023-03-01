@@ -11,12 +11,6 @@ public class Dummy {
     boolean halfCoverage = true;
 
     public void doSomethingUseless() {
-        if (!halfCoverage) {
-            log.debug("This line won't execute");
-            log.debug("This line won't execute either");
-            log.debug("This line won't execute either");
-            log.debug("This line won't execute either to ensure 50% code coverage");
-        }
         log.debug("This line will execute");
     }
 }
