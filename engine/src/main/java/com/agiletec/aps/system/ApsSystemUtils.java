@@ -26,7 +26,7 @@ import org.slf4j.MarkerFactory;
 public class ApsSystemUtils {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ApsSystemUtils.class);
-    private static final Marker starupMarker = MarkerFactory.getMarker("STARTUP");
+    private static final Marker startupMarker = MarkerFactory.getMarker("STARTUP");
     private static final boolean ENABLE_DIRECT_STDOUT_TRACE =
             ("" + System.getProperty("org.entando.enableDirectStdoutTrace")).equals("true");
     
@@ -72,7 +72,7 @@ public class ApsSystemUtils {
 
     public static boolean directStdoutTrace(String str, boolean force) {
         if (ENABLE_DIRECT_STDOUT_TRACE || force) {
-            logger.info(starupMarker, str);
+            logger.info(startupMarker, str);
             return true;
         } else {
             return false;
