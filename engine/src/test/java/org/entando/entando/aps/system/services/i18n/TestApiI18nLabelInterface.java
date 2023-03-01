@@ -21,13 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.i18n.II18nManager;
 import com.agiletec.aps.util.ApsProperties;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Properties;
-
-import javax.ws.rs.core.MediaType;
-
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
 import org.entando.entando.aps.system.services.api.UnmarshalUtils;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
@@ -37,6 +33,7 @@ import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
 import org.entando.entando.aps.system.services.i18n.model.JAXBI18nLabel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 /**
  * @author E.Santoboni
@@ -45,25 +42,25 @@ class TestApiI18nLabelInterface extends ApiBaseTestCase {
 	
     @Test
 	public void testGetXmlLabel() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+		MediaType mediaType = MediaType.APPLICATION_XML;
 		this.testGetLabel(mediaType, "admin", "PAGE_TITLE");
 	}
 	
 	@Test
 	public void testGetJsonLabel() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+		MediaType mediaType = MediaType.APPLICATION_JSON;
 		this.testGetLabel(mediaType, "admin", "PAGE_TITLE");
 	}
 	
 	@Test
 	public void testCreateNewLabelFromXml() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+		MediaType mediaType = MediaType.APPLICATION_XML;
 		this.testCreateNewLabel(mediaType);
 	}
 	
 	@Test
 	public void testCreateNewContentFromJson() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+		MediaType mediaType = MediaType.APPLICATION_JSON;
 		this.testCreateNewLabel(mediaType);
 	}
 	

@@ -13,25 +13,18 @@
  */
 package org.entando.entando.plugins.jacms.aps.system.services.api;
 
+import com.agiletec.plugins.jacms.aps.system.services.contentmodel.ContentModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import javax.ws.rs.core.Response;
-
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringListApiResponse;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
-import org.entando.entando.ent.exception.EntException;
-import com.agiletec.plugins.jacms.aps.system.services.contentmodel.ContentModel;
-
-import com.agiletec.aps.system.ApsSystemUtils;
-import org.entando.entando.ent.exception.EntException;
-import com.agiletec.plugins.jacms.aps.system.services.contentmodel.ContentModel;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -47,7 +40,7 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
 			String contentTypeParam = properties.getProperty("contentType");
 			String contentType = (null != contentTypeParam && contentTypeParam.trim().length() > 0) ? contentTypeParam.trim() : null;
 			if (null != contentType && null == this.getContentManager().getSmallContentTypesMap().get(contentType)) {
-				ApiError error = new ApiError(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Content Type " + contentType + " does not exist", Response.Status.CONFLICT);
+				ApiError error = new ApiError(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Content Type " + contentType + " does not exist", HttpStatus.CONFLICT);
 				response.addError(error);
 				contentType = null;
 			}
@@ -78,21 +71,21 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
         try {
             id = Integer.parseInt(idString);
         } catch (NumberFormatException e) {
-            throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Invalid number format for 'id' parameter - '" + idString + "'", Response.Status.CONFLICT);
+            throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Invalid number format for 'id' parameter - '" + idString + "'", HttpStatus.CONFLICT);
         }
         ContentModel model = this.getContentModelManager().getContentModel(id);
         if (null == model) {
-            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id '" + idString + "' does not exist", Response.Status.CONFLICT);
+            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id '" + idString + "' does not exist", HttpStatus.CONFLICT);
         }
         return model;
 	}
 	
 	public void addModel(ContentModel model) throws ApiException, Throwable {
 		if (null != this.getContentModelManager().getContentModel(model.getId())) {
-            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id " + model.getId() + " already exists", Response.Status.CONFLICT);
+            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id " + model.getId() + " already exists", HttpStatus.CONFLICT);
         }
 		if (null == this.getContentManager().getSmallContentTypesMap().get(model.getContentType())) {
-			throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Content Type " + model.getContentType() + " does not exist", Response.Status.CONFLICT);
+			throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Content Type " + model.getContentType() + " does not exist", HttpStatus.CONFLICT);
 		}
 		try {
             this.getContentModelManager().addContentModel(model);
@@ -106,11 +99,11 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
 	public void updateModel(ContentModel model) throws ApiException, Throwable {
 		ContentModel oldModel = this.getContentModelManager().getContentModel(model.getId());
 		if (null == oldModel) {
-            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id " + model.getId() + " does not exist", Response.Status.CONFLICT);
+            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id " + model.getId() + " does not exist", HttpStatus.CONFLICT);
         }
 		if (!oldModel.getContentType().equals(model.getContentType())) {
 			throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, 
-					"Content Type code can't be changed - it has to be '" + oldModel.getContentType() + "'", Response.Status.CONFLICT);
+					"Content Type code can't be changed - it has to be '" + oldModel.getContentType() + "'", HttpStatus.CONFLICT);
 		}
 		try {
             this.getContentModelManager().updateContentModel(model);
@@ -127,11 +120,11 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
         try {
             id = Integer.parseInt(idString);
         } catch (NumberFormatException e) {
-            throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Invalid number format for 'id' parameter - '" + idString + "'", Response.Status.CONFLICT);
+            throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Invalid number format for 'id' parameter - '" + idString + "'", HttpStatus.CONFLICT);
         }
         ContentModel model = this.getContentModelManager().getContentModel(id);
         if (null == model) {
-            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id '" + idString + "' does not exist", Response.Status.CONFLICT);
+            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id '" + idString + "' does not exist", HttpStatus.CONFLICT);
         }
 		try {
             this.getContentModelManager().removeContentModel(model);

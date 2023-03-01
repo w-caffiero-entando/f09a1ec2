@@ -13,25 +13,7 @@
  */
 package org.entando.entando.plugins.jacms.aps.system.services.api;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.ws.rs.core.Response;
-
-import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
-import org.entando.entando.aps.system.services.api.model.ApiException;
-import org.entando.entando.aps.system.services.api.model.StringApiResponse;
-import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
-import org.entando.entando.plugins.jacms.aps.system.services.api.model.JAXBResource;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
 import com.agiletec.aps.system.SystemConstants;
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.group.Group;
@@ -45,6 +27,21 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager;
 import com.agiletec.plugins.jacms.aps.system.services.resource.ResourceUtilizer;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.BaseResourceDataBean;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.entando.entando.aps.system.services.api.IApiErrorCodes;
+import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.ApiException;
+import org.entando.entando.aps.system.services.api.model.StringApiResponse;
+import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.plugins.jacms.aps.system.services.api.model.JAXBResource;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -123,7 +120,7 @@ public class ApiResourceInterface {
 			ResourceInterface resource = this.getResourceManager().loadResource(id);
 			if (null == resource || !resource.getType().equalsIgnoreCase(resourceTypeCode)) {
 				throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
-						"Null resource by id '" + id + "'", Response.Status.CONFLICT);
+						"Null resource by id '" + id + "'", HttpStatus.CONFLICT);
 			}
 			UserDetails user = (UserDetails) properties.get(SystemConstants.API_USER_PARAMETER);
             if (null == user) {
@@ -132,7 +129,7 @@ public class ApiResourceInterface {
 			String groupName = resource.getMainGroup();
             if (!Group.FREE_GROUP_NAME.equals(groupName) && !this.getAuthorizationManager().isAuthOnGroup(user, groupName)) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-						"Required resource '" + id + "' does not allowed", Response.Status.FORBIDDEN);
+						"Required resource '" + id + "' does not allowed", HttpStatus.FORBIDDEN);
             }
 			jaxbResource = new JAXBResource(resource);
         } catch (ApiException ae) {
@@ -172,7 +169,7 @@ public class ApiResourceInterface {
 				Matcher matcher = pattern.matcher(id);
 				if (!matcher.matches()) {
 					throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
-						"The resourceId can contain only alphabetic characters", Response.Status.CONFLICT);
+						"The resourceId can contain only alphabetic characters", HttpStatus.CONFLICT);
 				}
 			}
 			this.getResourceManager().addResource(bean, true);
@@ -205,7 +202,7 @@ public class ApiResourceInterface {
 	private void checkType(JAXBResource jaxbResource, String expectedTypeCode) throws Throwable {
 		if (!jaxbResource.getTypeCode().equals(expectedTypeCode)) {
 			throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-					"Invalid resource type - '" + jaxbResource.getTypeCode() + "'", Response.Status.CONFLICT);
+					"Invalid resource type - '" + jaxbResource.getTypeCode() + "'", HttpStatus.CONFLICT);
 		}
 	}
 
@@ -304,7 +301,7 @@ public class ApiResourceInterface {
 	}
 	*/
 	private void addValidationError(String message, StringApiResponse response) {
-		ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR, message, Response.Status.FORBIDDEN);
+		ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR, message, HttpStatus.FORBIDDEN);
 		response.addError(error);
 	}
 
@@ -335,7 +332,7 @@ public class ApiResourceInterface {
             ResourceInterface resource = this.getResourceManager().loadResource(id);
             if (null != resource && !resource.getType().equals(expectedTypeCode)) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-						"Invalid resource type - '" + resource.getType() + "'", Response.Status.CONFLICT);
+						"Invalid resource type - '" + resource.getType() + "'", HttpStatus.CONFLICT);
 			}
 			properties.setProperty(RESOURCE_TYPE_CODE_PARAM, expectedTypeCode);
 			response = this.deleteResource(properties, resource);
@@ -374,7 +371,7 @@ public class ApiResourceInterface {
 			String id = properties.getProperty("id");
 			if (null == resource) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-						"Resource with code '" + id + "' does not exist", Response.Status.CONFLICT);
+						"Resource with code '" + id + "' does not exist", HttpStatus.CONFLICT);
             }
 			UserDetails user = (UserDetails) properties.get(SystemConstants.API_USER_PARAMETER);
             if (null == user) {
@@ -382,7 +379,7 @@ public class ApiResourceInterface {
             }
 			if (!this.getAuthorizationManager().isAuthOnGroup(user, resource.getMainGroup())) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Resource not allowed for user '" + user.getUsername() + "' - resource group '" + resource.getMainGroup() + "'", Response.Status.FORBIDDEN);
+                        "Resource not allowed for user '" + user.getUsername() + "' - resource group '" + resource.getMainGroup() + "'", HttpStatus.FORBIDDEN);
             }
             List<String> references = ((ResourceUtilizer) this.getContentManager()).getResourceUtilizers(id);
 			if (references != null && references.size() > 0) {
@@ -393,7 +390,7 @@ public class ApiResourceInterface {
                     if (null != record) {
                         found = true;
                         response.addError(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                                "Resource " + id + " referenced to content " + record.getId() + " - '" + record.getDescr() + "'", Response.Status.CONFLICT));
+                                "Resource " + id + " referenced to content " + record.getId() + " - '" + record.getDescr() + "'", HttpStatus.CONFLICT));
                     }
                 }
                 if (found) {

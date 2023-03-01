@@ -13,16 +13,16 @@
  */
 package org.entando.entando.aps.system.services.api.server;
 
+import com.agiletec.aps.system.common.renderer.IVelocityRenderer;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.agiletec.aps.util.FileTextReader;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Response;
-
 import org.entando.entando.aps.system.services.api.IApiCatalogManager;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.AbstractApiResponse;
@@ -32,18 +32,15 @@ import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiMethodParameter;
 import org.entando.entando.aps.system.services.api.model.ApiMethodResult;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.context.ServletContextAware;
-
-import com.agiletec.aps.system.common.renderer.IVelocityRenderer;
-import org.entando.entando.ent.exception.EntException;
-import com.agiletec.aps.util.ApsWebApplicationUtils;
-import com.agiletec.aps.util.FileTextReader;
 
 /**
  * @author E.Santoboni
@@ -84,7 +81,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
             if (method.getHttpMethod().equals(ApiMethod.HttpMethod.GET)) {
                 masterResult = this.invokeGetMethod(method, bean, null, parameters, true);
                 if (null == masterResult) {
-					ApiError error = new ApiError(IApiErrorCodes.API_INVALID_RESPONSE, "Invalid or null Response", Response.Status.SERVICE_UNAVAILABLE);
+					ApiError error = new ApiError(IApiErrorCodes.API_INVALID_RESPONSE, "Invalid or null Response", HttpStatus.SERVICE_UNAVAILABLE);
                     throw new ApiException(error);
                 }
             } else {
@@ -116,7 +113,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
             if (response == null) {
                 response = new StringApiResponse();
             }
-            ApiError error = new ApiError(IApiErrorCodes.API_METHOD_ERROR, message, Response.Status.INTERNAL_SERVER_ERROR);
+            ApiError error = new ApiError(IApiErrorCodes.API_METHOD_ERROR, message, HttpStatus.INTERNAL_SERVER_ERROR);
             response.addError(error);
             response.setResult(FAILURE, null);
         }
@@ -195,7 +192,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
                 String paramName = apiParam.getKey();
                 Object value = parameters.get(paramName);
                 if (apiParam.isRequired() && (null == value || value.toString().trim().length() == 0)) {
-                    errors.add(new ApiError(IApiErrorCodes.API_PARAMETER_REQUIRED, "Parameter '" + paramName + "' is required", Response.Status.BAD_REQUEST));
+                    errors.add(new ApiError(IApiErrorCodes.API_PARAMETER_REQUIRED, "Parameter '" + paramName + "' is required", HttpStatus.BAD_REQUEST));
                 }
             }
             if (!errors.isEmpty()) {
@@ -246,11 +243,11 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
 		try {
             api = this.getApiCatalogManager().getMethod(httpMethod, namespace, resourceName);
             if (null == api) {
-				ApiError error = new ApiError(IApiErrorCodes.API_INVALID, signature + " does not exists", Response.Status.NOT_FOUND);
+				ApiError error = new ApiError(IApiErrorCodes.API_INVALID, signature + " does not exists", HttpStatus.NOT_FOUND);
                 throw new ApiException(error);
             }
             if (!api.isActive()) {
-				ApiError error = new ApiError(IApiErrorCodes.API_INVALID, signature + " does not exists", Response.Status.NOT_FOUND);
+				ApiError error = new ApiError(IApiErrorCodes.API_INVALID, signature + " does not exists", HttpStatus.NOT_FOUND);
 				throw new ApiException(error);
             }
         } catch (ApiException ae) {
@@ -261,7 +258,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
             _logger.error("Error extracting api method {}",
                     this.buildApiSignature(httpMethod, namespace, resourceName), t);
             throw new ApiException(IApiErrorCodes.SERVER_ERROR, signature + " is not supported",
-                    Response.Status.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return api;
     }
@@ -284,7 +281,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
         if (null == bean) {
             _logger.error("Null bean '{}' for api {}", api.getSpringBean(), this.buildApiSignature(api));
             throw new ApiException(IApiErrorCodes.SERVER_ERROR, this.buildApiSignature(api) + " is not supported",
-                    Response.Status.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return bean;
     }
@@ -308,14 +305,14 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
         } catch (NoSuchMethodException e) {
             if (throwException) {
             	_logger.error("No such method '{}' of class '{}'", methodName, bean.getClass(), e);
-                throw new ApiException(IApiErrorCodes.API_METHOD_ERROR, "Method not supported - " + this.buildApiSignature(apiMethod), Response.Status.INTERNAL_SERVER_ERROR);
+                throw new ApiException(IApiErrorCodes.API_METHOD_ERROR, "Method not supported - " + this.buildApiSignature(apiMethod), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ApiException) {
                 throw (ApiException) e.getTargetException();
             } else if (throwException) {
             	_logger.error("Error invoking method '{}' of class '{}'", methodName, bean.getClass());
-                throw new ApiException(IApiErrorCodes.API_METHOD_ERROR, "Error invoking Method - " + this.buildApiSignature(apiMethod), Response.Status.INTERNAL_SERVER_ERROR);
+                throw new ApiException(IApiErrorCodes.API_METHOD_ERROR, "Error invoking Method - " + this.buildApiSignature(apiMethod), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (Throwable t) {
             if (throwException) {
@@ -341,13 +338,13 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
             result = response;
         } catch (NoSuchMethodException e) {
         	_logger.error("No such method '{}' of class '{}'",apiMethod.getSpringBeanMethod(), bean.getClass(), e);
-            throw new ApiException(IApiErrorCodes.API_METHOD_ERROR, "Method not supported - " + this.buildApiSignature(apiMethod), Response.Status.INTERNAL_SERVER_ERROR);
+            throw new ApiException(IApiErrorCodes.API_METHOD_ERROR, "Method not supported - " + this.buildApiSignature(apiMethod), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ApiException) {
                 throw (ApiException) e.getTargetException();
             } else {
             	_logger.error("Error invoking method '{}' of class '{}'",apiMethod.getSpringBeanMethod(), bean.getClass());
-                throw new ApiException(IApiErrorCodes.API_METHOD_ERROR, "Error invoking Method - " + this.buildApiSignature(apiMethod), Response.Status.INTERNAL_SERVER_ERROR);
+                throw new ApiException(IApiErrorCodes.API_METHOD_ERROR, "Error invoking Method - " + this.buildApiSignature(apiMethod), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (Throwable t) {
         	_logger.error("Error invoking method '{}' of class '{}'",apiMethod.getSpringBeanMethod(), bean.getClass(), t);

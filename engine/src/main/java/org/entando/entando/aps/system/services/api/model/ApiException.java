@@ -15,14 +15,15 @@ package org.entando.entando.aps.system.services.api.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.ws.rs.core.Response;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
  */
 public class ApiException extends Exception {
-	
+
+	private final List<ApiError> errors = new ArrayList<>();
+
 	public ApiException(ApiError error) {
 		super(error.getMessage());
 		this.getErrors().add(error);
@@ -53,7 +54,7 @@ public class ApiException extends Exception {
 		this.addError(errorKey);
 	}
 	
-	public ApiException(String errorKey, String message, Response.Status status) {
+	public ApiException(String errorKey, String message, HttpStatus status) {
 		super(message);
 		this.addError(errorKey, status);
 	}
@@ -67,14 +68,12 @@ public class ApiException extends Exception {
 		this.getErrors().add(new ApiError(key, getMessage()));
 	}
 	
-	protected void addError(String key, Response.Status status) {
+	protected void addError(String key, HttpStatus status) {
 		this.getErrors().add(new ApiError(key, getMessage(), status));
 	}
 	
 	public List<ApiError> getErrors() {
-		return this._errors;
+		return this.errors;
 	}
-	
-	private final List<ApiError> _errors = new ArrayList<>();
 	
 }

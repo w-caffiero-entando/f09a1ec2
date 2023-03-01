@@ -14,6 +14,13 @@
 package org.entando.entando.aps.system.services.widgettype.api;
 
 import com.agiletec.aps.util.ApsProperties;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
@@ -21,15 +28,7 @@ import org.entando.entando.aps.system.services.guifragment.api.JAXBGuiFragment;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.aps.system.services.widgettype.WidgetTypeParameter;
-
-import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -110,7 +109,7 @@ public class JAXBWidgetType implements Serializable {
 				//Parameters of existing widget mustn't been changed
 				//type.setTypeParameters(parameters);
 				//type.setAction("configSimpleParameter");
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Parameters of existing widget mustn't been changed", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Parameters of existing widget mustn't been changed", HttpStatus.CONFLICT);
 			}
 		}
 		type.setMainGroup(this.getMainGroup());

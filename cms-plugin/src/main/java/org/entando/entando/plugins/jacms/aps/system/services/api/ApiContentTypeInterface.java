@@ -18,27 +18,25 @@ import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.PageManager;
 import com.agiletec.aps.system.services.pagemodel.Frame;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.ContentModel;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.IContentModelManager;
+import java.util.Arrays;
+import java.util.Properties;
 import org.entando.entando.aps.system.common.entity.api.ApiEntityTypeInterface;
 import org.entando.entando.aps.system.common.entity.api.JAXBEntityType;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
-import org.entando.entando.plugins.jacms.aps.system.services.api.model.JAXBContentType;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Properties;
-
-import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
-import com.agiletec.aps.system.services.pagemodel.PageModel;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.util.PageUtils;
+import org.entando.entando.plugins.jacms.aps.system.services.api.model.JAXBContentType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -130,7 +128,7 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
             IPage viewPage =  this.getPageManager().getOnlinePage(viewPageCode);
             if (null == viewPage) {
                 ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "View Page with id '" + viewPageCode + "' does not exist", Response.Status.ACCEPTED);
+                        "View Page with id '" + viewPageCode + "' does not exist", HttpStatus.ACCEPTED);
                 response.addError(error);
                 return false;
             }
@@ -139,7 +137,7 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
             final boolean mainFramePresent = Arrays.stream(configuration).anyMatch(Frame::isMainFrame);
             if (!mainFramePresent) {
                 ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Main frame for Page with id '" + viewPage.getCode() + "' not present", Response.Status.ACCEPTED);
+                        "Main frame for Page with id '" + viewPage.getCode() + "' not present", HttpStatus.ACCEPTED);
                 response.addError(error);
                 return false;
             }
@@ -155,13 +153,13 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
         ContentModel contentModel = this.getContentModelManager().getContentModel(modelId);
         if (null == contentModel) {
             ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-					"Content model with id '" + modelId + "' does not exist", Response.Status.ACCEPTED);
+					"Content model with id '" + modelId + "' does not exist", HttpStatus.ACCEPTED);
             response.addError(error);
             return false;
         }
         if (!contentType.getTypeCode().equals(contentModel.getContentType())) {
             ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-					"Content model with id '" + modelId + "' is for contents of type '" + contentModel.getContentType() + "'", Response.Status.ACCEPTED);
+					"Content model with id '" + modelId + "' is for contents of type '" + contentModel.getContentType() + "'", HttpStatus.ACCEPTED);
             response.addError(error);
             return false;
         }

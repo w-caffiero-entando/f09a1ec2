@@ -13,18 +13,16 @@
  */
 package org.entando.entando.aps.system.services.storage.api;
 
+import com.agiletec.aps.system.SystemConstants;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.*;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.IApiExportable;
 import org.entando.entando.aps.system.services.api.model.ApiException;
@@ -32,10 +30,10 @@ import org.entando.entando.aps.system.services.api.model.LinkedListItem;
 import org.entando.entando.aps.system.services.storage.BasicFileAttributeView;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.aps.system.services.storage.StorageManagerUtil;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
-import com.agiletec.aps.system.SystemConstants;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 public class LocalStorageManagerInterface implements IApiExportable {
 
@@ -54,7 +52,7 @@ public class LocalStorageManagerInterface implements IApiExportable {
 		try {
 			if (StringUtils.isNotBlank(pathValue)) pathValue = URLDecoder.decode(pathValue, "UTF-8");
 			if (!StorageManagerUtil.isValidDirName(pathValue)) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The path '" + pathValue + "' does not exists", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The path '" + pathValue + "' does not exists", HttpStatus.CONFLICT);
 			}
 			BasicFileAttributeView[] files = this.getStorageManager().listAttributes(pathValue, isProtected);
 			for (BasicFileAttributeView fileAttributeView : files) {
@@ -80,7 +78,7 @@ public class LocalStorageManagerInterface implements IApiExportable {
 			if (StringUtils.isNotBlank(pathValue)) pathValue = URLDecoder.decode(pathValue, "UTF-8");
 			BasicFileAttributeView result = this.getStorageManager().getAttributes(pathValue, isProtected);
 			if (null == result) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The path '" + pathValue + "' does not exists", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The path '" + pathValue + "' does not exists", HttpStatus.CONFLICT);
 			}
 			
 			InputStream fis = null;
@@ -105,31 +103,31 @@ public class LocalStorageManagerInterface implements IApiExportable {
 			String parentFolder = FilenameUtils.getFullPathNoEndSeparator(path);
 			if (StringUtils.isNotBlank(parentFolder)) parentFolder = URLDecoder.decode(parentFolder, "UTF-8");
 			if (!StorageManagerUtil.isValidDirName(parentFolder)) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", Response.Status.CONFLICT);									
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", HttpStatus.CONFLICT);									
 			}
 			BasicFileAttributeView parentBasicFileAttributeView = this.getStorageManager().getAttributes(parentFolder, isProtected);
 			if (null == parentBasicFileAttributeView || !parentBasicFileAttributeView.isDirectory()) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", HttpStatus.CONFLICT);
 			}
 			//validate exists
 			BasicFileAttributeView basicFileAttributeView2 = this.getStorageManager().getAttributes(path, isProtected);
 			if (null != basicFileAttributeView2) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "File already present", Response.Status.CONFLICT);					
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "File already present", HttpStatus.CONFLICT);					
 			}
 
 			String filename = StringUtils.substringAfter(storageResource.getName(), parentFolder);
 			if (storageResource.isDirectory()) {
 				if (!StorageManagerUtil.isValidDirName(filename)) {
-					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid dir name", Response.Status.CONFLICT);									
+					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid dir name", HttpStatus.CONFLICT);									
 				}
 				this.getStorageManager().createDirectory(storageResource.getName(), isProtected);
 			} else {
 				//validate file content
 				if (!storageResource.isDirectory() && (null == storageResource.getBase64() || storageResource.getBase64().length == 0 )) {
-					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "A file cannot be empty", Response.Status.CONFLICT);				
+					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "A file cannot be empty", HttpStatus.CONFLICT);				
 				}
 				if (!StorageManagerUtil.isValidFilename(filename)) {
-					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid filename name", Response.Status.CONFLICT);									
+					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid filename name", HttpStatus.CONFLICT);									
 				}
 				this.getStorageManager().saveFile(storageResource.getName(), isProtected,  new ByteArrayInputStream(storageResource.getBase64()));
 			}
@@ -152,33 +150,33 @@ public class LocalStorageManagerInterface implements IApiExportable {
 			String parentFolder = FilenameUtils.getFullPathNoEndSeparator(path);
 			BasicFileAttributeView parentBasicFileAttributeView = this.getStorageManager().getAttributes(parentFolder, isProtected);
 			if (null == parentBasicFileAttributeView || !parentBasicFileAttributeView.isDirectory()) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", HttpStatus.CONFLICT);
 			}
 			if (!StorageManagerUtil.isValidDirName(parentFolder)) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", Response.Status.CONFLICT);									
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", HttpStatus.CONFLICT);									
 			}
     		BasicFileAttributeView basicFileAttributeView = this.getStorageManager().getAttributes(pathValue, isProtected);
     		if (null == basicFileAttributeView) {
-    			throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The file does not exists", Response.Status.CONFLICT);			
+    			throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The file does not exists", HttpStatus.CONFLICT);			
     		}
     		String filename = StringUtils.substringAfter(pathValue, parentFolder);
     		if (basicFileAttributeView.isDirectory()) {
 				if (!StorageManagerUtil.isValidDirName(filename)) {
-					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid dir name", Response.Status.CONFLICT);									
+					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid dir name", HttpStatus.CONFLICT);									
 				}
     			String recursiveDelete = properties.getProperty(PARAM_DELETE_RECURSIVE);
     			boolean isRecursiveDelete = StringUtils.equalsIgnoreCase(recursiveDelete, "true");
     			if (!isRecursiveDelete) {
     				String[] dirContents = this.getStorageManager().list(pathValue, isProtected);
     				if (null != dirContents && dirContents.length > 0) {
-    					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The directory is not empty", Response.Status.CONFLICT);			    					
+    					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The directory is not empty", HttpStatus.CONFLICT);			    					
     				}
     			}
     			this.getStorageManager().deleteDirectory(pathValue, isProtected);
     		} else {
     			//it's a file
     			if (!StorageManagerUtil.isValidFilename(filename)) {
-    				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid filename", Response.Status.CONFLICT);									
+    				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid filename", HttpStatus.CONFLICT);									
     			}
     			this.getStorageManager().deleteFile(pathValue, isProtected);
     		}
@@ -221,7 +219,7 @@ public class LocalStorageManagerInterface implements IApiExportable {
 			stringBuilder.append("storageResource");			
 		}
 		
-		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
+		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
 			stringBuilder.append(".xml");
 		} else {
 			stringBuilder.append(".json");

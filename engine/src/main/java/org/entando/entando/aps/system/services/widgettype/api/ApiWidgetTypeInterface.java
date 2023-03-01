@@ -16,6 +16,9 @@ package org.entando.entando.aps.system.services.widgettype.api;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.IApiExportable;
@@ -32,12 +35,8 @@ import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 /**
  * @author E.Santoboni
@@ -74,7 +73,7 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 			WidgetType widgetType = this.getWidgetTypeManager().getWidgetType(widgetTypeCode);
 			if (null == widgetType) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "WidgetType with code '" + widgetTypeCode + "' does not exist",
-						Response.Status.CONFLICT);
+						HttpStatus.CONFLICT);
 			}
 			GuiFragment singleGuiFragment = null;
 			List<GuiFragment> fragments = new ArrayList<GuiFragment>();
@@ -109,20 +108,20 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 			WidgetType widgetType = this.getWidgetTypeManager().getWidgetType(jaxbWidgetType.getCode());
 			if (null != widgetType) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "WidgetType with code " + jaxbWidgetType.getCode()
-						+ " already exists", Response.Status.CONFLICT);
+						+ " already exists", HttpStatus.CONFLICT);
 			}
 			widgetType = jaxbWidgetType.getNewWidgetType(this.getWidgetTypeManager());
 			if (!widgetType.isLogic() && StringUtils.isBlank(jaxbWidgetType.getGui())) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Gui is mandatory", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Gui is mandatory", HttpStatus.CONFLICT);
 			}
 			if (widgetType.isLogic() && (StringUtils.isNotBlank(jaxbWidgetType.getGui()) || (null != jaxbWidgetType.getFragments()
 					&& jaxbWidgetType.getFragments().size() > 0))) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Fragment mustn't be added on the new logic widget type",
-						Response.Status.CONFLICT);
+						HttpStatus.CONFLICT);
 			}
 			if (widgetType.isLogic() && this.isInternalServletWidget(widgetType.getParentType().getCode())) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-						"Logic type with parent 'Internal Servlet' widget mustn't be added", Response.Status.CONFLICT);
+						"Logic type with parent 'Internal Servlet' widget mustn't be added", HttpStatus.CONFLICT);
 			}
 			this.getWidgetTypeManager().addWidgetType(widgetType);
 			if (!widgetType.isLogic()) {
@@ -148,7 +147,7 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 			widgetTypeToUpdate = this.getWidgetTypeManager().getWidgetType(jaxbWidgetType.getCode());
 			if (null == widgetTypeToUpdate) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "WidgetType with code " + jaxbWidgetType.getCode()
-						+ " does not exists", Response.Status.CONFLICT);
+						+ " does not exists", HttpStatus.CONFLICT);
 			}
 			WidgetType widgetType = jaxbWidgetType.getModifiedWidgetType(this.getWidgetTypeManager());
 			this.checkAndSaveFragment(widgetType, jaxbWidgetType, false, response, addedFragments, updatedFragments);
@@ -229,7 +228,7 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 					// throw new
 					// ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
 					// "Fragments mustn't be updated on a 'not internal servlet'
-					// logic widget type", Response.Status.CONFLICT);
+					// logic widget type", HttpStatus.CONFLICT);
 				} else {
 					List<JAXBGuiFragment> fragments = jaxbWidgetType.getFragments();
 					if (null != fragments && fragments.size() > 0) {
@@ -283,16 +282,16 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 			WidgetType widgetType = this.getWidgetTypeManager().getWidgetType(code);
 			if (null == widgetType) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Widget Type with code " + code + " does not exists",
-						Response.Status.CONFLICT);
+						HttpStatus.CONFLICT);
 			}
 			if (widgetType.isLocked()) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Widget Type '" + code + "' is locked",
-						Response.Status.CONFLICT);
+						HttpStatus.CONFLICT);
 			}
 			List<IPage> referencedPages = this.getPageManager().getDraftWidgetUtilizers(code);
 			if (null != referencedPages && !referencedPages.isEmpty()) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Widget Type '" + code + "' is published into some pages",
-						Response.Status.CONFLICT);
+						HttpStatus.CONFLICT);
 			}
 			this.getWidgetTypeManager().deleteWidgetType(code);
 		} catch (ApiException ae) {
@@ -311,7 +310,7 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 		WidgetType widgetType = (WidgetType) object;
 		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
 		stringBuilder.append("api/rs/").append(langCode).append("/core/widgetType");// ?code=").append(widgetType.getCode());
-		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
+		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
 			stringBuilder.append(".xml");
 		} else {
 			stringBuilder.append(".json");

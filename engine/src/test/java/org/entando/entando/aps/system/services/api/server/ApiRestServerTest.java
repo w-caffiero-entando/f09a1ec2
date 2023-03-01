@@ -12,7 +12,6 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.Response.Status;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
@@ -27,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
@@ -110,7 +110,7 @@ class ApiRestServerTest {
             apiRestServer.extractOAuthParameters(request, apiMethod, new Properties());
         });
         Assertions.assertEquals(IApiErrorCodes.API_AUTHENTICATION_REQUIRED, exception.getErrors().get(0).getCode());
-        Assertions.assertEquals(Status.UNAUTHORIZED, exception.getErrors().get(0).getStatus());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, exception.getErrors().get(0).getStatus());
     }
 
     @Test
@@ -144,7 +144,7 @@ class ApiRestServerTest {
             apiRestServer.extractOAuthParameters(request, apiMethod, new Properties());
         });
         Assertions.assertEquals(IApiErrorCodes.API_AUTHENTICATION_REQUIRED, exception.getErrors().get(0).getCode());
-        Assertions.assertEquals(Status.UNAUTHORIZED, exception.getErrors().get(0).getStatus());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, exception.getErrors().get(0).getStatus());
     }
 
     @Test
@@ -179,6 +179,6 @@ class ApiRestServerTest {
             apiRestServer.extractOAuthParameters(request, apiMethod, new Properties());
         });
         Assertions.assertEquals(IApiErrorCodes.API_AUTHORIZATION_REQUIRED, exception.getErrors().get(0).getCode());
-        Assertions.assertEquals(Status.FORBIDDEN, exception.getErrors().get(0).getStatus());
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, exception.getErrors().get(0).getStatus());
     }
 }

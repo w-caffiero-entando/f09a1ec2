@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiError;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -77,7 +76,7 @@ public class KeycloakLegacyApiAuthenticationFilter extends KeycloakAuthenticatio
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
         StringApiResponse legacyApiResponse = new StringApiResponse();
-        ApiError error = new ApiError(IApiErrorCodes.API_AUTHORIZATION_REQUIRED, exception.getMessage(), Response.Status.UNAUTHORIZED);
+        ApiError error = new ApiError(IApiErrorCodes.API_AUTHORIZATION_REQUIRED, exception.getMessage(), HttpStatus.UNAUTHORIZED);
         legacyApiResponse.addError(error);
         legacyApiResponse.setResult(IResponseBuilder.FAILURE);
 

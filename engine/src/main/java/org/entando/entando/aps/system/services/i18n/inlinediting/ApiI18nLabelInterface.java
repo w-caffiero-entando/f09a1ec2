@@ -13,16 +13,15 @@
  */
 package org.entando.entando.aps.system.services.i18n.inlinediting;
 
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.ApsProperties;
+import java.util.Iterator;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.i18n.inlinediting.model.JAXBI18nLabel;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
-import javax.ws.rs.core.Response;
-import java.util.Iterator;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -68,12 +67,12 @@ public class ApiI18nLabelInterface extends org.entando.entando.aps.system.servic
             String key = jaxbI18nLabel.getKey();
             if (null == key || key.trim().length() == 0) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Label key required", Response.Status.CONFLICT);
+                        "Label key required", HttpStatus.CONFLICT);
             }
             ApsProperties labels = jaxbI18nLabel.extractLabels();
             if (null == labels || labels.isEmpty()) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Label list can't be empty", Response.Status.CONFLICT);
+                        "Label list can't be empty", HttpStatus.CONFLICT);
             }
 
             Iterator<Object> labelCodeIter = labels.keySet().iterator();
@@ -82,7 +81,7 @@ public class ApiI18nLabelInterface extends org.entando.entando.aps.system.servic
                 Object value = labels.get(langCode);
                 if (null == value || value.toString().trim().length() == 0) {
                     throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                            "Label for the language '" + langCode + "' is empty", Response.Status.CONFLICT);
+                            "Label for the language '" + langCode + "' is empty", HttpStatus.CONFLICT);
                 }
             }
         } catch (ApiException ae) {

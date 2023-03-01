@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -85,6 +86,11 @@ public class SymbolicLink implements Serializable {
 	public int getDestType(){
 		return _destType;
 	}
+
+	@XmlTransient
+	public void setDestType(int destType) {
+		this._destType = destType;
+	}
 	
 	/**
 	 * Restituisce l'identificativo del contenuto di destinazione. Il valore restituito
@@ -114,7 +120,12 @@ public class SymbolicLink implements Serializable {
 	public String getUrlDest(){
 		return _urlDest;
 	}
-	
+
+	@XmlTransient
+	public void setUrlDest(String urlDest) {
+		this._urlDest = urlDest;
+	}
+
 	@XmlElement(name = "resourceDestination", required = false)
 	public String getResourceDest() {
 		return _resourceDest;

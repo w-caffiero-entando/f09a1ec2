@@ -9,7 +9,6 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath:spring/propertyPlaceholder.xml
-            classpath:spring/restServerConfig.xml
             classpath:spring/baseSystemConfig.xml
             classpath*:spring/aps/**/**.xml
             classpath*:spring/apsadmin/**/**.xml
@@ -123,12 +122,6 @@
         <servlet-class>org.entando.entando.aps.internalservlet.system.dispatcher.Struts2ServletDispatcher
         </servlet-class>
     </servlet>
-    <servlet>
-        <display-name>API Servlet</display-name>
-        <servlet-name>APIServlet</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
 
     <servlet>
         <servlet-name>springDispatcher</servlet-name>
@@ -166,10 +159,6 @@
     <servlet-mapping>
         <servlet-name>springDispatcher</servlet-name>
         <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>APIServlet</servlet-name>
-        <url-pattern>/legacyapi/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ControllerServlet</servlet-name>

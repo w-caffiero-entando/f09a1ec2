@@ -29,7 +29,7 @@ public class KeycloakLegacyApiUserExtractor extends LegacyApiUserExtractor {
         if (authentication instanceof UserAuthentication) {
             return (UserDetails) authentication.getDetails();
         }
-        return  null;
+        return (UserDetails) request.getAttribute("user");
     }
 
     public void setKeycloakEnabled(final boolean keycloakEnabled) {

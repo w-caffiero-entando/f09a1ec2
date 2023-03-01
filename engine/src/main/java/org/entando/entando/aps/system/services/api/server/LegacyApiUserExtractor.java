@@ -5,7 +5,6 @@ import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.oauth2.IApiOAuth2TokenManager;
@@ -14,6 +13,7 @@ import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.common.interceptor.EntandoBearerTokenExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 public class LegacyApiUserExtractor {
 
@@ -38,10 +38,10 @@ public class LegacyApiUserExtractor {
             if (token != null) {
                 // Validate the access token
                 if (!token.getValue().equals(accessToken)) {
-                    throw new ApiException(IApiErrorCodes.API_AUTHENTICATION_REQUIRED, "Token does not match", Response.Status.UNAUTHORIZED);
+                    throw new ApiException(IApiErrorCodes.API_AUTHENTICATION_REQUIRED, "Token does not match", HttpStatus.UNAUTHORIZED);
                 } // check if access token is expired
                 else if (token.isExpired()) {
-                    throw new ApiException(IApiErrorCodes.API_AUTHENTICATION_REQUIRED, "Token expired", Response.Status.UNAUTHORIZED);
+                    throw new ApiException(IApiErrorCodes.API_AUTHENTICATION_REQUIRED, "Token expired", HttpStatus.UNAUTHORIZED);
                 }
                 String username = token.getLocalUser();
                 UserDetails user = userManager.getUser(username);
@@ -60,7 +60,7 @@ public class LegacyApiUserExtractor {
             return null;
         } catch (EntException ex) {
             log.error("System exception", ex);
-            throw new ApiException(IApiErrorCodes.SERVER_ERROR, ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+            throw new ApiException(IApiErrorCodes.SERVER_ERROR, ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

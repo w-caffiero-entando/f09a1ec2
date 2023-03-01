@@ -13,8 +13,8 @@
  */
 package com.agiletec.aps.system.common.entity.model.attribute;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
-
 import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * @author E.Santoboni
  */
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @XmlType(propOrder = {"name", "description", "type", "roles", "names"})
 public class AbstractJAXBAttribute {
     

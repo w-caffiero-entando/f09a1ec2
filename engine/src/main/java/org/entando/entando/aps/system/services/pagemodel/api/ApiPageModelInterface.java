@@ -14,11 +14,9 @@
 package org.entando.entando.aps.system.services.pagemodel.api;
 
 import com.agiletec.aps.system.SystemConstants;
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.pagemodel.PageModelUtilizer;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,22 +24,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.IApiExportable;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.LinkedListItem;
-
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 /**
  * @author E.Santoboni
@@ -79,7 +74,7 @@ public class ApiPageModelInterface implements BeanFactoryAware, IApiExportable {
 		try {
 			pageModel = this.getPageModelManager().getPageModel(code);
 			if (null == pageModel) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Page template with code '" + code + "' does not exist", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Page template with code '" + code + "' does not exist", HttpStatus.CONFLICT);
 			}
 		} catch (ApiException ae) {
 			throw ae;
@@ -93,7 +88,7 @@ public class ApiPageModelInterface implements BeanFactoryAware, IApiExportable {
     public void addPageModel(PageModel pageModel) throws ApiException, Throwable {
 		try {
 			if (null != this.getPageModelManager().getPageModel(pageModel.getCode())) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Page template with code " + pageModel.getCode() + " already exists", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Page template with code " + pageModel.getCode() + " already exists", HttpStatus.CONFLICT);
 			}
 			this.getPageModelManager().addPageModel(pageModel);
 		} catch (ApiException ae) {
@@ -107,7 +102,7 @@ public class ApiPageModelInterface implements BeanFactoryAware, IApiExportable {
     public void updatePageModel(PageModel pageModel) throws ApiException, Throwable {
 		try {
 			if (null != this.getPageModelManager().getPageModel(pageModel.getCode())) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Page template with code '" + pageModel.getCode() + "' does not exist", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Page template with code '" + pageModel.getCode() + "' does not exist", HttpStatus.CONFLICT);
 			}
 			this.getPageModelManager().updatePageModel(pageModel);
 		} catch (ApiException ae) {
@@ -123,7 +118,7 @@ public class ApiPageModelInterface implements BeanFactoryAware, IApiExportable {
 		try {
 			PageModel pageModel = this.getPageModelManager().getPageModel(code);
 			if (null == pageModel) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "PageModel with code '" + code + "' does not exist", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "PageModel with code '" + code + "' does not exist", HttpStatus.CONFLICT);
 			}
 			Map<String, List<Object>> references = new HashMap<String, List<Object>>();
 			ListableBeanFactory factory = (ListableBeanFactory) this.getBeanFactory();
@@ -145,7 +140,7 @@ public class ApiPageModelInterface implements BeanFactoryAware, IApiExportable {
 				}
 			}
 			if (!references.isEmpty()) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "PageModel with code " + code + " has references with other object", Response.Status.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "PageModel with code " + code + " has references with other object", HttpStatus.CONFLICT);
 			}
 			this.getPageModelManager().deletePageModel(code);
 		} catch (ApiException ae) {
@@ -164,7 +159,7 @@ public class ApiPageModelInterface implements BeanFactoryAware, IApiExportable {
 		PageModel pageModel = (PageModel) object;
 		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
 		stringBuilder.append("api/rs/").append(langCode).append("/core/pageModel");//?code=").append(pageModel.getCode());
-		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
+		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
 			stringBuilder.append(".xml");
 		} else {
 			stringBuilder.append(".json");

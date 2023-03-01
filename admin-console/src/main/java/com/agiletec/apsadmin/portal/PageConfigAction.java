@@ -13,9 +13,12 @@
  */
 package com.agiletec.apsadmin.portal;
 
+import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.page.Page;
+import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.apsadmin.portal.helper.IPageActionHelper;
+import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInfo;
@@ -26,16 +29,11 @@ import org.entando.entando.apsadmin.portal.rs.model.PageResponse;
 import org.entando.entando.apsadmin.portal.rs.model.SwapWidgetRequest;
 import org.entando.entando.apsadmin.portal.rs.model.SwapWidgetResponse;
 import org.entando.entando.apsadmin.portal.rs.validator.ISwapWidgetRequestValidator;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import com.agiletec.aps.system.services.page.IPage;
-import com.agiletec.aps.system.services.page.Page;
-import com.agiletec.aps.system.services.page.Widget;
-import com.agiletec.apsadmin.portal.helper.IPageActionHelper;
-import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
+import org.springframework.http.HttpStatus;
 
 /**
  * Main action class for the pages configuration.
@@ -256,16 +254,16 @@ public class PageConfigAction extends AbstractPortalAction implements ServletRes
 			SwapWidgetRequest ajaxRequest = this.getSwapWidgetRequest();
 			this.getValidator().validateRequest(ajaxRequest, this);
 			if (this.hasActionErrors() || this.hasFieldErrors()) {
-				this.response.setStatus(Status.BAD_REQUEST.getStatusCode());
+				this.response.setStatus(HttpStatus.BAD_REQUEST.value());
 				return INPUT;
 			}
 			this.getPageManager().moveWidget(ajaxRequest.getPageCode(), ajaxRequest.getSrc(), ajaxRequest.getDest());
 		} catch (Throwable t) {
-			this.response.setStatus(Status.INTERNAL_SERVER_ERROR.getStatusCode());
+			this.response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			_logger.error("error in move", t);
 			return FAILURE;
 		}
-		this.response.setStatus(Status.OK.getStatusCode());
+		this.response.setStatus(HttpStatus.OK.value());
 		this.setPageCode(swapWidgetRequest.getPageCode());
 		return SUCCESS;
 	}

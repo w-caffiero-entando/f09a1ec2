@@ -11,6 +11,8 @@
 			http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd" >
 
+    <context:component-scan base-package="org.entando.entando.plugins.jacms.aps.system.services.api"></context:component-scan>
+
     <bean id="ApiResponseBuilder" class="org.entando.entando.aps.system.services.api.server.ResponseBuilder" >
         <property name="apiCatalogManager" ref="ApiCatalogManager" />
         <property name="velocityRenderer" >

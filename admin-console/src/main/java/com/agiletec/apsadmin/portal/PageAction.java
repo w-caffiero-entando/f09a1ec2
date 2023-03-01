@@ -16,7 +16,12 @@ package com.agiletec.apsadmin.portal;
 
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.lang.Lang;
-import com.agiletec.aps.system.services.page.*;
+import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.page.Page;
+import com.agiletec.aps.system.services.page.PageMetadata;
+import com.agiletec.aps.system.services.page.PageUtils;
+import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.util.ApsProperties;
@@ -24,6 +29,16 @@ import com.agiletec.apsadmin.portal.helper.IPageActionHelper;
 import com.agiletec.apsadmin.portal.helper.IPageActionReferencesHelper;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.apsadmin.system.BaseActionHelper;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletResponseAware;
@@ -31,12 +46,9 @@ import org.entando.entando.aps.system.services.actionlog.model.ActivityStreamInf
 import org.entando.entando.apsadmin.portal.PageActionConstants;
 import org.entando.entando.apsadmin.portal.rs.model.PageResponse;
 import org.entando.entando.ent.exception.EntException;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response.Status;
-import java.util.*;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.springframework.http.HttpStatus;
 
 /**
  * Main action for pages handling
@@ -409,7 +421,7 @@ public class PageAction extends AbstractPortalAction implements ServletResponseA
             pageResponse = new PageResponse(this, draftPage, onlinePage);
         } catch (Throwable t) {
             logger.error("error in getPageJsonResponse", t);
-            this.getServletResponse().setStatus(Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            this.getServletResponse().setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return null;
         }
         return pageResponse;

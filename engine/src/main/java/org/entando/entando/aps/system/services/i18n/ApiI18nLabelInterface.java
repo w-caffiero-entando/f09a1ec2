@@ -13,20 +13,19 @@
  */
 package org.entando.entando.aps.system.services.i18n;
 
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.i18n.II18nManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.util.ApsProperties;
+import java.util.Iterator;
+import java.util.Properties;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.i18n.model.JAXBI18nLabel;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
-import javax.ws.rs.core.Response;
-import java.util.Iterator;
-import java.util.Properties;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -42,7 +41,7 @@ public class ApiI18nLabelInterface {
             ApsProperties labelGroups = this.getI18nManager().getLabelGroup(key);
             if (null == labelGroups) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Label with key '" + key + "' does not exist", Response.Status.CONFLICT);
+                        "Label with key '" + key + "' does not exist", HttpStatus.CONFLICT);
             }
             jaxbI18nLabel = new JAXBI18nLabel(key, labelGroups);
         } catch (ApiException ae) {
@@ -61,7 +60,7 @@ public class ApiI18nLabelInterface {
             ApsProperties labelGroups = this.getI18nManager().getLabelGroup(key);
             if (null != labelGroups) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Label with key '" + key + "' already exists", Response.Status.CONFLICT);
+                        "Label with key '" + key + "' already exists", HttpStatus.CONFLICT);
             }
             ApsProperties labels = jaxbI18nLabel.extractLabels();
             this.getI18nManager().addLabelGroup(key, labels);
@@ -78,7 +77,7 @@ public class ApiI18nLabelInterface {
             ApsProperties labelGroups = this.getI18nManager().getLabelGroup(key);
             if (null == labelGroups) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Label with key '" + key + "' does not exist", Response.Status.CONFLICT);
+                        "Label with key '" + key + "' does not exist", HttpStatus.CONFLICT);
             }
             ApsProperties labels = jaxbI18nLabel.extractLabels();
             this.getI18nManager().updateLabelGroup(key, labels);
@@ -96,7 +95,7 @@ public class ApiI18nLabelInterface {
             ApsProperties labelGroups = this.getI18nManager().getLabelGroup(key);
             if (null == labelGroups) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Label with key '" + key + "' does not exist", Response.Status.CONFLICT);
+                        "Label with key '" + key + "' does not exist", HttpStatus.CONFLICT);
             }
             this.getI18nManager().deleteLabelGroup(key);
         } catch (ApiException | EntException ae) {
@@ -110,18 +109,18 @@ public class ApiI18nLabelInterface {
             String key = jaxbI18nLabel.getKey();
             if (null == key || key.trim().length() == 0) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Label key required", Response.Status.CONFLICT);
+                        "Label key required", HttpStatus.CONFLICT);
             }
             ApsProperties labels = jaxbI18nLabel.extractLabels();
             if (null == labels || labels.isEmpty()) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Label list can't be empty", Response.Status.CONFLICT);
+                        "Label list can't be empty", HttpStatus.CONFLICT);
             }
             Lang defaultLang = this.getLangManager().getDefaultLang();
             Object defaultLangValue = labels.get(defaultLang.getCode());
             if (null == defaultLangValue || defaultLangValue.toString().trim().length() == 0) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Label list must contain a label for the default language '" + defaultLang.getCode() + "'", Response.Status.CONFLICT);
+                        "Label list must contain a label for the default language '" + defaultLang.getCode() + "'", HttpStatus.CONFLICT);
             }
             Iterator<Object> labelCodeIter = labels.keySet().iterator();
             while (labelCodeIter.hasNext()) {
@@ -129,7 +128,7 @@ public class ApiI18nLabelInterface {
                 Object value = labels.get(langCode);
                 if (null == value || value.toString().trim().length() == 0) {
                     throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                            "Label for the language '" + langCode + "' is empty", Response.Status.CONFLICT);
+                            "Label for the language '" + langCode + "' is empty", HttpStatus.CONFLICT);
                 }
             }
         } catch (ApiException ae) {

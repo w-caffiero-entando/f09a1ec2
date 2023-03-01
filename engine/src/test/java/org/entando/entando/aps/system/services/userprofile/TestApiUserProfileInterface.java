@@ -23,6 +23,12 @@ import com.agiletec.aps.system.common.entity.model.attribute.AbstractComplexAttr
 import com.agiletec.aps.system.common.entity.model.attribute.AbstractListAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
 import com.agiletec.aps.system.common.entity.model.attribute.CompositeAttribute;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
 import org.entando.entando.aps.system.services.api.UnmarshalUtils;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
@@ -32,16 +38,9 @@ import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
 import org.entando.entando.aps.system.services.userprofile.api.ApiUserProfileInterface;
 import org.entando.entando.aps.system.services.userprofile.api.model.JAXBUserProfile;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
-
-import javax.ws.rs.core.MediaType;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 /**
  * @author E.Santoboni
@@ -54,25 +53,25 @@ class TestApiUserProfileInterface extends ApiBaseTestCase {
 
     @Test
     void testGetXmlUserProfile() throws Throwable {
-        MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+        MediaType mediaType = MediaType.APPLICATION_XML;
         this.testGetUserProfile(mediaType, "admin", "supervisorCoach", "it");
     }
     
     @Test
     void testGetJsonUserProfile() throws Throwable {
-        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+        MediaType mediaType = MediaType.APPLICATION_JSON;
         this.testGetUserProfile(mediaType, "admin", "supervisorCoach", "en");
     }
 
     @Test
     void testCreateNewUserProfileFromXml() throws Throwable {
-        MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+        MediaType mediaType = MediaType.APPLICATION_XML;
         this.testCreateNewUserProfile(mediaType, "supervisorCoach");
     }
     
     @Test
     void testCreateNewUserProfileFromJson() throws Throwable {
-        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+        MediaType mediaType = MediaType.APPLICATION_JSON;
         this.testCreateNewUserProfile(mediaType, "supervisorCoach");
     }
     

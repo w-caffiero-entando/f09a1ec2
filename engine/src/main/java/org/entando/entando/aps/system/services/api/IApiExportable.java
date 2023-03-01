@@ -13,7 +13,7 @@
  */
 package org.entando.entando.aps.system.services.api;
 
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
 
 /**
  * Interface implemented by all those services or beans 

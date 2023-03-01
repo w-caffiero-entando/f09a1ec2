@@ -19,22 +19,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
 import org.entando.entando.aps.system.services.api.UnmarshalUtils;
-import org.entando.entando.aps.system.services.api.model.ApiError;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
 import org.entando.entando.plugins.jacms.aps.system.services.api.model.JAXBContentType;
-
-import javax.ws.rs.core.MediaType;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 class TestApiContentTypeInterface extends ApiBaseTestCase {
 
@@ -43,13 +40,13 @@ class TestApiContentTypeInterface extends ApiBaseTestCase {
     
     @Test
     void testGetXmlContent() throws Throwable {
-        MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+        MediaType mediaType = MediaType.APPLICATION_XML;
         this.testGetContentType(mediaType, "admin", "ART", CONTENT_VIEW, "it");
     }
 
     @Test
     void testCreateNewContentFromXml() throws Throwable {
-        MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+        MediaType mediaType = MediaType.APPLICATION_XML;
         this.testCreateNewContentType(mediaType, "TST");
     }
 
