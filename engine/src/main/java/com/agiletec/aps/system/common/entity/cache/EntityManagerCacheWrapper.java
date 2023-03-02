@@ -67,7 +67,7 @@ public class EntityManagerCacheWrapper extends AbstractGenericCacheWrapper<Attri
         if (null != map && !map.isEmpty()) {
             return map.values().stream().collect(Collectors.toMap(e -> e.getName(), e -> e.clone()));
         }
-        return null;
+        return new HashMap<>();
     }
     
     @Override

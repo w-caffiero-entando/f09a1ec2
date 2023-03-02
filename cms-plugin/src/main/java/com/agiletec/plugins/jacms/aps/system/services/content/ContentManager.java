@@ -80,10 +80,7 @@ public class ContentManager extends ApsEntityManager
 
     @Override
     protected String getRolesConfigItemName() {
-        if (StringUtils.isBlank(super.getRolesConfigItemName())) {
-            return JacmsSystemConstants.CONFIG_ITEM_CONTENT_TYPES_ROLES;
-        }
-        return super.getRolesConfigItemName();
+        return JacmsSystemConstants.CONFIG_ITEM_CONTENT_TYPES_ROLES;
     }
     
     /**
