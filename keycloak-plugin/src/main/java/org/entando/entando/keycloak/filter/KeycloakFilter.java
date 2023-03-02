@@ -1,3 +1,16 @@
+/*
+ * Copyright 2022-Present Entando S.r.l. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.keycloak.filter;
 
 import static org.entando.entando.KeycloakWiki.wiki;
@@ -12,6 +25,7 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -26,6 +40,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.KeycloakWiki;
 import org.entando.entando.aps.servlet.security.GuestAuthentication;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.util.LogUtils;
+import org.entando.entando.aps.util.UrlUtils;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.keycloak.services.KeycloakAuthorizationManager;
 import org.entando.entando.keycloak.services.KeycloakConfiguration;
@@ -210,6 +226,11 @@ public class KeycloakFilter implements Filter {
         final String error = request.getParameter("error");
         final String errorDescription = request.getParameter("error_description");
 
+        log.debug("doLogin with params code:'{}' state:'{}' redirectUri:'{}' redirectTo:'{}' error:'{}' error_description:'{}'",
+                LogUtils.cleanupDataForLog(authorizationCode), LogUtils.cleanupDataForLog(stateParameter),
+                LogUtils.cleanupDataForLog(redirectUri), LogUtils.cleanupDataForLog(redirectTo),
+                LogUtils.cleanupDataForLog(error), LogUtils.cleanupDataForLog(errorDescription));
+
         if (StringUtils.isNotEmpty(error)) {
             if ("unsupported_response_type".equals(error)) {
                 log.error("{}. For more details, refer to the wiki {}",
@@ -268,13 +289,9 @@ public class KeycloakFilter implements Filter {
             redirect(request, response, session);
             return;
         } else {
-            final String path = request.getRequestURL().toString().replace(request.getServletPath(), "");
             if (redirectTo != null){
-                final String redirect = redirectTo.replace(path, "");
-                if (!redirect.startsWith("/")) {
-                    throw new EntandoTokenException("Invalid redirect", request, "guest");
-                }
-                session.setAttribute(SESSION_PARAM_REDIRECT, redirect);
+                String redirectServletPath = extractRedirectToPathOrThrowExceptionIfWrongDomain(redirectTo, request);
+                session.setAttribute(SESSION_PARAM_REDIRECT, redirectServletPath);
             }
         }
 
@@ -284,12 +301,44 @@ public class KeycloakFilter implements Filter {
             chain.doFilter(request, response);
         } else {
             final String state = UUID.randomUUID().toString();
-            final String redirect = oidcService.getRedirectUrl(redirectUri, state);
+            final String redirectUrl = oidcService.getRedirectUrl(redirectUri, state);
 
             session.setAttribute(SESSION_PARAM_STATE, state);
-            response.sendRedirect(redirect);
+            log.debug("doLogin sendRedirect redirectUrl:'{}'", redirectUrl);
+            response.sendRedirect(redirectUrl);
         }
     }
+
+    private String extractRedirectToPathOrThrowExceptionIfWrongDomain(String redirectTo, HttpServletRequest request){
+        log.debug("doLogin evaluate redirect with redirectTo:'{}' requestURL:'{}' servletPath:'{}'",
+                LogUtils.cleanupDataForLog(redirectTo), request.getRequestURL(), request.getServletPath());
+
+        Optional<String> redirectToPath = UrlUtils.fetchPathFromUri(redirectTo);
+        String redirectPathWithoutContextRoot = redirectToPath
+                .flatMap(p -> UrlUtils.removeContextRootFromPath(p, request))
+                .orElse("/");
+
+        UrlUtils.fetchServerNameFromUri(redirectTo).ifPresent(redirectServerName -> {
+            if(!redirectServerName.equals(request.getServerName())) {
+                // this was exception
+                log.warn("request server name:'{}' is NOT equals to redirectTo param server name:'{}'",
+                        request.getServerName(),
+                        redirectServerName);
+            }
+        });
+        /*
+        final String path = request.getRequestURL().toString().replace(request.getServletPath(), "");
+        final String redirect = redirectTo.replace(path, "");
+        if (!redirect.startsWith("/")) {
+            log.error("doLogin invalid redirect:'{}'", redirect);
+            throw new EntandoTokenException("Invalid redirect", request, "guest");
+        }
+        */
+
+        log.debug("doLogin set SESSION_PARAM_REDIRECT redirect:'{}'", redirectPathWithoutContextRoot);
+        return redirectPathWithoutContextRoot;
+    }
+
 
     private void saveUserOnSession(final HttpServletRequest request, final UserDetails user) {
         request.getSession().setAttribute("user", user);

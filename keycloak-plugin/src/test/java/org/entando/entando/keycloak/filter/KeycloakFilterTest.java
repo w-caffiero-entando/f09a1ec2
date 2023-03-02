@@ -28,6 +28,7 @@ import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
@@ -233,7 +234,7 @@ class KeycloakFilterTest {
     }
 
     @Test
-    void testAuthenticationWithInvalidRedirectURL() throws IOException, ServletException {
+    void shouldLoginWithInvalidRedirectURLHostnameNotThrowError() throws IOException, ServletException {
         final String requestRedirect = "https://not.authorized.url";
         final String loginEndpoint = "https://dev.entando.org/entando-app/do/login";
 
@@ -246,11 +247,10 @@ class KeycloakFilterTest {
         Mockito.lenient().when(oidcService.getRedirectUrl(any(), any())).thenReturn(redirect);
         try ( MockedStatic<WebApplicationContextUtils> wacUtil = Mockito.mockStatic(WebApplicationContextUtils.class)) {
             wacUtil.when(() -> WebApplicationContextUtils.getWebApplicationContext(svCtx)).thenReturn(wac);
-            Assertions.assertThrows(EntandoTokenException.class, () -> {
-                keycloakFilter.doFilter(request, response, filterChain);
-            });
+            keycloakFilter.doFilter(request, response, filterChain);
         }
         verify(filterChain, times(0)).doFilter(any(), any());
+        verify(session,times(1)).setAttribute(KeycloakFilter.SESSION_PARAM_REDIRECT, "/");
         // verify(response, times(1)).sendRedirect(redirect); Disabled due to junit5 integration
     }
 
@@ -553,6 +553,101 @@ class KeycloakFilterTest {
 
         verify(session).setAttribute(KeycloakFilter.SESSION_PARAM_REDIRECT, "/");
     }
+
+
+    @Test
+    void shouldLoginWithRedirectToDifferentDomainNotThrowException() throws Exception {
+
+        String path = "/do/login.action";
+        when(configuration.isEnabled()).thenReturn(true);
+        when(request.getServletPath()).thenReturn(path);
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://dev.entando.org/entando-de-app/do/login.action"));
+        when(request.getParameter("code")).thenReturn(null);
+        when(request.getParameter("state")).thenReturn(null);
+        when(request.getParameter("redirectTo")).thenReturn("http://fakedomain.entando.org/entando-de-app/pages/en/homepage/");
+        when(request.getContextPath()).thenReturn("/entando-de-app");
+
+        try ( MockedStatic<WebApplicationContextUtils> wacUtil = Mockito.mockStatic(WebApplicationContextUtils.class)) {
+            wacUtil.when(() -> WebApplicationContextUtils.getWebApplicationContext(svCtx)).thenReturn(wac);
+            keycloakFilter.doFilter(request, response, filterChain);
+        }
+
+        verify(session,times(1)).setAttribute(KeycloakFilter.SESSION_PARAM_REDIRECT, "/pages/en/homepage/");
+//        verify(response).sendRedirect(redirect);
+
+    }
+
+    @Test
+    void shouldLoginWithRedirectWithUrlExecuteFine() throws Exception {
+
+        final String path = "/do/login.action";
+        final String redirectPath = "/pages/en/homepage/";
+        final String contextRoot = "/entando-de-app";
+        final String protoAndServerName = "http://dev.entando.org";
+
+        testLoginExecuteFine(protoAndServerName, contextRoot, path, protoAndServerName+contextRoot+redirectPath, redirectPath);
+
+    }
+
+    private void testLoginExecuteFine(final String protoAndServerName, final String contextRoot, final String path,
+            final String redirectToUri, final String redirectToPath) throws Exception {
+        when(configuration.isEnabled()).thenReturn(true);
+        when(request.getServletPath()).thenReturn(path);
+        when(request.getRequestURL()).thenReturn(new StringBuffer(protoAndServerName+contextRoot+path));
+        when(request.getParameter("code")).thenReturn(null);
+        when(request.getParameter("state")).thenReturn(null);
+        when(request.getParameter("redirectTo")).thenReturn(redirectToUri);
+        when(request.getContextPath()).thenReturn(contextRoot);
+
+        final String redirect = "http://dev.entando.org/auth/realms/entando/protocol/openid-connect/auth";
+        when(oidcService.getRedirectUrl(any(), any())).thenReturn(redirect);
+
+        try ( MockedStatic<WebApplicationContextUtils> wacUtil = Mockito.mockStatic(WebApplicationContextUtils.class)) {
+            wacUtil.when(() -> WebApplicationContextUtils.getWebApplicationContext(svCtx)).thenReturn(wac);
+            keycloakFilter.doFilter(request, response, filterChain);
+        }
+        verify(session,times(1)).setAttribute(KeycloakFilter.SESSION_PARAM_REDIRECT, redirectToPath);
+        verify(response).sendRedirect(redirect);
+
+    }
+
+
+    @Test
+    void shouldLoginWithRedirectToWithPathExecuteFine() throws Exception {
+
+        final String path = "/do/login.action";
+        final String redirectPath = "/pages/en/homepage/";
+        final String contextRoot = "/entando-de-app";
+        final String protoAndServerName = "http://dev.entando.org";
+
+        testLoginExecuteFine(protoAndServerName, contextRoot, path, contextRoot+redirectPath, redirectPath);
+
+    }
+
+    @Test
+    void shouldLoginWithRedirectToSameDomainWithDifferentSchemaExecuteFine() throws Exception {
+
+        String path = "/do/login.action";
+        when(configuration.isEnabled()).thenReturn(true);
+        when(request.getServletPath()).thenReturn(path);
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://dev.entando.org/entando-de-app/do/login.action"));
+        when(request.getParameter("code")).thenReturn(null);
+        when(request.getParameter("state")).thenReturn(null);
+        when(request.getParameter("redirectTo")).thenReturn("https://dev.entando.org/entando-de-app/pages/en/mypage");
+        when(request.getContextPath()).thenReturn("/entando-de-app");
+
+        final String redirect = "http://dev.entando.org/auth/realms/entando/protocol/openid-connect/auth";
+        when(oidcService.getRedirectUrl(any(), any())).thenReturn(redirect);
+
+        try ( MockedStatic<WebApplicationContextUtils> wacUtil = Mockito.mockStatic(WebApplicationContextUtils.class)) {
+            wacUtil.when(() -> WebApplicationContextUtils.getWebApplicationContext(svCtx)).thenReturn(wac);
+            keycloakFilter.doFilter(request, response, filterChain);
+        }
+        verify(session,times(1)).setAttribute(KeycloakFilter.SESSION_PARAM_REDIRECT, "/pages/en/mypage");
+        verify(response).sendRedirect(redirect);
+
+    }
+
 
     static class ServletOutputStreamWrapper extends ServletOutputStream {
         private final StringWriter writer;

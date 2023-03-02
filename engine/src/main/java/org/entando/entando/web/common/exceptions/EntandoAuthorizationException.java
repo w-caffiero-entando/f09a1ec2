@@ -21,6 +21,7 @@ public class EntandoAuthorizationException extends RuntimeException {
     private String username;
 
     public EntandoAuthorizationException(String message, HttpServletRequest request, String username) {
+        super(message);
         this.request = request;
         this.username = username;
     }
