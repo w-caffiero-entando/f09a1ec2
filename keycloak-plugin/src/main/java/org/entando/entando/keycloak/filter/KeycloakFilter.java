@@ -15,6 +15,7 @@ package org.entando.entando.keycloak.filter;
 
 import static org.entando.entando.KeycloakWiki.wiki;
 import static org.entando.entando.aps.servlet.security.KeycloakSecurityConfig.API_PATH;
+import static org.entando.entando.ent.util.EntSanitization.fixJavaSecS5145;
 
 import com.agiletec.aps.system.EntThreadLocal;
 import com.agiletec.aps.system.SystemConstants;
@@ -40,7 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.KeycloakWiki;
 import org.entando.entando.aps.servlet.security.GuestAuthentication;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.aps.util.LogUtils;
 import org.entando.entando.aps.util.UrlUtils;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.keycloak.services.KeycloakAuthorizationManager;
@@ -226,10 +226,13 @@ public class KeycloakFilter implements Filter {
         final String error = request.getParameter("error");
         final String errorDescription = request.getParameter("error_description");
 
-        log.debug("doLogin with params code:'{}' state:'{}' redirectUri:'{}' redirectTo:'{}' error:'{}' error_description:'{}'",
-                LogUtils.cleanupDataForLog(authorizationCode), LogUtils.cleanupDataForLog(stateParameter),
-                LogUtils.cleanupDataForLog(redirectUri), LogUtils.cleanupDataForLog(redirectTo),
-                LogUtils.cleanupDataForLog(error), LogUtils.cleanupDataForLog(errorDescription));
+        if(log.isDebugEnabled()) {
+            log.debug(
+                    "doLogin with params code:'{}' state:'{}' redirectUri:'{}' redirectTo:'{}' error:'{}' error_description:'{}'",
+                    fixJavaSecS5145(authorizationCode), fixJavaSecS5145(stateParameter),
+                    fixJavaSecS5145(redirectUri), fixJavaSecS5145(redirectTo),
+                    fixJavaSecS5145(error), fixJavaSecS5145(errorDescription));
+        }
 
         if (StringUtils.isNotEmpty(error)) {
             if ("unsupported_response_type".equals(error)) {
@@ -310,9 +313,10 @@ public class KeycloakFilter implements Filter {
     }
 
     private String extractRedirectToPathOrThrowExceptionIfWrongDomain(String redirectTo, HttpServletRequest request){
-        log.debug("doLogin evaluate redirect with redirectTo:'{}' requestURL:'{}' servletPath:'{}'",
-                LogUtils.cleanupDataForLog(redirectTo), request.getRequestURL(), request.getServletPath());
-
+        if(log.isDebugEnabled()) {
+            log.debug("doLogin evaluate redirect with redirectTo:'{}' requestURL:'{}' servletPath:'{}'",
+                    fixJavaSecS5145(redirectTo), request.getRequestURL(), request.getServletPath());
+        }
         Optional<String> redirectToPath = UrlUtils.fetchPathFromUri(redirectTo);
         String redirectPathWithoutContextRoot = redirectToPath
                 .flatMap(p -> UrlUtils.removeContextRootFromPath(p, request))
@@ -326,15 +330,6 @@ public class KeycloakFilter implements Filter {
                         redirectServerName);
             }
         });
-        /*
-        final String path = request.getRequestURL().toString().replace(request.getServletPath(), "");
-        final String redirect = redirectTo.replace(path, "");
-        if (!redirect.startsWith("/")) {
-            log.error("doLogin invalid redirect:'{}'", redirect);
-            throw new EntandoTokenException("Invalid redirect", request, "guest");
-        }
-        */
-
         log.debug("doLogin set SESSION_PARAM_REDIRECT redirect:'{}'", redirectPathWithoutContextRoot);
         return redirectPathWithoutContextRoot;
     }
@@ -349,38 +344,11 @@ public class KeycloakFilter implements Filter {
         final String redirectPath = session.getAttribute(SESSION_PARAM_REDIRECT) != null
                 ? session.getAttribute(SESSION_PARAM_REDIRECT).toString()
                 : "/do/main";
-        String baseUrl = this.getBaseURL(request);
+        String baseUrl = UrlUtils.composeBaseUrl(request).toString();
         String redirectUrl = baseUrl + request.getContextPath() + redirectPath;
         log.info("Redirecting user to {}", redirectUrl);
         session.setAttribute(SESSION_PARAM_REDIRECT, null);
         response.sendRedirect(redirectUrl);
-    }
-
-    private String getBaseURL(HttpServletRequest request) {
-        StringBuilder link = new StringBuilder();
-        String reqScheme = request.getHeader("X-Forwarded-Proto");
-        if (StringUtils.isBlank(reqScheme)) {
-            reqScheme = request.getScheme();
-        }
-        link.append(reqScheme);
-        link.append("://");
-        String serverName = request.getServerName();
-        link.append(serverName);
-        boolean checkPort = false;
-        String hostName = request.getHeader("Host");
-        if (null != hostName && hostName.startsWith(serverName)) {
-            checkPort = true;
-            if (hostName.length() > serverName.length()) {
-                String encodedHostName = org.owasp.encoder.Encode.forHtmlContent(hostName);
-                link.append(encodedHostName.substring(serverName.length()));
-            }
-        }
-        if (!checkPort) {
-            link.append(":").append(request.getServerPort());
-        }
-        log.debug("Calculated baseURL:'{}' from reqScheme:'{}' serverName:'{} hostName:'{}''",
-                link, reqScheme, serverName, hostName);
-        return link.toString();
     }
 
     private boolean isInvalidCredentials(final HttpClientErrorException exception) {

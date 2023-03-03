@@ -17,6 +17,7 @@ import com.agiletec.aps.system.EntThreadLocal;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.util.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +34,8 @@ public final class ApsTenantApplicationUtils {
 	}
 
 	private static String getDomainFromRequest(HttpServletRequest request){
-		String serverName = request.getServerName();
-		logger.debug("Retrieved from serverName:'{}' the domain:'{}'", serverName, serverName);
+		String serverName = UrlUtils.fetchServer(request);
+		logger.debug("Retrieved from serverName:'{}' the domain:'{}'", request.getServerName(), serverName);
 		return serverName;
 	}
 

@@ -16,19 +16,17 @@ package org.entando.entando.aps.util;
 import com.google.common.net.HttpHeaders;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import javax.net.ssl.HttpsURLConnection;
-import javax.print.attribute.standard.ReferenceUriSchemesSupported;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
-import org.springframework.security.web.header.Header;
 
 @Slf4j
 public final class UrlUtils {
@@ -63,13 +61,6 @@ public final class UrlUtils {
     public static String fetchServer(HttpServletRequest request){
         return getHostFromXHeader(request)
                 .orElseGet(() -> getHostFromHeader(request).orElse(request.getServerName()));
-        // FIXME encoding
-        // seems valid only for port ... to encode ?
-//        if (hostName.length() > serverName.length()) {
-//            String encodedHostName = org.owasp.encoder.Encode.forHtmlContent(hostName);
-//            link.append(encodedHostName.substring(serverName.length()));
-//        }
-
     }
 
     private static Optional<String> getHostFromXHeader(HttpServletRequest request){
@@ -83,9 +74,11 @@ public final class UrlUtils {
                 .map(s -> s.split(":")[0]);
     }
 
-    public static int fetchPort(HttpServletRequest request) {
-        return getPortFromXHeader(request)
-                .orElseGet(() -> getPortFromHeader(request).orElse(request.getServerPort()));
+    public static Optional<Integer> fetchPort(HttpServletRequest request) {
+        Integer port = getPortFromXHeader(request)
+                .orElseGet(() -> getPortFromHeader(request)
+                        .orElseGet(() -> getPortServlet(request)));
+        return Optional.ofNullable(port);
     }
 
     private static Optional<Integer> getPortFromXHeader(HttpServletRequest request){
@@ -96,12 +89,19 @@ public final class UrlUtils {
         return Optional.ofNullable(request.getHeader(HttpHeaders.HOST))
                 .filter(StringUtils::isNotBlank)
                 .filter(s -> s.startsWith(request.getServerName()))
-                .filter(s -> s.contains(":"))
-                .map(s -> s.split(":"))
-                .filter(part -> part.length > 1)
-                .map(part -> part[1])
+                .filter(UrlUtils::hostHeaderContainsPort)
+                .map(host -> host.split(":")[1])
                 .map(Encode::forHtmlContent) // FIXME is unuseful ???
                 .map(Integer::valueOf);
+    }
+
+    private static boolean hostHeaderContainsPort(String header) {
+        return header.contains(":") && header.split(":").length > 1;
+    }
+
+
+    private static Integer getPortServlet(HttpServletRequest request) {
+        return request.getServerPort() == 0 ? null : request.getServerPort();
     }
 
     public static Optional<String> fetchServerNameFromUri(String uri){
@@ -135,6 +135,46 @@ public final class UrlUtils {
             log.debug("error with url:'{}'", url, ex);
             return null;
         }
+    }
+
+    public static URL composeBaseUrl(HttpServletRequest request){
+        String reqScheme = UrlUtils.fetchScheme(request);
+        String serverName = UrlUtils.fetchServer(request);
+        Optional<Integer> port = UrlUtils.fetchPort(request);
+
+        return generateUrl(reqScheme, serverName, port, request);
+    }
+
+    private static URL generateUrl(String reqScheme, String serverName, Optional<Integer> port, HttpServletRequest request) {
+        try {
+            URL baseUrl = null;
+            if ( port.isEmpty() || isStandardHttp(reqScheme, port.get()) || isStandardHttps(reqScheme, port.get()) || forcedHttps(request, port.get()) ) {
+                baseUrl = new URL(reqScheme, serverName, "");
+            } else {
+                baseUrl = new URL(reqScheme, serverName, port.get(), "");
+            }
+            return baseUrl;
+
+        } catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static boolean isStandardHttp(String reqScheme, int port) {
+        return HTTP_SCHEME.equals(reqScheme) && 80 == port;
+    }
+
+    private static boolean isStandardHttps(String reqScheme, int port) {
+        return HTTPS_SCHEME.equals(reqScheme) && 443 == port;
+    }
+
+    private static boolean forcedHttps(HttpServletRequest request, int port) {
+        return (HTTPS_SCHEME.equals(getProtoFromXHeader(request).orElse("")) && isStandardPort(port) )||
+                (HTTPS_SCHEME.equals(getProtoFromEnv().orElse("")) && isStandardPort(port) ) ;
+    }
+
+    private static boolean isStandardPort(int port) {
+        return 443 == port || 80 == port;
     }
 
     public static class EntUrlBuilder {

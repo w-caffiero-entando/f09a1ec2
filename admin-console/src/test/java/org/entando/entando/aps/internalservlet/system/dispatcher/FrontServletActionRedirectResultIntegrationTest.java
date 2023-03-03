@@ -49,6 +49,7 @@ class FrontServletActionRedirectResultIntegrationTest extends ApsAdminBaseTestCa
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, langManager.getDefaultLang());
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, 0);
         ((MockHttpServletRequest) super.getRequest()).setScheme("https");
+        ((MockHttpServletRequest) super.getRequest()).setServerPort(443);
         ((MockHttpServletRequest) super.getRequest()).setServerName("www.myproduct.com");
         ((MockHttpServletRequest) super.getRequest()).removeHeader("Host");
         ((MockHttpServletRequest) super.getRequest()).addHeader("Host", "www.myproduct.com");

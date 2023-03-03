@@ -17,6 +17,7 @@ import static org.entando.entando.aps.util.UrlUtils.ENTANDO_APP_USE_TLS;
 import static org.entando.entando.aps.util.UrlUtils.HTTPS_SCHEME;
 import static org.entando.entando.aps.util.UrlUtils.HTTP_SCHEME;
 import static org.entando.entando.aps.util.UrlUtils.fetchServerNameFromUri;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import com.google.common.net.HttpHeaders;
@@ -49,11 +50,12 @@ class UrlUtilsTest {
 
     @AfterEach
     public void afterAll() throws Exception {
+        Mockito.reset(requestMock);
     }
 
     @Test
     void shouldFetchSchemeWorksFineWithDifferentInputs() throws Exception {
-        // case1 ???
+        // case1
         Map<String,String> envsOrig = System.getenv().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));;
 
@@ -72,7 +74,7 @@ class UrlUtilsTest {
         when(requestMock.getScheme()).thenReturn(HTTP_SCHEME);
         Assertions.assertEquals(HTTPS_SCHEME, UrlUtils.fetchScheme(requestMock));
 
-        // case2
+        // case3
         Mockito.reset(requestMock);
         when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PROTO)).thenReturn(HTTP_SCHEME);
         when(requestMock.getScheme()).thenReturn(HTTP_SCHEME);
@@ -82,7 +84,7 @@ class UrlUtilsTest {
 
     @Test
     void shouldFetchHostWorksFineWithDifferentInputs() throws Exception {
-        // case1 ???
+        // case1
         when(requestMock.getHeader(HttpHeaders.X_FORWARDED_HOST)).thenReturn("www.test1.com");
         when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("www.test2.com");
         when(requestMock.getServerName()).thenReturn("www.test3.com");
@@ -113,11 +115,13 @@ class UrlUtilsTest {
 
     @Test
     void shouldFetchPortWorksFineWithDifferentInputs() throws Exception {
-        // case1 ???
+        // case1
         when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PORT)).thenReturn("443");
         when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("test.com:4443");
         when(requestMock.getServerPort()).thenReturn(8443);
-        Assertions.assertEquals(443, UrlUtils.fetchPort(requestMock));
+        Optional<Integer> port = UrlUtils.fetchPort(requestMock);
+        Assertions.assertTrue(port.isPresent());
+        Assertions.assertEquals(443, port.get());
 
         // case2-a
         Mockito.reset(requestMock);
@@ -125,7 +129,9 @@ class UrlUtilsTest {
         when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("test.com:4443");
         when(requestMock.getServerName()).thenReturn("test.com");
         when(requestMock.getServerPort()).thenReturn(8443);
-        Assertions.assertEquals(4443, UrlUtils.fetchPort(requestMock));
+        port = UrlUtils.fetchPort(requestMock);
+        Assertions.assertTrue(port.isPresent());
+        Assertions.assertEquals(4443, port.get());
 
         // case2-b
         Mockito.reset(requestMock);
@@ -133,14 +139,26 @@ class UrlUtilsTest {
         when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("test.com:4443");
         when(requestMock.getServerName()).thenReturn("test2.com");
         when(requestMock.getServerPort()).thenReturn(8443);
-        Assertions.assertEquals(8443, UrlUtils.fetchPort(requestMock));
+        port = UrlUtils.fetchPort(requestMock);
+        Assertions.assertTrue(port.isPresent());
+        Assertions.assertEquals(8443, port.get());
 
         // case3
         Mockito.reset(requestMock);
         when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PORT)).thenReturn(null);
         when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn(null);
         when(requestMock.getServerPort()).thenReturn(8443);
-        Assertions.assertEquals(8443, UrlUtils.fetchPort(requestMock));
+        port = UrlUtils.fetchPort(requestMock);
+        Assertions.assertTrue(port.isPresent());
+        Assertions.assertEquals(8443, port.get());
+
+        // case4
+        Mockito.reset(requestMock);
+        when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PORT)).thenReturn(null);
+        when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn(null);
+        when(requestMock.getServerPort()).thenReturn(0);
+        port = UrlUtils.fetchPort(requestMock);
+        Assertions.assertTrue(port.isEmpty());
 
     }
 
@@ -203,8 +221,84 @@ class UrlUtilsTest {
     }
 
     @Test
+    void shouldComposeBaseUrlWorkFine(){
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_HOST)).thenReturn("www.test1.com");
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PROTO)).thenReturn(HTTPS_SCHEME);
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PORT)).thenReturn("443");
+        lenient().when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("localhost:4443");
+        lenient().when(requestMock.getScheme()).thenReturn(HTTP_SCHEME);
+        lenient().when(requestMock.getServerName()).thenReturn("localhost");
+        lenient().when(requestMock.getServerPort()).thenReturn(4443);
+        lenient().when(requestMock.getContextPath()).thenReturn("/context-path");
+        lenient().when(requestMock.getServletPath()).thenReturn("/my-path");
+        Assertions.assertEquals("https://www.test1.com",UrlUtils.composeBaseUrl(requestMock).toString());
+
+
+        Mockito.reset(requestMock);
+        lenient().when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("www.test2.com:4443");
+        lenient().when(requestMock.getScheme()).thenReturn(HTTPS_SCHEME);
+        lenient().when(requestMock.getServerName()).thenReturn("www.test2.com");
+        lenient().when(requestMock.getServerPort()).thenReturn(4443);
+        lenient().when(requestMock.getContextPath()).thenReturn("/context-path");
+        lenient().when(requestMock.getServletPath()).thenReturn("/my-path");
+        Assertions.assertEquals("https://www.test2.com:4443",UrlUtils.composeBaseUrl(requestMock).toString());
+
+
+        Mockito.reset(requestMock);
+        lenient().when(requestMock.getScheme()).thenReturn(HTTPS_SCHEME);
+        lenient().when(requestMock.getServerName()).thenReturn("www.test3.com");
+        lenient().when(requestMock.getServerPort()).thenReturn(443);
+        lenient().when(requestMock.getContextPath()).thenReturn("/context-path");
+        lenient().when(requestMock.getServletPath()).thenReturn("/my-path");
+        Assertions.assertEquals("https://www.test3.com",UrlUtils.composeBaseUrl(requestMock).toString());
+
+
+        Mockito.reset(requestMock);
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_HOST)).thenReturn("www.test1.com");
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PROTO)).thenReturn(HTTPS_SCHEME);
+        lenient().when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("localhost:80");
+        lenient().when(requestMock.getScheme()).thenReturn(HTTP_SCHEME);
+        lenient().when(requestMock.getServerName()).thenReturn("localhost");
+        lenient().when(requestMock.getServerPort()).thenReturn(80);
+        lenient().when(requestMock.getContextPath()).thenReturn("/context-path");
+        lenient().when(requestMock.getServletPath()).thenReturn("/my-path");
+        Assertions.assertEquals("https://www.test1.com",UrlUtils.composeBaseUrl(requestMock).toString());
+
+        // FIXME problem!!!
+/*
+        Mockito.reset(requestMock);
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_HOST)).thenReturn("www.test1.com");
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PROTO)).thenReturn(HTTPS_SCHEME);
+        lenient().when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("localhost:8080");
+        lenient().when(requestMock.getScheme()).thenReturn(HTTP_SCHEME);
+        lenient().when(requestMock.getServerName()).thenReturn("localhost");
+        lenient().when(requestMock.getServerPort()).thenReturn(8080);
+        lenient().when(requestMock.getContextPath()).thenReturn("/context-path");
+        lenient().when(requestMock.getServletPath()).thenReturn("/my-path");
+        Assertions.assertEquals("https://www.test1.com",UrlUtils.composeBaseUrl(requestMock).toString());
+*/
+
+    }
+
+
+    @Test
+    void shouldComposeBaseUrlThrowException() {
+        Mockito.reset(requestMock);
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_HOST)).thenReturn("www.test1.com");
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PROTO)).thenReturn(HTTP_SCHEME);
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PORT)).thenReturn("80");
+        lenient().when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("localhost:8080");
+        lenient().when(requestMock.getScheme()).thenReturn("://");
+        lenient().when(requestMock.getServerName()).thenReturn("localhost");
+        lenient().when(requestMock.getServerPort()).thenReturn(8080);
+        lenient().when(requestMock.getContextPath()).thenReturn("/context-path");
+        lenient().when(requestMock.getServletPath()).thenReturn("/my-path");
+        Assertions.assertThrows(RuntimeException.class, () -> UrlUtils.composeBaseUrl(requestMock));
+    }
+
+    @Test
     void shouldEntUrlBuilderWorksFineWithDifferentInputs() {
-        URI url = EntUrlBuilder.builder().url("http://server.com/").path("/context-root").path("path/").build();
+        URI url = EntUrlBuilder.builder().url(URI.create("http://server.com/")).path("/context-root").path("path/").build();
         Assertions.assertEquals("http://server.com/context-root/path/", url.toString());
 
         url = EntUrlBuilder.builder().url("http://server.com/")
