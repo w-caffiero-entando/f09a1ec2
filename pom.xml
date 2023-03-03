@@ -21,9 +21,11 @@
         <module>cms-plugin</module>
         <module>mail-plugin</module>
         <module>redis-plugin</module>
+        <module>cds-plugin</module>
         <module>seo-plugin</module>
         <module>versioning-plugin</module>
         <module>contentscheduler-plugin</module>
+        <module>solr-plugin</module>
         <module>webapp</module>
     </modules>
 
@@ -189,6 +191,8 @@
         <xercesImpl.version>2.12.2</xercesImpl.version>
         <junrar.version>7.4.1</junrar.version>
         <netty-common.version>4.1.77.Final</netty-common.version>
+        <commons-fileupload.version>1.5</commons-fileupload.version>
+        <solr-solrj.version>8.11.1</solr-solrj.version>
     </properties>
     <issueManagement>
         <system>Github</system>
@@ -1577,6 +1581,11 @@
                 <groupId>io.netty</groupId>
                 <artifactId>netty-common</artifactId>
                 <version>${netty-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

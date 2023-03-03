@@ -29,6 +29,8 @@ public interface ISearchEngineDAOFactory {
      */
     public void init() throws Exception;
 
+    public void close() throws Exception;
+
     public boolean checkCurrentSubfolder() throws EntException;
 
     /**

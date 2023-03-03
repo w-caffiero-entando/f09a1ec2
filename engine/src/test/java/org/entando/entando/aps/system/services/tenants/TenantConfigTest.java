@@ -13,6 +13,7 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
@@ -89,13 +90,13 @@ class TenantConfigTest {
 
         Map<String, String> map2 = Map.of("dbUrl", "1",
                 "dbUsername", "2",
-                "dbPassword", "3", "domainPrefix", "4");
+                "dbPassword", "3", "fqdns", "test.com,pippo.com,www.com");
 
         tc.putAll(map2);
         Assertions.assertThat(tc.getDbUrl()).isEqualTo("1");
         Assertions.assertThat(tc.getDbUsername()).isEqualTo("2");
         Assertions.assertThat(tc.getDbPassword()).isEqualTo("3");
-        Assertions.assertThat(tc.getDomainPrefix()).isEqualTo("4");
+        Assertions.assertThat(tc.getFqdns()).contains("pippo.com");
 
     }
 }

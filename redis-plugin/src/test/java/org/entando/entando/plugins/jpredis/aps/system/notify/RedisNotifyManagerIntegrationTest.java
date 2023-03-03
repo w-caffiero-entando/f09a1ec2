@@ -1,5 +1,6 @@
 package org.entando.entando.plugins.jpredis.aps.system.notify;
 
+import com.agiletec.aps.system.EntThreadLocal;
 import com.agiletec.aps.system.services.lang.events.LangsChangedEvent;
 import io.lettuce.core.internal.LettuceFactories;
 import java.util.HashMap;
@@ -12,8 +13,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -28,11 +27,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath*:spring/web/**.xml"
 })
 @WebAppConfiguration(value = "")
-@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class RedisNotifyManagerIntegrationTest {
 
     @BeforeAll
     static void setUp() {
+        EntThreadLocal.clear();
         TestEntandoJndiUtils.setupJndi();
     }
 
@@ -40,11 +39,18 @@ class RedisNotifyManagerIntegrationTest {
     private RedisNotifyManager redisNotifyManager;
 
     @Test
+    void test() throws Exception {
+        testNotifyEvent();
+        testNotifyCustomEvent();
+    }
+
+
     void testNotifyEvent() throws Exception {
         DefaultRedisPubSubListener listener = this.createListener();
         Assertions.assertNotNull(this.redisNotifyManager);
-        this.redisNotifyManager.addListener("testchannel", listener);
+        this.redisNotifyManager.addListener("testchannel1", listener);
         LangsChangedEvent event = new LangsChangedEvent();
+        event.setChannel("testchannel1");
         redisNotifyManager.notify(event);
         synchronized (this) {
             wait(1000);
@@ -53,19 +59,18 @@ class RedisNotifyManagerIntegrationTest {
         Assertions.assertEquals(0, listener.getMessages().size());
     }
 
-    @Test
     void testNotifyCustomEvent() throws Exception {
         DefaultRedisPubSubListener listener = this.createListener();
         Assertions.assertEquals(0, listener.getMessages().size());
         Assertions.assertEquals(0, listener.getCounts().size());
 
         Assertions.assertNotNull(this.redisNotifyManager);
-        redisNotifyManager.addListener("testchannel", listener);
+        redisNotifyManager.addListener("testchannel2", listener);
         Map<String, String> properties = new HashMap<>();
         properties.put("aaa", "111");
         properties.put("bbb", "222");
         properties.put("ccc", "333");
-        TestEvent event = new TestEvent("testchannel", properties);
+        TestEvent event = new TestEvent("testchannel2", properties);
 
         redisNotifyManager.notify(event);
         synchronized (this) {

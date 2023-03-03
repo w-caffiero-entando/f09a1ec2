@@ -3,9 +3,11 @@ package org.entando.entando.plugins.jpredis.aps.system.notify;
 import io.lettuce.core.internal.LettuceFactories;
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import java.util.concurrent.BlockingQueue;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class DefaultRedisPubSubListener implements RedisPubSubListener<String, String> {
-    
+
     private BlockingQueue<String> channels;
     private BlockingQueue<String> patterns;
     private BlockingQueue<String> messages;
@@ -20,14 +22,14 @@ public class DefaultRedisPubSubListener implements RedisPubSubListener<String, S
 
     @Override
     public void message(String channel, String message) {
-        System.out.println(String.format("Channel: %s, Message: %s", channel, message));
+        log.info("Channel: '{}', Message: '{}'", channel, message);
         channels.add(channel);
         messages.add(message);
     }
 
     @Override
     public void message(String pattern, String channel, String message) {
-        System.out.println(String.format("pattern: %s, Channel: %s, Message: %s", pattern, channel, message));
+        log.info("pattern: '{}', Channel: '{}', Message: '{}'", pattern, channel, message);
         patterns.add(pattern);
         channels.add(channel);
         messages.add(message);
@@ -35,14 +37,14 @@ public class DefaultRedisPubSubListener implements RedisPubSubListener<String, S
 
     @Override
     public void subscribed(String channel, long count) {
-        System.out.println(String.format("channel: %s, count: %s", channel, count));
+        log.info("channel: '{}', count: '{}'", channel, count);
         channels.add(channel);
         counts.add(count);
     }
 
     @Override
     public void psubscribed(String pattern, long count) {
-        System.out.println(String.format("pattern: %s, pattern: %s", pattern, count));
+        log.info("pattern: '{}', pattern: '{}'", pattern, count);
         patterns.add(pattern);
         counts.add(count);
     }

@@ -1,19 +1,16 @@
 package org.entando.aps;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * This class is here only to provide coverage stats
  */
+@Slf4j
 public class Dummy {
 
     boolean halfCoverage = true;
 
     public void doSomethingUseless() {
-        if (!halfCoverage) {
-            System.out.println("This line won't execute");
-            System.out.println("This line won't execute either");
-            System.out.println("This line won't execute either");
-            System.out.println("This line won't execute either to ensure 50% code coverage");
-        }
-        System.out.println("This line will execute");
+        log.debug("This line will execute");
     }
 }

@@ -8,6 +8,7 @@ import org.entando.entando.keycloak.services.oidc.exception.OidcException;
 import org.entando.entando.keycloak.services.oidc.model.AuthResponse;
 import org.entando.entando.keycloak.services.oidc.model.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -36,7 +37,7 @@ public class KeycloakService {
 
 
     @Autowired
-    public KeycloakService(final KeycloakConfiguration configuration, final OpenIDConnectService oidcService, final RestTemplate rest) {
+    public KeycloakService(final KeycloakConfiguration configuration, final OpenIDConnectService oidcService, @Qualifier("keycloakRestTemplate")final RestTemplate rest) {
         this.configuration = configuration;
         this.oidcService = oidcService;
         this.restTemplate = rest;

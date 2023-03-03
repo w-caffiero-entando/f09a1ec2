@@ -13,12 +13,6 @@
     <name>Entando App Engine Webapp</name>
     <url>http://www.entando.com/</url>
     <properties>
-        <!-- SONAR -->
-        <github.organization>entando</github.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.organization>${github.organization}</sonar.organization>
-        <sonar.projectKey>${github.organization}_${project.artifactId}</sonar.projectKey>
-
         <!-- TESTS -->
         <test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</test.database.driver>
         <test.database.hostname>localhost</test.database.hostname>
@@ -116,8 +110,18 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.entando.entando.plugins</groupId>
+            <artifactId>entando-plugin-jpcds</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.entando.entando</groupId>
             <artifactId>entando-keycloak-auth</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.entando.entando.plugins</groupId>
+            <artifactId>entando-plugin-jpsolr</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -750,38 +754,6 @@
             </plugin>
             <!-- End of Fabric8 docker plugin -->
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.2</version>
-                <executions>
-                    <execution>
-                        <id>pre-unit-tests</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <destFile>${project.build.directory}/coverage/jacoco/jacoco.exec</destFile>
-                        </configuration>
-                    </execution>
-                    <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run -->
-                    <execution>
-                        <id>post-unit-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <excludes>
-                                <exclude>src/main/java/org/entando/entando/attic/*.*</exclude>
-                            </excludes>
-                            <dataFile>${project.build.directory}/coverage/jacoco/jacoco.exec</dataFile>
-                            <outputDirectory>${project.build.directory}/coverage/jacoco</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>1.0-beta-1</version>
@@ -847,7 +819,13 @@
                                     <directory>${basedir}/../redis-plugin/src/main/webapp</directory>
                                 </resource>
                                 <resource>
+                                    <directory>${basedir}/../cds-plugin/src/main/webapp</directory>
+                                </resource>
+                                <resource>
                                     <directory>${basedir}/../versioning-plugin/src/main/webapp</directory>
+                                </resource>
+                                <resource>
+                                    <directory>${basedir}/../solr-plugin/src/main/webapp</directory>
                                 </resource>
                             </resources>
                         </configuration>

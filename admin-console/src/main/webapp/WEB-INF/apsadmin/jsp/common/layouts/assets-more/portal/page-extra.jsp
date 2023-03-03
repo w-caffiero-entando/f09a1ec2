@@ -2,7 +2,7 @@
 <%@ taglib prefix="wp" uri="/aps-core" %>
 
 <s:if test="strutsAction != 2" >
-    <script src="<wp:resourceURL />administration/js/generate-code-from-title.js"></script>
+    <script src="<wp:resourceURL ignoreTenant="true" />administration/js/generate-code-from-title.js"></script>
 </s:if>
 <script>
     $(document).ready(function () {

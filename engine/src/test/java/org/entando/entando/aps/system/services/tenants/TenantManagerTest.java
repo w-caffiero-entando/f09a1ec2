@@ -13,6 +13,7 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -24,6 +25,7 @@ class TenantManagerTest {
     private String tenantConfigs="[{\n"
             + "    \"tenantCode\": \"TE_nant1\",\n"
             + "    \"kcEnabled\": true,\n"
+            + "    \"fqdns\": \"tenant1.com,tenant2.com\",\n"
             + "    \"kcAuthUrl\": \"http://tenant1.test.nip.io/auth\",\n"
             + "    \"kcRealm\": \"tenant1\",\n"
             + "    \"kcClientId\": \"quickstart\",\n"
@@ -34,8 +36,7 @@ class TenantManagerTest {
             + "    \"dbDriverClassName\": \"org.postgresql.Driver\",\n"
             + "    \"dbUrl\": \"jdbc:postgresql://testDbServer:5432/tenantDb1\",\n"
             + "    \"dbUsername\": \"db_user_2\",\n"
-            + "    \"dbPassword\": \"db_password_2\",\n"
-            + "    \"domainPrefix\": \"tenant1\"\n"
+            + "    \"dbPassword\": \"db_password_2\"\n"
             + "}, {\n"
             + "    \"tenantCode\": \"tenant2\",\n"
             + "    \"kcEnabled\": true,\n"
@@ -66,18 +67,34 @@ class TenantManagerTest {
             + "    \"dbUrl\": \"jdbc:postgresql://testDbServer:5432/tenantDb1\",\n"
             + "    \"dbUsername\": \"db_user_2\",\n"
             + "    \"dbPassword\": \"db_password_2\",\n"
-            + "    \"domainPrefix\": \"tenant1\"\n,"
+            + "    \"fqdns\": \"tenant1.com\"\n,"
             + "    \"customField1\": \"custom_value_1\"\n,"
             + "    \"customField2\": \"custom_value_2\""
             + "}]";
 
+    private String tenantWithPrimaryCodeConfigs="[{\n"
+            + "    \"tenantCode\": \"primary\",\n"
+            + "    \"kcEnabled\": true,\n"
+            + "    \"kcAuthUrl\": \"http://tenant2.test.nip.io/auth\",\n"
+            + "    \"kcRealm\": \"tenant2\",\n"
+            + "    \"kcClientId\": \"quickstart\",\n"
+            + "    \"kcClientSecret\": \"secret2\",\n"
+            + "    \"kcPublicClientId\": \"entando-web\",\n"
+            + "    \"kcSecureUris\": \"\",\n"
+            + "    \"kcDefaultAuthorizations\": \"\",\n"
+            + "    \"dbDriverClassName\": \"org.postgresql.Driver\",\n"
+            + "    \"dbUrl\": \"jdbc:postgresql://testDbServer:5432/tenantDb2\",\n"
+            + "    \"dbUsername\": \"db_user_1\",\n"
+            + "    \"dbPassword\": \"db_password_1\"\n"
+            + "}]\n";
 
     @Test
     void shouldAllOperationWorkFineWithConfigMapsWithCustomFields() throws Throwable {
         TenantManager tm = new TenantManager(tenantConfigsWithCustomFields, new ObjectMapper());
         tm.refresh();
-        TenantConfig tc = tm.getConfig("TE_nant1");
-        Assertions.assertThat(tc).isNotNull();
+        Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
+        Assertions.assertThat(otc).isNotEmpty();
+        TenantConfig tc = otc.get();
         Optional<String> customValue1 = tc.getProperty("customField1");
         Optional<String> customValue2 = tc.getProperty("customField2");
         Optional<String> customValue3 = tc.getProperty("customField3");
@@ -87,12 +104,17 @@ class TenantManagerTest {
     }
     @Test
     void shouldAllOperationWorkFineWithCorrectInput() throws Throwable {
+
         TenantManager tm = new TenantManager(tenantConfigs, new ObjectMapper());
         tm.refresh();
-        TenantConfig tc = tm.getConfig("TE_nant1");
+        Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
+        Assertions.assertThat(otc).isNotEmpty();
+        TenantConfig tc = otc.get();
         Assertions.assertThat(tc.isKcEnabled()).isTrue();
-        tc = tm.getTenantConfigByDomainPrefix("tenant1");
-        Assertions.assertThat(tc.getDomainPrefix()).isEqualTo("tenant1");
+        otc = tm.getTenantConfigByDomain("tenant1.com");
+        Assertions.assertThat(otc).isNotEmpty();
+        tc = otc.get();
+        Assertions.assertThat(tc.getFqdns()).contains("tenant1.com");
         BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant1");
         Assertions.assertThat(ds.getDriverClassName()).isEqualTo("org.postgresql.Driver");
         Assertions.assertThat(tm.exists("pippo")).isFalse();
@@ -105,15 +127,32 @@ class TenantManagerTest {
     @Test
     void shouldAllOperationWorkFineWithBadInput() throws Throwable {
         TenantManager tm = new TenantManager("[\"pippo\"pippo]", new ObjectMapper());
-        tm.refresh();
-        TenantConfig tc = tm.getConfig("TE_nant1");
-        Assertions.assertThat(tc).isNull();
+        Assertions.catchThrowableOfType(() -> tm.refresh(), JsonMappingException.class);
 
-        tc = tm.getTenantConfigByDomainPrefix("tenant1");
-        Assertions.assertThat(tc).isNull();
+        Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
+        Assertions.assertThat(otc).isEmpty();
+
+        otc = tm.getTenantConfigByDomain("tenant2.com");
+        Assertions.assertThat(otc).isEmpty();
 
         BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant_not_found");
         Assertions.assertThat(ds).isNull();
-
     }
+
+    @Test
+    void shouldInitThroExceptionWithTenantCodeWithValuePrimary() throws Throwable {
+        TenantManager tm = new TenantManager(tenantWithPrimaryCodeConfigs, new ObjectMapper());
+        RuntimeException ex = Assertions.catchThrowableOfType(() -> tm.refresh(), RuntimeException.class);
+        Assertions.assertThat(ex.getMessage()).isEqualTo("You cannot use 'primary' as tenant code");
+
+        Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
+        Assertions.assertThat(otc).isEmpty();
+
+        otc = tm.getTenantConfigByDomain("tenant2.com");
+        Assertions.assertThat(otc).isEmpty();
+
+        BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant_not_found");
+        Assertions.assertThat(ds).isNull();
+    }
+
 }

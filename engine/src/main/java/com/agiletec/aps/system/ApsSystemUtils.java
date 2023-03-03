@@ -15,6 +15,8 @@ package com.agiletec.aps.system;
 
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 /**
  * Utility class for system logger
@@ -24,7 +26,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 public class ApsSystemUtils {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ApsSystemUtils.class);
-
+    private static final Marker startupMarker = MarkerFactory.getMarker("STARTUP");
     private static final boolean ENABLE_DIRECT_STDOUT_TRACE =
             ("" + System.getProperty("org.entando.enableDirectStdoutTrace")).equals("true");
     
@@ -70,7 +72,7 @@ public class ApsSystemUtils {
 
     public static boolean directStdoutTrace(String str, boolean force) {
         if (ENABLE_DIRECT_STDOUT_TRACE || force) {
-            System.out.println(str);    //NOSONAR
+            logger.info(startupMarker, str);
             return true;
         } else {
             return false;

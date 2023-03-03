@@ -40,17 +40,17 @@ class ApsTenantApplicationUtilsTest {
             apsWebApplicationUtils.when(() -> ApsWebApplicationUtils.getBean(ITenantManager.class,httpServletRequest)).thenReturn(tenantManager);
 
             Mockito.when(httpServletRequest.getServerName()).thenReturn("www.test.com");
-            Mockito.when(tenantManager.getTenantCodeByDomainPrefix("test")).thenReturn("wwwCode");
+            Mockito.when(tenantManager.getTenantCodeByDomain("www.test.com")).thenReturn("wwwCode");
             Optional<String> res= ApsTenantApplicationUtils.extractCurrentTenantCode(httpServletRequest);
             Assertions.assertThat(res.get()).isNotEmpty().isEqualTo("wwwCode");
 
             Mockito.when(httpServletRequest.getServerName()).thenReturn("code.test.com");
-            Mockito.when(tenantManager.getTenantCodeByDomainPrefix("code")).thenReturn("tCode");
+            Mockito.when(tenantManager.getTenantCodeByDomain("code.test.com")).thenReturn("tCode");
             res= ApsTenantApplicationUtils.extractCurrentTenantCode(httpServletRequest);
             Assertions.assertThat(res.get()).isNotEmpty().isEqualTo("tCode");
 
             Mockito.when(httpServletRequest.getServerName()).thenReturn("localhost");
-            Mockito.when(tenantManager.getTenantCodeByDomainPrefix("localhost")).thenReturn(null);
+            Mockito.when(tenantManager.getTenantCodeByDomain("localhost")).thenReturn(null);
             res= ApsTenantApplicationUtils.extractCurrentTenantCode(httpServletRequest);
             Assertions.assertThat(res).isNotPresent();
         }

@@ -101,6 +101,10 @@ public class ApsWebApplicationUtils {
 		return getBean(type, request.getSession().getServletContext());
 	}
 
+	public static <T> T getBean(String beanName, Class<T> type, HttpServletRequest request) {
+		return getBean(beanName, type, request.getSession().getServletContext());
+	}
+
 	/**
 	 * Restituisce un bean di sistema.
 	 * Il seguente metodo è in uso ai tag jsp del sistema.
@@ -117,12 +121,23 @@ public class ApsWebApplicationUtils {
 		return getBean(type, pageContext.getServletContext());
 	}
 
+	public static <T> T getBean(String beanName, Class<T> type, PageContext pageContext) {
+		return getBean(beanName, type, pageContext.getServletContext());
+	}
+
+	public static <T> T getBean(String beanName, Class<T> type, ServletContext servCtx) {
+		return Optional.ofNullable(getWebApplicationContext(servCtx))
+				.map(wac -> wac.getBean(beanName, type))
+				.orElseThrow(() -> new IllegalArgumentException(
+						String.format("Error retrieving Bean of type '%s' and beanName '%s' from web application context",
+								type.toString(), beanName)));
+	}
+
 	public static <T> T getBean(Class<T> type, ServletContext servCtx) {
 		return Optional.ofNullable(getWebApplicationContext(servCtx))
 				.map(wac -> wac.getBean(type))
 				.orElseThrow(() -> new IllegalArgumentException(
 						String.format("Error retrieving Bean of type '%s' from web application context",type.toString())));
-
 	}
 
 	/**

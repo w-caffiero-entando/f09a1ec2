@@ -30,6 +30,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -42,6 +44,8 @@ import org.springframework.web.context.WebApplicationContext;
  * @author W.Ambu - E.Santoboni
  */
 public class BaseTestCase {
+
+    private static final Logger log = LoggerFactory.getLogger(BaseTestCase.class);
 
     private static ApplicationContext applicationContext;
     private static MockServletContext servletContext;
@@ -71,7 +75,8 @@ public class BaseTestCase {
             try {
                 ApsWebApplicationUtils.executeSystemRefresh(request);
                 waitNotifyingThread();
-            } catch (Throwable e) {
+            } catch (Throwable ex) {
+                log.error("BeforeAll setUp error: ", ex);
             }
         }
     }
