@@ -17,8 +17,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import org.entando.entando.aps.system.services.api.model.CDataXmlTypeAdapter;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 
@@ -90,7 +88,6 @@ public class ContentModel implements Comparable, Serializable {
 	/**
 	 * @return Returns the contentShape.
 	 */
-	@XmlJavaTypeAdapter(CDataXmlTypeAdapter.class)
 	@XmlElement(name = "shape", required = true)
 	public String getContentShape() {
 		return _contentShape;
