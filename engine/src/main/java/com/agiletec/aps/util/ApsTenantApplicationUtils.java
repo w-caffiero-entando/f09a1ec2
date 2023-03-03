@@ -27,17 +27,15 @@ public final class ApsTenantApplicationUtils {
 	private ApsTenantApplicationUtils(){}
 
 	public static Optional<String> extractCurrentTenantCode(HttpServletRequest request) {
-		String domainPrefix = getDomainAndSkipWWWIfPresent(request);
+		String domain = getDomainFromRequest(request);
 		ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, request);
-		return Optional.ofNullable(tenantManager.getTenantCodeByDomainPrefix(domainPrefix));
+		return Optional.ofNullable(tenantManager.getTenantCodeByDomain(domain));
 	}
 
-	private static String getDomainAndSkipWWWIfPresent(HttpServletRequest request){
+	private static String getDomainFromRequest(HttpServletRequest request){
 		String serverName = request.getServerName();
-		String[] domainSections = serverName.split("\\.");
-		String domainPrefix = ( "www".equalsIgnoreCase(domainSections[0])) ? domainSections[1] : domainSections[0];
-		logger.debug("Retrieved from serverName:'{}' the domainPrefix:'{}'", serverName, domainPrefix);
-		return domainPrefix;
+		logger.debug("Retrieved from serverName:'{}' the domain:'{}'", serverName, serverName);
+		return serverName;
 	}
 
 	public static Optional<String> getTenant() {

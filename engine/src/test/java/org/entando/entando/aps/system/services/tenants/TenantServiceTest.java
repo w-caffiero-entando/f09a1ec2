@@ -16,6 +16,7 @@ package org.entando.entando.aps.system.services.tenants;
 import static org.mockito.Mockito.when;
 
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

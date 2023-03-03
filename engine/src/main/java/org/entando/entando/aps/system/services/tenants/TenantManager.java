@@ -87,23 +87,23 @@ public class TenantManager extends AbstractService implements ITenantManager, In
     }
 
     @Override
-    public String getTenantCodeByDomainPrefix(String domainPrefix) {
+    public String getTenantCodeByDomain(String domain) {
         String tenantCode =  tenantsMap.values().stream()
-                .filter(v -> StringUtils.equals(domainPrefix, v.getDomainPrefix()))
+                .filter(v -> v.getFqdns().contains(domain))
                 .map(tc -> tc.getTenantCode())
                 .filter(StringUtils::isNotBlank)
                 .findFirst()
-                .orElse(getCodes().stream().filter(code -> StringUtils.equals(code, domainPrefix)).findFirst().orElse(null));
+                .orElse(getCodes().stream().filter(code -> StringUtils.equals(code, domain)).findFirst().orElse(null));
         if(logger.isDebugEnabled()) {
-            logger.debug("From domainPrefix:'{}' retrieved tenantCode:'{}' from codes:'{}'",
-                    domainPrefix, tenantCode, getCodes().stream().collect(Collectors.joining(",")));
+            logger.debug("From domain:'{}' retrieved tenantCode:'{}' from codes:'{}'",
+                    domain, tenantCode, getCodes().stream().collect(Collectors.joining(",")));
         }
         return tenantCode;
     }
 
     @Override
-    public Optional<TenantConfig> getTenantConfigByDomainPrefix(String domainPrefix) {
-        return this.getConfig(this.getTenantCodeByDomainPrefix(domainPrefix));
+    public Optional<TenantConfig> getTenantConfigByDomain(String domain) {
+        return this.getConfig(this.getTenantCodeByDomain(domain));
     }
 
     @Override

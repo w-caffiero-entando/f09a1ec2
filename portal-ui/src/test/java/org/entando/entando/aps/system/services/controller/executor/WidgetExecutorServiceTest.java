@@ -106,7 +106,7 @@ class WidgetExecutorServiceTest {
         IPage page = Mockito.mock(IPage.class);
         Mockito.when(page.getWidgets()).thenReturn(new Widget[]{widget});
         Mockito.when(wac.getBean(ITenantManager.class)).thenReturn(tenantManager);
-        Mockito.when(tenantManager.getTenantCodeByDomainPrefix(any())).thenReturn(null);
+        Mockito.when(tenantManager.getTenantCodeByDomain(any())).thenReturn(null);
 
         Mockito.when(wac.getBeanNamesForType(IFrameDecoratorContainer.class)).thenReturn(new String[]{});
 

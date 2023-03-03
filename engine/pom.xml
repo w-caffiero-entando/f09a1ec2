@@ -196,6 +196,10 @@
         </pluginManagement>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
