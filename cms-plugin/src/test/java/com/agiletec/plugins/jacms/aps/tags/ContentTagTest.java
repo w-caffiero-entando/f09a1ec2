@@ -34,7 +34,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
-public class ContentTagTest {
+class ContentTagTest {
     
     private MockServletContext mockServletContext;
     

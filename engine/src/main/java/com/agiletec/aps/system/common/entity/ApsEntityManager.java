@@ -52,6 +52,7 @@ import com.agiletec.aps.system.common.entity.parse.IEntityTypeFactory;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.DateConverter;
 import java.util.Comparator;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.beanutils.BeanComparator;
@@ -146,7 +147,7 @@ public abstract class ApsEntityManager extends AbstractService
             list.sort(Comparator.comparing(AttributeRole::getName));
             return list;
         }
-        return null;
+        return new ArrayList<>();
     }
     
     @Override
@@ -159,7 +160,7 @@ public abstract class ApsEntityManager extends AbstractService
         List<String> defaultRoles = this.getAttributeRoles().stream().filter(a -> !a.isLocal()).map(e -> e.getName()).collect(Collectors.toList());
         // save only local roles
         Map<String, AttributeRole> rolesToSave = roles.entrySet()
-                .stream().filter(e -> !defaultRoles.contains(e.getKey())).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().clone()));
+                .stream().filter(e -> !defaultRoles.contains(e.getKey())).collect(Collectors.toMap(Entry:: getKey, e -> e.getValue().clone()));
         this.getEntityTypeFactory().updateAttributeRoles(this.getRolesConfigItemName(), rolesToSave);
         this.refreshAttributeRoles();
     }

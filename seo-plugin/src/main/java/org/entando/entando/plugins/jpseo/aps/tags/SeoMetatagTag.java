@@ -96,7 +96,7 @@ public class SeoMetatagTag extends ExtendedTagSupport {
         return EVAL_PAGE;
     }
     
-    protected void manageAttributeWithRole(Lang currentLang, ILangManager langManager, RequestContext reqCtx) throws Exception {
+    protected void manageAttributeWithRole(Lang currentLang, ILangManager langManager, RequestContext reqCtx) {
         Serializable value = (Serializable) reqCtx.getExtraParam(JacmsSystemConstants.ATTRIBUTE_WITH_ROLE_CTX_PREFIX + this.getKey());
         if (null != value) {
             if (value instanceof Map) {
@@ -115,24 +115,24 @@ public class SeoMetatagTag extends ExtendedTagSupport {
         }
     }
     
-    protected void manageComplexParameters(Lang currentLang, ILangManager langManager, PageMetadata pageMetadata) throws Exception {
+    protected void manageComplexParameters(Lang currentLang, ILangManager langManager, PageMetadata pageMetadata) {
         Map<String, Map<String, PageMetatag>> complexParameters = ((SeoPageMetadata) pageMetadata).getComplexParameters();
         if (null != complexParameters) {
-            Map<String, PageMetatag> mapvalue = complexParameters.get(currentLang.getCode());
-            Map<String, PageMetatag> defaultMapvalue = complexParameters.get("default");
-            if (null == defaultMapvalue) {
+            Map<String, PageMetatag> mapValue = complexParameters.get(currentLang.getCode());
+            Map<String, PageMetatag> defaultMapValue = complexParameters.get("default");
+            if (null == defaultMapValue) {
                 Lang defaultLang = langManager.getDefaultLang();
-                defaultMapvalue = complexParameters.get(defaultLang.getCode());
+                defaultMapValue = complexParameters.get(defaultLang.getCode());
             }
-            if (null != mapvalue) {
-                PageMetatag pageMetatag = mapvalue.get(this.getKey());
+            if (null != mapValue) {
+                PageMetatag pageMetatag = mapValue.get(this.getKey());
                 if (null != pageMetatag && !pageMetatag.isUseDefaultLangValue() && !StringUtils.isBlank(pageMetatag.getValue())) {
                     this.setValue(pageMetatag.getValue());
                     this.setAttributeName(pageMetatag.getKeyAttribute());
                 }
             }
-            if (null == this.getValue() && null != defaultMapvalue) {
-                PageMetatag pageMetatag = defaultMapvalue.get(this.getKey());
+            if (null == this.getValue() && null != defaultMapValue) {
+                PageMetatag pageMetatag = defaultMapValue.get(this.getKey());
                 if (null != pageMetatag && !StringUtils.isBlank(pageMetatag.getValue())) {
                     this.setValue(pageMetatag.getValue());
                     this.setAttributeName(pageMetatag.getKeyAttribute());
