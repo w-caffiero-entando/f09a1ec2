@@ -61,7 +61,6 @@ public class ContentTag extends com.agiletec.plugins.jacms.aps.tags.ContentTag {
 				this.pageContext.getOut().print(renderedContent);
 			}
 			if (null != renderInfo) {
-                this.manageAttributeWithRoles(renderInfo, reqCtx);
 				if (null != this.getAttributeValuesByRoleVar()) {
 					this.pageContext.setAttribute(this.getAttributeValuesByRoleVar(), renderInfo.getAttributeValues());
 				}

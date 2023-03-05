@@ -11,7 +11,7 @@
             <column name="version" value="production" />
             <column name="item" value="userProfileTypesRoles" />
             <column name="descr" value="Definition of the Attribute Rules" />
-            <column name="config" value="clob/production/sysconfig_4.xml" />
+            <column name="config" valueClobFile="clob/production/sysconfig_4.xml" />
         </insert>
         
     </changeSet>
