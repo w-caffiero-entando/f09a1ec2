@@ -13,7 +13,6 @@
  */
 package org.entando.entando.aps.util;
 
-import static org.entando.entando.aps.util.UrlUtils.ENTANDO_APP_USE_TLS;
 import static org.entando.entando.aps.util.UrlUtils.HTTPS_SCHEME;
 import static org.entando.entando.aps.util.UrlUtils.HTTP_SCHEME;
 import static org.entando.entando.aps.util.UrlUtils.fetchServerNameFromUri;
@@ -61,7 +60,7 @@ class UrlUtilsTest {
 
         Map<String,String> envs = (HashMap<String, String>) envsOrig.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        envs.put(ENTANDO_APP_USE_TLS, "true");
+        envs.put("ENTANDO_APP_USE_TLS", "true");
         UnitTestUtils.setEnv(envs);
         when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PROTO)).thenReturn(HTTP_SCHEME);
         when(requestMock.getScheme()).thenReturn(HTTP_SCHEME);
@@ -115,11 +114,27 @@ class UrlUtilsTest {
 
     @Test
     void shouldFetchPortWorksFineWithDifferentInputs() throws Exception {
-        // case1
+        // case 0
+        Map<String,String> envsOrig = System.getenv().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));;
+
+        Map<String,String> envs = (HashMap<String, String>) envsOrig.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        envs.put("ENTANDO_APP_ENGINE_EXTERNAL_PORT", "8888");
+        UnitTestUtils.setEnv(envs);
         when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PORT)).thenReturn("443");
         when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("test.com:4443");
         when(requestMock.getServerPort()).thenReturn(8443);
         Optional<Integer> port = UrlUtils.fetchPort(requestMock);
+        Assertions.assertTrue(port.isPresent());
+        Assertions.assertEquals(8888, port.get());
+        UnitTestUtils.setEnv(envsOrig);
+
+        // case1
+        when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PORT)).thenReturn("443");
+        when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("test.com:4443");
+        when(requestMock.getServerPort()).thenReturn(8443);
+        port = UrlUtils.fetchPort(requestMock);
         Assertions.assertTrue(port.isPresent());
         Assertions.assertEquals(443, port.get());
 

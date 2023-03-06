@@ -26,12 +26,14 @@ import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.owasp.encoder.Encode;
 
 @Slf4j
 public final class UrlUtils {
 
     public static final String ENTANDO_APP_USE_TLS = "ENTANDO_APP_USE_TLS";
+    public static final String ENTANDO_APP_ENGINE_EXTERNAL_PORT = "ENTANDO_APP_ENGINE_EXTERNAL_PORT";
     public static final String HTTP_SCHEME = "http";
     public static final String HTTPS_SCHEME = "https";
 
@@ -75,10 +77,19 @@ public final class UrlUtils {
     }
 
     public static Optional<Integer> fetchPort(HttpServletRequest request) {
-        Integer port = getPortFromXHeader(request)
+        Integer port = getPortFromEnv().orElseGet(() -> getPortFromXHeader(request)
                 .orElseGet(() -> getPortFromHeader(request)
-                        .orElseGet(() -> getPortServlet(request)));
+                        .orElseGet(() -> getPortServlet(request))));
         return Optional.ofNullable(port);
+    }
+
+    private static Optional<Integer> getPortFromEnv(){
+        String port = System.getenv(ENTANDO_APP_ENGINE_EXTERNAL_PORT);
+        if( NumberUtils.isParsable(port)) {
+            return Optional.of(NumberUtils.toInt(port));
+        } else {
+            return Optional.empty();
+        }
     }
 
     private static Optional<Integer> getPortFromXHeader(HttpServletRequest request){
