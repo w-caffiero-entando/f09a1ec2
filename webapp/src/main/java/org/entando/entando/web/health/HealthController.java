@@ -13,6 +13,7 @@
  */
 package org.entando.entando.web.health;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.health.IHealthService;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -25,11 +26,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/health")
 public class HealthController {
 
-    private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
     private final IHealthService healthService;
     private boolean isExtendedCheck;
 
@@ -42,10 +43,10 @@ public class HealthController {
     @GetMapping
     public ResponseEntity<Void> isHealthy() {
         if(isExtendedCheck) {
-            logger.debug("health check with db");
+            log.debug("health check with db");
             return new ResponseEntity<>(this.healthService.isHealthy() ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
-            logger.debug("health check standard");
+            log.debug("health check standard");
             return new ResponseEntity<>(HttpStatus.OK);
         }
     }
