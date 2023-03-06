@@ -91,7 +91,7 @@ public final class UrlUtils {
                 .filter(s -> s.startsWith(request.getServerName()))
                 .filter(UrlUtils::hostHeaderContainsPort)
                 .map(host -> host.split(":")[1])
-                .map(Encode::forHtmlContent) // FIXME is unuseful ???
+                .map(Encode::forHtmlContent)
                 .map(Integer::valueOf);
     }
 
