@@ -33,6 +33,7 @@ import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
 import com.agiletec.aps.system.common.entity.model.ApsEntityRecord;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole.FormFieldTypes;
 import com.agiletec.aps.system.common.entity.model.attribute.DateAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoTextAttribute;
 import org.entando.entando.ent.exception.EntException;
@@ -304,6 +305,7 @@ class UserProfileManagerIntegrationTest extends BaseTestCase {
         assertNull(this.profileManager.getAttributeRole(testRole1));
         try {
             AttributeRole newRole1 = new AttributeRole(testRole1, "Description", Arrays.asList("Text", "Monotext"));
+            newRole1.setFormFieldType(null);
             map.put(testRole1, newRole1);
             ((IEntityTypesConfigurer) this.profileManager).updateRoleAttributes(map);
             
@@ -313,6 +315,7 @@ class UserProfileManagerIntegrationTest extends BaseTestCase {
             assertNotNull(extractedRole1);
             assertEquals("Description", extractedRole1.getDescription());
             assertEquals(2, extractedRole1.getAllowedAttributeTypes().size());
+            assertEquals(FormFieldTypes.TEXT, extractedRole1.getFormFieldType());
             
             AttributeRole newRole2 = new AttributeRole(testRole2, "Description 2", Arrays.asList("Text", "Monotext", "Image"));
             map.put(testRole2, newRole2);

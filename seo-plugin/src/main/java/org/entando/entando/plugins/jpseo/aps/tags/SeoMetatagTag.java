@@ -42,7 +42,6 @@ import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import java.io.Serializable;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.tags.ExtendedTagSupport;
 import org.entando.entando.plugins.jpseo.aps.system.services.metatag.Metatag;
@@ -77,8 +76,7 @@ public class SeoMetatagTag extends ExtendedTagSupport {
             } else {
                 ILangManager langManager = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);
                 IContentManager contentManager = (IContentManager) ApsWebApplicationUtils.getBean(JacmsSystemConstants.CONTENT_MANAGER, this.pageContext);
-                List<AttributeRole> roles = contentManager.getAttributeRoles();
-                AttributeRole role = roles.stream().filter(r -> r.getName().equals(this.getKey())).findFirst().orElse(null);
+                AttributeRole role = contentManager.getAttributeRole(this.getKey());
                 if (null != role) {
                     this.manageAttributeWithRole(currentLang, langManager, reqCtx);
                 } else {
@@ -97,19 +95,20 @@ public class SeoMetatagTag extends ExtendedTagSupport {
     }
     
     protected void manageAttributeWithRole(Lang currentLang, ILangManager langManager, RequestContext reqCtx) {
-        Serializable value = (Serializable) reqCtx.getExtraParam(JacmsSystemConstants.ATTRIBUTE_WITH_ROLE_CTX_PREFIX + this.getKey());
-        if (null != value) {
-            if (value instanceof Map) {
-                Object elementValue = ((Map) value).get(currentLang.getCode());
+        Serializable attrValue = (Serializable) reqCtx.getExtraParam(JacmsSystemConstants.ATTRIBUTE_WITH_ROLE_CTX_PREFIX + this.getKey());
+        if (null != attrValue) {
+            if (attrValue instanceof Map) {
+                Lang lang = (null == currentLang) ? langManager.getDefaultLang() : currentLang;
+                Object elementValue = ((Map) attrValue).get(lang.getCode());
                 if (null == elementValue) {
                     Lang defaultLang = langManager.getDefaultLang();
-                    elementValue = ((Map) value).get(defaultLang.getCode());
+                    elementValue = ((Map) attrValue).get(defaultLang.getCode());
                 }
                 if (null != elementValue) {
                     this.setValue(elementValue);
                 }
             } else {
-                this.setValue(value);
+                this.setValue(attrValue);
             }
             this.setAttributeName(Metatag.ATTRIBUTE_NAME_NAME);
         }
@@ -118,7 +117,8 @@ public class SeoMetatagTag extends ExtendedTagSupport {
     protected void manageComplexParameters(Lang currentLang, ILangManager langManager, PageMetadata pageMetadata) {
         Map<String, Map<String, PageMetatag>> complexParameters = ((SeoPageMetadata) pageMetadata).getComplexParameters();
         if (null != complexParameters) {
-            Map<String, PageMetatag> mapValue = complexParameters.get(currentLang.getCode());
+            Lang lang = (null == currentLang) ? langManager.getDefaultLang() : currentLang;
+            Map<String, PageMetatag> mapValue = complexParameters.get(lang.getCode());
             Map<String, PageMetatag> defaultMapValue = complexParameters.get("default");
             if (null == defaultMapValue) {
                 Lang defaultLang = langManager.getDefaultLang();
@@ -176,35 +176,35 @@ public class SeoMetatagTag extends ExtendedTagSupport {
 
     @Override
     public void release() {
-        this._key = null;
-        this._var = null;
-        this._value = null;
+        this.key = null;
+        this.pgcVar = null;
+        this.value = null;
         this.attributeName = null;
         super.setEscapeXml(true);
     }
 
     public String getKey() {
-        return _key;
+        return key;
     }
 
     public void setKey(String key) {
-        this._key = key;
+        this.key = key;
     }
 
-    public void setVar(String var) {
-        this._var = var;
+    public void setVar(String pgcVar) {
+        this.pgcVar = pgcVar;
     }
 
     protected String getVar() {
-        return _var;
+        return pgcVar;
     }
 
     public Object getValue() {
-        return _value;
+        return value;
     }
 
     public void setValue(Object value) {
-        this._value = value;
+        this.value = value;
     }
 
     public String getAttributeName() {
@@ -215,10 +215,10 @@ public class SeoMetatagTag extends ExtendedTagSupport {
         this.attributeName = attributeName;
     }
 
-    private String _key;
+    private String key;
 
-    private String _var;
-    private Object _value;
+    private String pgcVar;
+    private transient Object value;
     private String attributeName;
 
 }
