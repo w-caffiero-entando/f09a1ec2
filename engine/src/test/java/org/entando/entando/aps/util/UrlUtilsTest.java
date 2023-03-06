@@ -248,6 +248,17 @@ class UrlUtilsTest {
         lenient().when(requestMock.getServletPath()).thenReturn("/my-path");
         Assertions.assertEquals("https://www.test1.com",UrlUtils.composeBaseUrl(requestMock).toString());
 
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_HOST)).thenReturn("www.test1.com");
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PROTO)).thenReturn(HTTPS_SCHEME);
+        lenient().when(requestMock.getHeader(HttpHeaders.X_FORWARDED_PORT)).thenReturn("883");
+        lenient().when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("localhost:4443");
+        lenient().when(requestMock.getScheme()).thenReturn(HTTP_SCHEME);
+        lenient().when(requestMock.getServerName()).thenReturn("localhost");
+        lenient().when(requestMock.getServerPort()).thenReturn(4443);
+        lenient().when(requestMock.getContextPath()).thenReturn("/context-path");
+        lenient().when(requestMock.getServletPath()).thenReturn("/my-path");
+        Assertions.assertEquals("https://www.test1.com:883",UrlUtils.composeBaseUrl(requestMock).toString());
+
 
         Mockito.reset(requestMock);
         lenient().when(requestMock.getHeader(HttpHeaders.HOST)).thenReturn("www.test2.com:4443");
