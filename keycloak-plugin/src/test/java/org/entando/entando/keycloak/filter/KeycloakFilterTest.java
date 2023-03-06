@@ -251,7 +251,6 @@ class KeycloakFilterTest {
         }
         verify(filterChain, times(0)).doFilter(any(), any());
         verify(session,times(1)).setAttribute(KeycloakFilter.SESSION_PARAM_REDIRECT, "/");
-        // verify(response, times(1)).sendRedirect(redirect); Disabled due to junit5 integration
     }
 
     @Test
@@ -573,7 +572,6 @@ class KeycloakFilterTest {
         }
 
         verify(session,times(1)).setAttribute(KeycloakFilter.SESSION_PARAM_REDIRECT, "/pages/en/homepage/");
-//        verify(response).sendRedirect(redirect);
 
     }
 

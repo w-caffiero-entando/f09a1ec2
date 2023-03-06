@@ -56,7 +56,7 @@ class UrlUtilsTest {
     void shouldFetchSchemeWorksFineWithDifferentInputs() throws Exception {
         // case1
         Map<String,String> envsOrig = System.getenv().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));;
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Map<String,String> envs = (HashMap<String, String>) envsOrig.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -116,7 +116,7 @@ class UrlUtilsTest {
     void shouldFetchPortWorksFineWithDifferentInputs() throws Exception {
         // case 0
         Map<String,String> envsOrig = System.getenv().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));;
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Map<String,String> envs = (HashMap<String, String>) envsOrig.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
