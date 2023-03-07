@@ -13,8 +13,6 @@
  */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
-import java.net.URI;
-import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.CdsUrlBuilder;
 import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.EntSubPath;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -65,18 +63,6 @@ class CdsUtilsTest {
 
     }
 
-    @Test
-    void shouldCdsBuildUriWorksFineWithDifferentInputs() throws Exception {
-        URI url = CdsUrlBuilder.builder().url("http://server.com/").path("/context-root").path("path/").build();
-        Assertions.assertEquals("http://server.com/context-root/path/", url.toString());
-
-        url = CdsUrlBuilder.builder().url("http://server.com/")
-                .path("/context-root")
-                .path("").path("path/").path(null).path("   ").path(" /path1/ ")
-                .paths("path2","path3").build();
-        Assertions.assertEquals("http://server.com/context-root/path/path1/path2/path3", url.toString());
-
-    }
 
     @Test
     void shouldWorkFineWithToString() {

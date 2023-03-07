@@ -1,3 +1,16 @@
+/*
+ * Copyright 2022-Present Entando S.r.l. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.keycloak.filter;
 
 import static org.entando.entando.KeycloakWiki.wiki;
@@ -12,6 +25,7 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -26,7 +40,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.KeycloakWiki;
 import org.entando.entando.aps.servlet.security.GuestAuthentication;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.util.UrlUtils;
 import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.keycloak.services.KeycloakAuthorizationManager;
 import org.entando.entando.keycloak.services.KeycloakConfiguration;
 import org.entando.entando.keycloak.services.KeycloakJson;
@@ -34,8 +51,6 @@ import org.entando.entando.keycloak.services.oidc.OpenIDConnectService;
 import org.entando.entando.keycloak.services.oidc.model.AccessToken;
 import org.entando.entando.keycloak.services.oidc.model.AuthResponse;
 import org.entando.entando.web.common.exceptions.EntandoTokenException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,7 +58,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 public class KeycloakFilter implements Filter {
 
-    private static final Logger log = LoggerFactory.getLogger(KeycloakFilter.class);
+    private static final EntLogger log = EntLogFactory.getSanitizedLogger(KeycloakFilter.class);
 
     public static final String SESSION_PARAM_STATE = "keycloak-plugin-state";
     public static final String SESSION_PARAM_REDIRECT = "keycloak-plugin-redirectTo";
@@ -210,21 +225,16 @@ public class KeycloakFilter implements Filter {
         final String error = request.getParameter("error");
         final String errorDescription = request.getParameter("error_description");
 
-        if (StringUtils.isNotEmpty(error)) {
-            if ("unsupported_response_type".equals(error)) {
-                log.error("{}. For more details, refer to the wiki {}",
-                        errorDescription,
-                        wiki(KeycloakWiki.EN_APP_STANDARD_FLOW_DISABLED));
-            }
-            throw new EntandoTokenException(errorDescription, request, "guest");
+        if(log.isDebugEnabled()) {
+            log.debug(
+                    "doLogin with params code:'{}' state:'{}' redirectUri:'{}' redirectTo:'{}' error:'{}' error_description:'{}'",
+                    authorizationCode, stateParameter, redirectUri, redirectTo, error, errorDescription);
         }
 
+        checkNoErrorOrThrow(request, error, errorDescription);
+
         if (authorizationCode != null) {
-            if (stateParameter == null) {
-                log.warn("State parameter not provided");
-            } else if (!stateParameter.equals(session.getAttribute(SESSION_PARAM_STATE))) {
-                log.warn("State parameter '{}' is different than generated '{}'", stateParameter, session.getAttribute(SESSION_PARAM_STATE));
-            }
+            checkAndLogStateParameter(stateParameter, session);
 
             try {
                 final ResponseEntity<AuthResponse> responseEntity = oidcService.requestToken(authorizationCode, redirectUri);
@@ -268,14 +278,7 @@ public class KeycloakFilter implements Filter {
             redirect(request, response, session);
             return;
         } else {
-            final String path = request.getRequestURL().toString().replace(request.getServletPath(), "");
-            if (redirectTo != null){
-                final String redirect = redirectTo.replace(path, "");
-                if (!redirect.startsWith("/")) {
-                    throw new EntandoTokenException("Invalid redirect", request, "guest");
-                }
-                session.setAttribute(SESSION_PARAM_REDIRECT, redirect);
-            }
+            buildAndSaveInSessionRedirectPath(redirectTo, request, session);
         }
 
         final Object user = session.getAttribute(SystemConstants.SESSIONPARAM_CURRENT_USER);
@@ -284,12 +287,59 @@ public class KeycloakFilter implements Filter {
             chain.doFilter(request, response);
         } else {
             final String state = UUID.randomUUID().toString();
-            final String redirect = oidcService.getRedirectUrl(redirectUri, state);
+            final String redirectUrl = oidcService.getRedirectUrl(redirectUri, state);
 
             session.setAttribute(SESSION_PARAM_STATE, state);
-            response.sendRedirect(redirect);
+            log.debug("doLogin sendRedirect redirectUrl:'{}'", redirectUrl);
+            response.sendRedirect(redirectUrl);
         }
     }
+
+    private void checkNoErrorOrThrow(HttpServletRequest request, String error, String errorDescription){
+        if (StringUtils.isNotEmpty(error)) {
+            if ("unsupported_response_type".equals(error)) {
+                log.error("{}. For more details, refer to the wiki {}",
+                        errorDescription,
+                        wiki(KeycloakWiki.EN_APP_STANDARD_FLOW_DISABLED));
+            }
+            throw new EntandoTokenException(errorDescription, request, SystemConstants.GUEST_USER_NAME);
+        }
+
+    }
+
+    private void checkAndLogStateParameter(String stateParameter, HttpSession session){
+        if (stateParameter == null) {
+            log.warn("State parameter not provided");
+        } else if (!stateParameter.equals(session.getAttribute(SESSION_PARAM_STATE))) {
+            log.warn("State parameter '{}' is different than generated '{}'", stateParameter, session.getAttribute(SESSION_PARAM_STATE));
+        }
+
+    }
+
+    private void buildAndSaveInSessionRedirectPath(String redirectTo, HttpServletRequest request, HttpSession session){
+        if (redirectTo != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("doLogin evaluate redirect with redirectTo:'{}' requestURL:'{}' servletPath:'{}'",
+                        redirectTo, request.getRequestURL(), request.getServletPath());
+            }
+            Optional<String> redirectToPath = UrlUtils.fetchPathFromUri(redirectTo);
+            String redirectPathWithoutContextRoot = redirectToPath
+                    .flatMap(p -> UrlUtils.removeContextRootFromPath(p, request))
+                    .orElse("/");
+
+            UrlUtils.fetchServerNameFromUri(redirectTo).ifPresent(redirectServerName -> {
+                if (!redirectServerName.equals(request.getServerName())) {
+                    // this was exception
+                    log.warn("request server name:'{}' is NOT equals to redirectTo param server name:'{}'",
+                            request.getServerName(),
+                            redirectServerName);
+                }
+            });
+            log.debug("doLogin set SESSION_PARAM_REDIRECT redirect:'{}'", redirectPathWithoutContextRoot);
+            session.setAttribute(SESSION_PARAM_REDIRECT, redirectPathWithoutContextRoot);
+        }
+    }
+
 
     private void saveUserOnSession(final HttpServletRequest request, final UserDetails user) {
         request.getSession().setAttribute("user", user);
@@ -300,38 +350,11 @@ public class KeycloakFilter implements Filter {
         final String redirectPath = session.getAttribute(SESSION_PARAM_REDIRECT) != null
                 ? session.getAttribute(SESSION_PARAM_REDIRECT).toString()
                 : "/do/main";
-        String baseUrl = this.getBaseURL(request);
+        String baseUrl = UrlUtils.composeBaseUrl(request).toString();
         String redirectUrl = baseUrl + request.getContextPath() + redirectPath;
         log.info("Redirecting user to {}", redirectUrl);
         session.setAttribute(SESSION_PARAM_REDIRECT, null);
         response.sendRedirect(redirectUrl);
-    }
-
-    private String getBaseURL(HttpServletRequest request) {
-        StringBuilder link = new StringBuilder();
-        String reqScheme = request.getHeader("X-Forwarded-Proto");
-        if (StringUtils.isBlank(reqScheme)) {
-            reqScheme = request.getScheme();
-        }
-        link.append(reqScheme);
-        link.append("://");
-        String serverName = request.getServerName();
-        link.append(serverName);
-        boolean checkPort = false;
-        String hostName = request.getHeader("Host");
-        if (null != hostName && hostName.startsWith(serverName)) {
-            checkPort = true;
-            if (hostName.length() > serverName.length()) {
-                String encodedHostName = org.owasp.encoder.Encode.forHtmlContent(hostName);
-                link.append(encodedHostName.substring(serverName.length()));
-            }
-        }
-        if (!checkPort) {
-            link.append(":").append(request.getServerPort());
-        }
-        log.debug("Calculated baseURL:'{}' from reqScheme:'{}' serverName:'{} hostName:'{}''",
-                link, reqScheme, serverName, hostName);
-        return link.toString();
     }
 
     private boolean isInvalidCredentials(final HttpClientErrorException exception) {

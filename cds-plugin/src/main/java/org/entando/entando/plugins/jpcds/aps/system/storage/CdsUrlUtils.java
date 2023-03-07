@@ -14,11 +14,7 @@
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import javax.ws.rs.core.UriBuilder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +22,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
+import org.entando.entando.aps.util.UrlUtils.EntUrlBuilder;
 
 @Slf4j
 public final class CdsUrlUtils {
@@ -52,7 +49,7 @@ public final class CdsUrlUtils {
 
         String publicUrl = config.flatMap(c -> c.getProperty(CDS_PUBLIC_URL_TENANT_PARAM)).orElse(configuration.getCdsPublicUrl());
 
-        return CdsUrlBuilder.builder().url(publicUrl).paths(paths).build();
+        return EntUrlBuilder.builder().url(publicUrl).paths(paths).build();
 
     }
 
@@ -66,7 +63,7 @@ public final class CdsUrlUtils {
         String apiUrl = config.flatMap(c -> c.getProperty(CDS_PRIVATE_URL_TENANT_PARAM)).orElse(configuration.getCdsPrivateUrl());
         String basePath = config.flatMap(c -> c.getProperty(CDS_PATH_TENANT_PARAM)).orElse(configuration.getCdsPath());
 
-        return CdsUrlBuilder.builder().url(apiUrl).path(basePath).paths(paths).build();
+        return EntUrlBuilder.builder().url(apiUrl).path(basePath).paths(paths).build();
     }
 
     public static String fetchBaseUrl(Optional<TenantConfig> config, CdsConfiguration configuration, boolean usePrivateUrl) {
@@ -98,47 +95,6 @@ public final class CdsUrlUtils {
         }
         return EntSubPath.builder().path(path).fileName(filename).build();
 
-    }
-
-    public static class CdsUrlBuilder {
-        private String url;
-        private List<String> paths = new ArrayList<>();
-
-        private CdsUrlBuilder(){}
-
-        public static CdsUrlBuilder builder() {
-            return new CdsUrlBuilder();
-        }
-
-        public CdsUrlBuilder url(String u){
-            this.url = u;
-            return this;
-        }
-
-        public CdsUrlBuilder url(URI u){
-            this.url = u.toString();
-            return this;
-        }
-
-        public CdsUrlBuilder path(String p){
-            paths.add(p);
-            return this;
-        }
-
-        public CdsUrlBuilder paths(String ... u){
-            paths.addAll(Arrays.asList(u));
-            return this;
-        }
-
-        public URI build(){
-            UriBuilder builder = UriBuilder.fromUri(url);
-            for (String path : paths) {
-                if(StringUtils.isNotBlank(path)) {
-                    builder.path(path.trim());
-                }
-            }
-            return builder.build();
-        }
     }
 
 

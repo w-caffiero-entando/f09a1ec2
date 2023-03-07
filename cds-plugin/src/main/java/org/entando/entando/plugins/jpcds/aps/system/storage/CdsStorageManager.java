@@ -31,9 +31,9 @@ import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.aps.system.services.storage.StorageManagerUtil;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
+import org.entando.entando.aps.util.UrlUtils.EntUrlBuilder;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
-import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.CdsUrlBuilder;
 import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.EntSubPath;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -112,7 +112,7 @@ public class CdsStorageManager implements IStorageManager {
 
             this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
 
-            URI apiUrl = CdsUrlBuilder.builder()
+            URI apiUrl = EntUrlBuilder.builder()
                             .url(CdsUrlUtils.buildCdsInternalApiUrl(config, configuration))
                             .path("/delete/")
                             .path(CdsUrlUtils.getInternalSection(isProtectedResource))
@@ -144,7 +144,7 @@ public class CdsStorageManager implements IStorageManager {
                     CdsUrlUtils.buildCdsInternalApiUrl(config, configuration)  :
                     CdsUrlUtils.buildCdsExternalPublicResourceUrl(config, configuration);
 
-            url = CdsUrlBuilder.builder()
+            url = EntUrlBuilder.builder()
                     .url(url)
                     .path(CdsUrlUtils.getInternalSection(isProtectedResource))
                     .path(subPath).build();
@@ -232,7 +232,7 @@ public class CdsStorageManager implements IStorageManager {
         Optional<TenantConfig> config = this.getTenantConfig();
         this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
 
-        URI apiUrl = CdsUrlBuilder.builder()
+        URI apiUrl = EntUrlBuilder.builder()
                 .url(CdsUrlUtils.buildCdsInternalApiUrl(config, configuration).toString())
                 .path("/list/")
                 .path(CdsUrlUtils.getInternalSection(isProtectedResource))
@@ -302,12 +302,12 @@ public class CdsStorageManager implements IStorageManager {
 
     private String validateAndReturnResourcePath(Optional<TenantConfig> config, String resourceRelativePath, boolean privateUrl) {
         try {
-            String baseUrl = CdsUrlBuilder.builder()
+            String baseUrl = EntUrlBuilder.builder()
                     .url(CdsUrlUtils.fetchBaseUrl(config, configuration, privateUrl))
                     .path(CdsUrlUtils.getInternalSection(privateUrl)) // << this is part of base url because we want check path traversal!!
                     .build().toString();
 
-            String fullPath = CdsUrlBuilder.builder()
+            String fullPath = EntUrlBuilder.builder()
                     .url(baseUrl)
                     .path(resourceRelativePath)
                     .build().toString();

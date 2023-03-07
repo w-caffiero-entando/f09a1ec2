@@ -14,6 +14,7 @@ import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
+import com.google.common.net.HttpHeaders;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,6 +83,8 @@ class KeycloakAuthenticationFilterTest {
     @BeforeEach
     public void setUp() {
         Mockito.lenient().when(request.getSession()).thenReturn(session);
+        Mockito.lenient().when(request.getHeader(HttpHeaders.X_FORWARDED_HOST)).thenReturn(null);
+        Mockito.lenient().when(request.getHeader(HttpHeaders.HOST)).thenReturn("dev.entando.org");
         Mockito.lenient().when(request.getServerName()).thenReturn("dev.entando.org");
         Mockito.lenient().when(session.getServletContext()).thenReturn(svCtx);
         Mockito.lenient().when(wac.getBean(ITenantManager.class)).thenReturn(tenantManager);

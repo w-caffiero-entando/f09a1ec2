@@ -16,7 +16,9 @@ package com.agiletec.aps.system.services.url;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import java.net.URL;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.util.UrlUtils;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
@@ -186,26 +188,9 @@ public class URLManager extends AbstractURLManager {
         }
         String baseUrlMode = this.calculateBaseUrlMode(forcedBaseUrlMode, request);
         if (this.isForceAddSchemeHost(baseUrlMode)) {
-            String reqScheme = request.getHeader("X-Forwarded-Proto");
-            if (StringUtils.isBlank(reqScheme)) {
-                reqScheme = request.getScheme();
-            }
-            link.append(reqScheme);
-            link.append("://");
-            String serverName = request.getServerName();
-            link.append(serverName);
-            boolean checkPort = false;
-            String hostName = request.getHeader("Host");
-            if (null != hostName && hostName.startsWith(serverName)) {
-                checkPort = true;
-                if (hostName.length() > serverName.length()) {
-                    String encodedHostName = org.owasp.encoder.Encode.forHtmlContent(hostName);
-                    link.append(encodedHostName.substring(serverName.length()));
-                }
-            }
-            if (!checkPort) {
-                link.append(":").append(request.getServerPort());
-            }
+            URL url = UrlUtils.composeBaseUrl(request);
+            link.append(url);
+
             if (this.addContextName()) {
                 link.append(request.getContextPath());
             }
