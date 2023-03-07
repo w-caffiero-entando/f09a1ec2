@@ -23,15 +23,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(propOrder = {"number"})
 public class JAXBNumberAttribute extends AbstractJAXBAttribute implements Serializable {
-    
+
     @XmlElement(name = "value", required = false)
     public BigDecimal getNumber() {
-        return _number;
+        return number;
     }
+
     public void setNumber(BigDecimal number) {
-        this._number = number;
+        this.number = number;
     }
-    
-    private BigDecimal _number;
-    
+
+    private BigDecimal number;
 }

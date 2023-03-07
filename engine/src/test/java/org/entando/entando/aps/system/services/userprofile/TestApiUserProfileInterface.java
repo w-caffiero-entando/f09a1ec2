@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.UnmarshalUtils;
+import org.entando.entando.aps.system.services.api.Unmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -50,6 +50,7 @@ class TestApiUserProfileInterface extends ApiBaseTestCase {
     public static final String TEST_USERNAME = "testusername";
 
     private IUserProfileManager userProfileManager;
+    private Unmarshaller unmarshaller;
 
     @Test
     void testGetXmlUserProfile() throws Throwable {
@@ -91,7 +92,7 @@ class TestApiUserProfileInterface extends ApiBaseTestCase {
             List<AttributeInterface> attributes = masterUserProfile.getAttributeList();
             for (int i = 0; i < attributes.size(); i++) {
                 AttributeInterface attribute = attributes.get(i);
-                AttributeInterface newAttribute = (AttributeInterface) userProfile.getAttribute(attribute.getName());
+                AttributeInterface newAttribute = userProfile.getAttribute(attribute.getName());
                 this.checkAttributes(attribute, newAttribute);
             }
         } catch (Exception e) {
@@ -146,7 +147,7 @@ class TestApiUserProfileInterface extends ApiBaseTestCase {
         assertNotNull(singleResult);
         String toString = this.marshall(singleResult, mediaType);
         InputStream stream = new ByteArrayInputStream(toString.getBytes());
-        JAXBUserProfile jaxbData = (JAXBUserProfile) UnmarshalUtils.unmarshal(super.getApplicationContext(), JAXBUserProfile.class, stream, mediaType);
+        JAXBUserProfile jaxbData = this.unmarshaller.unmarshal(mediaType, stream, JAXBUserProfile.class);
         assertNotNull(jaxbData);
         return jaxbData;
     }
@@ -155,6 +156,7 @@ class TestApiUserProfileInterface extends ApiBaseTestCase {
     protected void init() {
         super.init();
         this.userProfileManager = (IUserProfileManager) this.getApplicationContext().getBean(SystemConstants.USER_PROFILE_MANAGER);
+        this.unmarshaller = (Unmarshaller) this.getApplicationContext().getBean(SystemConstants.UNMARSHALLER);
     }
 
 }

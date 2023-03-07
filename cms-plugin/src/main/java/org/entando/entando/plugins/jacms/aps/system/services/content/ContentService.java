@@ -32,7 +32,6 @@ import com.agiletec.aps.system.services.category.CategoryUtilizer;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.GroupUtilizer;
-import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.PageUtilizer;
 import com.agiletec.aps.system.services.role.Permission;
@@ -226,9 +225,9 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
             final SymbolicLink symbolicLink = ((LinkAttribute) attribute).getSymbolicLink();
             if (symbolicLink != null) {
                 final Map<String, String> linkPoperties = ((LinkAttribute) attribute).getLinkProperties();
-                final String contentDest = symbolicLink.getContentDest();
-                final String pageDest = symbolicLink.getPageDest();
-                final String resourceDest = symbolicLink.getResourceDest();
+                final String contentDest = symbolicLink.getContentDestination();
+                final String pageDest = symbolicLink.getPageDestination();
+                final String resourceDest = symbolicLink.getResourceDestination();
                 final String symbolicDestination = symbolicLink.getSymbolicDestination();
                 Map<String, Object> result = new HashMap<>();
                 result.put("contentDest", contentDest);

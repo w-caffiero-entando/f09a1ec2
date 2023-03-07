@@ -22,7 +22,7 @@ public class DefaultJsonTypesProvider implements JsonTypesProvider {
                 new NamedType(JAXBDateAttribute.class),
                 new NamedType(JAXBEnumeratorMapAttribute.class),
                 new NamedType(JAXBHypertextAttribute.class),
-                new NamedType(JAXBListAttribute.class), // TESTARE
+                new NamedType(JAXBListAttribute.class),
                 new NamedType(JAXBNumberAttribute.class),
                 new NamedType(JAXBTextAttribute.class)
         };

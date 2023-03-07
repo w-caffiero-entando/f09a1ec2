@@ -24,24 +24,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "item")
 @XmlType(propOrder = {"code", "url"})
 public class LinkedListItem implements Serializable {
-	
-	@XmlElement(name = "code", required = true)
-	public String getCode() {
-		return _code;
-	}
-	public void setCode(String code) {
-		this._code = code;
-	}
-	
-	@XmlElement(name = "url", required = false)
-	public String getUrl() {
-		return _url;
-	}
-	public void setUrl(String url) {
-		this._url = url;
-	}
-	
-	private String _code;
-	private String _url;
-	
+
+    private String code;
+    private String url;
+
+    @XmlElement(name = "code", required = true)
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    @XmlElement(name = "url", required = false)
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

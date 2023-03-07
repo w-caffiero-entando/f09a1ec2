@@ -55,16 +55,16 @@ public class LinkResolverManager extends com.agiletec.plugins.jacms.aps.system.s
                 url = symbolicLink.getUrlDest();
             } else if (symbolicLink.getDestType() == SymbolicLink.PAGE_TYPE) {
                 PageURL pageUrl = (PageURL) this.getUrlManager().createURL(reqCtx);
-                pageUrl.setPageCode(symbolicLink.getPageDest());
+                pageUrl.setPageCode(symbolicLink.getPageDestination());
                 url = pageUrl.getURL();
             } else if (symbolicLink.getDestType() == SymbolicLink.CONTENT_ON_PAGE_TYPE) {
                 PageURL pageUrl = (PageURL) this.getUrlManager().createURL(reqCtx);
-                pageUrl.setPageCode(symbolicLink.getPageDest());
-                pageUrl.addParam(SystemConstants.K_CONTENT_ID_PARAM, symbolicLink.getContentDest());
+                pageUrl.setPageCode(symbolicLink.getPageDestination());
+                pageUrl.addParam(SystemConstants.K_CONTENT_ID_PARAM, symbolicLink.getContentDestination());
                 url = pageUrl.getURL();
             } else if (symbolicLink.getDestType() == SymbolicLink.CONTENT_TYPE) {
                 PageURL pageUrl = (PageURL) this.getUrlManager().createURL(reqCtx);
-                String contentIdDest = symbolicLink.getContentDest();
+                String contentIdDest = symbolicLink.getContentDestination();
                 String pageCode = this.getContentPageMapperManager().getPageCode(contentIdDest);
                 boolean forwardToDefaultPage = !this.isPageAllowed(reqCtx, pageCode);
                 if (forwardToDefaultPage) {
@@ -87,7 +87,7 @@ public class LinkResolverManager extends com.agiletec.plugins.jacms.aps.system.s
                 }
                 url = pageUrl.getURL();
             } else if (symbolicLink.getDestType() == SymbolicLink.RESOURCE_TYPE) {
-                ResourceInterface resource = this.getResourceManager().loadResource(symbolicLink.getResourceDest());
+                ResourceInterface resource = this.getResourceManager().loadResource(symbolicLink.getResourceDestination());
                 if (null != resource) {
                     url = resource.getDefaultUrlPath();
                     if (!resource.getMainGroup().equals(Group.FREE_GROUP_NAME)) {

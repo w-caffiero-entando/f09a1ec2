@@ -1,44 +1,10 @@
 package org.entando.entando.plugins.jacms.web.page;
 
-import org.entando.entando.ent.exception.EntException;
-import com.agiletec.aps.system.services.group.Group;
-import com.agiletec.aps.system.services.role.Permission;
-import com.agiletec.aps.util.FileTextReader;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.agiletec.aps.system.services.page.IPage;
-import com.agiletec.aps.system.services.page.IPageManager;
-import com.agiletec.aps.system.services.page.Page;
-import com.agiletec.aps.system.services.page.PageMetadata;
-import com.agiletec.aps.system.services.page.PageTestUtil;
-import com.agiletec.aps.system.services.page.Widget;
-import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
-import com.agiletec.aps.system.services.pagemodel.PageModel;
-import com.agiletec.aps.system.services.user.UserDetails;
-import com.agiletec.aps.util.ApsProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.entando.entando.aps.system.services.page.IPageService;
-import org.entando.entando.aps.system.services.page.model.PagesStatusDto;
-import org.entando.entando.aps.system.services.page.model.WidgetConfigurationDto;
-import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
-import org.entando.entando.web.AbstractControllerIntegrationTest;
-import org.entando.entando.web.page.model.WidgetConfigurationRequest;
-import org.entando.entando.web.utils.OAuth2TestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import org.hamcrest.Matchers;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,8 +16,40 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.page.Page;
+import com.agiletec.aps.system.services.page.PageMetadata;
+import com.agiletec.aps.system.services.page.PageTestUtil;
+import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
+import com.agiletec.aps.system.services.role.Permission;
+import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.aps.util.ApsProperties;
+import com.agiletec.aps.util.FileTextReader;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import org.entando.entando.aps.system.services.page.IPageService;
+import org.entando.entando.aps.system.services.page.model.PagesStatusDto;
+import org.entando.entando.aps.system.services.page.model.WidgetConfigurationDto;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.web.AbstractControllerIntegrationTest;
+import org.entando.entando.web.common.model.SimpleRestResponse;
+import org.entando.entando.web.page.model.WidgetConfigurationRequest;
+import org.entando.entando.web.utils.OAuth2TestUtils;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 class PageConfigurationControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -64,7 +62,8 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
     @Autowired
     private IWidgetTypeManager widgetTypeManager;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper mapper;
 
     @Test
     void testPageConfiguration() throws Exception {
@@ -788,7 +787,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString().replace("{\"payload\":", "").replace(",\"metaData\":{},\"errors\":[]}", "");
 
-        return mapper.readValue(contentAsString, PagesStatusDto.class);
+        return mapper.readValue(contentAsString, new TypeReference<SimpleRestResponse<PagesStatusDto>>() {}).getPayload();
     }
 
     /**

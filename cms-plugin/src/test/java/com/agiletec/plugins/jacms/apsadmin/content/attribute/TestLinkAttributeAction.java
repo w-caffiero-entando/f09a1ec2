@@ -118,7 +118,7 @@ class TestLinkAttributeAction extends AbstractBaseTestContentAction {
 		assertNotNull(linkAttribute);
 		SymbolicLink symbolicLink = linkAttribute.getSymbolicLink();
 		assertNotNull(symbolicLink);
-		assertEquals("ART111", symbolicLink.getContentDest());
+		assertEquals("ART111", symbolicLink.getContentDestination());
 
 		this.initContentAction("/do/jacms/Content", "removeLink", contentOnSessionMarker);
 		this.addParameter("attributeName", "VediAnche");

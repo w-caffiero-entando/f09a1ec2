@@ -13,6 +13,7 @@
  */
 package com.agiletec.aps.system.common.entity.model.attribute.util;
 
+import javax.xml.bind.annotation.XmlTransient;
 import org.jdom.Element;
 
 /**
@@ -46,6 +47,7 @@ public abstract class AbstractAttributeValidationRules extends BaseAttributeVali
 	}
 	
 	@Override
+	@XmlTransient
 	public boolean isEmpty() {
 		return (super.isEmpty() 
 				&& (null == this.getRangeStart()) 

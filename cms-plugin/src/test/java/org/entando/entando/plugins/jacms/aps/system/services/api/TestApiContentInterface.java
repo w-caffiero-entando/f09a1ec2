@@ -13,6 +13,7 @@
  */
 package org.entando.entando.plugins.jacms.aps.system.services.api;
 
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.attribute.AbstractComplexAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.AbstractListAttribute;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.UnmarshalUtils;
+import org.entando.entando.aps.system.services.api.Unmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
@@ -166,7 +167,7 @@ class TestApiContentInterface extends ApiBaseTestCase {
 		Assertions.assertNotNull(singleResult);
 		String toString = this.marshall(singleResult, mediaType);
 		InputStream stream = new ByteArrayInputStream(toString.getBytes());
-		JAXBContent jaxbContent = (JAXBContent) UnmarshalUtils.unmarshal(super.getApplicationContext(), JAXBContent.class, stream, mediaType);
+		JAXBContent jaxbContent = unmarshaller.unmarshal(mediaType, stream, JAXBContent.class);
 		Assertions.assertNotNull(jaxbContent);
 		return jaxbContent;
 	}
@@ -176,8 +177,10 @@ class TestApiContentInterface extends ApiBaseTestCase {
 	public void init() {
         super.init();
 		this.contentManager = (IContentManager) this.getApplicationContext().getBean(JacmsSystemConstants.CONTENT_MANAGER);
+		this.unmarshaller = (Unmarshaller) this.getApplicationContext().getBean(SystemConstants.UNMARSHALLER);
 	}
 
 	private IContentManager contentManager;
+	private Unmarshaller unmarshaller;
 
 }

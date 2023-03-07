@@ -153,7 +153,7 @@ class TestPageLinkAction extends AbstractBaseTestContentAction {
 		LinkAttribute attribute = (LinkAttribute) content.getAttribute("VediAnche");
 		SymbolicLink symbolicLink = attribute.getSymbolicLink();
 		assertNotNull(symbolicLink);
-		assertEquals("pagina_11", symbolicLink.getPageDest());
+		assertEquals("pagina_11", symbolicLink.getPageDestination());
 	}
 
 	private String initJoinLinkTest(String username, String contentId, String simpleLinkAttributeName, String langCode) throws Throwable {

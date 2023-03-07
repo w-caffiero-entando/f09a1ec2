@@ -13,27 +13,36 @@
  */
 package com.agiletec.aps.system.common.entity.model.attribute.util;
 
-import java.io.Serializable;
-import java.util.List;
-
-import org.jdom.Element;
-
 import com.agiletec.aps.system.common.entity.model.AttributeFieldError;
 import com.agiletec.aps.system.common.entity.model.AttributeTracer;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
 import com.agiletec.aps.system.services.lang.ILangManager;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.io.Serializable;
+import java.util.List;
+import javax.xml.bind.annotation.XmlTransient;
+import org.jdom.Element;
 
 /**
  * @author E.Santoboni
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "classType")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = DateAttributeValidationRules.class),
+        @JsonSubTypes.Type(value = NumberAttributeValidationRules.class),
+        @JsonSubTypes.Type(value = TextAttributeValidationRules.class)
+})
 public interface IAttributeValidationRules extends Serializable {
     
     public IAttributeValidationRules clone();
     
 	public boolean isEmpty();
-	
+
+    @XmlTransient
     public void setConfig(Element attributeElement);
-    
+
+    @XmlTransient
     public Element getJDOMConfigElement();
     
     /**

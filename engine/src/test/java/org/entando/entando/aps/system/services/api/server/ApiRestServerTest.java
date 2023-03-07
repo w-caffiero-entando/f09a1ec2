@@ -8,11 +8,15 @@ import com.agiletec.aps.system.services.role.Role;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.entando.entando.aps.system.services.api.DefaultJsonTypesProvider;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
+import org.entando.entando.aps.system.services.api.ObjectMapperConfiguration;
+import org.entando.entando.aps.system.services.api.Unmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.oauth2.IApiOAuth2TokenManager;
@@ -62,6 +66,15 @@ class ApiRestServerTest {
         Mockito.when(webApplicationContext.getBean(SystemConstants.LEGACY_API_USER_EXTRACTOR)).thenReturn(legacyApiUserExtractor);
 
         apiRestServer = new ApiRestServer();
+        apiRestServer.setUnmarshaller(getUnmarshaller());
+    }
+
+    private Unmarshaller getUnmarshaller() {
+        ObjectMapperConfiguration mapperConfiguration = new ObjectMapperConfiguration();
+        mapperConfiguration.setJsonTypesProviders(List.of(new DefaultJsonTypesProvider()));
+        Unmarshaller unmarshaller = new Unmarshaller(
+                mapperConfiguration.defaultObjectMapper(), mapperConfiguration.xmlMapper());
+        return unmarshaller;
     }
 
     @Test

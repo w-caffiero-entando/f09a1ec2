@@ -13,23 +13,6 @@
  */
 package com.agiletec.aps.system.common.entity.model.attribute;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
-
-import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiException;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
 import com.agiletec.aps.system.common.entity.model.attribute.util.BaseAttributeValidationRules;
 import com.agiletec.aps.system.common.entity.model.attribute.util.DateAttributeValidationRules;
 import com.agiletec.aps.system.common.entity.model.attribute.util.IAttributeValidationRules;
@@ -37,127 +20,163 @@ import com.agiletec.aps.system.common.entity.model.attribute.util.NumberAttribut
 import com.agiletec.aps.system.common.entity.model.attribute.util.OgnlValidationRule;
 import com.agiletec.aps.system.common.entity.model.attribute.util.TextAttributeValidationRules;
 import com.agiletec.aps.system.common.searchengine.IndexableAttributeInterface;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
+import lombok.extern.slf4j.Slf4j;
+import org.entando.entando.aps.system.services.api.IApiErrorCodes;
+import org.entando.entando.aps.system.services.api.model.ApiException;
 
 /**
  * @author E.Santoboni
  */
+@Slf4j
 @XmlRootElement(name = "attributeType")
 @XmlType(propOrder = {"name", "names", "description", "type", "roles", "searchable", "indexable", "validationRules"})
-@XmlSeeAlso({ArrayList.class, BaseAttributeValidationRules.class, DateAttributeValidationRules.class, 
-    NumberAttributeValidationRules.class, TextAttributeValidationRules.class, OgnlValidationRule.class})
+@XmlSeeAlso({ArrayList.class, BaseAttributeValidationRules.class, DateAttributeValidationRules.class,
+        NumberAttributeValidationRules.class, TextAttributeValidationRules.class, OgnlValidationRule.class})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "classType")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = JAXBCompositeAttributeType.class),
+        @JsonSubTypes.Type(value = JAXBEnumeratorAttributeType.class),
+        @JsonSubTypes.Type(value = JAXBListAttributeType.class)
+})
 public class DefaultJAXBAttributeType {
 
-	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(DefaultJAXBAttributeType.class);
-	
-	@XmlElement(name = "name", required = true)
+    @XmlElement(name = "name", required = true)
     public String getName() {
-        return _name;
+        return name;
     }
+
     public void setName(String name) {
-        this._name = name;
+        this.name = name;
     }
-    
+
     @XmlElement(name = "names", required = false)
     public Map<String, String> getNames() {
-        return _names;
+        return names;
     }
+
     public void setNames(Map<String, String> names) {
-        this._names = names;
+        this.names = names;
     }
-	
-	@XmlElement(name = "description", required = false)
+
+    @XmlElement(name = "description", required = false)
     public String getDescription() {
-		return _description;
-	}
-	public void setDescription(String description) {
-		this._description = description;
-	}
-    
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @XmlElement(name = "type", required = true)
     public String getType() {
-        return _type;
+        return type;
     }
+
     public void setType(String type) {
-        this._type = type;
+        this.type = type;
     }
-    
+
     @XmlElement(name = "role", required = false)
     @XmlElementWrapper(name = "roles")
     public List<String> getRoles() {
-        return _roles;
+        return roles;
     }
+
     public void setRoles(List<String> roles) {
-        this._roles = roles;
+        this.roles = roles;
     }
-    
+
     public Boolean getIndexable() {
-        return _indexable;
+        return indexable;
     }
+
     public void setIndexable(Boolean indexable) {
-        this._indexable = indexable;
+        this.indexable = indexable;
     }
-    
+
     public Boolean getSearchable() {
-        return _searchable;
+        return searchable;
     }
+
     public void setSearchable(Boolean searchable) {
-        this._searchable = searchable;
+        this.searchable = searchable;
     }
-    
-    public Object getValidationRules() {
-        return _validationRules;
+
+    public IAttributeValidationRules getValidationRules() {
+        return validationRules;
     }
-    public void setValidationRules(Object validationRules) {
-        this._validationRules = validationRules;
+
+    public void setValidationRules(IAttributeValidationRules validationRules) {
+        this.validationRules = validationRules;
     }
-    
+
     public AttributeInterface createAttribute(Map<String, AttributeInterface> attributes) throws ApiException {
-        AttributeInterface attribute = null;
+        AttributeInterface attribute;
         try {
             AttributeInterface master = attributes.get(this.getType());
             if (null == master) {
-                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Attribute Type '" + this.getType() + "' does not exist");
+                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
+                        "Attribute Type '" + this.getType() + "' does not exist");
             }
             attribute = (AttributeInterface) master.getAttributePrototype();
             Pattern pattern = Pattern.compile("\\w+");
             Matcher matcher = pattern.matcher(this.getName());
             if (null == this.getName() || !matcher.matches()) {
-                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, 
+                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
                         "Invalid name '" + this.getName() + "' of Attribute Type '" + this.getType() + "'");
             }
             attribute.setName(this.getName());
             attribute.setDescription(this.getDescription());
             attribute.setRoles(this.toArray(this.getRoles()));
-            if (null != this.getSearchable()) attribute.setSearchable(this.getSearchable());
-            if (null != this.getIndexable()) attribute.setIndexingType(IndexableAttributeInterface.INDEXING_TYPE_TEXT);
-            attribute.setValidationRules((IAttributeValidationRules) this.getValidationRules());
+            if (null != this.getSearchable()) {
+                attribute.setSearchable(this.getSearchable());
+            }
+            if (null != this.getIndexable()) {
+                attribute.setIndexingType(IndexableAttributeInterface.INDEXING_TYPE_TEXT);
+            }
+            attribute.setValidationRules(this.getValidationRules());
         } catch (ApiException ae) {
             throw ae;
-        } catch (Throwable t) {
-        	_logger.error("Error creating attribute '{}'", this.getName(), t);
-            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Error creating attribute '" + this.getName() + "'");
+        } catch (Exception ex) {
+            log.error("Error creating attribute '{}'", this.getName(), ex);
+            throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
+                    "Error creating attribute '" + this.getName() + "'");
         }
         return attribute;
     }
-    
+
     private String[] toArray(List<String> strings) {
-        if (null == strings || strings.isEmpty()) return null;
+        if (null == strings || strings.isEmpty()) {
+            return new String[]{};
+        }
         String[] array = new String[strings.size()];
         for (int i = 0; i < strings.size(); i++) {
             array[i] = strings.get(i);
         }
         return array;
     }
-    
-    private String _name;
-    private Map<String, String> _names;
-    private String _description;
-    private String _type;
-    private List<String> _roles;
-    
-    private Boolean _searchable;
-    private Boolean _indexable;
-    
-    private Object _validationRules;
-    
+
+    private String name;
+    private Map<String, String> names;
+    private String description;
+    private String type;
+    private List<String> roles;
+
+    private Boolean searchable;
+    private Boolean indexable;
+
+    private IAttributeValidationRules validationRules;
+
 }

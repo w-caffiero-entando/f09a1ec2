@@ -63,8 +63,8 @@ class TestUrlLinkAction extends AbstractBaseTestContentAction {
 		LinkAttribute attribute = (LinkAttribute) content.getAttribute("VediAnche");
 		SymbolicLink symbolicLink = attribute.getSymbolicLink();
 		assertNotNull(symbolicLink);
-		assertNull(symbolicLink.getPageDest());
-		assertNull(symbolicLink.getContentDest());
+		assertNull(symbolicLink.getPageDestination());
+		assertNull(symbolicLink.getContentDestination());
 		assertEquals("http://www.entando.com", symbolicLink.getUrlDest());
 	}
 

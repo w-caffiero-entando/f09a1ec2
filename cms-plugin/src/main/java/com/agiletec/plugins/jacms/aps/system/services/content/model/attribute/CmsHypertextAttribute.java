@@ -141,8 +141,8 @@ public class CmsHypertextAttribute extends HypertextAttribute implements IRefere
             if (null != links && !links.isEmpty()) {
                 for (SymbolicLink symbLink : links) {
                     if (symbLink.getDestType() != SymbolicLink.URL_TYPE) {
-                        CmsAttributeReference ref = new CmsAttributeReference(symbLink.getPageDest(),
-                                symbLink.getContentDest(), symbLink.getResourceDest());
+                        CmsAttributeReference ref = new CmsAttributeReference(symbLink.getPageDestination(),
+                                symbLink.getContentDestination(), symbLink.getResourceDestination());
                         refs.add(ref);
                     }
                 }
@@ -177,8 +177,8 @@ public class CmsHypertextAttribute extends HypertextAttribute implements IRefere
                         if (null != attributeError) {
                             AttributeFieldError error = new AttributeFieldError(this, attributeError.getErrorCode(), textTracer);
                             if (attributeError.getMessage() == null) {
-                                attributeError.setMessage("Invalid link - page " + symbLink.getPageDest()
-                                        + " - content " + symbLink.getContentDest() + " - Error code " + attributeError.getErrorCode());
+                                attributeError.setMessage("Invalid link - page " + symbLink.getPageDestination()
+                                        + " - content " + symbLink.getContentDestination() + " - Error code " + attributeError.getErrorCode());
                             }
                             error.setMessage(attributeError.getMessage());
                             errors.add(error);

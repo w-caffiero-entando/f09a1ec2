@@ -56,7 +56,7 @@ public class SymbolicLinkErrorMessenger implements ISymbolicLinkErrorMessenger {
 	}
 
 	protected int checkPageDest(SymbolicLink symbLink, Content content) {
-		String pageCode = symbLink.getPageDest();
+		String pageCode = symbLink.getPageDestination();
 		IPage page = this.getPageManager().getOnlinePage(pageCode);
 		if (null == page) {
 			return MESSAGE_CODE_INVALID_PAGE;
@@ -85,9 +85,9 @@ public class SymbolicLinkErrorMessenger implements ISymbolicLinkErrorMessenger {
 	protected int checkContentDest(SymbolicLink symbLink, Content content) {
 		Content linkedContent = null;
 		try {
-			linkedContent = this.getContentManager().loadContent(symbLink.getContentDest(), true);
+			linkedContent = this.getContentManager().loadContent(symbLink.getContentDestination(), true);
 		} catch (Throwable e) {
-			throw new RuntimeException("Errore in caricamento contenuto " + symbLink.getContentDest(), e);
+			throw new RuntimeException("Errore in caricamento contenuto " + symbLink.getContentDestination(), e);
 		}
 		if (null == linkedContent) {
 			return MESSAGE_CODE_INVALID_CONTENT;

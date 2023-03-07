@@ -26,7 +26,7 @@ import javax.xml.bind.Marshaller;
 import org.entando.entando.aps.system.init.model.IPostProcess;
 import org.entando.entando.aps.system.init.model.InvalidPostProcessResultException;
 import org.entando.entando.aps.system.init.model.SelfRestCallPostProcess;
-import org.entando.entando.aps.system.services.api.UnmarshalUtils;
+import org.entando.entando.aps.system.services.api.Unmarshaller;
 import org.entando.entando.aps.system.services.api.model.AbstractApiResponse;
 import org.entando.entando.aps.system.services.api.model.ApiError;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
@@ -64,7 +64,8 @@ public class SelfRestCaller implements IPostProcessor, BeanFactoryAware {
 				result = responseBuilder.createResponse(method, properties);
 			} else {
 				String contentBody = this.getContentBody(selfRestCall);
-				Object bodyObject = UnmarshalUtils.unmarshal(method, contentBody, selfRestCall.getContentType());
+				Unmarshaller unmarshaller = (Unmarshaller) getBeanFactory().getBean(SystemConstants.UNMARSHALLER);
+				Object bodyObject = unmarshaller.unmarshal(selfRestCall.getContentType(), contentBody, method.getExpectedType());
 				result = responseBuilder.createResponse(method, bodyObject, properties);
 			}
 			HttpStatus responseStatus = this.extractResponseStatusCode(result);

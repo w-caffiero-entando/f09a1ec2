@@ -16,6 +16,7 @@ package org.entando.entando.plugins.jacms.aps.system.services.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
@@ -23,7 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.UnmarshalUtils;
+import org.entando.entando.aps.system.services.api.Unmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -91,7 +92,7 @@ class TestApiContentTypeInterface extends ApiBaseTestCase {
         assertEquals(viewPage, result.getViewPage());
         String toString = this.marshall(result, mediaType);
         InputStream stream = new ByteArrayInputStream(toString.getBytes());
-        JAXBContentType jaxbContentType = (JAXBContentType) UnmarshalUtils.unmarshal(super.getApplicationContext(), JAXBContentType.class, stream, mediaType);
+        JAXBContentType jaxbContentType = this.unmarshaller.unmarshal(mediaType, stream, JAXBContentType.class);
         assertNotNull(jaxbContentType);
         return jaxbContentType;
     }
@@ -101,8 +102,10 @@ class TestApiContentTypeInterface extends ApiBaseTestCase {
     public void init() {
         super.init();
         this.contentManager = (IContentManager) this.getApplicationContext().getBean(JacmsSystemConstants.CONTENT_MANAGER);
+        this.unmarshaller = (Unmarshaller) this.getApplicationContext().getBean(SystemConstants.UNMARSHALLER);
     }
 
     private IContentManager contentManager;
+    private Unmarshaller unmarshaller;
 
 }

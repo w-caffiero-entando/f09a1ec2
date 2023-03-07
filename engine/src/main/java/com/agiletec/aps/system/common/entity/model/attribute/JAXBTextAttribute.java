@@ -22,15 +22,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(propOrder = {"text"})
 public class JAXBTextAttribute extends AbstractJAXBAttribute implements Serializable {
-    
+
     @XmlElement(name = "value", required = false)
     public String getText() {
-        return _text;
+        return text;
     }
+
     public void setText(String text) {
-        this._text = text;
+        this.text = text;
     }
-    
-    private String _text;
-    
+
+    private String text;
 }
