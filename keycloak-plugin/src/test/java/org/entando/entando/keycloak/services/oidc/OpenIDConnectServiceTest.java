@@ -13,9 +13,9 @@
  */
 package org.entando.entando.keycloak.services.oidc;
 
-import org.assertj.core.api.Assertions;
 import org.entando.entando.keycloak.services.KeycloakConfiguration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -40,6 +40,47 @@ class OpenIDConnectServiceTest {
         Mockito.when(keycloakConfiguration.getClientSecret()).thenReturn("secretId");
 
         HttpHeaders headers = testService.getHttpHeaders();
-        Assertions.assertThat(headers.getFirst("Authorization")).isEqualTo("Basic Y2xpZW50SWQ6c2VjcmV0SWQ=");
+        Assertions.assertEquals("Basic Y2xpZW50SWQ6c2VjcmV0SWQ=", headers.getFirst("Authorization"));
     }
+
+    @Test
+    void shouldAddCorrectlySuggestedIdpIfNotBlank() throws Exception {
+        OpenIDConnectService testService = new OpenIDConnectService(keycloakConfiguration);
+
+        final String expectedUrl = "http://keycloack.com/auth/realms/ent/protocol/openid-connect/auth"
+                + "?response_type=code&client_id=clientId&redirect_uri=http%3A%2F%2Ftest.com&state=s5d43"
+                + "&login=true&scope=openid&kc_idp_hint=facebook";
+
+        Mockito.when(keycloakConfiguration.getAuthUrl()).thenReturn("http://keycloack.com/auth");
+        Mockito.when(keycloakConfiguration.getRealm()).thenReturn("ent");
+        Mockito.when(keycloakConfiguration.getClientId()).thenReturn("clientId");
+
+        final String actualUrl = testService.getRedirectUrl("http://test.com","s5d43", "facebook");
+
+        Assertions.assertEquals(expectedUrl, actualUrl);
+
+    }
+
+    @Test
+    void shouldSkipSuggestedIdpIfBlank() throws Exception {
+        OpenIDConnectService testService = new OpenIDConnectService(keycloakConfiguration);
+
+        final String expectedUrl = "http://keycloack.com/auth/realms/ent/protocol/openid-connect/auth"
+                + "?response_type=code&client_id=clientId&redirect_uri=http%3A%2F%2Ftest.com&state=s5d43"
+                + "&login=true&scope=openid";
+
+        Mockito.when(keycloakConfiguration.getAuthUrl()).thenReturn("http://keycloack.com/auth");
+        Mockito.when(keycloakConfiguration.getRealm()).thenReturn("ent");
+        Mockito.when(keycloakConfiguration.getClientId()).thenReturn("clientId");
+
+        String actualUrl = testService.getRedirectUrl("http://test.com","s5d43", null);
+        Assertions.assertEquals(expectedUrl, actualUrl);
+
+        actualUrl = testService.getRedirectUrl("http://test.com","s5d43", "");
+        Assertions.assertEquals(expectedUrl, actualUrl);
+
+        actualUrl = testService.getRedirectUrl("http://test.com","s5d43", "  ");
+        Assertions.assertEquals(expectedUrl, actualUrl);
+    }
+
 }
