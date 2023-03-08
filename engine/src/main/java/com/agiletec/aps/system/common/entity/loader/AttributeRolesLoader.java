@@ -28,6 +28,7 @@ import com.agiletec.aps.system.common.entity.parse.AttributeRoleDOM;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.FileTextReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -74,26 +75,27 @@ public class AttributeRolesLoader {
     public void loadLocalRoles(String configItemName, Map<String, AttributeRole> defaultCollection) {
         try {
             ConfigInterface configManager = this.getBeanFactory().getBean(ConfigInterface.class);
-			String xml = configManager.getConfigItem(configItemName);
+            String xml = configManager.getConfigItem(configItemName);
+            _logger.debug("Extracted configuration item '{}' - {}", configItemName, xml);
             if (StringUtils.isBlank(xml)) {
                 return;
             }
             AttributeRoleDOM dom = new AttributeRoleDOM();
-			Map<String, AttributeRole> attributeRoles = dom.extractRoles(xml, "configItem:" + configItemName);
-			List<AttributeRole> roles = new ArrayList<>(attributeRoles.values());
-			for (int i = 0; i < roles.size(); i++) {
-				AttributeRole role = roles.get(i);
-				if (defaultCollection.containsKey(role.getName())) {
-					_logger.warn("You can't override existing attribute role : {} - {}", role.getName(), role.getDescription());
-				} else {
-					defaultCollection.put(role.getName(), role);
-					_logger.info("Added new attribute role : {} - {}",role.getName(), role.getDescription());
-				}
+            Map<String, AttributeRole> attributeRoles = dom.extractRoles(xml, "configItem:" + configItemName);
+            List<AttributeRole> roles = new ArrayList<>(attributeRoles.values());
+            for (int i = 0; i < roles.size(); i++) {
+                AttributeRole role = roles.get(i);
+                if (defaultCollection.containsKey(role.getName())) {
+                    _logger.warn("You can't override existing attribute role : {} - {}", role.getName(), role.getDescription());
+                } else {
+                    defaultCollection.put(role.getName(), role);
+                    _logger.debug("Added new attribute role : {} - {}", role.getName(), role.getDescription());
+                }
                 role.setLocal(true);
-			}
-		} catch (EntException | BeansException e) {
-			_logger.error("Error loading local attribute Roles", e);
-		}
+            }
+        } catch (EntException | BeansException e) {
+            _logger.error("Error loading local attribute Roles from configuration item '{}'", configItemName, e);
+        }
     }
     
 	private void loadExtraRoles(Map<String, AttributeRole> attributeRoles) {
@@ -115,7 +117,7 @@ public class AttributeRolesLoader {
 		}
 	}
 	
-	private String extractConfigFile(String fileName) throws Throwable {
+	private String extractConfigFile(String fileName) throws EntException, IOException {
 		InputStream is = this.getEntityManager().getClass().getResourceAsStream(fileName);
 		if (null == is) {
 			_logger.debug("{}: there isn't any object to load : file {}", this.getEntityManager().getClass().getName(), fileName);
