@@ -101,6 +101,7 @@ class PageControllerTest extends AbstractControllerTest {
         when(authorizationManager.isAuthOnPermission(any(UserDetails.class), any(String.class))).thenReturn(true);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
+                .setMessageConverters(getMessageConverters())
                 .setHandlerExceptionResolvers(createHandlerExceptionResolver())
                 .build();
         PageValidator pageValidator = new PageValidator();

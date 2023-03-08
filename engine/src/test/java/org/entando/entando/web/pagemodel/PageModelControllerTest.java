@@ -13,37 +13,46 @@
  */
 package org.entando.entando.web.pagemodel;
 
-import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
-import com.agiletec.aps.system.services.pagemodel.PageModel;
-import com.agiletec.aps.system.services.user.UserDetails;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import org.entando.entando.aps.system.services.pagemodel.PageModelService;
-import org.entando.entando.aps.system.services.pagemodel.model.*;
-import org.entando.entando.web.AbstractControllerTest;
-import org.entando.entando.web.common.model.*;
-import org.entando.entando.web.pagemodel.model.*;
-import org.entando.entando.web.pagemodel.validator.PageModelValidator;
-import org.entando.entando.web.utils.OAuth2TestUtils;
-import org.mockito.*;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.*;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.*;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
+import com.agiletec.aps.system.services.user.UserDetails;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.List;
+import org.entando.entando.aps.system.services.pagemodel.PageModelService;
+import org.entando.entando.aps.system.services.pagemodel.model.PageModelDto;
+import org.entando.entando.aps.system.services.pagemodel.model.PageModelDtoBuilder;
+import org.entando.entando.web.AbstractControllerTest;
+import org.entando.entando.web.common.model.PagedMetadata;
+import org.entando.entando.web.common.model.RestListRequest;
+import org.entando.entando.web.pagemodel.model.PageModelConfigurationRequest;
+import org.entando.entando.web.pagemodel.model.PageModelFrameReq;
+import org.entando.entando.web.pagemodel.model.PageModelRequest;
+import org.entando.entando.web.pagemodel.validator.PageModelValidator;
+import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 class PageModelControllerTest extends AbstractControllerTest {
@@ -68,6 +77,7 @@ class PageModelControllerTest extends AbstractControllerTest {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
+                .setMessageConverters(getMessageConverters())
                 .setHandlerExceptionResolvers(createHandlerExceptionResolver())
                 .build();
 
