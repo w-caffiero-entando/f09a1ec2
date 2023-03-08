@@ -108,11 +108,11 @@ public abstract class ApsEntityManager extends AbstractService
     public void init() throws Exception {
         this.entityDom.setRootElementName(this.getXmlAttributeRootElementName());
         this.getCacheWrapper().initCache(super.getName());
-        this.refreshAttributeRoles();
+        this.initAttributeRoles();
         logger.info("{} : inizializated", this.getName());
     }
     
-    protected void refreshAttributeRoles() {
+    protected void initAttributeRoles() {
         AttributeRolesLoader loader = new AttributeRolesLoader();
         Map<String, AttributeRole> attributeRoles = loader.extractAttributeRoles(this.getRolesConfigItemName(), this.getAttributeRolesFileName(), super.getBeanFactory(), this);
         this.getCacheWrapper().updateRoles(attributeRoles);
@@ -162,7 +162,7 @@ public abstract class ApsEntityManager extends AbstractService
         Map<String, AttributeRole> rolesToSave = roles.entrySet()
                 .stream().filter(e -> !defaultRoles.contains(e.getKey())).collect(Collectors.toMap(Entry:: getKey, e -> e.getValue().clone()));
         this.getEntityTypeFactory().updateAttributeRoles(this.getRolesConfigItemName(), rolesToSave);
-        this.refreshAttributeRoles();
+        this.initAttributeRoles();
     }
 
     /**
