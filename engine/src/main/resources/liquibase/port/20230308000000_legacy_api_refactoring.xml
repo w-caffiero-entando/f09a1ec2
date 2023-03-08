@@ -1,0 +1,21 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+           http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="20230308000000_legacy_api_refactoring" author="entando" context="production">
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_25_2.ftl"/>
+            <where>code='entandoapi_is_resource_detail'</where>
+        </update>
+
+        <update tableName="guifragment">
+            <column name="defaultgui" valueClobFile="clob/production/guifragment_28_1.ftl"/>
+            <where>code='entandoapi_is_service_detail'</where>
+        </update>
+
+    </changeSet>
+</databaseChangeLog>
