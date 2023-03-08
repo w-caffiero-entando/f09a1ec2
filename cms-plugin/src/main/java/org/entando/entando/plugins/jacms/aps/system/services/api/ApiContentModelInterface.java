@@ -33,10 +33,10 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ApiContentModelInterface.class);
 	
-	public StringListApiResponse getModels(Properties properties) throws ApiException, Throwable {
+	public StringListApiResponse getModels(Properties properties) throws EntException {
 		StringListApiResponse response = new StringListApiResponse();
 		try {
-			List<ContentModel> models = null;
+			List<ContentModel> models;
 			String contentTypeParam = properties.getProperty("contentType");
 			String contentType = (null != contentTypeParam && contentTypeParam.trim().length() > 0) ? contentTypeParam.trim() : null;
 			if (null != contentType && null == this.getContentManager().getSmallContentTypesMap().get(contentType)) {
@@ -49,7 +49,7 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
 			} else {
 				models = this.getContentModelManager().getContentModels();
 			}
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			if (null != models) {
 				for (int i = 0; i < models.size(); i++) {
 					ContentModel model = models.get(i);
@@ -59,15 +59,14 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
 			response.setResult(list, null);
 		} catch (Throwable t) {
 			_logger.error("Error loading models", t);
-            //ApsSystemUtils.logThrowable(t, this, "getModels");
             throw new EntException("Error loading models", t);
         }
 		return response;
 	}
 	
-	public ContentModel getModel(Properties properties) throws ApiException, Throwable {
+	public ContentModel getModel(Properties properties) throws ApiException {
 		String idString = properties.getProperty("id");
-        int id = 0;
+        int id;
         try {
             id = Integer.parseInt(idString);
         } catch (NumberFormatException e) {
@@ -80,7 +79,7 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
         return model;
 	}
 	
-	public void addModel(ContentModel model) throws ApiException, Throwable {
+	public void addModel(ContentModel model) throws ApiException, EntException {
 		if (null != this.getContentModelManager().getContentModel(model.getId())) {
             throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id " + model.getId() + " already exists", HttpStatus.CONFLICT);
         }
@@ -91,12 +90,11 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
             this.getContentModelManager().addContentModel(model);
         } catch (Throwable t) {
         	_logger.error("Error adding model", t);
-        	//ApsSystemUtils.logThrowable(t, this, "addModel");
             throw new EntException("Error adding model", t);
         }
 	}
 	
-	public void updateModel(ContentModel model) throws ApiException, Throwable {
+	public void updateModel(ContentModel model) throws ApiException, EntException {
 		ContentModel oldModel = this.getContentModelManager().getContentModel(model.getId());
 		if (null == oldModel) {
             throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Model with id " + model.getId() + " does not exist", HttpStatus.CONFLICT);
@@ -109,14 +107,13 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
             this.getContentModelManager().updateContentModel(model);
         } catch (Throwable t) {
         	_logger.error("Error updating model", t);
-            //ApsSystemUtils.logThrowable(t, this, "updateModel");
             throw new EntException("Error updating model", t);
         }
 	}
 	
-	public void deleteModel(Properties properties) throws ApiException, Throwable {
+	public void deleteModel(Properties properties) throws ApiException, EntException {
 		String idString = properties.getProperty("id");
-        int id = 0;
+        int id;
         try {
             id = Integer.parseInt(idString);
         } catch (NumberFormatException e) {
@@ -130,7 +127,6 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
             this.getContentModelManager().removeContentModel(model);
         } catch (Throwable t) {
         	_logger.error("Error deleting model", t);
-            //ApsSystemUtils.logThrowable(t, this, "deleteModel");
             throw new EntException("Error deleting model", t);
         }
 	}

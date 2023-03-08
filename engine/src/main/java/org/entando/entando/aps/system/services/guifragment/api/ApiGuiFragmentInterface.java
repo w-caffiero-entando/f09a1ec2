@@ -95,13 +95,13 @@ public class ApiGuiFragmentInterface implements BeanFactoryAware, IApiExportable
 		return newFilters;
 	}
 	
-    public JAXBGuiFragment getGuiFragment(Properties properties) throws ApiException, Throwable {
+    public JAXBGuiFragment getGuiFragment(Properties properties) throws Throwable {
         String code = properties.getProperty("code");
 		JAXBGuiFragment jaxbGuiFragment = null;
 		try {
 			GuiFragment guiFragment = this.getGuiFragmentManager().getGuiFragment(code);
 			if (null == guiFragment) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "GuiFragment with id '" + code + "' does not exist", HttpStatus.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, getGuiFragmentDoesNotExistMessage(code), HttpStatus.CONFLICT);
 			}
 			jaxbGuiFragment = new JAXBGuiFragment(guiFragment);
 		} catch (ApiException ae) {
@@ -113,7 +113,7 @@ public class ApiGuiFragmentInterface implements BeanFactoryAware, IApiExportable
         return jaxbGuiFragment;
     }
 	
-    public void addGuiFragment(JAXBGuiFragment jaxbGuiFragment) throws ApiException, Throwable {
+    public void addGuiFragment(JAXBGuiFragment jaxbGuiFragment) throws Throwable {
 		try {
 			if (null != this.getGuiFragmentManager().getGuiFragment(jaxbGuiFragment.getCode())) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "GuiFragment with code " + jaxbGuiFragment.getCode() + " already exists", HttpStatus.CONFLICT);
@@ -131,10 +131,11 @@ public class ApiGuiFragmentInterface implements BeanFactoryAware, IApiExportable
 		}
     }
 	
-    public void updateGuiFragment(JAXBGuiFragment jaxbGuiFragment) throws ApiException, Throwable {
+    public void updateGuiFragment(JAXBGuiFragment jaxbGuiFragment) throws Throwable {
 		try {
 			if (null == this.getGuiFragmentManager().getGuiFragment(jaxbGuiFragment.getCode())) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "GuiFragment with code '" + jaxbGuiFragment.getCode() + "' does not exist", HttpStatus.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, getGuiFragmentDoesNotExistMessage(
+						jaxbGuiFragment.getCode()), HttpStatus.CONFLICT);
 			}
 			GuiFragment guiFragment = jaxbGuiFragment.getGuiFragment();
 			if (StringUtils.isBlank(guiFragment.getCurrentGui())) {
@@ -149,15 +150,15 @@ public class ApiGuiFragmentInterface implements BeanFactoryAware, IApiExportable
 		}
     }
 	
-    public void deleteGuiFragment(Properties properties) throws ApiException, Throwable {
+    public void deleteGuiFragment(Properties properties) throws Throwable {
         String code = properties.getProperty("code");
 		try {
 			GuiFragment guiFragment = this.getGuiFragmentManager().getGuiFragment(code);
 			if (null == guiFragment) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "GuiFragment with code '" + code + "' does not exist", HttpStatus.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, getGuiFragmentDoesNotExistMessage(code), HttpStatus.CONFLICT);
 			}
 			if (guiFragment.isLocked()) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "GuiFragment with code '" + code + "' are locked", HttpStatus.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "GuiFragment with code '" + code + "' is locked", HttpStatus.CONFLICT);
 			}
 			Map<String, List<Object>> references = new HashMap<String, List<Object>>();
 			ListableBeanFactory factory = (ListableBeanFactory) this.getBeanFactory();
@@ -204,7 +205,7 @@ public class ApiGuiFragmentInterface implements BeanFactoryAware, IApiExportable
 			return null;
 		}
 		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
-		stringBuilder.append("api/rs/").append(langCode).append("/core/guiFragment");//?code=").append(fragmentCode);
+		stringBuilder.append("api/legacy/").append(langCode).append("/core/guiFragment");
 		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
 			stringBuilder.append(".xml");
 		} else {
@@ -212,6 +213,10 @@ public class ApiGuiFragmentInterface implements BeanFactoryAware, IApiExportable
 		}
 		stringBuilder.append("?code=").append(fragmentCode);
 		return stringBuilder.toString();
+	}
+
+	private static String getGuiFragmentDoesNotExistMessage(String code) {
+		return String.format("GuiFragment with code '%s' does not exist", code);
 	}
 	
 	protected BeanFactory getBeanFactory() {

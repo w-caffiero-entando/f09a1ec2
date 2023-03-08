@@ -16,7 +16,7 @@ package org.entando.entando.plugins.jacms.aps.system.services.api;
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.services.page.IPage;
-import com.agiletec.aps.system.services.page.PageManager;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.pagemodel.Frame;
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
@@ -44,7 +44,7 @@ import org.springframework.http.HttpStatus;
 public class ApiContentTypeInterface extends ApiEntityTypeInterface {
 
     @Autowired
-    private PageManager pageManager;
+    private IPageManager pageManager;
     
     private IContentManager contentManager;
     private IContentModelManager contentModelManager;
@@ -128,7 +128,7 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
             IPage viewPage =  this.getPageManager().getOnlinePage(viewPageCode);
             if (null == viewPage) {
                 ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "View Page with id '" + viewPageCode + "' does not exist", HttpStatus.ACCEPTED);
+                        "View Page with id '" + viewPageCode + "' does not exist", HttpStatus.CONFLICT);
                 response.addError(error);
                 return false;
             }
@@ -137,7 +137,7 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
             final boolean mainFramePresent = Arrays.stream(configuration).anyMatch(Frame::isMainFrame);
             if (!mainFramePresent) {
                 ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Main frame for Page with id '" + viewPage.getCode() + "' not present", HttpStatus.ACCEPTED);
+                        "Main frame for Page with id '" + viewPage.getCode() + "' not present", HttpStatus.CONFLICT);
                 response.addError(error);
                 return false;
             }
@@ -153,13 +153,13 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
         ContentModel contentModel = this.getContentModelManager().getContentModel(modelId);
         if (null == contentModel) {
             ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-					"Content model with id '" + modelId + "' does not exist", HttpStatus.ACCEPTED);
+					"Content model with id '" + modelId + "' does not exist", HttpStatus.CONFLICT);
             response.addError(error);
             return false;
         }
         if (!contentType.getTypeCode().equals(contentModel.getContentType())) {
             ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-					"Content model with id '" + modelId + "' is for contents of type '" + contentModel.getContentType() + "'", HttpStatus.ACCEPTED);
+					"Content model with id '" + modelId + "' is for contents of type '" + contentModel.getContentType() + "'", HttpStatus.CONFLICT);
             response.addError(error);
             return false;
         }
@@ -193,10 +193,10 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
         this.contentManager = contentManager;
     }
 
-    protected PageManager getPageManager() {
+    protected IPageManager getPageManager() {
         return pageManager;
     }
-    public void setPageManager(PageManager pageManager) {
+    public void setPageManager(IPageManager pageManager) {
         this.pageManager = pageManager;
     }
 

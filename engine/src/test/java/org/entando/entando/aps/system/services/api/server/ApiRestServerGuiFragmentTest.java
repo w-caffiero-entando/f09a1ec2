@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
@@ -53,7 +52,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(jsonPath("result.items.size", is("1")))
                 .andExpect(jsonPath("result.items.item[0].code", is("breadcrumb")))
                 .andExpect(jsonPath("result.items.item[0].url",
@@ -71,7 +69,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_XML)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(xpath("/response/result/items/size").number(1d))
                 .andExpect(xpath("/response/result/items/item[1]/code").string("breadcrumb"))
                 .andExpect(xpath("/response/result/items/item[1]/url")
@@ -90,7 +87,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(jsonPath("result.guiFragment.code", is("fragmentCode")))
                 .andExpect(jsonPath("result.guiFragment.widgetTypeCode", is("fragmentCode")))
                 .andExpect(jsonPath("result.guiFragment.gui", is("<p>hello</p>")))
@@ -109,7 +105,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_XML)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(xpath("/response/result/guiFragment/code").string("fragmentCode"))
                 .andExpect(xpath("/response/result/guiFragment/widgetTypeCode").string("fragmentCode"))
                 .andExpect(xpath("/response/result/guiFragment/gui").string("<p>hello</p>"))
@@ -137,7 +132,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .content(requestPayload)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(jsonPath("result", is("SUCCESS")))
                 .andExpect(status().isOk());
     }
@@ -160,7 +154,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .content(requestPayload)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(xpath("/response/result").string("SUCCESS"))
                 .andExpect(status().isOk());
     }
@@ -185,7 +178,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .content(requestPayload)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(jsonPath("result", is("SUCCESS")))
                 .andExpect(status().isOk());
     }
@@ -208,7 +200,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .content(requestPayload)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(xpath("/response/result").string("SUCCESS"))
                 .andExpect(status().isOk());
     }
@@ -224,7 +215,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(jsonPath("result", is("SUCCESS")))
                 .andExpect(status().isOk());
     }
@@ -240,7 +230,6 @@ class ApiRestServerGuiFragmentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_XML)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(xpath("/response/result").string("SUCCESS"))
                 .andExpect(status().isOk());
     }

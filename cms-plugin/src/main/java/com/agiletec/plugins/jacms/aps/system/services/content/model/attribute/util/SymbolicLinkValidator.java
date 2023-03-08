@@ -27,6 +27,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
 import java.util.HashSet;
 import org.apache.commons.collections4.CollectionUtils;
+import org.entando.entando.ent.exception.EntRuntimeException;
 
 /**
  * Classe di utilità per la validazione degli attributi in cui negli elementi
@@ -113,7 +114,7 @@ public class SymbolicLinkValidator {
         try {
             linkedContent = this.getContentManager().loadContent(symbLink.getContentDestination(), true);
         } catch (Throwable e) {
-            throw new RuntimeException("Errore in caricamento contenuto " + symbLink.getContentDestination(), e);
+            throw new EntRuntimeException("Errore in caricamento contenuto " + symbLink.getContentDestination(), e);
         }
         if (null == linkedContent) {
             return new AttributeFieldError(null, ICmsAttributeErrorCodes.INVALID_CONTENT, null);
@@ -135,7 +136,7 @@ public class SymbolicLinkValidator {
         try {
             linkedResource = _resourceManager.loadResource(symbLink.getResourceDestination());
         } catch (Throwable e) {
-            throw new RuntimeException("Error loading resource " + symbLink.getResourceDestination(), e);
+            throw new EntRuntimeException("Error loading resource " + symbLink.getResourceDestination(), e);
         }
         if (null == linkedResource) {
             return new AttributeFieldError(null, ICmsAttributeErrorCodes.INVALID_RESOURCE, null);

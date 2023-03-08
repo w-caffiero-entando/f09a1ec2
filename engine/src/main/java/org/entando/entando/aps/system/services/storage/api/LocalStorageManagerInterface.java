@@ -39,6 +39,8 @@ public class LocalStorageManagerInterface implements IApiExportable {
 
 	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(LocalStorageManagerInterface.class);
 
+	private static final String INVALID_PARENT_DIRECTORY_ERROR_MESSAGE = "Invalid parent directory";
+
 	private IStorageManager storageManager;
 	private static final String PARAM_PATH = "path";
 	private static final String PARAM_IS_PROTECTED = "protected";
@@ -78,7 +80,7 @@ public class LocalStorageManagerInterface implements IApiExportable {
 			if (StringUtils.isNotBlank(pathValue)) pathValue = URLDecoder.decode(pathValue, "UTF-8");
 			BasicFileAttributeView result = this.getStorageManager().getAttributes(pathValue, isProtected);
 			if (null == result) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The path '" + pathValue + "' does not exists", HttpStatus.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "The path '" + pathValue + "' does not exist", HttpStatus.CONFLICT);
 			}
 			
 			InputStream fis = null;
@@ -103,11 +105,11 @@ public class LocalStorageManagerInterface implements IApiExportable {
 			String parentFolder = FilenameUtils.getFullPathNoEndSeparator(path);
 			if (StringUtils.isNotBlank(parentFolder)) parentFolder = URLDecoder.decode(parentFolder, "UTF-8");
 			if (!StorageManagerUtil.isValidDirName(parentFolder)) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", HttpStatus.CONFLICT);									
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, INVALID_PARENT_DIRECTORY_ERROR_MESSAGE, HttpStatus.CONFLICT);
 			}
 			BasicFileAttributeView parentBasicFileAttributeView = this.getStorageManager().getAttributes(parentFolder, isProtected);
 			if (null == parentBasicFileAttributeView || !parentBasicFileAttributeView.isDirectory()) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", HttpStatus.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, INVALID_PARENT_DIRECTORY_ERROR_MESSAGE, HttpStatus.CONFLICT);
 			}
 			//validate exists
 			BasicFileAttributeView basicFileAttributeView2 = this.getStorageManager().getAttributes(path, isProtected);
@@ -127,7 +129,7 @@ public class LocalStorageManagerInterface implements IApiExportable {
 					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "A file cannot be empty", HttpStatus.CONFLICT);				
 				}
 				if (!StorageManagerUtil.isValidFilename(filename)) {
-					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid filename name", HttpStatus.CONFLICT);									
+					throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid file name", HttpStatus.CONFLICT);
 				}
 				this.getStorageManager().saveFile(storageResource.getName(), isProtected,  new ByteArrayInputStream(storageResource.getBase64()));
 			}
@@ -150,10 +152,10 @@ public class LocalStorageManagerInterface implements IApiExportable {
 			String parentFolder = FilenameUtils.getFullPathNoEndSeparator(path);
 			BasicFileAttributeView parentBasicFileAttributeView = this.getStorageManager().getAttributes(parentFolder, isProtected);
 			if (null == parentBasicFileAttributeView || !parentBasicFileAttributeView.isDirectory()) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", HttpStatus.CONFLICT);
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, INVALID_PARENT_DIRECTORY_ERROR_MESSAGE, HttpStatus.CONFLICT);
 			}
 			if (!StorageManagerUtil.isValidDirName(parentFolder)) {
-				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Invalid parent directory", HttpStatus.CONFLICT);									
+				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, INVALID_PARENT_DIRECTORY_ERROR_MESSAGE, HttpStatus.CONFLICT);
 			}
     		BasicFileAttributeView basicFileAttributeView = this.getStorageManager().getAttributes(pathValue, isProtected);
     		if (null == basicFileAttributeView) {
@@ -211,7 +213,7 @@ public class LocalStorageManagerInterface implements IApiExportable {
 		}
 		BasicFileAttributeView basicFileAttributeView = (BasicFileAttributeView) object;
 		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
-		stringBuilder.append("api/rs/").append(langCode).append("/core/");
+		stringBuilder.append("api/legacy/").append(langCode).append("/core/");
 		
 		if (basicFileAttributeView.isDirectory()) {
 			stringBuilder.append("storage");

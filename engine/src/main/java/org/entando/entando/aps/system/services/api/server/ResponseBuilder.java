@@ -77,7 +77,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
         try {
             this.checkParameter(method, parameters);
             Object bean = this.extractBean(method);
-            Object masterResult = null;
+            Object masterResult;
             if (method.getHttpMethod().equals(ApiMethod.HttpMethod.GET)) {
                 masterResult = this.invokeGetMethod(method, bean, null, parameters, true);
                 if (null == masterResult) {
@@ -180,15 +180,14 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
         return template;
     }
 
-    private void checkParameter(ApiMethod apiMethod, Properties parameters) throws ApiException, Throwable {
+    private void checkParameter(ApiMethod apiMethod, Properties parameters) throws ApiException, EntException {
         try {
             List<ApiMethodParameter> apiParameters = apiMethod.getParameters();
             if (null == apiParameters || apiParameters.isEmpty()) {
                 return;
             }
-            List<ApiError> errors = new ArrayList<ApiError>();
-            for (int i = 0; i < apiParameters.size(); i++) {
-                ApiMethodParameter apiParam = apiParameters.get(i);
+            List<ApiError> errors = new ArrayList<>();
+            for (ApiMethodParameter apiParam : apiParameters) {
                 String paramName = apiParam.getKey();
                 Object value = parameters.get(paramName);
                 if (apiParam.isRequired() && (null == value || value.toString().trim().length() == 0)) {
@@ -238,7 +237,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
     
 	@Override
     public ApiMethod extractApiMethod(ApiMethod.HttpMethod httpMethod, String namespace, String resourceName) throws ApiException {
-        ApiMethod api = null;
+        ApiMethod api;
         String signature = this.buildApiSignature(httpMethod, namespace, resourceName);
 		try {
             api = this.getApiCatalogManager().getMethod(httpMethod, namespace, resourceName);
@@ -325,7 +324,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
     
     protected Object invokePutPostDeleteMethod(ApiMethod apiMethod, Object bean,
             Properties parameters, Object bodyObject) throws ApiException, Throwable {
-        Object result = null;
+        Object result;
         try {
             if (apiMethod.getHttpMethod().equals(ApiMethod.HttpMethod.DELETE)) {
                 result = this.invokeDeleteMethod(apiMethod, bean, parameters);
@@ -355,7 +354,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
     
     private Object invokePutPostMethod(ApiMethod api, Object bean, 
             Properties parameters, Object bodyObject) throws NoSuchMethodException, InvocationTargetException, Throwable {
-        Object result = null;
+        Object result;
         Class beanClass = bean.getClass();
         String methodName = api.getSpringBeanMethod();
         try {

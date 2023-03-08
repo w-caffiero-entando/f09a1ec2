@@ -3,7 +3,10 @@ package org.entando.entando.aps.system.services.api.server;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.lang.ILangManager;
+import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.role.Role;
+import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import java.util.Collections;
@@ -16,8 +19,10 @@ import org.entando.entando.aps.system.services.api.DefaultJsonTypesProvider;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.ObjectMapperConfiguration;
 import org.entando.entando.aps.system.services.api.Unmarshaller;
+import org.entando.entando.aps.system.services.api.model.ApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
+import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.oauth2.IApiOAuth2TokenManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,6 +53,12 @@ class ApiRestServerTest {
     private ServletContext servletContext;
     @Mock
     private WebApplicationContext webApplicationContext;
+    @Mock
+    private IResponseBuilder responseBuilder;
+    @Mock
+    private ILangManager langManager;
+    @Mock
+    private IURLManager urlManager;
 
     private ApiRestServer apiRestServer;
 
@@ -54,9 +66,11 @@ class ApiRestServerTest {
     void setUp() {
         Mockito.when(request.getSession()).thenReturn(session);
         Mockito.when(session.getServletContext()).thenReturn(servletContext);
-        Mockito.when(servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)).thenReturn(webApplicationContext);
+        Mockito.when(servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE))
+                .thenReturn(webApplicationContext);
 
-        Mockito.when(webApplicationContext.getBean(SystemConstants.AUTHORIZATION_SERVICE)).thenReturn(authManager);
+        Mockito.lenient().when(webApplicationContext.getBean(SystemConstants.AUTHORIZATION_SERVICE))
+                .thenReturn(authManager);
 
         apiRestServer = new ApiRestServer();
         apiRestServer.setUnmarshaller(getUnmarshaller());
@@ -171,5 +185,56 @@ class ApiRestServerTest {
         });
         Assertions.assertEquals(IApiErrorCodes.API_AUTHORIZATION_REQUIRED, exception.getErrors().get(0).getCode());
         Assertions.assertEquals(HttpStatus.FORBIDDEN, exception.getErrors().get(0).getStatus());
+    }
+
+    @Test
+    void shouldHandleInvalidApiRequest() throws Exception {
+        mockLanguageManager();
+        mockUrlManager();
+        Mockito.when(webApplicationContext.getBean(SystemConstants.API_RESPONSE_BUILDER)).thenReturn(responseBuilder);
+        Mockito.when(request.getParameterNames()).thenReturn(Collections.emptyEnumeration());
+        Mockito.when(request.getPathInfo()).thenReturn(".json");
+
+        ApiError error = new ApiError(IApiErrorCodes.API_INVALID_RESPONSE, "Invalid", HttpStatus.SERVICE_UNAVAILABLE);
+        Mockito.doThrow(new ApiException(error)).when(responseBuilder)
+                .extractApiMethod(Mockito.any(), Mockito.any(), Mockito.any());
+
+        Object response = apiRestServer.doDeleteJson("en", "invalidResource", request);
+
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
+        ResponseEntity<StringApiResponse> responseEntity = (ResponseEntity<StringApiResponse>) response;
+        Assertions.assertEquals(HttpStatus.SERVICE_UNAVAILABLE, responseEntity.getStatusCode());
+        Assertions.assertEquals("FAILURE", responseEntity.getBody().getResult());
+    }
+
+    @Test
+    void shouldHandleUnexpectedError() throws Exception {
+        mockLanguageManager();
+        mockUrlManager();
+        Mockito.when(webApplicationContext.getBean(SystemConstants.API_RESPONSE_BUILDER)).thenReturn(responseBuilder);
+        Mockito.when(request.getParameterNames()).thenReturn(Collections.emptyEnumeration());
+        Mockito.when(request.getPathInfo()).thenReturn(".json");
+
+        Mockito.doThrow(RuntimeException.class).when(responseBuilder)
+                .extractApiMethod(Mockito.any(), Mockito.any(), Mockito.any());
+
+        Object response = apiRestServer.doDeleteJson("en", "core", "errorTest", request);
+
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
+        ResponseEntity<StringApiResponse> responseEntity = (ResponseEntity<StringApiResponse>) response;
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        Assertions.assertEquals("FAILURE", responseEntity.getBody().getResult());
+    }
+
+    private void mockLanguageManager() {
+        Mockito.when(webApplicationContext.getBean(SystemConstants.LANGUAGE_MANAGER)).thenReturn(langManager);
+        Lang defaultLang = new Lang();
+        defaultLang.setCode("en");
+        Mockito.when(langManager.getDefaultLang()).thenReturn(defaultLang);
+    }
+
+    private void mockUrlManager() throws Exception {
+        Mockito.when(webApplicationContext.getBean(SystemConstants.URL_MANAGER)).thenReturn(urlManager);
+        Mockito.when(urlManager.getApplicationBaseURL(Mockito.any())).thenReturn("http://localhost:8080");
     }
 }

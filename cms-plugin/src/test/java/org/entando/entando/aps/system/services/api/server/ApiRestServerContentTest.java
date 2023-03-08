@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
@@ -68,7 +67,6 @@ class ApiRestServerContentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(jsonPath("result.item.attribute", hasSize(3)))
                 .andExpect(jsonPath("result.item.attribute[0].type", is("Text")))
                 .andExpect(jsonPath("result.item.attribute[0].classType", is("JAXBTextAttribute")))
@@ -99,7 +97,6 @@ class ApiRestServerContentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_XML)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(xpath("/response/result/item/attributes/attribute[1]/type").string("Text"))
                 .andExpect(
                         xpath("/response/result/item/attributes/attribute[1]/@classType").string("JAXBTextAttribute"))
@@ -193,7 +190,6 @@ class ApiRestServerContentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(jsonPath("result", is("SUCCESS")))
                 .andExpect(status().isOk());
 
@@ -263,7 +259,6 @@ class ApiRestServerContentTest extends BaseLegacyApiTest {
                         .accept(MediaType.APPLICATION_XML)
                         .header("Authorization", "Bearer " + accessToken));
         result
-                .andDo(print())
                 .andExpect(xpath("/response/result").string("SUCCESS"))
                 .andExpect(status().isOk());
 

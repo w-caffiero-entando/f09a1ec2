@@ -134,7 +134,7 @@ public class SelfRestCaller implements IPostProcessor, BeanFactoryAware {
 	}
 	
 	private void printResponse(SelfRestCallPostProcess selfRestCall, Object result, 
-			HttpStatus responseStatus, ApiMethod method, Properties properties) throws InvalidPostProcessResultException, Throwable {
+			HttpStatus responseStatus, ApiMethod method, Properties properties) throws Throwable {
 		String responseClassName = method.getResponseClassName();
 		Class responseClass = (null != responseClassName) ? Class.forName(responseClassName) : StringApiResponse.class;
 		JAXBContext context = JAXBContext.newInstance(responseClass);

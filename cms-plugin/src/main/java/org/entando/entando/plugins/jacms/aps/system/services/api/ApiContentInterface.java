@@ -67,12 +67,12 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
 
     private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ApiContentInterface.class);
 
-    public List<String> getContents(Properties properties) throws Throwable {
+    public List<String> getContents(Properties properties) throws ApiException, EntException {
         return this.extractContents(properties);
     }
 
-    protected List<String> extractContents(Properties properties) throws Throwable {
-        List<String> contentsId = null;
+    protected List<String> extractContents(Properties properties) throws ApiException, EntException {
+        List<String> contentsId;
         try {
             ApiContentListBean bean = this.buildSearchBean(properties);
             UserDetails user = (UserDetails) properties.get(SystemConstants.API_USER_PARAMETER);
@@ -86,8 +86,8 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return contentsId;
     }
 
-    protected ApiContentListBean buildSearchBean(Properties properties) throws ApiException, Throwable {
-        ApiContentListBean bean = null;
+    protected ApiContentListBean buildSearchBean(Properties properties) throws ApiException, EntException {
+        ApiContentListBean bean;
         try {
             String contentType = properties.getProperty("contentType");
             if (null == this.getContentManager().getSmallContentTypesMap().get(contentType)) {
@@ -117,7 +117,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return bean;
     }
 
-    public String getContentsToHtml(Properties properties) throws Throwable {
+    public String getContentsToHtml(Properties properties) throws ApiException, EntException {
         StringBuilder render = new StringBuilder();
         try {
             String modelId = properties.getProperty("modelId");
@@ -152,8 +152,8 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return render.toString();
     }
 
-    public JAXBContent getContent(Properties properties) throws ApiException, Throwable {
-        JAXBContent jaxbContent = null;
+    public JAXBContent getContent(Properties properties) throws ApiException, EntException {
+        JAXBContent jaxbContent;
         String id = properties.getProperty("id");
         try {
             String langCode = properties.getProperty(SystemConstants.API_LANG_CODE_PARAMETER);
@@ -164,7 +164,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
                 user = this.getUserManager().getGuestUser();
             }
             if (!this.getContentAuthorizationHelper().isAuth(user, mainContent)) {
-                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Required content '" + id + "' does not allowed", HttpStatus.FORBIDDEN);
+                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Required content '" + id + "' is not allowed", HttpStatus.FORBIDDEN);
             }
         } catch (ApiException ae) {
             throw ae;
@@ -179,7 +179,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return new JAXBContent(mainContent, langCode);
     }
 
-    public String getContentToHtml(Properties properties) throws ApiException, Throwable {
+    public String getContentToHtml(Properties properties) throws ApiException, EntException {
         String render = null;
         String id = properties.getProperty("id");
         String modelId = properties.getProperty("modelId");
@@ -220,8 +220,8 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return renderedContent;
     }
 
-    protected Content getPublicContent(String id) throws ApiException, Throwable {
-        Content content = null;
+    protected Content getPublicContent(String id) throws ApiException, EntException {
+        Content content;
         try {
             content = this.getContentManager().loadContent(id, true);
             if (null == content) {
@@ -236,8 +236,8 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return content;
     }
 
-    protected Integer checkModel(String modelId, Content content) throws ApiException, Throwable {
-        Integer modelIdInteger = null;
+    protected Integer checkModel(String modelId, Content content) throws ApiException, EntException {
+        Integer modelIdInteger;
         try {
             if (null == modelId || modelId.trim().length() == 0) {
                 return null;
@@ -246,32 +246,32 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
                 if (null == content.getDefaultModel()) {
                     throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
                             "Invalid 'default' system model for content type '" + content.getTypeCode() + "' - Contact the administrators",
-                            HttpStatus.ACCEPTED);
+                            HttpStatus.CONFLICT);
                 }
                 modelIdInteger = Integer.parseInt(content.getDefaultModel());
             } else if (modelId.equals(ContentModel.MODEL_ID_LIST)) {
                 if (null == content.getListModel()) {
                     throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
                             "Invalid 'list' system model for content type '" + content.getTypeCode() + "' - Contact the administrators",
-                            HttpStatus.ACCEPTED);
+                            HttpStatus.CONFLICT);
                 }
                 modelIdInteger = Integer.parseInt(content.getListModel());
             } else {
                 try {
                     modelIdInteger = Integer.parseInt(modelId);
-                } catch (Throwable t) {
+                } catch (NumberFormatException t) {
                     throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
                             "The model id must be an integer or 'default' or 'list' - '" + modelId + "'",
-                            HttpStatus.ACCEPTED);
+                            HttpStatus.CONFLICT);
                 }
             }
             ContentModel model = this.getContentModelManager().getContentModel(modelIdInteger);
             if (model == null) {
-                throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "The content model with id '" + modelId + "' does not exist", HttpStatus.ACCEPTED);
+                throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "The content model with id '" + modelId + "' does not exist", HttpStatus.CONFLICT);
             } else if (!content.getTypeCode().equals(model.getContentType())) {
                 throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
-                        "The content model with id '" + modelId + "' does not match with content of type '" + content.getTypeDescription() + "' ",
-                        HttpStatus.ACCEPTED);
+                        "The content model with id '" + modelId + "' does not match with content of type '" + content.getTypeCode() + "'",
+                        HttpStatus.CONFLICT);
             }
         } catch (ApiException ae) {
             throw ae;
@@ -282,7 +282,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return modelIdInteger;
     }
 
-    public CmsApiResponse addContent(JAXBContent jaxbContent, Properties properties) throws Throwable {
+    public CmsApiResponse addContent(JAXBContent jaxbContent, Properties properties) throws EntException {
         CmsApiResponse response = new CmsApiResponse();
         try {
             String typeCode = jaxbContent.getTypeCode();
@@ -307,7 +307,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return response;
     }
 
-    public CmsApiResponse updateContent(JAXBContent jaxbContent, Properties properties) throws Throwable {
+    public CmsApiResponse updateContent(JAXBContent jaxbContent, Properties properties) throws EntException {
         CmsApiResponse response = new CmsApiResponse();
         try {
             String typeCode = jaxbContent.getTypeCode();
@@ -325,7 +325,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Content with code '" + content.getId() + "' does not exist", HttpStatus.CONFLICT);
             } else if (!masterContent.getMainGroup().equals(content.getMainGroup())) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Invalid main group " + content.getMainGroup() + " not equals then master " + masterContent.getMainGroup(),
+                        "Invalid main group " + content.getMainGroup() + " not equal to master " + masterContent.getMainGroup(),
                         HttpStatus.CONFLICT);
             }
             response = this.validateAndSaveContent(content, properties);
@@ -339,7 +339,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return response;
     }
 
-    protected CmsApiResponse validateAndSaveContent(Content content, Properties properties) throws ApiException, Throwable {
+    protected CmsApiResponse validateAndSaveContent(Content content, Properties properties) throws EntException {
         CmsApiResponse response = new CmsApiResponse();
         try {
             UserDetails user = (UserDetails) properties.get(SystemConstants.API_USER_PARAMETER);
@@ -388,8 +388,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
             }
             List<FieldError> fieldErrors = content.validate(this.getGroupManager(), this.getLangManager());
             if (null != fieldErrors) {
-                for (int i = 0; i < fieldErrors.size(); i++) {
-                    FieldError fieldError = fieldErrors.get(i);
+                for (FieldError fieldError : fieldErrors) {
                     if (fieldError instanceof AttributeFieldError) {
                         AttributeFieldError attributeError = (AttributeFieldError) fieldError;
                         errors.add(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR, attributeError.getFullMessage(), HttpStatus.CONFLICT));
@@ -405,7 +404,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return errors;
     }
 
-    public StringApiResponse deleteContent(Properties properties) throws Throwable {
+    public StringApiResponse deleteContent(Properties properties) throws EntException {
         StringApiResponse response = new StringApiResponse();
         try {
             String id = properties.getProperty("id");
@@ -431,7 +430,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
                     if (null != record) {
                         found = true;
                         response.addError(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                                "Content " + id + " referenced to content " + record.getId() + " - '" + record.getDescr() + "'",
+                                "Content " + id + " referenced to content " + record.getId() + " - '" + record.getDescription() + "'",
                                 HttpStatus.CONFLICT));
                     }
                 }
@@ -459,7 +458,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return response;
     }
 
-    public void updateContentText(JAXBContentAttribute jaxbContentAttribute, Properties properties) throws ApiException, Throwable {
+    public void updateContentText(JAXBContentAttribute jaxbContentAttribute) throws ApiException, EntException {
         try {
             String contentId = jaxbContentAttribute.getContentId();
             Content masterContent = this.getContentManager().loadContent(jaxbContentAttribute.getContentId(), true);
@@ -467,14 +466,14 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Content with code '" + contentId + "' does not exist", HttpStatus.CONFLICT);
             }
             String attributeName = jaxbContentAttribute.getAttributeName();
-            AttributeInterface attribute = (AttributeInterface) masterContent.getAttribute(attributeName);
+            AttributeInterface attribute = masterContent.getAttribute(attributeName);
             if (null == attribute) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
                         "Content Attribute with code '" + attributeName + "' does not exist into content " + contentId,
                         HttpStatus.CONFLICT);
             } else if (!(attribute instanceof ITextAttribute)) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Content Attribute with code '" + attributeName + "' isn't a Text Atttribute",
+                        "Content Attribute with code '" + attributeName + "' isn't a Text Attribute",
                         HttpStatus.CONFLICT);
             }
             String langCode = jaxbContentAttribute.getLangCode();

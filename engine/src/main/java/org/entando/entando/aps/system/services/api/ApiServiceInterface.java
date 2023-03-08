@@ -96,8 +96,8 @@ public class ApiServiceInterface {
     }
     
     public Object getService(Properties properties) throws ApiException {
-        Object response = null;
-        String key = (String) properties.get("key");
+        Object response;
+        String key = properties.getProperty("key");
         try {
             ApiService service = this.getApiCatalogManager().getApiService(key);
             if (null == service) {

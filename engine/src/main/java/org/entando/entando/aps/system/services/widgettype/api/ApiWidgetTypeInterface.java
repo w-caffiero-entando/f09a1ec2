@@ -225,10 +225,6 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 								"Fragments mustn't be updated on a 'not internal servlet' logic widget type");
 						response.addError(error);
 					}
-					// throw new
-					// ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-					// "Fragments mustn't be updated on a 'not internal servlet'
-					// logic widget type", HttpStatus.CONFLICT);
 				} else {
 					List<JAXBGuiFragment> fragments = jaxbWidgetType.getFragments();
 					if (null != fragments && fragments.size() > 0) {
@@ -309,7 +305,7 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 		}
 		WidgetType widgetType = (WidgetType) object;
 		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
-		stringBuilder.append("api/rs/").append(langCode).append("/core/widgetType");// ?code=").append(widgetType.getCode());
+		stringBuilder.append("api/legacy/").append(langCode).append("/core/widgetType");
 		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
 			stringBuilder.append(".xml");
 		} else {

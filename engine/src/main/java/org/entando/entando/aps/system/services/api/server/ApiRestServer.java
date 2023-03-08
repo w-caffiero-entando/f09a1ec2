@@ -27,7 +27,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.Unmarshaller;
 import org.entando.entando.aps.system.services.api.model.AbstractApiResponse;
@@ -35,8 +35,6 @@ import org.entando.entando.aps.system.services.api.model.ApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -54,11 +52,10 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author E.Santoboni
  */
+@Slf4j
 @RestController
 @RequestMapping("/legacy")
 public class ApiRestServer {
-
-    private static final Logger logger = LoggerFactory.getLogger(ApiRestServer.class);
 
     private Unmarshaller unmarshaller;
 
@@ -108,16 +105,16 @@ public class ApiRestServer {
     @PostMapping(value = "/{langCode}/{resourceName}.json",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object doPostJson(@PathVariable String langCode, @PathVariable String resourceName,
-            HttpServletRequest request, HttpServletResponse response) {
-        return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.POST, null, resourceName, request, response,
+            HttpServletRequest request) {
+        return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.POST, null, resourceName, request,
                 MediaType.APPLICATION_JSON);
     }
 
     @PostMapping(value = "/{langCode}/{resourceName}.xml",
             produces = MediaType.APPLICATION_XML_VALUE, consumes = MediaType.APPLICATION_XML_VALUE)
     public Object doPostXml(@PathVariable String langCode, @PathVariable String resourceName,
-            HttpServletRequest request, HttpServletResponse response) {
-        return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.POST, null, resourceName, request, response,
+            HttpServletRequest request) {
+        return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.POST, null, resourceName, request,
                 MediaType.APPLICATION_XML);
     }
 
@@ -125,88 +122,85 @@ public class ApiRestServer {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Object doPost(@PathVariable String langCode, @PathVariable String resourceName,
-            HttpServletRequest request, HttpServletResponse response,
-            @RequestHeader(HttpHeaders.CONTENT_TYPE) MediaType contentType) {
-        return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.POST, null, resourceName, request, response,
-                contentType);
+            HttpServletRequest request, @RequestHeader(HttpHeaders.CONTENT_TYPE) MediaType contentType) {
+        return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.POST, null, resourceName, request, contentType);
     }
 
     @PostMapping(value = "/{langCode}/{namespace}/{resourceName}.json",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object doPostJson(@PathVariable String langCode, @PathVariable String namespace,
-            @PathVariable String resourceName, HttpServletRequest request, HttpServletResponse response) {
+            @PathVariable String resourceName, HttpServletRequest request) {
         return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.POST, namespace,
-                resourceName, request, response, MediaType.APPLICATION_JSON);
+                resourceName, request, MediaType.APPLICATION_JSON);
     }
 
     @PostMapping(value = "/{langCode}/{namespace}/{resourceName}.xml",
             produces = MediaType.APPLICATION_XML_VALUE, consumes = MediaType.APPLICATION_XML_VALUE)
     public Object doPostXml(@PathVariable String langCode, @PathVariable String namespace,
-            @PathVariable String resourceName, HttpServletRequest request, HttpServletResponse response) {
+            @PathVariable String resourceName, HttpServletRequest request) {
         return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.POST, namespace,
-                resourceName, request, response, MediaType.APPLICATION_XML);
+                resourceName, request, MediaType.APPLICATION_XML);
     }
 
     @PostMapping(value = "/{langCode}/{namespace}/{resourceName}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Object doPost(@PathVariable String langCode, @PathVariable String namespace,
-            @PathVariable String resourceName, HttpServletRequest request, HttpServletResponse response,
+            @PathVariable String resourceName, HttpServletRequest request,
             @RequestHeader(HttpHeaders.CONTENT_TYPE) MediaType contentType) {
         return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.POST, namespace,
-                resourceName, request, response, contentType);
+                resourceName, request, contentType);
     }
 
     @PutMapping(value = "/{langCode}/{resourceName}.json",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object doPutJson(@PathVariable String langCode, @PathVariable String resourceName,
-            HttpServletRequest request, HttpServletResponse response) {
+            HttpServletRequest request) {
         return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.PUT, null,
-                resourceName, request, response, MediaType.APPLICATION_JSON);
+                resourceName, request, MediaType.APPLICATION_JSON);
     }
 
     @PutMapping(value = "/{langCode}/{resourceName}.xml",
             produces = MediaType.APPLICATION_XML_VALUE, consumes = MediaType.APPLICATION_XML_VALUE)
     public Object doPutXml(@PathVariable String langCode, @PathVariable String resourceName,
-            HttpServletRequest request, HttpServletResponse response) {
+            HttpServletRequest request) {
         return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.PUT, null,
-                resourceName, request, response, MediaType.APPLICATION_XML);
+                resourceName, request, MediaType.APPLICATION_XML);
     }
 
     @PutMapping(value = "/{langCode}/{resourceName}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Object doPut(@PathVariable String langCode, @PathVariable String resourceName,
-            HttpServletRequest request, HttpServletResponse response,
-            @RequestHeader(HttpHeaders.CONTENT_TYPE) MediaType contentType) {
+            HttpServletRequest request, @RequestHeader(HttpHeaders.CONTENT_TYPE) MediaType contentType) {
         return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.PUT, null,
-                resourceName, request, response, contentType);
+                resourceName, request, contentType);
     }
 
     @PutMapping(value = "/{langCode}/{namespace}/{resourceName}.json",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object doPutJson(@PathVariable String langCode, @PathVariable String namespace,
-            @PathVariable String resourceName, HttpServletRequest request, HttpServletResponse response) {
+            @PathVariable String resourceName, HttpServletRequest request) {
         return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.PUT, namespace,
-                resourceName, request, response, MediaType.APPLICATION_JSON);
+                resourceName, request, MediaType.APPLICATION_JSON);
     }
 
     @PutMapping(value = "/{langCode}/{namespace}/{resourceName}.xml",
             produces = MediaType.APPLICATION_XML_VALUE, consumes = MediaType.APPLICATION_XML_VALUE)
     public Object doPutXml(@PathVariable String langCode, @PathVariable String namespace,
-            @PathVariable String resourceName, HttpServletRequest request, HttpServletResponse response) {
+            @PathVariable String resourceName, HttpServletRequest request) {
         return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.PUT, namespace,
-                resourceName, request, response, MediaType.APPLICATION_XML);
+                resourceName, request, MediaType.APPLICATION_XML);
     }
 
     @PutMapping(value = "/{langCode}/{namespace}/{resourceName}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Object doPut(@PathVariable String langCode, @PathVariable String namespace,
-            @PathVariable String resourceName, HttpServletRequest request, HttpServletResponse response,
+            @PathVariable String resourceName, HttpServletRequest request,
             @RequestHeader(HttpHeaders.CONTENT_TYPE) MediaType contentType) {
         return this.buildPostPutResponse(langCode, ApiMethod.HttpMethod.PUT, namespace,
-                resourceName, request, response, contentType);
+                resourceName, request, contentType);
     }
 
     @DeleteMapping(value = "/{langCode}/{resourceName}.json", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -266,7 +260,7 @@ public class ApiRestServer {
     }
 
     protected Object buildPostPutResponse(String langCode, ApiMethod.HttpMethod httpMethod,
-                                          String namespace, String resourceName, HttpServletRequest request, HttpServletResponse response, MediaType mediaType) {
+                                          String namespace, String resourceName, HttpServletRequest request, MediaType mediaType) {
         Object responseObject;
         try {
             IResponseBuilder responseBuilder = (IResponseBuilder) ApsWebApplicationUtils.getBean(SystemConstants.API_RESPONSE_BUILDER, request);
@@ -319,7 +313,7 @@ public class ApiRestServer {
             IURLManager urlManager = (IURLManager) ApsWebApplicationUtils.getBean(SystemConstants.URL_MANAGER, request);
             applicationBaseUrl = urlManager.getApplicationBaseURL(request);
         } catch (Exception t) {
-            logger.error("Error extracting application base url", t);
+            log.error("Error extracting application base url", t);
         }
         return applicationBaseUrl;
     }
@@ -345,7 +339,7 @@ public class ApiRestServer {
             buffer.append(" Namespace '").append(namespace).append("'");
         }
         final String message = buffer.toString();
-        logger.error("Error building api response  - {}", message, t);
+        log.error("Error building api response - {}", message, t);
         StringApiResponse response = new StringApiResponse();
         if (t instanceof ApiException) {
             response.addErrors(((ApiException) t).getErrors());
@@ -361,7 +355,7 @@ public class ApiRestServer {
         IAuthorizationManager authManager = (IAuthorizationManager) ApsWebApplicationUtils.getBean(SystemConstants.AUTHORIZATION_SERVICE, request);
         properties.put(SystemConstants.API_REQUEST_PARAMETER, request);
         String permission = apiMethod.getRequiredPermission();
-        logger.debug("Permission required: {}", permission);
+        log.debug("Permission required: {}", permission);
 
         UserDetails user = (UserDetails) request.getAttribute("user");
 
@@ -371,7 +365,7 @@ public class ApiRestServer {
             if (permission != null && !authManager.isAuthOnPermission(user, permission)) {
                 List<Role> roles = authManager.getUserRoles(user);
                 for (Role role : roles) {
-                    logger.debug("User {} requesting resource has {} permission ", username, (null != role.getPermissions()) ? role.getPermissions().toString() : "");
+                    log.debug("User {} requesting resource has {} permission ", username, (null != role.getPermissions()) ? role.getPermissions().toString() : "");
                 }
                 throw new ApiException(IApiErrorCodes.API_AUTHORIZATION_REQUIRED, "Authorization Required", HttpStatus.FORBIDDEN);
             }

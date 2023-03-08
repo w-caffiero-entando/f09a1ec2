@@ -101,7 +101,7 @@ public class ApiPageModelInterface implements BeanFactoryAware, IApiExportable {
 	
     public void updatePageModel(PageModel pageModel) throws ApiException, Throwable {
 		try {
-			if (null != this.getPageModelManager().getPageModel(pageModel.getCode())) {
+			if (null == this.getPageModelManager().getPageModel(pageModel.getCode())) {
 				throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Page template with code '" + pageModel.getCode() + "' does not exist", HttpStatus.CONFLICT);
 			}
 			this.getPageModelManager().updatePageModel(pageModel);
@@ -158,7 +158,7 @@ public class ApiPageModelInterface implements BeanFactoryAware, IApiExportable {
 		}
 		PageModel pageModel = (PageModel) object;
 		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
-		stringBuilder.append("api/rs/").append(langCode).append("/core/pageModel");//?code=").append(pageModel.getCode());
+		stringBuilder.append("api/legacy/").append(langCode).append("/core/pageModel");
 		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
 			stringBuilder.append(".xml");
 		} else {
