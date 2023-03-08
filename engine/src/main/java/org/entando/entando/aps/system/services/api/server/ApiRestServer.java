@@ -365,7 +365,7 @@ public class ApiRestServer {
 
         UserDetails user = (UserDetails) request.getAttribute("user");
 
-        if (null != user) {
+        if (null != user && !user.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
             String username = user.getUsername();
             properties.put(SystemConstants.API_USER_PARAMETER, user);
             if (permission != null && !authManager.isAuthOnPermission(user, permission)) {

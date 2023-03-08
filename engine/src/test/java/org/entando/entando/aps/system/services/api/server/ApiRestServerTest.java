@@ -93,11 +93,29 @@ class ApiRestServerTest {
     }
 
     @Test
+    void extractOAuthParameters_nullUserOnRestrictedEndpoint_shouldDenyAccess() throws Exception {
+
+        ApiMethod apiMethod = Mockito.mock(ApiMethod.class);
+        Mockito.when(apiMethod.getRequiredPermission()).thenReturn("viewUsers");
+        Mockito.when(apiMethod.getRequiredAuth()).thenReturn(true);
+
+        ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
+            apiRestServer.extractOAuthParameters(request, apiMethod, new Properties());
+        });
+        Assertions.assertEquals(IApiErrorCodes.API_AUTHENTICATION_REQUIRED, exception.getErrors().get(0).getCode());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, exception.getErrors().get(0).getStatus());
+    }
+
+    @Test
     void extractOAuthParameters_guestOnRestrictedEndpoint_shouldDenyAccess() throws Exception {
 
         ApiMethod apiMethod = Mockito.mock(ApiMethod.class);
         Mockito.when(apiMethod.getRequiredPermission()).thenReturn("viewUsers");
         Mockito.when(apiMethod.getRequiredAuth()).thenReturn(true);
+
+        User user = new User();
+        user.setUsername(SystemConstants.GUEST_USER_NAME);
+        Mockito.when(request.getAttribute("user")).thenReturn(user);
 
         ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
             apiRestServer.extractOAuthParameters(request, apiMethod, new Properties());
