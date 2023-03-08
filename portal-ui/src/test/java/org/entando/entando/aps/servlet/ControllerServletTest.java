@@ -1,4 +1,4 @@
-package org.entando.entando.aps.servlet.servlet;
+package org.entando.entando.aps.servlet;
 
 import static org.mockito.ArgumentMatchers.any;
 

@@ -310,13 +310,6 @@
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <type>jar</type>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
