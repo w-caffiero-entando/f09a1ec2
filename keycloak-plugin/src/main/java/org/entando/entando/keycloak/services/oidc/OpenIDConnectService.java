@@ -105,7 +105,6 @@ public class OpenIDConnectService {
     }
 
     private String composeSuggestedIdpIfNtoEmpty(String clientSuggestedIdp) {
-        log.debug("evaluate if compose redirect url with clientSuggestedIdp:'{}'", clientSuggestedIdp);
         return Optional.ofNullable(clientSuggestedIdp)
                 .filter(StringUtils::isNotBlank)
                 .map(idp -> "&kc_idp_hint="+idp)

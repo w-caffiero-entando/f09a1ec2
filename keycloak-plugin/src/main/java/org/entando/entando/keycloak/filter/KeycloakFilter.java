@@ -296,7 +296,9 @@ public class KeycloakFilter implements Filter {
     }
 
     private String fetchSuggestedIdp(HttpServletRequest request){
-        return request.getParameter("idp_hint");
+        String  clientSuggestedIdp = request.getParameter("idp_hint");
+        log.debug("fetched clientSuggestedIdp:'{}' to compose redirect url with it", clientSuggestedIdp);
+        return clientSuggestedIdp;
     }
 
     private void checkNoErrorOrThrow(HttpServletRequest request, String error, String errorDescription){
