@@ -16,14 +16,14 @@ package org.entando.entando.aps.system.services.api.server;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,11 +32,10 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author E.Santoboni
  */
+@Slf4j
 @RestController
-@RequestMapping(value = "/apistatus")
+@RequestMapping(value = "/legacy/status")
 public class ApiRestStatusServer {
-
-    private static final Logger logger = LoggerFactory.getLogger(ApiRestStatusServer.class);
 
     @GetMapping(value = "/{resourceName}/{httpMethod}.xml",
             produces = org.springframework.http.MediaType.APPLICATION_XML_VALUE)
@@ -54,7 +53,6 @@ public class ApiRestStatusServer {
 
     @GetMapping(value = "/{resourceName}/{httpMethod}",
             produces = {org.springframework.http.MediaType.APPLICATION_XML_VALUE,
-                    org.springframework.http.MediaType.TEXT_PLAIN_VALUE,
                     org.springframework.http.MediaType.APPLICATION_JSON_VALUE})
     public Object getApiStatus(@PathVariable String resourceName,
             @PathVariable String httpMethod, HttpServletRequest request) {
@@ -77,14 +75,13 @@ public class ApiRestStatusServer {
 
     @GetMapping(value = "/{namespace}/{resourceName}/{httpMethod}",
             produces = {org.springframework.http.MediaType.APPLICATION_XML_VALUE,
-                    org.springframework.http.MediaType.TEXT_PLAIN_VALUE,
                     org.springframework.http.MediaType.APPLICATION_JSON_VALUE})
     public Object getApiStatus(@PathVariable String namespace,
             @PathVariable String resourceName, @PathVariable String httpMethod, HttpServletRequest request) {
         return this.executeGetApiStatus(httpMethod, namespace, resourceName, request);
     }
 
-    protected Object executeGetApiStatus(String httpMethodString,
+    protected ResponseEntity<StringApiResponse> executeGetApiStatus(String httpMethodString,
             String namespace, String resourceName, HttpServletRequest request) {
         StringApiResponse response = new StringApiResponse();
         ApiMethod.HttpMethod httpMethod = Enum.valueOf(ApiMethod.HttpMethod.class, httpMethodString.toUpperCase());
@@ -105,21 +102,21 @@ public class ApiRestStatusServer {
         } catch (Throwable t) {
             return this.buildErrorResponse(httpMethod, namespace, resourceName, t);
         }
-        return response;
+        return ResponseEntity.ok(response);
     }
 
-    private StringApiResponse buildErrorResponse(ApiMethod.HttpMethod httpMethod,
+    private ResponseEntity<StringApiResponse> buildErrorResponse(ApiMethod.HttpMethod httpMethod,
             String namespace, String resourceName, Throwable t) {
         StringBuilder buffer = new StringBuilder();
         buffer.append("Method '").append(httpMethod).
                 append("' Namespace '").append(namespace).append("' Resource '").append(resourceName).append("'");
-        logger.error("Error building api response  - {}", buffer, t);
+        log.error("Error building api response  - {}", buffer, t);
         StringApiResponse response = new StringApiResponse();
-        ApiError error = new ApiError(IApiErrorCodes.SERVER_ERROR, "Error building response - " + buffer.toString(),
+        ApiError error = new ApiError(IApiErrorCodes.SERVER_ERROR, "Error building response - " + buffer,
                 HttpStatus.INTERNAL_SERVER_ERROR);
         response.addError(error);
         response.setResult(IResponseBuilder.FAILURE, null);
-        return response;
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     public enum ApiStatus {
