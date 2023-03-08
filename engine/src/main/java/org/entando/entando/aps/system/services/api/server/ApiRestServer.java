@@ -363,12 +363,11 @@ public class ApiRestServer {
         String permission = apiMethod.getRequiredPermission();
         logger.debug("Permission required: {}", permission);
 
-        LegacyApiUserExtractor legacyApiUserExtractor = (LegacyApiUserExtractor) ApsWebApplicationUtils.getBean(SystemConstants.LEGACY_API_USER_EXTRACTOR, request);
-
-        UserDetails user = legacyApiUserExtractor.getUser(request);
+        UserDetails user = (UserDetails) request.getAttribute("user");
 
         if (null != user) {
             String username = user.getUsername();
+            properties.put(SystemConstants.API_USER_PARAMETER, user);
             if (permission != null && !authManager.isAuthOnPermission(user, permission)) {
                 List<Role> roles = authManager.getUserRoles(user);
                 for (Role role : roles) {

@@ -18,15 +18,12 @@ public class KeycloakSecurityConfig extends OAuth2SecurityConfiguration {
     public static final String API_PATH = "/api";
 
     private final KeycloakAuthenticationFilter keycloakAuthenticationFilter;
-    private final KeycloakLegacyApiAuthenticationFilter keycloakLegacyApiAuthenticationFilter;
     private final KeycloakConfiguration configuration;
 
     @Autowired
     public KeycloakSecurityConfig(final KeycloakAuthenticationFilter keycloakAuthenticationFilter,
-                                  final KeycloakLegacyApiAuthenticationFilter keycloakLegacyApiAuthenticationFilter,
                                   final KeycloakConfiguration configuration) {
         this.keycloakAuthenticationFilter = keycloakAuthenticationFilter;
-        this.keycloakLegacyApiAuthenticationFilter = keycloakLegacyApiAuthenticationFilter;
         this.configuration = configuration;
     }
 
@@ -47,7 +44,6 @@ public class KeycloakSecurityConfig extends OAuth2SecurityConfiguration {
                 .headers().frameOptions().sameOrigin()
                 .and()
                     .addFilterBefore(keycloakAuthenticationFilter, BasicAuthenticationFilter.class)
-                    .addFilterBefore(keycloakLegacyApiAuthenticationFilter, BasicAuthenticationFilter.class)
                     .anonymous().disable()
                     .csrf().disable()
                     .cors();

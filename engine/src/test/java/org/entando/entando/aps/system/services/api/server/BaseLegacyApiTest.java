@@ -1,10 +1,11 @@
 package org.entando.entando.aps.system.services.api.server;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
+import com.agiletec.aps.system.services.authorization.AuthorizationManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.url.IURLManager;
+import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.List;
 import org.entando.entando.aps.system.services.api.ApiCatalogManager;
 import org.entando.entando.aps.system.services.api.DefaultJsonTypesProvider;
@@ -32,10 +33,6 @@ public abstract class BaseLegacyApiTest extends AbstractControllerTest {
     protected ILangManager langManager;
     @Mock
     protected IURLManager urlManager;
-    @Mock
-    protected LegacyApiUserExtractor legacyApiUserExtractor;
-    @Mock
-    protected IAuthorizationManager authorizationManager;
     @Mock
     protected BeanFactory beanFactory;
     @Mock
@@ -82,8 +79,6 @@ public abstract class BaseLegacyApiTest extends AbstractControllerTest {
         Mockito.when(webApplicationContext.getBean(SystemConstants.URL_MANAGER)).thenReturn(urlManager);
         Mockito.when(webApplicationContext.getBean(SystemConstants.AUTHORIZATION_SERVICE))
                 .thenReturn(authorizationManager);
-        Mockito.when(webApplicationContext.getBean(SystemConstants.LEGACY_API_USER_EXTRACTOR))
-                .thenReturn(legacyApiUserExtractor);
         Mockito.when(webApplicationContext.getBean("flashMapManager", FlashMapManager.class))
                 .thenReturn(flashMapManager);
 
@@ -94,6 +89,11 @@ public abstract class BaseLegacyApiTest extends AbstractControllerTest {
 
         responseBuilder.setApiCatalogManager(apiCatalogManager);
         responseBuilder.setBeanFactory(beanFactory);
+
+        Mockito.lenient().when(authorizationManager.getUserRoles(Mockito.any(UserDetails.class))).then(invocation -> {
+            UserDetails user = (UserDetails) invocation.getArguments()[0];
+            return new AuthorizationManager().getUserRoles(user);
+        });
     }
 
     private Unmarshaller getUnmarshaller() {
