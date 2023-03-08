@@ -16,15 +16,18 @@ package com.agiletec.aps.system.common.entity.cache;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.agiletec.aps.system.common.AbstractCacheWrapper;
+import com.agiletec.aps.system.common.AbstractGenericCacheWrapper;
 import com.agiletec.aps.system.common.entity.IEntityManager;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.entando.entando.ent.exception.EntException;
 import org.springframework.cache.Cache;
 
 /**
  * @author E.Santoboni
  */
-public class EntityManagerCacheWrapper extends AbstractCacheWrapper implements IEntityManagerCacheWrapper {
+public class EntityManagerCacheWrapper extends AbstractGenericCacheWrapper<AttributeRole> implements IEntityManagerCacheWrapper {
 
     private String entityManagerName;
     
@@ -54,8 +57,38 @@ public class EntityManagerCacheWrapper extends AbstractCacheWrapper implements I
     }
 
     @Override
+    public void updateRoles(Map<String, AttributeRole> roles) {
+        super.insertAndCleanCache(super.getCache(), roles);
+    }
+
+    @Override
+    public Map<String, AttributeRole> getRoles() {
+        Map<String, AttributeRole> map = super.getObjectMap();
+        if (null != map && !map.isEmpty()) {
+            return map.values().stream().collect(Collectors.toMap(e -> e.getName(), e -> e.clone()));
+        }
+        return new HashMap<>();
+    }
+    
+    @Override
+    public AttributeRole getRole(String name) {
+        return Optional.ofNullable(this.get(this.getCacheKeyPrefix() + name, AttributeRole.class))
+				.map(AttributeRole::clone).orElse(null);
+    }
+
+    @Override
     protected String getCacheName() {
         return ENTITY_MANAGER_CACHE_NAME_PREFIX + this.getEntityManagerName();
+    }
+
+    @Override
+    protected String getCodesCacheKey() {
+        return this.getCacheName() + "_roles";
+    }
+
+    @Override
+    protected String getCacheKeyPrefix() {
+        return this.getCacheName() + "_role_";
     }
 
     protected String getEntityManagerName() {

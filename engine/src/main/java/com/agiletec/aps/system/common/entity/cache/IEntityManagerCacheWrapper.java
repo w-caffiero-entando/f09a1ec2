@@ -13,6 +13,8 @@
  */
 package com.agiletec.aps.system.common.entity.cache;
 
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
+import java.util.Map;
 import org.entando.entando.ent.exception.EntException;
 
 /**
@@ -28,5 +30,11 @@ public interface IEntityManagerCacheWrapper {
 	public Integer getEntityTypeStatus(String typeCode);
 
 	public void updateEntityTypeStatus(String typeCode, Integer status);
+    
+    public void updateRoles(Map<String, AttributeRole> roles);
+    
+    public Map<String, AttributeRole> getRoles();
+    
+    public AttributeRole getRole(String name);
 
 }

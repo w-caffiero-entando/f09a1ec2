@@ -35,6 +35,7 @@ public class AttributeRole implements Serializable {
 		allowedTypes.addAll(this.getAllowedAttributeTypes());
 		AttributeRole clone = new AttributeRole(this.getName(), this.getDescription(), allowedTypes);
 		clone.setFormFieldType(this.getFormFieldType());
+        clone.setLocal(this.isLocal());
 		return clone;
 	}
 	
@@ -54,11 +55,20 @@ public class AttributeRole implements Serializable {
 	public void setFormFieldType(FormFieldTypes formFieldType) {
 		this._formFieldType = formFieldType;
 	}
+
+    public boolean isLocal() {
+        return local;
+    }
+    public void setLocal(boolean local) {
+        this.local = local;
+    }
 	
 	private String _name;
 	private String _description;
 	private List<String> _allowedAttributeTypes;
 	private FormFieldTypes _formFieldType = FormFieldTypes.TEXT;
+    
+    private boolean local;
 	
 	public enum FormFieldTypes {TEXT, DATE, NUMBER, BOOLEAN}
 	

@@ -94,7 +94,7 @@ public class ContentTag extends com.agiletec.plugins.jacms.aps.tags.ContentTag {
 	
 	/**
 	 * Specify if the extra descriptions will be insert into Request Context.
-	 * @param publishExtraTitle The property to set.
+	 * @param publishExtraDescription The property to set.
 	 */
 	public void setPublishExtraDescription(boolean publishExtraDescription) {
 		this._publishExtraDescription = publishExtraDescription;

@@ -1,0 +1,17 @@
+<roles>
+    <role>
+        <name>userprofile:role1</name>
+        <description>Description of role1</description>
+        <allowedTypes>Text,Monotext,Longtext</allowedTypes>
+    </role>
+    <role>
+        <name>userprofile:role2</name>
+        <description>Description of role2</description>
+        <allowedTypes>Text,Monotext,Longtext</allowedTypes>
+    </role>
+    <role>
+        <name>userprofile:role3</name>
+        <description>Description of role3</description>
+        <allowedTypes>Image</allowedTypes>
+    </role>
+</roles>

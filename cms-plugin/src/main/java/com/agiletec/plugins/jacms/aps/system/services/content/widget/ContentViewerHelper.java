@@ -35,6 +35,7 @@ import com.agiletec.plugins.jacms.aps.system.services.contentmodel.ContentModel;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.IContentModelManager;
 import com.agiletec.plugins.jacms.aps.system.services.dispenser.ContentRenderizationInfo;
 import com.agiletec.plugins.jacms.aps.system.services.dispenser.IContentDispenser;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -137,11 +138,8 @@ public class ContentViewerHelper implements IContentViewerHelper {
     }
 
     protected void manageAttributeValues(ContentRenderizationInfo renderInfo, boolean publishExtraTitle, RequestContext reqCtx) {
-        if (!publishExtraTitle) {
-            return;
-        }
         IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
-        if (null == page || !page.isUseExtraTitles()) {
+        if (null == page) {
             return;
         }
         Integer currentFrame = (Integer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
@@ -150,10 +148,13 @@ public class ContentViewerHelper implements IContentViewerHelper {
         }
         PageModel pageModel = this.getPageModelManager().getPageModel(page.getMetadata().getModelCode());
         if (currentFrame == pageModel.getMainFrame() && null != renderInfo) {
-            Serializable extraTitle = (Serializable) renderInfo.getAttributeValues().get(JacmsSystemConstants.ATTRIBUTE_ROLE_TITLE);
-            if (null != extraTitle) {
-                reqCtx.addExtraParam(SystemConstants.EXTRAPAR_EXTRA_PAGE_TITLES, extraTitle);
-            }
+            Map<String, Object> attributeValues = renderInfo.getAttributeValues();
+            attributeValues.entrySet().stream().forEach(e -> {
+                if (publishExtraTitle && page.isUseExtraTitles() && e.getKey().equals(JacmsSystemConstants.ATTRIBUTE_ROLE_TITLE)) {
+                    reqCtx.addExtraParam(SystemConstants.EXTRAPAR_EXTRA_PAGE_TITLES, (Serializable) e.getValue());
+                }
+                reqCtx.addExtraParam(JacmsSystemConstants.ATTRIBUTE_WITH_ROLE_CTX_PREFIX + e.getKey(), (Serializable) e.getValue());
+            });
         }
     }
 

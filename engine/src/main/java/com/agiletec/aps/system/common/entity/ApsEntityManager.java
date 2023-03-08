@@ -51,7 +51,10 @@ import com.agiletec.aps.system.common.entity.parse.IEntityTypeDOM;
 import com.agiletec.aps.system.common.entity.parse.IEntityTypeFactory;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.DateConverter;
+import java.util.Comparator;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.commons.beanutils.BeanComparator;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -67,8 +70,8 @@ import org.xml.sax.SAXException;
  *
  * @author E.Santoboni
  */
-public abstract class ApsEntityManager extends AbstractService
-                                       implements IEntityManager, IEntityTypesConfigurer, ReloadingEntitiesReferencesObserver {
+public abstract class ApsEntityManager extends AbstractService 
+        implements IEntityManager, IEntityTypesConfigurer, ReloadingEntitiesReferencesObserver {
 
     /**
      * Prefix of the thread used for references reloading.
@@ -83,6 +86,8 @@ public abstract class ApsEntityManager extends AbstractService
 
     private String configItemName;
 
+    private String rolesConfigItemName;
+
     private IEntityTypeDOM entityTypeDom;
 
     private EntityHandler entityHandler;
@@ -91,8 +96,6 @@ public abstract class ApsEntityManager extends AbstractService
 
     private IApsEntityDOM entityDom;
 
-    private Map<String, AttributeRole> attributeRoles = null;
-
     private Map<String, String> attributeDisablingCodes = null;
 
     private String attributeRolesFileName;
@@ -100,19 +103,25 @@ public abstract class ApsEntityManager extends AbstractService
     private String attributeDisablingCodesFileName;
 
     private IEntityManagerCacheWrapper cacheWrapper;
-
+    
     @Override
     public void init() throws Exception {
         this.entityDom.setRootElementName(this.getXmlAttributeRootElementName());
         this.getCacheWrapper().initCache(super.getName());
-        logger.debug("{} : inizializated", this.getName());
+        this.initAttributeRoles();
+        logger.info("{} : inizializated", this.getName());
+    }
+    
+    protected void initAttributeRoles() {
+        AttributeRolesLoader loader = new AttributeRolesLoader();
+        Map<String, AttributeRole> attributeRoles = loader.extractAttributeRoles(this.getRolesConfigItemName(), this.getAttributeRolesFileName(), super.getBeanFactory(), this);
+        this.getCacheWrapper().updateRoles(attributeRoles);
     }
 
     @Override
     public void refresh() throws Throwable {
         super.refresh();
         this.attributeDisablingCodes = null;
-        this.attributeRoles = null;
     }
 
     @Override
@@ -131,43 +140,29 @@ public abstract class ApsEntityManager extends AbstractService
 
     @Override
     public List<AttributeRole> getAttributeRoles() {
-        if (null != this.attributeRoles) {
-            //roles already loaded
-            return this.getOrderedAttributeRoles();
+        Map<String, AttributeRole> attributeRoles = this.getCacheWrapper().getRoles();
+        if (null != attributeRoles) {
+            List<AttributeRole> list = attributeRoles.values().stream()
+                    .map(v -> v.clone()).collect(Collectors.toList());
+            list.sort(Comparator.comparing(AttributeRole::getName));
+            return list;
         }
-        //roles not loaded yet
-        this.initAttributeRoles();
-        return this.getOrderedAttributeRoles();
+        return new ArrayList<>();
     }
-
-    protected void initAttributeRoles() {
-        this.attributeRoles = new HashMap<>();
-        AttributeRolesLoader loader = new AttributeRolesLoader();
-        this.attributeRoles = loader.extractAttributeRoles(this.getAttributeRolesFileName(), super.getBeanFactory(), this);
-    }
-
-    private List<AttributeRole> getOrderedAttributeRoles() {
-        List<AttributeRole> roles = new ArrayList<>(this.attributeRoles.size());
-        Iterator<AttributeRole> iter = this.attributeRoles.values().iterator();
-        while (iter.hasNext()) {
-            AttributeRole role = iter.next();
-            roles.add(role.clone());
-        }
-        BeanComparator comparator = new BeanComparator("name");
-        Collections.sort(roles, comparator);
-        return roles;
+    
+    @Override
+    public AttributeRole getAttributeRole(String roleName) {
+        return this.getCacheWrapper().getRole(roleName);
     }
 
     @Override
-    public AttributeRole getAttributeRole(String roleName) {
-        if (null == this.attributeRoles) {
-            this.initAttributeRoles();
-        }
-        AttributeRole role = this.attributeRoles.get(roleName);
-        if (null != role) {
-            return role.clone();
-        }
-        return null;
+    public void updateRoleAttributes(Map<String, AttributeRole> roles) throws EntException {
+        List<String> defaultRoles = this.getAttributeRoles().stream().filter(a -> !a.isLocal()).map(e -> e.getName()).collect(Collectors.toList());
+        // save only local roles
+        Map<String, AttributeRole> rolesToSave = roles.entrySet()
+                .stream().filter(e -> !defaultRoles.contains(e.getKey())).collect(Collectors.toMap(Entry:: getKey, e -> e.getValue().clone()));
+        this.getEntityTypeFactory().updateAttributeRoles(this.getRolesConfigItemName(), rolesToSave);
+        this.initAttributeRoles();
     }
 
     /**
@@ -472,6 +467,13 @@ public abstract class ApsEntityManager extends AbstractService
         this.configItemName = confItemName;
     }
 
+    protected String getRolesConfigItemName() {
+        return rolesConfigItemName;
+    }
+    public void setRolesConfigItemName(String rolesConfigItemName) {
+        this.rolesConfigItemName = rolesConfigItemName;
+    }
+    
     protected IEntityTypeDOM getEntityTypeDom() {
         return this.entityTypeDom;
     }

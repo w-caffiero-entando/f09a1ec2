@@ -17,6 +17,7 @@ import java.util.Map;
 
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.SmallEntityType;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
 import org.entando.entando.ent.exception.EntException;
 import java.util.List;
 
@@ -70,5 +71,7 @@ public interface IEntityTypeFactory {
 	 * @throws EntException
 	 */
 	public void updateEntityTypes(Map<String, IApsEntity> entityTypes, String configItemName, IEntityTypeDOM entityTypeDom) throws EntException;
+	
+    public void updateAttributeRoles(String configItemName, Map<String, AttributeRole> roles) throws EntException;
 	
 }

@@ -14,6 +14,8 @@
 package com.agiletec.aps.system.common.entity;
 
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
+import java.util.Map;
 import org.entando.entando.ent.exception.EntException;
 
 /**
@@ -42,4 +44,6 @@ public interface IEntityTypesConfigurer {
 	 */
 	public void removeEntityPrototype(String entityTypeCode) throws EntException;
 	
+    public void updateRoleAttributes(Map<String, AttributeRole> roles) throws EntException;
+    
 }

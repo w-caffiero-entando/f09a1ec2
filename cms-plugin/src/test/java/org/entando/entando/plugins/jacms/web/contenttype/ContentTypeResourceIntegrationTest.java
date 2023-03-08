@@ -647,7 +647,7 @@ class ContentTypeResourceIntegrationTest extends AbstractControllerIntegrationTe
         result.andExpect(jsonPath("$.payload.dateFilterSupported", is(false)));
         result.andExpect(jsonPath("$.payload.assignedRoles.size()", is(1)));
         result.andExpect(jsonPath("$.payload.assignedRoles.jacms:title", is("Titolo")));
-        result.andExpect(jsonPath("$.payload.allowedRoles", Matchers.hasSize(1)));
+        result.andExpect(jsonPath("$.payload.allowedRoles", Matchers.hasSize(3)));
         result.andExpect(jsonPath("$.payload.dateFilterSupported", is(false)));
         result.andExpect(jsonPath("$.payload.simple", is(true)));
         result.andExpect(jsonPath("$.errors", Matchers.hasSize(0)));

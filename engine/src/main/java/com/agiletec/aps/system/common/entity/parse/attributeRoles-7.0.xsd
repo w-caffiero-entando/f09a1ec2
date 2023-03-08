@@ -3,7 +3,7 @@
   <xs:element name="roles">
     <xs:complexType>
       <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="role"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="role"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

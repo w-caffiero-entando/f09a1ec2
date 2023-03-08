@@ -21,6 +21,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import com.agiletec.aps.system.common.entity.ApsEntityManager;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.SmallEntityType;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import java.util.List;
@@ -93,6 +94,18 @@ public class EntityTypeFactory implements IEntityTypeFactory {
 			throw new EntException("Error detected while updating the Entity Types", t);
 		}
 	}
+
+    @Override
+    public void updateAttributeRoles(String configItemName, Map<String, AttributeRole> roles) throws EntException {
+        try {
+            AttributeRoleDOM dom = new AttributeRoleDOM();
+            String xml = dom.getXml(roles);
+            this.getConfigManager().updateConfigItem(configItemName, xml);
+        } catch (EntException e) {
+            logger.error("Error detected while updating attribute roles. configItemName: {}", configItemName, e);
+            throw new EntException("Error detected while updating attribute roles", e);
+        }
+    }
 	
 	protected ConfigInterface getConfigManager() {
 		return this.configManager;

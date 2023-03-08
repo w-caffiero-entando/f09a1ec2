@@ -1,0 +1,30 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+           http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    
+    <changeSet id="20230224000000_jacms_social_tag_roles" author="entando" context="production">
+        
+        <insert tableName="sysconfig">
+            <column name="version" value="production" />
+            <column name="item" value="contentTypesRoles" />
+            <column name="descr" value="Definition of the Attribute Rules" />
+            <column name="config" valueClobFile="clob/production/sysconfig_4.xml" />
+        </insert>
+        
+    </changeSet>
+    
+    <changeSet id="20230224000000_jacms_social_tag_roles_test" author="entando" context="test">
+        
+        <insert tableName="sysconfig">
+            <column name="version" value="test" />
+            <column name="item" value="contentTypesRoles" />
+            <column name="descr" value="Definition of the Attribute Rules" />
+            <column name="config" valueClobFile="clob/test/sysconfig_4.xml" />
+        </insert>
+        
+    </changeSet>
+    
+</databaseChangeLog>

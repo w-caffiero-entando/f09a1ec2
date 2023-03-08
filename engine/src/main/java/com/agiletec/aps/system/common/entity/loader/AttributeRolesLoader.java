@@ -25,8 +25,13 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
 import com.agiletec.aps.system.common.entity.parse.AttributeRoleDOM;
+import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.FileTextReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 
 /**
@@ -36,13 +41,18 @@ import org.springframework.beans.BeansException;
 public class AttributeRolesLoader {
 
 	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(AttributeRolesLoader.class);
+    
+    public Map<String, AttributeRole> extractAttributeRoles(String attributeRolesFileName, BeanFactory beanFactory, IEntityManager entityManager) {
+        return this.extractAttributeRoles(null, attributeRolesFileName, beanFactory, entityManager);
+    }
 	
-	public Map<String, AttributeRole> extractAttributeRoles(String attributeRolesFileName, BeanFactory beanFactory, IEntityManager entityManager) {
+	public Map<String, AttributeRole> extractAttributeRoles(String configItemName, String attributeRolesFileName, BeanFactory beanFactory, IEntityManager entityManager) {
 		Map<String, AttributeRole> attributeRoles = new HashMap<>();
 		try {
 			this.setEntityManager(entityManager);
 			this.setBeanFactory(beanFactory);
 			this.loadDefaultRoles(attributeRolesFileName, attributeRoles);
+            this.loadLocalRoles(configItemName, attributeRoles);
 			this.loadExtraRoles(attributeRoles);
 		} catch (Throwable t) {
 			_logger.error("Error loading attribute Roles", t);
@@ -61,7 +71,33 @@ public class AttributeRolesLoader {
 			_logger.error("Error loading attribute Roles : file {}", attributeRolesFileName, t);
 		}
 	}
-	
+    
+    public void loadLocalRoles(String configItemName, Map<String, AttributeRole> defaultCollection) {
+        try {
+            ConfigInterface configManager = this.getBeanFactory().getBean(ConfigInterface.class);
+            String xml = configManager.getConfigItem(configItemName);
+            _logger.debug("Extracted configuration item '{}' - {}", configItemName, xml);
+            if (StringUtils.isBlank(xml)) {
+                return;
+            }
+            AttributeRoleDOM dom = new AttributeRoleDOM();
+            Map<String, AttributeRole> attributeRoles = dom.extractRoles(xml, "configItem:" + configItemName);
+            List<AttributeRole> roles = new ArrayList<>(attributeRoles.values());
+            for (int i = 0; i < roles.size(); i++) {
+                AttributeRole role = roles.get(i);
+                if (defaultCollection.containsKey(role.getName())) {
+                    _logger.warn("You can't override existing attribute role : {} - {}", role.getName(), role.getDescription());
+                } else {
+                    defaultCollection.put(role.getName(), role);
+                    _logger.debug("Added new attribute role : {} - {}", role.getName(), role.getDescription());
+                }
+                role.setLocal(true);
+            }
+        } catch (EntException | BeansException e) {
+            _logger.error("Error loading local attribute Roles from configuration item '{}'", configItemName, e);
+        }
+    }
+    
 	private void loadExtraRoles(Map<String, AttributeRole> attributeRoles) {
 		try {
 			ListableBeanFactory factory = (ListableBeanFactory) this.getBeanFactory();
@@ -81,7 +117,7 @@ public class AttributeRolesLoader {
 		}
 	}
 	
-	private String extractConfigFile(String fileName) throws Throwable {
+	private String extractConfigFile(String fileName) throws EntException, IOException {
 		InputStream is = this.getEntityManager().getClass().getResourceAsStream(fileName);
 		if (null == is) {
 			_logger.debug("{}: there isn't any object to load : file {}", this.getEntityManager().getClass().getName(), fileName);

@@ -74,6 +74,8 @@ public interface JacmsSystemConstants {
 
     public static final String CONFIG_ITEM_CONTENT_TYPES = "contentTypes";
 
+    public static final String CONFIG_ITEM_CONTENT_TYPES_ROLES = "contentTypesRoles";
+
     public static final String CONFIG_ITEM_IMAGE_DIMENSIONS = "imageDimensions";
 
     public static final String CONFIG_ITEM_RESOURCE_METADATA_MAPPING = "jacms_resourceMetadataMapping";
@@ -138,5 +140,7 @@ public interface JacmsSystemConstants {
     public static final String SEARCH_ENGINE_EVENT_CHANNEL = "cms-searchengine";
     
     public static final String RESOURCE_EVENT_CHANNEL = "cms-resource";
+    
+    public static final String ATTRIBUTE_WITH_ROLE_CTX_PREFIX = "ctx-attribute-";
 
 }

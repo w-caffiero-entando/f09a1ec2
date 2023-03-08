@@ -77,6 +77,11 @@ public class ContentManager extends ApsEntityManager
         return JacmsSystemConstants.CONFIG_ITEM_CONTENT_TYPES;
     }
 
+    @Override
+    protected String getRolesConfigItemName() {
+        return JacmsSystemConstants.CONFIG_ITEM_CONTENT_TYPES_ROLES;
+    }
+    
     /**
      * Create a new instance of the requested content. The new content is forked
      * (or cloned) from the corresponding prototype, and it's returned empty.
