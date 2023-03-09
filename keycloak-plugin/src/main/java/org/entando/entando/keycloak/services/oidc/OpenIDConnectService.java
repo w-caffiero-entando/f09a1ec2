@@ -100,11 +100,11 @@ public class OpenIDConnectService {
                 .append("&state=").append(state)
                 .append("&login=true")
                 .append("&scope=openid")
-                .append(composeSuggestedIdpIfNtoEmpty(clientSuggestedIdp))
+                .append(composeSuggestedIdpIfNotEmpty(clientSuggestedIdp))
                 .toString();
     }
 
-    private String composeSuggestedIdpIfNtoEmpty(String clientSuggestedIdp) {
+    private String composeSuggestedIdpIfNotEmpty(String clientSuggestedIdp) {
         return Optional.ofNullable(clientSuggestedIdp)
                 .filter(StringUtils::isNotBlank)
                 .map(idp -> "&kc_idp_hint="+idp)
