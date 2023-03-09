@@ -287,12 +287,18 @@ public class KeycloakFilter implements Filter {
             chain.doFilter(request, response);
         } else {
             final String state = UUID.randomUUID().toString();
-            final String redirectUrl = oidcService.getRedirectUrl(redirectUri, state);
+            final String redirectUrl = oidcService.getRedirectUrl(redirectUri, state, fetchSuggestedIdp(request));
 
             session.setAttribute(SESSION_PARAM_STATE, state);
             log.debug("doLogin sendRedirect redirectUrl:'{}'", redirectUrl);
             response.sendRedirect(redirectUrl);
         }
+    }
+
+    private String fetchSuggestedIdp(HttpServletRequest request){
+        String  clientSuggestedIdp = request.getParameter("idp_hint");
+        log.debug("fetched clientSuggestedIdp:'{}' to compose redirect url with it", clientSuggestedIdp);
+        return clientSuggestedIdp;
     }
 
     private void checkNoErrorOrThrow(HttpServletRequest request, String error, String errorDescription){

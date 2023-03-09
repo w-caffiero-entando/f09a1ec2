@@ -1,5 +1,7 @@
 package org.entando.entando.keycloak.services.oidc;
 
+import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.KeycloakWiki;
 import org.entando.entando.keycloak.services.KeycloakConfiguration;
 import org.entando.entando.keycloak.services.oidc.exception.AccountDisabledException;
@@ -88,7 +90,7 @@ public class OpenIDConnectService {
         }
     }
 
-    public String getRedirectUrl(final String redirectUri, final String state) throws UnsupportedEncodingException {
+    public String getRedirectUrl(final String redirectUri, final String state, final String clientSuggestedIdp) throws UnsupportedEncodingException {
         return new StringBuilder(configuration.getAuthUrl())
                 .append("/realms/").append(configuration.getRealm())
                 .append("/protocol/openid-connect/auth")
@@ -98,7 +100,15 @@ public class OpenIDConnectService {
                 .append("&state=").append(state)
                 .append("&login=true")
                 .append("&scope=openid")
+                .append(composeSuggestedIdpIfNotEmpty(clientSuggestedIdp))
                 .toString();
+    }
+
+    private String composeSuggestedIdpIfNotEmpty(String clientSuggestedIdp) {
+        return Optional.ofNullable(clientSuggestedIdp)
+                .filter(StringUtils::isNotBlank)
+                .map(idp -> "&kc_idp_hint="+idp)
+                .orElse("");
     }
 
     private ResponseEntity<AuthResponse> request(final String username, final String password) {

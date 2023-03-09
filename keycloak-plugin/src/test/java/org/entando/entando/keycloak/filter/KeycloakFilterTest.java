@@ -119,12 +119,12 @@ class KeycloakFilterTest {
         Mockito.lenient().when(request.getParameter(eq("redirectTo"))).thenReturn(requestRedirect);
 
         final String redirect = "http://dev.entando.org/auth/realms/entando/protocol/openid-connect/auth";
-        when(oidcService.getRedirectUrl(any(), any())).thenReturn(redirect);
+        when(oidcService.getRedirectUrl(any(), any(), any())).thenReturn(redirect);
 
         keycloakFilter.doFilter(request, response, filterChain);
         verify(filterChain, times(0)).doFilter(any(), any());
         verify(response, times(1)).sendRedirect(redirect);
-        verify(oidcService, times(1)).getRedirectUrl(eq(loginEndpoint), anyString());
+        verify(oidcService, times(1)).getRedirectUrl(eq(loginEndpoint), anyString(), anyString());
         verify(session, times(1)).setAttribute(eq(KeycloakFilter.SESSION_PARAM_REDIRECT), eq("/main.html"));
         verify(session, times(1)).setAttribute(eq(KeycloakFilter.SESSION_PARAM_STATE), anyString());
 
@@ -244,7 +244,7 @@ class KeycloakFilterTest {
         Mockito.lenient().when(request.getParameter(eq("redirectTo"))).thenReturn(requestRedirect);
 
         final String redirect = "http://dev.entando.org/auth/realms/entando/protocol/openid-connect/auth";
-        Mockito.lenient().when(oidcService.getRedirectUrl(any(), any())).thenReturn(redirect);
+        Mockito.lenient().when(oidcService.getRedirectUrl(any(), any(), any())).thenReturn(redirect);
         try ( MockedStatic<WebApplicationContextUtils> wacUtil = Mockito.mockStatic(WebApplicationContextUtils.class)) {
             wacUtil.when(() -> WebApplicationContextUtils.getWebApplicationContext(svCtx)).thenReturn(wac);
             keycloakFilter.doFilter(request, response, filterChain);
@@ -598,7 +598,7 @@ class KeycloakFilterTest {
         when(request.getContextPath()).thenReturn(contextRoot);
 
         final String redirect = "http://dev.entando.org/auth/realms/entando/protocol/openid-connect/auth";
-        when(oidcService.getRedirectUrl(any(), any())).thenReturn(redirect);
+        when(oidcService.getRedirectUrl(any(), any(), any())).thenReturn(redirect);
 
         try ( MockedStatic<WebApplicationContextUtils> wacUtil = Mockito.mockStatic(WebApplicationContextUtils.class)) {
             wacUtil.when(() -> WebApplicationContextUtils.getWebApplicationContext(svCtx)).thenReturn(wac);
@@ -635,7 +635,7 @@ class KeycloakFilterTest {
         when(request.getContextPath()).thenReturn("/entando-de-app");
 
         final String redirect = "http://dev.entando.org/auth/realms/entando/protocol/openid-connect/auth";
-        when(oidcService.getRedirectUrl(any(), any())).thenReturn(redirect);
+        when(oidcService.getRedirectUrl(any(), any(), any())).thenReturn(redirect);
 
         try ( MockedStatic<WebApplicationContextUtils> wacUtil = Mockito.mockStatic(WebApplicationContextUtils.class)) {
             wacUtil.when(() -> WebApplicationContextUtils.getWebApplicationContext(svCtx)).thenReturn(wac);

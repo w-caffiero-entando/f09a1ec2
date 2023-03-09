@@ -220,6 +220,7 @@
                         <shutdown>exit</shutdown>
                         <parallel>methods</parallel>
                         <threadCount>8</threadCount>
+                        <runOrder>alphabetical</runOrder>
                         <excludes>
                             <exclude>**/*BaseTestCase*</exclude>
                             <exclude>**/Abstract*</exclude>
