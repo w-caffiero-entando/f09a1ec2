@@ -368,9 +368,9 @@ class CdsRemoteCallerTest {
         Mockito.when(cdsConfiguration.getKcClientSecret()).thenReturn("sec");
 
         Map <String, String> map = Map.of("status","OK");
-        URI url = URI.create("http://cds-kube-service:8081/mytenant/public/myfolder/filename.txt");
 
         //public
+        URI url = URI.create("http://cds-kube-service:8081/mytenant/public/myfolder/filename.txt");
         byte[] data = "random text".getBytes(StandardCharsets.UTF_8);
         Mockito.when(restTemplate.getForObject(url, byte[].class))
                 .thenReturn(data);
@@ -379,7 +379,7 @@ class CdsRemoteCallerTest {
                 false);
         Assertions.assertTrue(ret.isPresent());
         byte[] retValue = new byte[data.length];
-                IOUtils.read(ret.get(), retValue);
+        IOUtils.read(ret.get(), retValue);
         Assertions.assertEquals(new String(data), new String(retValue));
 
         //private
