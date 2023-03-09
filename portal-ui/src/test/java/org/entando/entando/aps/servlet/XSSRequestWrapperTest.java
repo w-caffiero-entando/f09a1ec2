@@ -1,15 +1,7 @@
 package org.entando.entando.aps.servlet;
 
-import static org.mockito.ArgumentMatchers.any;
-
-import java.io.IOException;
-import java.io.Reader;
 import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
-import org.entando.entando.aps.servlet.ControllerServlet.EntTemplateLoader;
-import org.entando.entando.aps.system.services.guifragment.GuiFragment;
-import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
-import org.entando.entando.ent.exception.EntException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
