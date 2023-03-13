@@ -21,6 +21,8 @@ import org.entando.entando.aps.system.init.model.SystemInstallationReport;
 public interface IInitializerManager {
 
 	public static enum DatabaseMigrationStrategy {DISABLED, AUTO, GENERATE_SQL};
+    
+    public void init() throws Exception;
 	
 	public SystemInstallationReport getCurrentReport();
 	

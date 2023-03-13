@@ -94,6 +94,7 @@ public class InitializerManager extends AbstractInitializerManager implements II
         }
     }
 
+    @Override
     public void init() throws Exception {
         SystemInstallationReport report = null;
         try {
