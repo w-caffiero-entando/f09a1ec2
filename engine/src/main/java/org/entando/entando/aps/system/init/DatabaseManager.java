@@ -143,12 +143,12 @@ public class DatabaseManager extends AbstractInitializerManager
         return report;
     }
 
-    private DatabaseMigrationStrategy getTenantMigrationStrategy() throws EntException {
+    private DatabaseMigrationStrategy getTenantMigrationStrategy() {
         Optional<String> tenantCodeOp = ApsTenantApplicationUtils.getTenant();
-        Optional<String> strategy = null;
+        Optional<String> strategy = Optional.empty();
         try {
             strategy = (tenantCodeOp.map(tenantCode -> getTenantManager().getConfig(tenantCode))
-					.orElse(Optional.empty())).map(config -> config.getDbMigrationStrategy());
+					.orElse(Optional.empty())).map(TenantConfig::getDbMigrationStrategy);
             return strategy.map(s -> Enum.valueOf(DatabaseMigrationStrategy.class, s.toUpperCase())).orElse(null);
         } catch (IllegalArgumentException e) {
             logger.warn(String.format("Migration Strategy - , Tenant '%s', Invalid value '%s' - Allowed values disabled|auto|generate_sql", 

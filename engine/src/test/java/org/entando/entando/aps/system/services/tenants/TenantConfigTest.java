@@ -13,7 +13,6 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
@@ -25,7 +24,7 @@ class TenantConfigTest {
     void shouldConstructorFromMapAndCopyConstructorWorkFine() {
 
         Map<String, String> map = Map.of("tenantCode", "CodeTenant1", "kCEnabled", "true", "kcClientId",
-                "tenant1ClientId");
+                "tenant1ClientId", "dbMigrationStrategy", "disabled");
 
         TenantConfig tc = new TenantConfig(map);
 
@@ -38,6 +37,7 @@ class TenantConfigTest {
         Map<String, String> mapResult = clone.getAll();
 
         Assertions.assertThat(mapResult).hasSize(map2.size()).containsOnlyKeys(map2.keySet());
+        Assertions.assertThat(clone.getDbMigrationStrategy()).isEqualTo("disabled");
     }
 
     @Test
@@ -99,4 +99,5 @@ class TenantConfigTest {
         Assertions.assertThat(tc.getFqdns()).contains("pippo.com");
 
     }
+    
 }
