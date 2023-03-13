@@ -81,11 +81,11 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
                 LOGGER.info("refresh bean for tenant:'{}'", tenantCode);
                 initManager.init();
                 ApsWebApplicationUtils.executeSystemRefresh(svCtx);
+                String tenantMsg = this.getClass().getName() + ": Tenant '" + tenantCode + "' inizialized";
+                ApsSystemUtils.directStdoutTrace(tenantMsg, true);
             } catch (Throwable t) {
                 LOGGER.error("Error initializing '{}' tenant", tenantCode, t);
             }
-            String tenantMsg = this.getClass().getName() + ": Tenant '" + tenantCode + "' inizialized";
-            ApsSystemUtils.directStdoutTrace(tenantMsg, true);
         });
         long endMs = System.currentTimeMillis();
         String executionTimeMsg = String.format("%s: contextInitialized takes ms:'%s' of execution",

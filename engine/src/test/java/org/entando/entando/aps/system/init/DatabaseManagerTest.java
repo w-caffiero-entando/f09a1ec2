@@ -98,12 +98,6 @@ class DatabaseManagerTest {
         List<Component> components = new ArrayList<>();
         components.add(this.loadComponent());
         Mockito.lenient().when(componentManager.getCurrentComponents()).thenReturn(components);
-        
-        
-        
-        
-        
-        
     }
 
     private Component loadComponent() throws Exception {
@@ -353,16 +347,6 @@ class DatabaseManagerTest {
         }
     }
     
-    
-    
-
-    
-    
-    
-    
-    
-    
-
     private static class ComponentDefDOMForTest {
 
         public ComponentDefDOMForTest(String xmlText) throws EntException {
