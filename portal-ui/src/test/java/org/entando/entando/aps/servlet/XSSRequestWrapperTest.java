@@ -25,11 +25,6 @@ class XSSRequestWrapperTest {
     @Mock
     private Encoder encoder;
 
-    @BeforeEach
-    private void setUp() {
-        Mockito.reset(httpServletRequest, validator);
-    }
-
     @Test
     void shouldGetParameterValuesManageException() throws Exception{
         Mockito.when(httpServletRequest.getParameterValues("testParams")).thenReturn(new String[]{"test1", "test2", "test3"});
