@@ -187,7 +187,6 @@
         <hamcrest.version>2.2</hamcrest.version>
         <jaxb-runtime.version>2.3.4</jaxb-runtime.version>
         <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
-        <keycloak-admin-client.version>15.1.1</keycloak-admin-client.version>
         <protobuf-java.version>3.19.6</protobuf-java.version>
         <xercesImpl.version>2.12.2</xercesImpl.version>
         <junrar.version>7.4.1</junrar.version>
@@ -1517,11 +1516,6 @@
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
                 <version>${jakarta.annotation-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.keycloak</groupId>
-                <artifactId>keycloak-admin-client</artifactId>
-                <version>${keycloak-admin-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
