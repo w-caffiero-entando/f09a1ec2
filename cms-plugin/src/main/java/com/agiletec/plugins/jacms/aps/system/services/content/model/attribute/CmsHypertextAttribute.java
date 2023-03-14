@@ -177,8 +177,10 @@ public class CmsHypertextAttribute extends HypertextAttribute implements IRefere
                         if (null != attributeError) {
                             AttributeFieldError error = new AttributeFieldError(this, attributeError.getErrorCode(), textTracer);
                             if (attributeError.getMessage() == null) {
-                                attributeError.setMessage("Invalid link - page " + symbLink.getPageDestination()
-                                        + " - content " + symbLink.getContentDestination() + " - Error code " + attributeError.getErrorCode());
+                                attributeError.setMessage(
+                                        String.format("Invalid link - page %s - content %s - Error code %s",
+                                                symbLink.getPageDestination(), symbLink.getContentDestination(),
+                                                attributeError.getErrorCode()));
                             }
                             error.setMessage(attributeError.getMessage());
                             errors.add(error);

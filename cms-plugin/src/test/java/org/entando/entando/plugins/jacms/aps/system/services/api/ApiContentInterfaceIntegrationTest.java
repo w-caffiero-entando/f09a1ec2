@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.Unmarshaller;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
@@ -47,7 +47,7 @@ import org.springframework.http.MediaType;
 /**
  * @author E.Santoboni
  */
-class TestApiContentInterface extends ApiBaseTestCase {
+class ApiContentInterfaceIntegrationTest extends ApiBaseTestCase {
 
 	@Test
     void testGetXmlContent() throws Throwable {
@@ -177,10 +177,10 @@ class TestApiContentInterface extends ApiBaseTestCase {
 	public void init() {
         super.init();
 		this.contentManager = (IContentManager) this.getApplicationContext().getBean(JacmsSystemConstants.CONTENT_MANAGER);
-		this.unmarshaller = (Unmarshaller) this.getApplicationContext().getBean(SystemConstants.UNMARSHALLER);
+		this.unmarshaller = (LegacyApiUnmarshaller) this.getApplicationContext().getBean(SystemConstants.LEGACY_API_UNMARSHALLER);
 	}
 
 	private IContentManager contentManager;
-	private Unmarshaller unmarshaller;
+	private LegacyApiUnmarshaller unmarshaller;
 
 }

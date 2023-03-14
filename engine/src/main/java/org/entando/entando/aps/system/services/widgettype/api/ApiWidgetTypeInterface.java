@@ -304,15 +304,8 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 			return null;
 		}
 		WidgetType widgetType = (WidgetType) object;
-		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
-		stringBuilder.append("api/legacy/").append(langCode).append("/core/widgetType");
-		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
-			stringBuilder.append(".xml");
-		} else {
-			stringBuilder.append(".json");
-		}
-		stringBuilder.append("?code=").append(widgetType.getCode());
-		return stringBuilder.toString();
+		return String.format("%sapi/%s/%s/core/widgetType.%s?code=%s", applicationBaseUrl,
+				SystemConstants.LEGACY_API_PREFIX, langCode, getExtension(mediaType), widgetType.getCode());
 	}
 
 	public boolean isInternalServletWidget(String widgetTypeCode) {

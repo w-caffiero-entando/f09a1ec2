@@ -103,7 +103,7 @@ class ApiContentInterfaceTest {
         Assertions.assertEquals(1, exception.getErrors().size());
         LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
-        Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
         Assertions.assertEquals("Invalid 'default' system model for content type 'null' - Contact the administrators",
                 error.getMessage());
     }
@@ -121,7 +121,7 @@ class ApiContentInterfaceTest {
         Assertions.assertEquals(1, exception.getErrors().size());
         LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
-        Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
         Assertions.assertEquals("Invalid 'list' system model for content type 'null' - Contact the administrators",
                 error.getMessage());
     }
@@ -139,7 +139,7 @@ class ApiContentInterfaceTest {
         Assertions.assertEquals(1, exception.getErrors().size());
         LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
-        Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
         Assertions.assertEquals("The model id must be an integer or 'default' or 'list' - 'NaN'", error.getMessage());
     }
 
@@ -156,7 +156,7 @@ class ApiContentInterfaceTest {
         Assertions.assertEquals(1, exception.getErrors().size());
         LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
-        Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
         Assertions.assertEquals("The content model with id '42' does not exist", error.getMessage());
     }
 
@@ -177,7 +177,7 @@ class ApiContentInterfaceTest {
         Assertions.assertEquals(1, exception.getErrors().size());
         LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
-        Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
         Assertions.assertEquals("The content model with id '42' does not match with content of type 'typeCode1'",
                 error.getMessage());
     }

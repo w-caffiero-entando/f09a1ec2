@@ -28,7 +28,7 @@
             </bean>
             <bean id="jacksonXmlMessageConverter" name="jacksonXmlMessageConverter"
                     class="org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter">
-                <property name="objectMapper" ref="xmlMapper"/>
+                <property name="objectMapper" ref="LegacyApiXmlMapper"/>
                 <property name="supportedMediaTypes">
                     <list>
                         <value>application/xml;charset=UTF-8</value>

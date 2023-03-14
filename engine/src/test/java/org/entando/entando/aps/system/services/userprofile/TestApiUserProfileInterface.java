@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.Unmarshaller;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -50,7 +50,7 @@ class TestApiUserProfileInterface extends ApiBaseTestCase {
     public static final String TEST_USERNAME = "testusername";
 
     private IUserProfileManager userProfileManager;
-    private Unmarshaller unmarshaller;
+    private LegacyApiUnmarshaller unmarshaller;
 
     @Test
     void testGetXmlUserProfile() throws Throwable {
@@ -156,7 +156,7 @@ class TestApiUserProfileInterface extends ApiBaseTestCase {
     protected void init() {
         super.init();
         this.userProfileManager = (IUserProfileManager) this.getApplicationContext().getBean(SystemConstants.USER_PROFILE_MANAGER);
-        this.unmarshaller = (Unmarshaller) this.getApplicationContext().getBean(SystemConstants.UNMARSHALLER);
+        this.unmarshaller = (LegacyApiUnmarshaller) this.getApplicationContext().getBean(SystemConstants.LEGACY_API_UNMARSHALLER);
     }
 
 }

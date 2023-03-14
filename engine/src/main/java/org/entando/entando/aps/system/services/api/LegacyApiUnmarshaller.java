@@ -9,14 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
-@Component(SystemConstants.UNMARSHALLER)
-public class Unmarshaller {
+@Component(SystemConstants.LEGACY_API_UNMARSHALLER)
+public class LegacyApiUnmarshaller {
 
     private final ObjectMapper jsonObjectMapper;
     private final XmlMapper xmlMapper;
 
     @Autowired
-    public Unmarshaller(ObjectMapper jsonObjectMapper, XmlMapper xmlMapper) {
+    public LegacyApiUnmarshaller(ObjectMapper jsonObjectMapper, XmlMapper xmlMapper) {
         this.jsonObjectMapper = jsonObjectMapper;
         this.xmlMapper = xmlMapper;
     }

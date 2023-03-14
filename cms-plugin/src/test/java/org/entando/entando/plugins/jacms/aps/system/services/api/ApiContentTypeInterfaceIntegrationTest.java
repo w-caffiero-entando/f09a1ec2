@@ -24,7 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.Unmarshaller;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
-class TestApiContentTypeInterface extends ApiBaseTestCase {
+class ApiContentTypeInterfaceIntegrationTest extends ApiBaseTestCase {
 
     private final static String CONTENT_VIEW = "contentview";
     private final static String CONTENT_VIEW_TEST = "contentviewtest";
@@ -102,10 +102,10 @@ class TestApiContentTypeInterface extends ApiBaseTestCase {
     public void init() {
         super.init();
         this.contentManager = (IContentManager) this.getApplicationContext().getBean(JacmsSystemConstants.CONTENT_MANAGER);
-        this.unmarshaller = (Unmarshaller) this.getApplicationContext().getBean(SystemConstants.UNMARSHALLER);
+        this.unmarshaller = (LegacyApiUnmarshaller) this.getApplicationContext().getBean(SystemConstants.LEGACY_API_UNMARSHALLER);
     }
 
     private IContentManager contentManager;
-    private Unmarshaller unmarshaller;
+    private LegacyApiUnmarshaller unmarshaller;
 
 }

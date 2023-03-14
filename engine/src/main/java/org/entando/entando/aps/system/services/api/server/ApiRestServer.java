@@ -29,11 +29,11 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.Unmarshaller;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.AbstractApiResponse;
-import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -54,13 +54,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequestMapping("/legacy")
+@RequestMapping("/" + SystemConstants.LEGACY_API_PREFIX)
 public class ApiRestServer {
 
-    private Unmarshaller unmarshaller;
+    private final LegacyApiUnmarshaller unmarshaller;
 
     @Autowired
-    public void setUnmarshaller(Unmarshaller unmarshaller) {
+    public ApiRestServer(LegacyApiUnmarshaller unmarshaller) {
         this.unmarshaller = unmarshaller;
     }
 

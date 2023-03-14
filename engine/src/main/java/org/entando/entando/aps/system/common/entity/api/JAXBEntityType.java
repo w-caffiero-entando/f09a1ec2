@@ -61,7 +61,7 @@ public class JAXBEntityType {
     }
     
     public IApsEntity buildEntityType(Class entityClass, Map<String, AttributeInterface> attributes) throws ApiException, Throwable {
-        List<LegacyApiError> errors = new ArrayList<LegacyApiError>();
+        List<LegacyApiError> errors = new ArrayList<>();
         IApsEntity entityType = null;
         try {
             entityType = (IApsEntity) entityClass.newInstance();

@@ -157,15 +157,8 @@ public class ApiPageModelInterface implements BeanFactoryAware, IApiExportable {
 			return null;
 		}
 		PageModel pageModel = (PageModel) object;
-		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
-		stringBuilder.append("api/legacy/").append(langCode).append("/core/pageModel");
-		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
-			stringBuilder.append(".xml");
-		} else {
-			stringBuilder.append(".json");
-		}
-		stringBuilder.append("?code=").append(pageModel.getCode());
-		return stringBuilder.toString();
+		return String.format("%sapi/%s/%s/core/pageModel.%s?code=%s", applicationBaseUrl,
+				SystemConstants.LEGACY_API_PREFIX, langCode, getExtension(mediaType), pageModel.getCode());
 	}
 	
 	protected BeanFactory getBeanFactory() {

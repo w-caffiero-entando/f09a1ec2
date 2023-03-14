@@ -220,7 +220,7 @@ public final class UrlUtils {
         }
 
         public URI build() {
-            UriBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+            UriBuilder builder = UriComponentsBuilder.fromUriString(url);
             for (String path : paths) {
                 if (StringUtils.isNotBlank(path)) {
                     path = path.trim();

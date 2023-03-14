@@ -214,7 +214,9 @@ public final class SystemConstants {
 
     public static final String API_CATALOG_MANAGER = "ApiCatalogManager";
 
-    public static final String UNMARSHALLER = "Unmarshaller";
+    public static final String LEGACY_API_UNMARSHALLER = "LegacyApiUnmarshaller";
+
+    public static final String LEGACY_API_PREFIX = "legacy";
 
     public static final String API_LANG_CODE_PARAMETER = "apiMethod:langCode";
 

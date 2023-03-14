@@ -107,12 +107,10 @@ public class ApiRestStatusServer {
 
     private ResponseEntity<StringApiResponse> buildErrorResponse(ApiMethod.HttpMethod httpMethod,
             String namespace, String resourceName, Throwable t) {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("Method '").append(httpMethod).
-                append("' Namespace '").append(namespace).append("' Resource '").append(resourceName).append("'");
-        log.error("Error building api response  - {}", buffer, t);
+        String message = String.format("Method '%s' Namespace '%s' Resource '%s'", httpMethod, namespace, resourceName);
+        log.error("Error building API response - {}", message, t);
         StringApiResponse response = new StringApiResponse();
-        LegacyApiError error = new LegacyApiError(IApiErrorCodes.SERVER_ERROR, "Error building response - " + buffer,
+        LegacyApiError error = new LegacyApiError(IApiErrorCodes.SERVER_ERROR, "Error building response - " + message,
                 HttpStatus.INTERNAL_SERVER_ERROR);
         response.addError(error);
         response.setResult(IResponseBuilder.FAILURE, null);

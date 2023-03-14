@@ -246,14 +246,14 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
                 if (null == content.getDefaultModel()) {
                     throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
                             "Invalid 'default' system model for content type '" + content.getTypeCode() + "' - Contact the administrators",
-                            HttpStatus.CONFLICT);
+                            HttpStatus.BAD_REQUEST);
                 }
                 modelIdInteger = Integer.parseInt(content.getDefaultModel());
             } else if (modelId.equals(ContentModel.MODEL_ID_LIST)) {
                 if (null == content.getListModel()) {
                     throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
                             "Invalid 'list' system model for content type '" + content.getTypeCode() + "' - Contact the administrators",
-                            HttpStatus.CONFLICT);
+                            HttpStatus.BAD_REQUEST);
                 }
                 modelIdInteger = Integer.parseInt(content.getListModel());
             } else {
@@ -262,16 +262,16 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
                 } catch (NumberFormatException t) {
                     throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
                             "The model id must be an integer or 'default' or 'list' - '" + modelId + "'",
-                            HttpStatus.CONFLICT);
+                            HttpStatus.BAD_REQUEST);
                 }
             }
             ContentModel model = this.getContentModelManager().getContentModel(modelIdInteger);
             if (model == null) {
-                throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "The content model with id '" + modelId + "' does not exist", HttpStatus.CONFLICT);
+                throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "The content model with id '" + modelId + "' does not exist", HttpStatus.BAD_REQUEST);
             } else if (!content.getTypeCode().equals(model.getContentType())) {
                 throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
                         "The content model with id '" + modelId + "' does not match with content of type '" + content.getTypeCode() + "'",
-                        HttpStatus.CONFLICT);
+                        HttpStatus.BAD_REQUEST);
             }
         } catch (ApiException ae) {
             throw ae;

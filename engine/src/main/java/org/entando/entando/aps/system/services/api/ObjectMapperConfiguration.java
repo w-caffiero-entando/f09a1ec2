@@ -35,7 +35,7 @@ public class ObjectMapperConfiguration {
         return objectMapper;
     }
 
-    @Bean
+    @Bean("LegacyApiXmlMapper")
     public XmlMapper xmlMapper() {
         XmlMapper xmlMapper = new XmlMapper();
         xmlMapper.configure(Feature.WRITE_XML_DECLARATION, true);

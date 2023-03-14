@@ -212,21 +212,9 @@ public class LocalStorageManagerInterface implements IApiExportable {
 			return null;
 		}
 		BasicFileAttributeView basicFileAttributeView = (BasicFileAttributeView) object;
-		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
-		stringBuilder.append("api/legacy/").append(langCode).append("/core/");
-		
-		if (basicFileAttributeView.isDirectory()) {
-			stringBuilder.append("storage");
-		} else {
-			stringBuilder.append("storageResource");			
-		}
-		
-		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
-			stringBuilder.append(".xml");
-		} else {
-			stringBuilder.append(".json");
-		}
-		return stringBuilder.toString();
+		String type = basicFileAttributeView.isDirectory() ? "storage" : "storageResource";
+		return String.format("%sapi/%s/%s/core/%s.%s", applicationBaseUrl,
+				SystemConstants.LEGACY_API_PREFIX, langCode, type, getExtension(mediaType));
 	}
 	
 	protected String buildResourcePath(BasicFileAttributeView fileAttributeView, String path) {

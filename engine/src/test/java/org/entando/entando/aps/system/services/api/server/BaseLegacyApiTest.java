@@ -7,7 +7,7 @@ import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import org.entando.entando.aps.system.services.api.ApiCatalogManager;
-import org.entando.entando.aps.system.services.api.Unmarshaller;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.web.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,12 +35,11 @@ public abstract class BaseLegacyApiTest extends AbstractControllerTest {
     @InjectMocks
     protected ResponseBuilder responseBuilder;
 
-    @InjectMocks
     protected ApiRestServer controller;
 
     @BeforeEach
     public void setUp() throws Exception {
-        controller.setUnmarshaller(getUnmarshaller());
+        controller = new ApiRestServer(getUnmarshaller());
 
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
@@ -81,9 +80,9 @@ public abstract class BaseLegacyApiTest extends AbstractControllerTest {
         });
     }
 
-    private Unmarshaller getUnmarshaller() {
+    private LegacyApiUnmarshaller getUnmarshaller() {
         mapperConfiguration.setJsonTypesProviders(getJsonTypesProviders());
-        Unmarshaller unmarshaller = new Unmarshaller(
+        LegacyApiUnmarshaller unmarshaller = new LegacyApiUnmarshaller(
                 mapperConfiguration.defaultObjectMapper(), mapperConfiguration.xmlMapper());
         return unmarshaller;
     }

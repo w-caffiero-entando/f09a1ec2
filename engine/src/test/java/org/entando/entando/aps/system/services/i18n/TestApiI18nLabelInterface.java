@@ -25,7 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.Unmarshaller;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -112,10 +112,10 @@ class TestApiI18nLabelInterface extends ApiBaseTestCase {
 	protected void init() {
         super.init();
 		this.i18nManager = (II18nManager) this.getApplicationContext().getBean(SystemConstants.I18N_MANAGER);
-		this.unmarshaller = (Unmarshaller) this.getApplicationContext().getBean(SystemConstants.UNMARSHALLER);
+		this.unmarshaller = (LegacyApiUnmarshaller) this.getApplicationContext().getBean(SystemConstants.LEGACY_API_UNMARSHALLER);
     }
 	
 	private II18nManager i18nManager;
-	private Unmarshaller unmarshaller;
+	private LegacyApiUnmarshaller unmarshaller;
 	
 }

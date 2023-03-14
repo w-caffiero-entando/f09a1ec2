@@ -204,15 +204,8 @@ public class ApiGuiFragmentInterface implements BeanFactoryAware, IApiExportable
 		if (null == fragmentCode || null == applicationBaseUrl || null == langCode) {
 			return null;
 		}
-		StringBuilder stringBuilder = new StringBuilder(applicationBaseUrl);
-		stringBuilder.append("api/legacy/").append(langCode).append("/core/guiFragment");
-		if (null == mediaType || mediaType.equals(MediaType.APPLICATION_XML)) {
-			stringBuilder.append(".xml");
-		} else {
-			stringBuilder.append(".json");
-		}
-		stringBuilder.append("?code=").append(fragmentCode);
-		return stringBuilder.toString();
+		return String.format("%sapi/%s/%s/core/guiFragment.%s?code=%s", applicationBaseUrl,
+				SystemConstants.LEGACY_API_PREFIX, langCode, getExtension(mediaType), fragmentCode);
 	}
 
 	private static String getGuiFragmentDoesNotExistMessage(String code) {

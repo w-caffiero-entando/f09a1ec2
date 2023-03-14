@@ -24,43 +24,44 @@ import javax.xml.bind.annotation.XmlElementWrapper;
  * @author E.Santoboni
  */
 public abstract class AbstractApiResponse implements Serializable {
-    
+
     public void setResult(Object result, String html) {
         AbstractApiResponseResult responseResult = this.createResponseResultInstance();
         responseResult.setMainResult(result);
         responseResult.setHtml(html);
         this.setResult(responseResult);
     }
-    
+
     protected abstract AbstractApiResponseResult createResponseResultInstance();
-    
+
     @XmlElement(name = "error", required = true)
     @XmlElementWrapper(name = "errors")
     public List<LegacyApiError> getErrors() {
-        return this._errors;
+        return this.errors;
     }
-    
+
     public void addError(LegacyApiError error) {
         if (null != error) {
-			this._errors.add(error);
+            this.errors.add(error);
         }
     }
-    
+
     public void addErrors(List<LegacyApiError> errors) {
         if (null == errors) {
             return;
         }
-		this.getErrors().addAll(errors);
+        this.getErrors().addAll(errors);
     }
-    
+
     public Object getResult() {
-        return _result;
+        return result;
     }
+
     protected void setResult(Object result) {
-        this._result = result;
+        this.result = result;
     }
-    
-    private List<LegacyApiError> _errors = new ArrayList<LegacyApiError>();
-    private Object _result;
-	
+
+    private List<LegacyApiError> errors = new ArrayList<>();
+    private Object result;
+
 }

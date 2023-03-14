@@ -239,8 +239,9 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
             if (null != attributeError) {
                 AttributeFieldError error = new AttributeFieldError(this, attributeError.getErrorCode(), tracer);
                 if (attributeError.getMessage() == null) {
-                    attributeError.setMessage("Invalid link - page " + symbolicLink.getPageDestination()
-                            + " - content " + symbolicLink.getContentDestination() + " - Error code " + attributeError.getErrorCode());
+                    attributeError.setMessage(String.format("Invalid link - page %s - content %s - Error code %s",
+                            symbolicLink.getPageDestination(), symbolicLink.getContentDestination(),
+                            attributeError.getErrorCode()));
                 }
                 error.setMessage(attributeError.getMessage());
                 errors.add(error);
