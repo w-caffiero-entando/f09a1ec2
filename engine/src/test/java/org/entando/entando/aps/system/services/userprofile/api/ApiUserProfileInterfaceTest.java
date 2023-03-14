@@ -2,7 +2,7 @@ package org.entando.entando.aps.system.services.userprofile.api;
 
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
@@ -33,7 +33,7 @@ class ApiUserProfileInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiUserProfileInterface.getUserProfiles(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("User Profile type with code 'XXX' does not exist", error.getMessage());
@@ -46,7 +46,7 @@ class ApiUserProfileInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiUserProfileInterface.getUserProfile(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Profile of user 'foo' does not exist", error.getMessage());
@@ -59,7 +59,7 @@ class ApiUserProfileInterfaceTest {
         Mockito.when(userProfileManager.getProfile("admin")).thenReturn(new UserProfile());
         StringApiResponse response = apiUserProfileInterface.addUserProfile(jaxbUserProfile);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Profile of user 'admin' already exist", error.getMessage());
@@ -71,7 +71,7 @@ class ApiUserProfileInterfaceTest {
         Mockito.when(jaxbUserProfile.getTypeCode()).thenReturn("XXX");
         StringApiResponse response = apiUserProfileInterface.addUserProfile(jaxbUserProfile);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("User Profile type with code 'XXX' does not exist", error.getMessage());
@@ -83,7 +83,7 @@ class ApiUserProfileInterfaceTest {
         properties.setProperty("username", "foo");
         StringApiResponse response = apiUserProfileInterface.deleteUserProfile(properties);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Profile of user 'foo' does not exist", error.getMessage());

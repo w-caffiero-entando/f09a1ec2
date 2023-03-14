@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
@@ -101,7 +101,7 @@ public class ApiUserProfileInterface {
                         getProfileTypeDoesNotExistMessage(jaxbUserProfile.getTypeCode()), HttpStatus.CONFLICT);
             }
             IUserProfile userProfile = (IUserProfile) jaxbUserProfile.buildEntity(profilePrototype, null);
-            List<ApiError> errors = this.validate(userProfile);
+            List<LegacyApiError> errors = this.validate(userProfile);
             if (errors.size() > 0) {
                 response.addErrors(errors);
                 response.setResult(IResponseBuilder.FAILURE, null);
@@ -133,7 +133,7 @@ public class ApiUserProfileInterface {
                         getProfileTypeDoesNotExistMessage(jaxbUserProfile.getTypeCode()), HttpStatus.CONFLICT);
             }
             IUserProfile userProfile = (IUserProfile) jaxbUserProfile.buildEntity(profilePrototype, null);
-            List<ApiError> errors = this.validate(userProfile);
+            List<LegacyApiError> errors = this.validate(userProfile);
             if (errors.size() > 0) {
                 response.addErrors(errors);
                 response.setResult(IResponseBuilder.FAILURE, null);
@@ -151,8 +151,8 @@ public class ApiUserProfileInterface {
         return response;
     }
 
-    private List<ApiError> validate(IUserProfile userProfile) throws EntException {
-        List<ApiError> errors = new ArrayList<>();
+    private List<LegacyApiError> validate(IUserProfile userProfile) throws EntException {
+        List<LegacyApiError> errors = new ArrayList<>();
         try {
             List<FieldError> fieldErrors = userProfile.validate(this.getGroupManager(), this.getLangManager());
             if (null != fieldErrors) {
@@ -160,10 +160,10 @@ public class ApiUserProfileInterface {
                     FieldError fieldError = fieldErrors.get(i);
                     if (fieldError instanceof AttributeFieldError) {
                         AttributeFieldError attributeError = (AttributeFieldError) fieldError;
-                        errors.add(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+                        errors.add(new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
                                 attributeError.getFullMessage(), HttpStatus.CONFLICT));
                     } else {
-                        errors.add(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+                        errors.add(new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
                                 fieldError.getMessage(), HttpStatus.CONFLICT));
                     }
                 }

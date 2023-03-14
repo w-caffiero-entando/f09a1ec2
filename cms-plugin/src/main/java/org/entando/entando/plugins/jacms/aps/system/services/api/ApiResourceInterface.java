@@ -33,7 +33,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
@@ -301,7 +301,7 @@ public class ApiResourceInterface {
 	}
 	*/
 	private void addValidationError(String message, StringApiResponse response) {
-		ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR, message, HttpStatus.FORBIDDEN);
+		LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR, message, HttpStatus.FORBIDDEN);
 		response.addError(error);
 	}
 
@@ -388,7 +388,7 @@ public class ApiResourceInterface {
                     ContentRecordVO record = this.getContentManager().loadContentVO(reference);
                     if (null != record) {
                         found = true;
-                        response.addError(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+                        response.addError(new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
                                 "Resource " + id + " referenced to content " + record.getId() + " - '" + record.getDescription() + "'", HttpStatus.CONFLICT));
                     }
                 }

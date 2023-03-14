@@ -10,7 +10,7 @@ import com.agiletec.plugins.jacms.aps.system.services.contentmodel.ContentModel;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.IContentModelManager;
 import java.util.Map;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.plugins.jacms.aps.system.services.api.model.JAXBContentType;
 import org.junit.jupiter.api.Assertions;
@@ -49,7 +49,7 @@ class ApiContentTypeInterfaceTest {
         Mockito.when(contentManager.getEntityClass()).thenReturn(Content.class);
         StringApiResponse response = apiContentTypeInterface.updateContentType(jaxbContentType);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content model with id '999' does not exist", error.getMessage());
@@ -70,7 +70,7 @@ class ApiContentTypeInterfaceTest {
         Mockito.when(contentModelManager.getContentModel(999)).thenReturn(contentModel);
         StringApiResponse response = apiContentTypeInterface.updateContentType(jaxbContentType);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content model with id '999' is for contents of type 'BNR'", error.getMessage());
@@ -88,7 +88,7 @@ class ApiContentTypeInterfaceTest {
         Mockito.when(contentManager.getEntityClass()).thenReturn(Content.class);
         StringApiResponse response = apiContentTypeInterface.updateContentType(jaxbContentType);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("View Page with id 'viewPage' does not exist", error.getMessage());
@@ -112,7 +112,7 @@ class ApiContentTypeInterfaceTest {
         Mockito.when(pageModelManager.getPageModel("pageModel")).thenReturn(pageModel);
         StringApiResponse response = apiContentTypeInterface.updateContentType(jaxbContentType);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Main frame for Page with id 'viewPage' not present", error.getMessage());

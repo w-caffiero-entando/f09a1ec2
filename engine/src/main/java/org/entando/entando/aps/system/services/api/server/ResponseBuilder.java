@@ -26,7 +26,7 @@ import javax.servlet.ServletContext;
 import org.entando.entando.aps.system.services.api.IApiCatalogManager;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.AbstractApiResponse;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiMethodParameter;
@@ -81,7 +81,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
             if (method.getHttpMethod().equals(ApiMethod.HttpMethod.GET)) {
                 masterResult = this.invokeGetMethod(method, bean, null, parameters, true);
                 if (null == masterResult) {
-					ApiError error = new ApiError(IApiErrorCodes.API_INVALID_RESPONSE, "Invalid or null Response", HttpStatus.SERVICE_UNAVAILABLE);
+					LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_INVALID_RESPONSE, "Invalid or null Response", HttpStatus.SERVICE_UNAVAILABLE);
                     throw new ApiException(error);
                 }
             } else {
@@ -113,7 +113,7 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
             if (response == null) {
                 response = new StringApiResponse();
             }
-            ApiError error = new ApiError(IApiErrorCodes.API_METHOD_ERROR, message, HttpStatus.INTERNAL_SERVER_ERROR);
+            LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_METHOD_ERROR, message, HttpStatus.INTERNAL_SERVER_ERROR);
             response.addError(error);
             response.setResult(FAILURE, null);
         }
@@ -186,12 +186,12 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
             if (null == apiParameters || apiParameters.isEmpty()) {
                 return;
             }
-            List<ApiError> errors = new ArrayList<>();
+            List<LegacyApiError> errors = new ArrayList<>();
             for (ApiMethodParameter apiParam : apiParameters) {
                 String paramName = apiParam.getKey();
                 Object value = parameters.get(paramName);
                 if (apiParam.isRequired() && (null == value || value.toString().trim().length() == 0)) {
-                    errors.add(new ApiError(IApiErrorCodes.API_PARAMETER_REQUIRED, "Parameter '" + paramName + "' is required", HttpStatus.BAD_REQUEST));
+                    errors.add(new LegacyApiError(IApiErrorCodes.API_PARAMETER_REQUIRED, "Parameter '" + paramName + "' is required", HttpStatus.BAD_REQUEST));
                 }
             }
             if (!errors.isEmpty()) {
@@ -242,11 +242,11 @@ public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, Serv
 		try {
             api = this.getApiCatalogManager().getMethod(httpMethod, namespace, resourceName);
             if (null == api) {
-				ApiError error = new ApiError(IApiErrorCodes.API_INVALID, signature + " does not exists", HttpStatus.NOT_FOUND);
+				LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_INVALID, signature + " does not exists", HttpStatus.NOT_FOUND);
                 throw new ApiException(error);
             }
             if (!api.isActive()) {
-				ApiError error = new ApiError(IApiErrorCodes.API_INVALID, signature + " does not exists", HttpStatus.NOT_FOUND);
+				LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_INVALID, signature + " does not exists", HttpStatus.NOT_FOUND);
 				throw new ApiException(error);
             }
         } catch (ApiException ae) {

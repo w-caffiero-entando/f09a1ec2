@@ -4,7 +4,7 @@ import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class ApiPageModelInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiPageModelInterface.getPageModel(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Page template with code 'invalidModel' does not exist", error.getMessage());
@@ -46,7 +46,7 @@ class ApiPageModelInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiPageModelInterface.addPageModel(pageModel));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Page template with code existingModel already exists", error.getMessage());
@@ -59,7 +59,7 @@ class ApiPageModelInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiPageModelInterface.updatePageModel(pageModel));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Page template with code 'invalidModel' does not exist", error.getMessage());
@@ -72,7 +72,7 @@ class ApiPageModelInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiPageModelInterface.deletePageModel(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("PageModel with code 'invalidModel' does not exist", error.getMessage());

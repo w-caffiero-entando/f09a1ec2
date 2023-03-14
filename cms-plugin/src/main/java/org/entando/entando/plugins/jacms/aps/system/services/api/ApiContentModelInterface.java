@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringListApiResponse;
 import org.entando.entando.ent.exception.EntException;
@@ -40,7 +40,7 @@ public class ApiContentModelInterface extends AbstractCmsApiInterface {
 			String contentTypeParam = properties.getProperty("contentType");
 			String contentType = (null != contentTypeParam && contentTypeParam.trim().length() > 0) ? contentTypeParam.trim() : null;
 			if (null != contentType && null == this.getContentManager().getSmallContentTypesMap().get(contentType)) {
-				ApiError error = new ApiError(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Content Type " + contentType + " does not exist", HttpStatus.CONFLICT);
+				LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, "Content Type " + contentType + " does not exist", HttpStatus.CONFLICT);
 				response.addError(error);
 				contentType = null;
 			}

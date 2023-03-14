@@ -19,7 +19,7 @@ import org.entando.entando.aps.system.services.api.DefaultJsonTypesProvider;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.ObjectMapperConfiguration;
 import org.entando.entando.aps.system.services.api.Unmarshaller;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -195,7 +195,7 @@ class ApiRestServerTest {
         Mockito.when(request.getParameterNames()).thenReturn(Collections.emptyEnumeration());
         Mockito.when(request.getPathInfo()).thenReturn(".json");
 
-        ApiError error = new ApiError(IApiErrorCodes.API_INVALID_RESPONSE, "Invalid", HttpStatus.SERVICE_UNAVAILABLE);
+        LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_INVALID_RESPONSE, "Invalid", HttpStatus.SERVICE_UNAVAILABLE);
         Mockito.doThrow(new ApiException(error)).when(responseBuilder)
                 .extractApiMethod(Mockito.any(), Mockito.any(), Mockito.any());
 

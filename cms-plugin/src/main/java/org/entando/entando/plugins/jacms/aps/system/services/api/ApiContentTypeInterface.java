@@ -29,7 +29,7 @@ import java.util.Properties;
 import org.entando.entando.aps.system.common.entity.api.ApiEntityTypeInterface;
 import org.entando.entando.aps.system.common.entity.api.JAXBEntityType;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
@@ -127,7 +127,7 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
         if (null != viewPageCode) {
             IPage viewPage =  this.getPageManager().getOnlinePage(viewPageCode);
             if (null == viewPage) {
-                ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+                LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
                         "View Page with id '" + viewPageCode + "' does not exist", HttpStatus.CONFLICT);
                 response.addError(error);
                 return false;
@@ -136,7 +136,7 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
             final Frame[] configuration = pageModel.getConfiguration();
             final boolean mainFramePresent = Arrays.stream(configuration).anyMatch(Frame::isMainFrame);
             if (!mainFramePresent) {
-                ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+                LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
                         "Main frame for Page with id '" + viewPage.getCode() + "' not present", HttpStatus.CONFLICT);
                 response.addError(error);
                 return false;
@@ -152,13 +152,13 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
 		}
         ContentModel contentModel = this.getContentModelManager().getContentModel(modelId);
         if (null == contentModel) {
-            ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+            LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
 					"Content model with id '" + modelId + "' does not exist", HttpStatus.CONFLICT);
             response.addError(error);
             return false;
         }
         if (!contentType.getTypeCode().equals(contentModel.getContentType())) {
-            ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+            LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
 					"Content model with id '" + modelId + "' is for contents of type '" + contentModel.getContentType() + "'", HttpStatus.CONFLICT);
             response.addError(error);
             return false;

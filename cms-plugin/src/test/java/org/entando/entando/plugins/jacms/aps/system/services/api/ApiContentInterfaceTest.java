@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.plugins.jacms.aps.system.services.api.model.CmsApiResponse;
@@ -53,7 +53,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.getContents(new Properties()));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content Type 'null' does not exist", error.getMessage());
@@ -67,7 +67,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.getContent(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Null content by id 'DoesNotExists'", error.getMessage());
@@ -84,7 +84,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.getContent(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.FORBIDDEN, error.getStatus());
         Assertions.assertEquals("Required content 'NWS3' is not allowed", error.getMessage());
@@ -101,7 +101,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.getContentToHtml(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid 'default' system model for content type 'null' - Contact the administrators",
@@ -119,7 +119,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.getContentToHtml(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid 'list' system model for content type 'null' - Contact the administrators",
@@ -137,7 +137,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.getContentToHtml(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("The model id must be an integer or 'default' or 'list' - 'NaN'", error.getMessage());
@@ -154,7 +154,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.getContentToHtml(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("The content model with id '42' does not exist", error.getMessage());
@@ -175,7 +175,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.getContentToHtml(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("The content model with id '42' does not match with content of type 'typeCode1'",
@@ -187,7 +187,7 @@ class ApiContentInterfaceTest {
         JAXBContent jaxbContent = new JAXBContent();
         CmsApiResponse cmsApiResponse = apiContentInterface.addContent(jaxbContent, new Properties());
         Assertions.assertEquals(1, cmsApiResponse.getErrors().size());
-        ApiError error = cmsApiResponse.getErrors().get(0);
+        LegacyApiError error = cmsApiResponse.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content type with code 'null' does not exist", error.getMessage());
@@ -200,7 +200,7 @@ class ApiContentInterfaceTest {
         Mockito.when(contentManager.getEntityPrototype(Mockito.any())).thenReturn(new Content());
         CmsApiResponse cmsApiResponse = apiContentInterface.addContent(jaxbContent, new Properties());
         Assertions.assertEquals(1, cmsApiResponse.getErrors().size());
-        ApiError error = cmsApiResponse.getErrors().get(0);
+        LegacyApiError error = cmsApiResponse.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("You cannot specify Content Id", error.getMessage());
@@ -211,7 +211,7 @@ class ApiContentInterfaceTest {
         JAXBContent jaxbContent = new JAXBContent();
         CmsApiResponse cmsApiResponse = apiContentInterface.updateContent(jaxbContent, new Properties());
         Assertions.assertEquals(1, cmsApiResponse.getErrors().size());
-        ApiError error = cmsApiResponse.getErrors().get(0);
+        LegacyApiError error = cmsApiResponse.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content type with code 'null' does not exist", error.getMessage());
@@ -223,7 +223,7 @@ class ApiContentInterfaceTest {
         Mockito.when(contentManager.getEntityPrototype(Mockito.any())).thenReturn(new Content());
         CmsApiResponse cmsApiResponse = apiContentInterface.updateContent(jaxbContent, new Properties());
         Assertions.assertEquals(1, cmsApiResponse.getErrors().size());
-        ApiError error = cmsApiResponse.getErrors().get(0);
+        LegacyApiError error = cmsApiResponse.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content with code 'null' does not exist", error.getMessage());
@@ -242,7 +242,7 @@ class ApiContentInterfaceTest {
         Mockito.when(contentManager.getEntityPrototype(Mockito.any())).thenReturn(new Content());
         CmsApiResponse cmsApiResponse = apiContentInterface.updateContent(spyJaxbContent, new Properties());
         Assertions.assertEquals(1, cmsApiResponse.getErrors().size());
-        ApiError error = cmsApiResponse.getErrors().get(0);
+        LegacyApiError error = cmsApiResponse.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid main group free not equal to master admin", error.getMessage());
@@ -263,7 +263,7 @@ class ApiContentInterfaceTest {
         properties.put(SystemConstants.API_USER_PARAMETER, new User());
         CmsApiResponse cmsApiResponse = apiContentInterface.updateContent(spyJaxbContent, properties);
         Assertions.assertEquals(1, cmsApiResponse.getErrors().size());
-        ApiError error = cmsApiResponse.getErrors().get(0);
+        LegacyApiError error = cmsApiResponse.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.FORBIDDEN, error.getStatus());
         Assertions.assertEquals("Content groups makes the new content not allowed for user null", error.getMessage());
@@ -286,7 +286,7 @@ class ApiContentInterfaceTest {
                 Mockito.any(UserDetails.class), Mockito.any(Content.class))).thenReturn(true);
         CmsApiResponse cmsApiResponse = apiContentInterface.updateContent(spyJaxbContent, properties);
         Assertions.assertEquals(1, cmsApiResponse.getErrors().size());
-        ApiError error = cmsApiResponse.getErrors().get(0);
+        LegacyApiError error = cmsApiResponse.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid main group - invalidGroup", error.getMessage());
@@ -298,7 +298,7 @@ class ApiContentInterfaceTest {
         properties.setProperty("id", "doesNotExist");
         StringApiResponse response = apiContentInterface.deleteContent(properties);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content with code 'doesNotExist' does not exist", error.getMessage());
@@ -312,7 +312,7 @@ class ApiContentInterfaceTest {
         Mockito.when(contentManager.loadContent("NWS3", false)).thenReturn(new Content());
         StringApiResponse response = apiContentInterface.deleteContent(properties);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.FORBIDDEN, error.getStatus());
         Assertions.assertEquals("Content groups makes the new content not allowed for user null", error.getMessage());
@@ -330,7 +330,7 @@ class ApiContentInterfaceTest {
         Mockito.when(contentManager.loadContentVO("REF")).thenReturn(new ContentRecordVO());
         StringApiResponse response = apiContentInterface.deleteContent(properties);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content NWS3 referenced to content null - 'null'", error.getMessage());
@@ -343,7 +343,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.updateContentText(jaxbContentAttribute));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content with code 'doesNotExist' does not exist", error.getMessage());
@@ -357,7 +357,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.updateContentText(jaxbContentAttribute));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content Attribute with code 'null' does not exist into content NWS3",
@@ -377,7 +377,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.updateContentText(jaxbContentAttribute));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content Attribute with code 'number' isn't a Text Attribute", error.getMessage());
@@ -396,7 +396,7 @@ class ApiContentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiContentInterface.updateContentText(jaxbContentAttribute));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("LangCode or value is Empty", error.getMessage());

@@ -18,7 +18,7 @@ import com.agiletec.aps.util.ApsWebApplicationUtils;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -112,7 +112,7 @@ public class ApiRestStatusServer {
                 append("' Namespace '").append(namespace).append("' Resource '").append(resourceName).append("'");
         log.error("Error building api response  - {}", buffer, t);
         StringApiResponse response = new StringApiResponse();
-        ApiError error = new ApiError(IApiErrorCodes.SERVER_ERROR, "Error building response - " + buffer,
+        LegacyApiError error = new LegacyApiError(IApiErrorCodes.SERVER_ERROR, "Error building response - " + buffer,
                 HttpStatus.INTERNAL_SERVER_ERROR);
         response.addError(error);
         response.setResult(IResponseBuilder.FAILURE, null);

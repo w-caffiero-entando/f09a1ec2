@@ -3,7 +3,7 @@ package org.entando.entando.aps.system.services.storage.api;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.storage.BasicFileAttributeView;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
@@ -33,7 +33,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.getListDirectory(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("The path '\"' does not exists", error.getMessage());
@@ -46,7 +46,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.getFile(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("The path 'foo' does not exist", error.getMessage());
@@ -59,7 +59,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.addResource(storageResource, new Properties()));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid parent directory", error.getMessage());
@@ -75,7 +75,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.addResource(storageResource, new Properties()));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid parent directory", error.getMessage());
@@ -92,7 +92,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.addResource(storageResource, new Properties()));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("File already present", error.getMessage());
@@ -109,7 +109,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.addResource(storageResource, new Properties()));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid dir name", error.getMessage());
@@ -125,7 +125,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.addResource(storageResource, new Properties()));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("A file cannot be empty", error.getMessage());
@@ -142,7 +142,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.addResource(storageResource, new Properties()));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid file name", error.getMessage());
@@ -154,7 +154,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.deleteResource(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid parent directory", error.getMessage());
@@ -170,7 +170,7 @@ class LocalStorageManagerInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> localStorageManagerInterface.deleteResource(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("The file does not exists", error.getMessage());

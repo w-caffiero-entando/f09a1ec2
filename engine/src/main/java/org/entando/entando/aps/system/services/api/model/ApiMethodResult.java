@@ -30,25 +30,25 @@ public final class ApiMethodResult implements Serializable {
     }
     
     public void addError(String errorCode, String description) {
-        ApiError error = new ApiError(errorCode, description);
+        LegacyApiError error = new LegacyApiError(errorCode, description);
         this.addError(error);
     }
     
-    public void addError(ApiError error) {
+    public void addError(LegacyApiError error) {
         if (null == this.getErrors()) {
-            this.setErrors(new ArrayList<ApiError>());
+            this.setErrors(new ArrayList<LegacyApiError>());
         }
         this.getErrors().add(error);
     }
     
-    public List<ApiError> getErrors() {
+    public List<LegacyApiError> getErrors() {
         return _errors;
     }
-    public void setErrors(List<ApiError> errors) {
+    public void setErrors(List<LegacyApiError> errors) {
         this._errors = errors;
     }
     
     private Object _result;
-    private List<ApiError> _errors;
+    private List<LegacyApiError> _errors;
     
 }

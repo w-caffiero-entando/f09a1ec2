@@ -6,7 +6,7 @@ import com.agiletec.plugins.jacms.aps.system.services.contentmodel.IContentModel
 import java.util.HashMap;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringListApiResponse;
 import org.junit.jupiter.api.Assertions;
@@ -36,7 +36,7 @@ class ApiContentModelInterfaceTest {
         Mockito.when(contentManager.getSmallContentTypesMap()).thenReturn(new HashMap<>());
         StringListApiResponse response = apiContentModelInterface.getModels(properties);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content Type XXX does not exist", error.getMessage());
@@ -49,7 +49,7 @@ class ApiContentModelInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiContentModelInterface.getModel(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid number format for 'id' parameter - 'NaN'", error.getMessage());
@@ -62,7 +62,7 @@ class ApiContentModelInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiContentModelInterface.getModel(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Model with id '42' does not exist", error.getMessage());
@@ -75,7 +75,7 @@ class ApiContentModelInterfaceTest {
         Mockito.when(contentModelManager.getContentModel(42)).thenReturn(model);
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiContentModelInterface.addModel(model));
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Model with id 42 already exists", error.getMessage());
@@ -87,7 +87,7 @@ class ApiContentModelInterfaceTest {
         model.setId(42);
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiContentModelInterface.addModel(model));
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content Type null does not exist", error.getMessage());
@@ -99,7 +99,7 @@ class ApiContentModelInterfaceTest {
         model.setId(42);
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiContentModelInterface.updateModel(model));
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Model with id 42 does not exist", error.getMessage());
@@ -116,7 +116,7 @@ class ApiContentModelInterfaceTest {
         updatedModel.setId(42);
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiContentModelInterface.updateModel(updatedModel));
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Content Type code can't be changed - it has to be 'AAA'", error.getMessage());
@@ -129,7 +129,7 @@ class ApiContentModelInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiContentModelInterface.deleteModel(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid number format for 'id' parameter - 'NaN'", error.getMessage());
@@ -142,7 +142,7 @@ class ApiContentModelInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiContentModelInterface.deleteModel(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Model with id '42' does not exist", error.getMessage());

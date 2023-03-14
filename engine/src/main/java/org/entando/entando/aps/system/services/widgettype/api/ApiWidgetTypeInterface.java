@@ -22,7 +22,7 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.IApiExportable;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.LinkedListItem;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -221,7 +221,7 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 				boolean isInternalServlet = this.isInternalServletWidget(type.getParentType().getCode());
 				if (!isInternalServlet && (null != jaxbWidgetType.getFragments() && jaxbWidgetType.getFragments().size() > 0)) {
 					if (null != response) {
-						ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+						LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
 								"Fragments mustn't be updated on a 'not internal servlet' logic widget type");
 						response.addError(error);
 					}
@@ -234,7 +234,7 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 							GuiFragment existingFragment = this.getGuiFragmentManager().getGuiFragment(fragment.getCode());
 							if (null != existingFragment) {
 								if (StringUtils.isBlank(existingFragment.getDefaultGui()) && StringUtils.isBlank(jaxbWidgetType.getGui())) {
-									ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+									LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
 											"one between A and B must be valued on fragment '" + existingFragment.getCode() + "'");
 									response.addError(error);
 									continue;
@@ -243,7 +243,7 @@ public class ApiWidgetTypeInterface implements IApiExportable {
 								updatedFragment.add(existingFragment);
 								clone.setGui(jaxbGuiFragment.getGui());
 							} else {
-								ApiError error = new ApiError(IApiErrorCodes.API_VALIDATION_ERROR, "Fragment '" + fragment.getCode()
+								LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR, "Fragment '" + fragment.getCode()
 										+ "' does not exists");
 								response.addError(error);
 							}

@@ -4,7 +4,7 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.user.User;
 import java.util.Properties;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiService;
 import org.junit.jupiter.api.Assertions;
@@ -39,7 +39,7 @@ class ApiServiceInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiServiceInterface.getService(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_AUTHENTICATION_REQUIRED, error.getCode());
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, error.getStatus());
         Assertions.assertEquals("Authentication is mandatory for service 'myService'", error.getMessage());
@@ -59,7 +59,7 @@ class ApiServiceInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiServiceInterface.getService(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_AUTHORIZATION_REQUIRED, error.getCode());
         Assertions.assertEquals(HttpStatus.FORBIDDEN, error.getStatus());
         Assertions.assertEquals("Permission denied for service 'myService'", error.getMessage());

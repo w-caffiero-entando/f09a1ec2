@@ -28,7 +28,7 @@ import org.entando.entando.aps.system.init.model.InvalidPostProcessResultExcepti
 import org.entando.entando.aps.system.init.model.SelfRestCallPostProcess;
 import org.entando.entando.aps.system.services.api.Unmarshaller;
 import org.entando.entando.aps.system.services.api.model.AbstractApiResponse;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
@@ -187,7 +187,7 @@ public class SelfRestCaller implements IPostProcessor, BeanFactoryAware {
 			AbstractApiResponse mainResponse = (AbstractApiResponse) responseObject;
 			if (null != mainResponse.getErrors()) {
 				for (int i = 0; i < mainResponse.getErrors().size(); i++) {
-					ApiError error = mainResponse.getErrors().get(i);
+					LegacyApiError error = mainResponse.getErrors().get(i);
 					HttpStatus errorStatus = error.getStatus();
 					if (null != errorStatus && status.value() < errorStatus.value()) {
 						status = errorStatus;

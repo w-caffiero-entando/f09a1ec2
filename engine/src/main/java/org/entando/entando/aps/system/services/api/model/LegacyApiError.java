@@ -24,21 +24,21 @@ import org.springframework.http.HttpStatus;
  */
 @XmlRootElement(name = "error")
 @XmlType(propOrder = {"code", "message"})
-public class ApiError implements Serializable {
+public class LegacyApiError implements Serializable {
 
     private String code;
     private String message;
     private HttpStatus status;
 
-    public ApiError() {
+    public LegacyApiError() {
     }
 
-    public ApiError(String code, String message) {
+    public LegacyApiError(String code, String message) {
         this.setCode(code);
         this.setMessage(message);
     }
 
-    public ApiError(String code, String message, HttpStatus status) {
+    public LegacyApiError(String code, String message, HttpStatus status) {
         this.setCode(code);
         this.setStatus(status);
         this.setMessage(message);

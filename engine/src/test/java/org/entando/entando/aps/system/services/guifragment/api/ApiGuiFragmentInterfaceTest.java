@@ -2,7 +2,7 @@ package org.entando.entando.aps.system.services.guifragment.api;
 
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
@@ -32,7 +32,7 @@ class ApiGuiFragmentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiGuiFragmentInterface.getGuiFragment(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("GuiFragment with code 'doesNotExist' does not exist", error.getMessage());
@@ -46,7 +46,7 @@ class ApiGuiFragmentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiGuiFragmentInterface.addGuiFragment(guiFragment));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("GuiFragment with code existingFragment already exists", error.getMessage());
@@ -59,7 +59,7 @@ class ApiGuiFragmentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiGuiFragmentInterface.addGuiFragment(guiFragment));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("one between A and B must be valued", error.getMessage());
@@ -72,7 +72,7 @@ class ApiGuiFragmentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiGuiFragmentInterface.updateGuiFragment(guiFragment));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("GuiFragment with code 'doesNotExist' does not exist", error.getMessage());
@@ -86,7 +86,7 @@ class ApiGuiFragmentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiGuiFragmentInterface.updateGuiFragment(guiFragment));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("one between A and B must be valued", error.getMessage());
@@ -99,7 +99,7 @@ class ApiGuiFragmentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiGuiFragmentInterface.deleteGuiFragment(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("GuiFragment with code 'doesNotExist' does not exist", error.getMessage());
@@ -115,7 +115,7 @@ class ApiGuiFragmentInterfaceTest {
         ApiException exception = Assertions.assertThrows(ApiException.class,
                 () -> apiGuiFragmentInterface.deleteGuiFragment(properties));
         Assertions.assertEquals(1, exception.getErrors().size());
-        ApiError error = exception.getErrors().get(0);
+        LegacyApiError error = exception.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("GuiFragment with code 'lockedFragment' is locked", error.getMessage());

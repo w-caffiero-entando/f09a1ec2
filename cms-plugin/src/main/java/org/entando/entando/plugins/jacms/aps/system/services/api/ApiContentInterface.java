@@ -20,7 +20,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
@@ -351,7 +351,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
                         "Content groups makes the new content not allowed for user " + user.getUsername(),
                         HttpStatus.FORBIDDEN);
             }
-            List<ApiError> errors = this.validate(content);
+            List<LegacyApiError> errors = this.validate(content);
             if (errors.size() > 0) {
                 response.addErrors(errors);
                 response.setResult(IResponseBuilder.FAILURE, null);
@@ -380,20 +380,20 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
         return response;
     }
 
-    private List<ApiError> validate(Content content) throws EntException {
-        List<ApiError> errors = new ArrayList<>();
+    private List<LegacyApiError> validate(Content content) throws EntException {
+        List<LegacyApiError> errors = new ArrayList<>();
         try {
             if (null == content.getMainGroup()) {
-                errors.add(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR, "Main group null", HttpStatus.CONFLICT));
+                errors.add(new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR, "Main group null", HttpStatus.CONFLICT));
             }
             List<FieldError> fieldErrors = content.validate(this.getGroupManager(), this.getLangManager());
             if (null != fieldErrors) {
                 for (FieldError fieldError : fieldErrors) {
                     if (fieldError instanceof AttributeFieldError) {
                         AttributeFieldError attributeError = (AttributeFieldError) fieldError;
-                        errors.add(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR, attributeError.getFullMessage(), HttpStatus.CONFLICT));
+                        errors.add(new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR, attributeError.getFullMessage(), HttpStatus.CONFLICT));
                     } else {
-                        errors.add(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR, fieldError.getMessage(), HttpStatus.CONFLICT));
+                        errors.add(new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR, fieldError.getMessage(), HttpStatus.CONFLICT));
                     }
                 }
             }
@@ -429,7 +429,7 @@ public class ApiContentInterface extends AbstractCmsApiInterface {
                     ContentRecordVO record = this.getContentManager().loadContentVO(reference);
                     if (null != record) {
                         found = true;
-                        response.addError(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+                        response.addError(new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
                                 "Content " + id + " referenced to content " + record.getId() + " - '" + record.getDescription() + "'",
                                 HttpStatus.CONFLICT));
                     }

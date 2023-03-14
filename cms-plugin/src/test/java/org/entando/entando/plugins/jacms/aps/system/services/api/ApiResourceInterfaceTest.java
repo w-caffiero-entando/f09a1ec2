@@ -10,7 +10,7 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResour
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.plugins.jacms.aps.system.services.api.model.JAXBResource;
@@ -43,7 +43,7 @@ class ApiResourceInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiResourceInterface.getResource(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Null resource by id 'XXX'", error.getMessage());
@@ -62,7 +62,7 @@ class ApiResourceInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiResourceInterface.getResource(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.FORBIDDEN, error.getStatus());
         Assertions.assertEquals("Required resource 'XXX' is not allowed", error.getMessage());
@@ -98,7 +98,7 @@ class ApiResourceInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiResourceInterface.addImage(jaxbResource, properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("The resourceId can contain only alphabetic characters", error.getMessage());
@@ -111,7 +111,7 @@ class ApiResourceInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiResourceInterface.updateAttachment(jaxbResource, new Properties()));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid resource type - 'Image'", error.getMessage());
@@ -127,7 +127,7 @@ class ApiResourceInterfaceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> apiResourceInterface.deleteImage(properties));
         Assertions.assertEquals(1, apiException.getErrors().size());
-        ApiError error = apiException.getErrors().get(0);
+        LegacyApiError error = apiException.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Invalid resource type - 'Attach'", error.getMessage());
@@ -139,7 +139,7 @@ class ApiResourceInterfaceTest {
         properties.setProperty("id", "XXX");
         StringApiResponse response = apiResourceInterface.deleteAttachment(properties);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.CONFLICT, error.getStatus());
         Assertions.assertEquals("Resource with code 'XXX' does not exist", error.getMessage());
@@ -156,7 +156,7 @@ class ApiResourceInterfaceTest {
         Mockito.when(resourceManager.loadResource("myFile")).thenReturn(attachResource);
         StringApiResponse response = apiResourceInterface.deleteAttachment(properties);
         Assertions.assertEquals(1, response.getErrors().size());
-        ApiError error = response.getErrors().get(0);
+        LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
         Assertions.assertEquals(HttpStatus.FORBIDDEN, error.getStatus());
         Assertions.assertEquals("Resource not allowed for user 'null' - resource group 'admin'", error.getMessage());

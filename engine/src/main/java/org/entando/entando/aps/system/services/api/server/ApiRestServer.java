@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.Unmarshaller;
 import org.entando.entando.aps.system.services.api.model.AbstractApiResponse;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -344,7 +344,7 @@ public class ApiRestServer {
         if (t instanceof ApiException) {
             response.addErrors(((ApiException) t).getErrors());
         } else {
-            ApiError error = new ApiError(IApiErrorCodes.SERVER_ERROR, "Error building response - " + message, HttpStatus.INTERNAL_SERVER_ERROR);
+            LegacyApiError error = new LegacyApiError(IApiErrorCodes.SERVER_ERROR, "Error building response - " + message, HttpStatus.INTERNAL_SERVER_ERROR);
             response.addError(error);
         }
         response.setResult(IResponseBuilder.FAILURE, null);
@@ -403,10 +403,10 @@ public class ApiRestServer {
         }
     }
 
-    protected HttpStatus extractResponseStatus(List<ApiError> errors) {
+    protected HttpStatus extractResponseStatus(List<LegacyApiError> errors) {
         HttpStatus status = HttpStatus.OK;
         if (null != errors) {
-            for (ApiError error : errors) {
+            for (LegacyApiError error : errors) {
                 HttpStatus errorStatus = error.getStatus();
                 if (null != errorStatus && status.value() < errorStatus.value()) {
                     status = errorStatus;

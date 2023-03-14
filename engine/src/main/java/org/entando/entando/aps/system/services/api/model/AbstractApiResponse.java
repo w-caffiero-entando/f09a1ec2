@@ -36,17 +36,17 @@ public abstract class AbstractApiResponse implements Serializable {
     
     @XmlElement(name = "error", required = true)
     @XmlElementWrapper(name = "errors")
-    public List<ApiError> getErrors() {
+    public List<LegacyApiError> getErrors() {
         return this._errors;
     }
     
-    public void addError(ApiError error) {
+    public void addError(LegacyApiError error) {
         if (null != error) {
 			this._errors.add(error);
         }
     }
     
-    public void addErrors(List<ApiError> errors) {
+    public void addErrors(List<LegacyApiError> errors) {
         if (null == errors) {
             return;
         }
@@ -60,7 +60,7 @@ public abstract class AbstractApiResponse implements Serializable {
         this._result = result;
     }
     
-    private List<ApiError> _errors = new ArrayList<ApiError>();
+    private List<LegacyApiError> _errors = new ArrayList<LegacyApiError>();
     private Object _result;
 	
 }
