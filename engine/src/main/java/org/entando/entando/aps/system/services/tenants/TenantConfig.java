@@ -27,6 +27,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 public class TenantConfig {
 
     private static final String TENANT_CODE_PROPERTY = "tenantCode";
+    private static final String FQDNS_PROPERTY = "fqdns";
     private static final String KC_ENABLED_PROPERTY = "kcEnabled";
     private static final String KC_AUTH_URL_PROPERTY = "kcAuthUrl";
     private static final String KC_REALM_PROPERTY = "kcRealm";
@@ -39,11 +40,11 @@ public class TenantConfig {
     private static final String DB_URL_PROPERTY = "dbUrl";
     private static final String DB_USERNAME_PROPERTY = "dbUsername";
     private static final String DB_PASSWORD_PROPERTY = "dbPassword";
-    private static final String FQDNS_PROPERTY = "fqdns";
     private static final String DB_MAX_TOTAL_PROPERTY = "dbMaxTotal";
     private static final String DB_MAX_IDLE_PROPERTY = "dbMaxIdle";
     private static final String DB_MAX_WAIT_MS_PROPERTY = "dbMaxWaitMillis";
     private static final String DB_INITIAL_SIZE_PROPERTY = "dbInitialSize";
+    private static final String DB_MIGRATION_STRATEGY = "dbMigrationStrategy";
     private static final int DEFAULT_DB_MAX_TOTAL = 10;
     private static final int DEFAULT_DB_MAX_IDLE = 2;
     private static final int DEFAULT_DB_MAX_WAIT_MS = 20000;
@@ -120,6 +121,10 @@ public class TenantConfig {
 
     public String getDbPassword() {
         return configs.get(DB_PASSWORD_PROPERTY);
+    }
+
+    public Optional<String> getDbMigrationStrategy() {
+        return this.getProperty(DB_MIGRATION_STRATEGY);
     }
 
     public List<String> getFqdns() {

@@ -16,8 +16,6 @@ package org.entando.entando.aps.system.init;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.aps.system.init.cache.IInitializerManagerCacheWrapper;
 import org.entando.entando.aps.system.init.model.Component;
@@ -93,7 +91,7 @@ public class InitializerManager extends AbstractInitializerManager implements II
             throw new EntException(message, e);
         }
     }
-
+    
     public void init() throws Exception {
         SystemInstallationReport report = null;
         try {
@@ -195,9 +193,7 @@ public class InitializerManager extends AbstractInitializerManager implements II
             return;
         }
         try {
-            InstallationReportDAO dao = new InstallationReportDAO();
-            DataSource dataSource = (DataSource) this.getBeanFactory().getBean("portDataSource");
-            dao.setDataSource(dataSource);
+            InstallationReportDAO dao = this.createReportDAO();
             dao.saveConfigItem(report.toXml(), this.getConfigVersion());
             this.getCacheWrapper().setCurrentReport(report);
         } catch (Throwable t) {

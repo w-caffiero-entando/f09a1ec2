@@ -33,11 +33,7 @@ public abstract class AbstractInitializerManager implements BeanFactoryAware {
 	protected SystemInstallationReport extractReport() throws EntException {
 		SystemInstallationReport report = null;
 		try {
-			InstallationReportDAO dao = new InstallationReportDAO();
-			ITenantManager tenantManager = this.getBeanFactory().getBean(ITenantManager.class);
-			dao.setTenantManager(tenantManager);
-			DataSource dataSource = (DataSource) this.getBeanFactory().getBean("portDataSource");
-			dao.setDataSource(dataSource);
+			InstallationReportDAO dao = this.createReportDAO();
 			report = dao.loadReport(this.getConfigVersion());
 		} catch (Throwable t) {
 			_logger.error("error Error extracting report", t);
@@ -45,6 +41,15 @@ public abstract class AbstractInitializerManager implements BeanFactoryAware {
 		}
 		return report;
 	}
+    
+    protected InstallationReportDAO createReportDAO() {
+        InstallationReportDAO dao = new InstallationReportDAO();
+        ITenantManager tenantManager = this.getBeanFactory().getBean(ITenantManager.class);
+        dao.setTenantManager(tenantManager);
+        DataSource dataSource = (DataSource) this.getBeanFactory().getBean("portDataSource");
+        dao.setDataSource(dataSource);
+        return dao;
+    }
 	
 	protected String getConfigVersion() {
 		return _configVersion;

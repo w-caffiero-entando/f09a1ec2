@@ -14,6 +14,7 @@
 package org.entando.entando.aps.system.init;
 
 import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.aps.util.DateConverter;
 import com.agiletec.aps.util.FileTextReader;
@@ -30,11 +31,13 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -62,11 +65,14 @@ import org.entando.entando.aps.system.init.model.SystemInstallationReport.Status
 import org.entando.entando.aps.system.init.util.TableDataUtils;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.aps.system.services.storage.StorageManagerUtil;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.ServletContextAware;
 
@@ -93,27 +99,36 @@ public class DatabaseManager extends AbstractInitializerManager
     private int lockFallbackMinutes;
 
     private ServletContext servletContext;
+    private ITenantManager tenantManager;
 
     public void init() {
-        logger.debug("{} ready", this.getClass().getName());
+        logger.debug("DatabaseManager ready");
     }
 
     @Override
-    public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) throws Exception {
+    public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy defaultMigrationStrategy) throws Exception {
         String lastLocalBackupFolder = null;
-        migrationStrategy = (null == migrationStrategy) ? DatabaseMigrationStrategy.DISABLED : migrationStrategy;
+
+        DatabaseMigrationStrategy defaultComputedStrategy = Optional.ofNullable(defaultMigrationStrategy).orElse(DatabaseMigrationStrategy.DISABLED);
+        // compute strategy
+        DatabaseMigrationStrategy strategy = getTenantMigrationStrategy().orElse(defaultComputedStrategy);
+
+        if (DatabaseMigrationStrategy.SKIP.equals(strategy)) {
+            Optional<String> tenantCodeOp = ApsTenantApplicationUtils.getTenant();
+            logger.warn(String.format("Database Migration Strategy, Tenant '%s', SKIPPED", tenantCodeOp.orElse("*primary*")));
+            return report;
+        }
         if (null == report) {
             report = SystemInstallationReport.getInstance();
-            lastLocalBackupFolder = checkRestore(report, migrationStrategy);
+            lastLocalBackupFolder = checkRestore(report, strategy);
         }
 
         // Check if we are dealing with an old database version (not Liquibase compliant - Entando <= 6.3.2)
         legacyDatabaseCheck();
 
         try {
-            initComponents(report, migrationStrategy);
-            if (DatabaseMigrationStrategy.AUTO.equals(migrationStrategy) && report.getStatus()
-                    .equals(Status.RESTORE)) {
+            initComponents(report, strategy);
+            if (DatabaseMigrationStrategy.AUTO.equals(strategy) && Status.RESTORE.equals(report.getStatus())) {
                 //ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH:MI:SS.FF'
                 if (null != lastLocalBackupFolder) {
                     this.restoreBackup(lastLocalBackupFolder);
@@ -133,6 +148,23 @@ public class DatabaseManager extends AbstractInitializerManager
             }
         }
         return report;
+    }
+    
+    private Optional<DatabaseMigrationStrategy> getTenantMigrationStrategy() {
+        return ApsTenantApplicationUtils.getTenant().map(this::composeTenantStrategy);
+    }
+
+    private DatabaseMigrationStrategy composeTenantStrategy(String tenantCode) {
+        try {
+            return getTenantManager().getConfig(tenantCode)
+                .flatMap(TenantConfig::getDbMigrationStrategy)
+                .map(s -> Enum.valueOf(DatabaseMigrationStrategy.class, s.toUpperCase()))
+                .orElse(DatabaseMigrationStrategy.SKIP);
+
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Migration Strategy, Tenant '{}', Invalid value - Allowed values skip|disabled|auto|generate_sql", tenantCode);
+            return DatabaseMigrationStrategy.SKIP;
+        }
     }
 
     private String checkRestore(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) {
@@ -170,20 +202,20 @@ public class DatabaseManager extends AbstractInitializerManager
     }
 
     private void legacyDatabaseCheck() throws DatabaseMigrationException, SQLException {
-
-        for (DataSource dataSource : defaultDataSources) {
-
+        List<DataSource> dss = ApsTenantApplicationUtils.getTenant()
+                                .map(getTenantManager()::getDatasource)
+                                .map(ds -> Arrays.asList(ds))
+                                .orElse(this.defaultDataSources);
+        for (DataSource dataSource : dss) {
             Connection connection = null;
             ResultSet rs = null;
             try {
                 connection = dataSource.getConnection();
                 final DatabaseMetaData databaseMetaData = connection.getMetaData();
-
                 // Liquibase tables are relevant only if related to portdb/servdb schema/catalog, we are not interested in others.
                 // Each DB vendor has a different objects hierarchy so we can't check only for schema or catalog
                 rs = databaseMetaData.getTables(connection.getCatalog(), connection.getSchema(), null,
                         new String[]{"TABLE"});
-
                 boolean liquibaseChangelogTableFound = false;
                 int tablesCount = 0;
                 while (rs.next()) {
@@ -193,7 +225,6 @@ public class DatabaseManager extends AbstractInitializerManager
                     }
                     tablesCount++;
                 }
-
                 // If we have some tables in the DB but Liquibase changelog table is not found we are running on a legacy DB
                 if (!liquibaseChangelogTableFound && tablesCount > 0) {
                     throw new DatabaseMigrationException(
@@ -229,7 +260,7 @@ public class DatabaseManager extends AbstractInitializerManager
                 String changeLogFile = (null != componentConfiguration.getLiquibaseChangeSets()) ? componentConfiguration.getLiquibaseChangeSets().get(dataSourceName) : null;
                 if (null != changeLogFile) {
                     liquibaseReport.getDatabaseStatus().put(dataSourceName, Status.INCOMPLETE);
-                    List<ChangeSetStatus> changeSetToExecute = this.executeLiquibaseUpdate(report.getCreation(), 
+                    List<ChangeSetStatus> changeSetToExecute = this.executeLiquibaseUpdate(report.getCreation(),
                             componentConfiguration.getCode(), changeLogFile, dataSourceName, report.getStatus(), migrationStrategy);
                     pendingChangeSet.addAll(changeSetToExecute);
                     ApsSystemUtils.directStdoutTrace("|   ( ok )  " + dataSourceName);
@@ -260,7 +291,7 @@ public class DatabaseManager extends AbstractInitializerManager
         Liquibase liquibase = null;
         Writer writer = null;
         try {
-            DataSource dataSource = (DataSource) this.getBeanFactory().getBean(dataSourceName);
+            DataSource dataSource = this.fetchFromTenantOrGetDefaultByName(dataSourceName);
             connection = dataSource.getConnection();
             JdbcConnection liquibaseConnection = new JdbcConnection(connection);
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(liquibaseConnection);
@@ -301,6 +332,12 @@ public class DatabaseManager extends AbstractInitializerManager
             }
         }
         return changeSetToExecute;
+    }
+
+    private DataSource fetchFromTenantOrGetDefaultByName(String dataSourceName) {
+        return ApsTenantApplicationUtils.getTenant()
+					.map(tenantCode -> this.getTenantManager().getDatasource(tenantCode))
+					.orElse((DataSource) this.getBeanFactory().getBean(dataSourceName));
     }
 
     /**
@@ -352,7 +389,7 @@ public class DatabaseManager extends AbstractInitializerManager
                 return;
             }
             for (String dataSourceName : dataSourceNames) {
-                DataSource dataSource = (DataSource) this.getBeanFactory().getBean(dataSourceName);
+                DataSource dataSource = this.fetchFromTenantOrGetDefaultByName(dataSourceName);
                 Resource resource = defaultDump.get(dataSourceName);
                 String script = this.readFile(resource);
                 if (null != script && script.trim().length() > 0) {
@@ -635,4 +672,13 @@ public class DatabaseManager extends AbstractInitializerManager
     public void setLockFallbackMinutes(int lockFallbackMinutes) {
         this.lockFallbackMinutes = lockFallbackMinutes;
     }
+
+    protected ITenantManager getTenantManager() {
+        return tenantManager;
+    }
+    @Autowired
+    public void setTenantManager(ITenantManager tenantManager) {
+        this.tenantManager = tenantManager;
+    }
+
 }

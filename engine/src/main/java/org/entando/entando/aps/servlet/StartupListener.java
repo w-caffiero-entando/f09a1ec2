@@ -26,6 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.init.InitializerManager;
 
 /**
  * Init the system when the web application is started
@@ -73,17 +74,18 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
         }
 
         ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, svCtx);
+        InitializerManager initManager = ApsWebApplicationUtils.getBean(InitializerManager.class, svCtx);
         tenantManager.getCodes().stream().forEach(tenantCode -> {
-
             ApsTenantApplicationUtils.setTenant(tenantCode);
             try {
                 LOGGER.info("refresh bean for tenant:'{}'", tenantCode);
+                initManager.init();
                 ApsWebApplicationUtils.executeSystemRefresh(svCtx);
+                String tenantMsg = String.format("%s: Tenant '%s' inizialized", this.getClass().getName(), tenantCode);
+                ApsSystemUtils.directStdoutTrace(tenantMsg, true);
             } catch (Throwable t) {
                 LOGGER.error("Error initializing '{}' tenant", tenantCode, t);
             }
-            String tenantMsg = this.getClass().getName() + ": Tenant '" + tenantCode + "' inizialized";
-            ApsSystemUtils.directStdoutTrace(tenantMsg, true);
         });
         long endMs = System.currentTimeMillis();
         String executionTimeMsg = String.format("%s: contextInitialized takes ms:'%s' of execution",

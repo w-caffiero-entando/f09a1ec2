@@ -21,6 +21,6 @@ import org.entando.entando.aps.system.init.model.SystemInstallationReport;
  */
 public interface IDatabaseInstallerManager {
 	
-	public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) throws Exception;
+	public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy defaultMigrationStrategy) throws Exception;
 	
 }
