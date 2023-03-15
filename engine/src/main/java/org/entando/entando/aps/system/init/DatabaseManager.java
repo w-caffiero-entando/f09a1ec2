@@ -104,12 +104,17 @@ public class DatabaseManager extends AbstractInitializerManager
     public void init() {
         logger.debug("{} ready", this.getClass().getName());
     }
-    
+
     @Override
     public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy defaultMigrationStrategy) throws Exception {
         String lastLocalBackupFolder = null;
         DatabaseMigrationStrategy strategy = Optional.ofNullable(this.getTenantMigrationStrategy())
                 .orElse(Optional.ofNullable(defaultMigrationStrategy).orElse(DatabaseMigrationStrategy.DISABLED));
+        if (DatabaseMigrationStrategy.SKIP.equals(strategy)) {
+            Optional<String> tenantCodeOp = ApsTenantApplicationUtils.getTenant();
+            logger.warn(String.format("Database Migration Strategy, Tenant '%s', SKIPPED", tenantCodeOp.orElse("*primary*")));
+            return report;
+        }
         if (null == report) {
             report = SystemInstallationReport.getInstance();
             lastLocalBackupFolder = checkRestore(report, strategy);
@@ -145,18 +150,21 @@ public class DatabaseManager extends AbstractInitializerManager
 
     private DatabaseMigrationStrategy getTenantMigrationStrategy() {
         Optional<String> tenantCodeOp = ApsTenantApplicationUtils.getTenant();
-        Optional<String> strategy = Optional.empty();
+        Optional<String> strategyOp = Optional.empty();
         try {
-            strategy = (tenantCodeOp.map(tenantCode -> getTenantManager().getConfig(tenantCode))
-					.orElse(Optional.empty())).map(TenantConfig::getDbMigrationStrategy);
-            return strategy.map(s -> Enum.valueOf(DatabaseMigrationStrategy.class, s.toUpperCase())).orElse(null);
+            if (tenantCodeOp.isEmpty()) {
+                return null;
+            }
+            strategyOp = (tenantCodeOp.map(tenantCode -> getTenantManager().getConfig(tenantCode))
+					.orElse(Optional.empty())).map(TenantConfig::getDbMigrationStrategy).or(() -> Optional.of(DatabaseMigrationStrategy.SKIP.toString()));
+            return strategyOp.map(s -> Enum.valueOf(DatabaseMigrationStrategy.class, s.toUpperCase())).orElse(null);
         } catch (IllegalArgumentException e) {
-            logger.warn(String.format("Migration Strategy - , Tenant '%s', Invalid value '%s' - Allowed values disabled|auto|generate_sql", 
-                    tenantCodeOp.orElse(null), strategy));
+            logger.warn(String.format("Migration Strategy, Tenant '%s', Invalid value '%s' - Allowed values skip|disabled|auto|generate_sql",
+                    tenantCodeOp.orElse(null), strategyOp.orElse(null)));
             return null;
         }
     }
-    
+
     private String checkRestore(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) {
         String lastLocalBackupFolder = null;
         if (!DatabaseMigrationStrategy.DISABLED.equals(migrationStrategy) && !Environment.test.equals(this.getEnvironment())) {
@@ -249,7 +257,7 @@ public class DatabaseManager extends AbstractInitializerManager
                 String changeLogFile = (null != componentConfiguration.getLiquibaseChangeSets()) ? componentConfiguration.getLiquibaseChangeSets().get(dataSourceName) : null;
                 if (null != changeLogFile) {
                     liquibaseReport.getDatabaseStatus().put(dataSourceName, Status.INCOMPLETE);
-                    List<ChangeSetStatus> changeSetToExecute = this.executeLiquibaseUpdate(report.getCreation(), 
+                    List<ChangeSetStatus> changeSetToExecute = this.executeLiquibaseUpdate(report.getCreation(),
                             componentConfiguration.getCode(), changeLogFile, dataSourceName, report.getStatus(), migrationStrategy);
                     pendingChangeSet.addAll(changeSetToExecute);
                     ApsSystemUtils.directStdoutTrace("|   ( ok )  " + dataSourceName);
@@ -322,7 +330,7 @@ public class DatabaseManager extends AbstractInitializerManager
         }
         return changeSetToExecute;
     }
-    
+
     private DataSource getRightDatasource(String dataSourceName) {
         return ApsTenantApplicationUtils.getTenant()
 					.map(tenantCode -> this.getTenantManager().getDatasource(tenantCode))
@@ -669,5 +677,5 @@ public class DatabaseManager extends AbstractInitializerManager
     public void setTenantManager(ITenantManager tenantManager) {
         this.tenantManager = tenantManager;
     }
-    
+
 }

@@ -122,7 +122,7 @@ class DatabaseManagerTest {
         }
         return component;
     }
-
+    
     @Test
     void testDisabledDatabaseMigrationStrategy() throws Exception {
         List<ChangeSetStatus> changeSetToExecute = new ArrayList<>();
@@ -342,6 +342,24 @@ class DatabaseManagerTest {
                 });
                 Mockito.verifyNoInteractions(storageManager);
             }
+        } finally {
+            EntThreadLocal.clear();
+        }
+    }
+    
+    @Test
+    void testMigrationStrategyForTenant_3() throws Exception {
+        databaseManager.setEnvironment(Environment.production);
+        EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, "tenant1");
+        try {
+            TenantConfig tenantConfig = Mockito.mock(TenantConfig.class);
+            Mockito.lenient().when(tenantConfig.getDbMigrationStrategy()).thenReturn(null);
+            Mockito.lenient().when(tenantManager.getConfig("tenant1")).thenReturn(Optional.of(tenantConfig));
+            SystemInstallationReport report = Mockito.mock(SystemInstallationReport.class);
+            databaseManager.installDatabase(Mockito.mock(SystemInstallationReport.class), DatabaseMigrationStrategy.GENERATE_SQL);
+            Mockito.verifyNoInteractions(storageManager);
+            Mockito.verifyNoInteractions(componentManager);
+            Mockito.verifyNoInteractions(report);
         } finally {
             EntThreadLocal.clear();
         }
