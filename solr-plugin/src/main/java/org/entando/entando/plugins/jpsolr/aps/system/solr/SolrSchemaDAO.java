@@ -1,7 +1,6 @@
 package org.entando.entando.plugins.jpsolr.aps.system.solr;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.request.schema.SchemaRequest;
+import org.apache.solr.client.solrj.request.schema.SchemaRequest.MultiUpdate;
+import org.apache.solr.client.solrj.request.schema.SchemaRequest.Update;
 import org.apache.solr.common.util.SimpleOrderedMap;
 
 @Slf4j
@@ -23,13 +24,13 @@ public class SolrSchemaDAO implements ISolrSchemaDAO {
     }
 
     @Override
-    public List<Map<String, Serializable>> getFields() {
+    public List<Map<String, ?>> getFields() {
         SchemaRequest.Fields getFieldsRequest = new SchemaRequest.Fields();
-        List<Map<String, Serializable>> fields = new ArrayList<>();
+        List<Map<String, ?>> fields = new ArrayList<>();
         try {
-            List<SimpleOrderedMap<Serializable>> items = (List<SimpleOrderedMap<Serializable>>)
+            List<SimpleOrderedMap<Object>> items = (List<SimpleOrderedMap<Object>>)
                     solrClient.request(getFieldsRequest, this.solrCore).get("fields");
-            for (SimpleOrderedMap<Serializable> item : items) {
+            for (SimpleOrderedMap<Object> item : items) {
                 fields.add(item.asMap());
             }
         } catch (SolrServerException | IOException ex) {
@@ -38,38 +39,23 @@ public class SolrSchemaDAO implements ISolrSchemaDAO {
         return fields;
     }
 
-    @Override
-    public boolean addField(Map<String, ?> properties) {
+    public boolean updateFields(List<Map<String, ?>> fieldsToAdd, List<Map<String, ?>> fieldsToReplace) {
         try {
-            SchemaRequest.AddField addFieldRequest = new SchemaRequest.AddField((Map<String, Object>) properties);
-            solrClient.request(addFieldRequest, this.solrCore);
+            List<Update> updates = new ArrayList<>();
+            for (Map<String, ?> fieldToAdd : fieldsToAdd) {
+                SchemaRequest.AddField addFieldRequest = new SchemaRequest.AddField((Map<String, Object>) fieldToAdd);
+                updates.add(addFieldRequest);
+            }
+            for (Map<String, ?> fieldToReplace : fieldsToReplace) {
+                SchemaRequest.ReplaceField replaceFieldRequest =
+                        new SchemaRequest.ReplaceField((Map<String, Object>) fieldToReplace);
+                updates.add(replaceFieldRequest);
+            }
+            SchemaRequest.MultiUpdate multiUpdateRequest = new MultiUpdate(updates);
+            solrClient.request(multiUpdateRequest, this.solrCore);
+            solrClient.commit(this.solrCore);
         } catch (SolrServerException | IOException ex) {
-            log.error("Error adding field to Solr", ex);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean replaceField(Map<String, ?> properties) {
-        try {
-            SchemaRequest.ReplaceField replaceFieldRequest =
-                    new SchemaRequest.ReplaceField((Map<String, Object>) properties);
-            solrClient.request(replaceFieldRequest, this.solrCore);
-        } catch (SolrServerException | IOException ex) {
-            log.error("Error replacing field in Solr", ex);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean deleteField(String fieldKey) {
-        try {
-            SchemaRequest.DeleteField deleteFieldRequest = new SchemaRequest.DeleteField(fieldKey);
-            solrClient.request(deleteFieldRequest, this.solrCore);
-        } catch (SolrServerException | IOException ex) {
-            log.error("Error deleting field in Solr", ex);
+            log.error("Error executing Solr multi-update request", ex);
             return false;
         }
         return true;

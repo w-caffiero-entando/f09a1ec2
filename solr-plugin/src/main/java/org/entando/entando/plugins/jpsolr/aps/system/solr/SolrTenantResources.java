@@ -5,9 +5,11 @@ import com.agiletec.aps.system.services.lang.ILangManager;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
+@Slf4j
 public class SolrTenantResources {
 
     private final ReentrantLock lock = new ReentrantLock();
@@ -19,9 +21,13 @@ public class SolrTenantResources {
     private final ISolrSearcherDAO searcherDAO;
     @Getter
     private final ISolrSchemaDAO solrSchemaDAO;
+    @Getter
+    private final String solrCore;
 
     public SolrTenantResources(String solrAddress, String solrCore, ILangManager langManager,
             ICategoryManager categoryManager) {
+        log.debug("Creating Solr resources for {}", solrCore);
+        this.solrCore = solrCore;
         this.solrClient = new HttpSolrClient.Builder(solrAddress)
                 .withConnectionTimeout(10000)
                 .withSocketTimeout(60000)

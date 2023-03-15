@@ -62,7 +62,7 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
 
     @Override
     public void close() throws IOException {
-        for (SolrTenantResources tenantResources : this.getAllSolrTenantResources()) {
+        for (SolrTenantResources tenantResources : this.getAllSolrTenantsResources()) {
             tenantResources.close();
         }
     }
@@ -97,7 +97,7 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
     }
 
     @Override
-    public List<SolrTenantResources> getAllSolrTenantResources() {
+    public List<SolrTenantResources> getAllSolrTenantsResources() {
         List<SolrTenantResources> allTenantResources = new ArrayList<>(tenantResources.values());
         allTenantResources.add(0, primaryResources);
         return allTenantResources;

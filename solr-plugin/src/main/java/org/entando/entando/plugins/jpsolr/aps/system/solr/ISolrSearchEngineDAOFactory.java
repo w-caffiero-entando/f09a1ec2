@@ -30,5 +30,5 @@ public interface ISolrSearchEngineDAOFactory extends ISearchEngineDAOFactory {
 
     SolrTenantResources getSolrTenantResources();
 
-    List<SolrTenantResources> getAllSolrTenantResources();
+    List<SolrTenantResources> getAllSolrTenantsResources();
 }
