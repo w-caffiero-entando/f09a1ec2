@@ -107,8 +107,11 @@ public class DatabaseManager extends AbstractInitializerManager
     @Override
     public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy defaultMigrationStrategy) throws Exception {
         String lastLocalBackupFolder = null;
+
         DatabaseMigrationStrategy defaultComputedStrategy = Optional.ofNullable(defaultMigrationStrategy).orElse(DatabaseMigrationStrategy.DISABLED);
-        DatabaseMigrationStrategy strategy = Optional.ofNullable(getTenantMigrationStrategy()).orElse(defaultComputedStrategy);
+        // compute strategy
+        DatabaseMigrationStrategy strategy = getTenantMigrationStrategy().orElse(defaultComputedStrategy);
+
         if (DatabaseMigrationStrategy.SKIP.equals(strategy)) {
             Optional<String> tenantCodeOp = ApsTenantApplicationUtils.getTenant();
             logger.warn(String.format("Database Migration Strategy, Tenant '%s', SKIPPED", tenantCodeOp.orElse("*primary*")));
@@ -146,22 +149,23 @@ public class DatabaseManager extends AbstractInitializerManager
         return report;
     }
     
-    private DatabaseMigrationStrategy getTenantMigrationStrategy() {
-        Optional<String> tenantCodeOp = ApsTenantApplicationUtils.getTenant();
-        Optional<String> strategyOp = Optional.empty();
+    private Optional<DatabaseMigrationStrategy> getTenantMigrationStrategy() {
+        return ApsTenantApplicationUtils.getTenant().map(this::composeTenantStrategy);
+    }
+
+    private DatabaseMigrationStrategy composeTenantStrategy(String tenantCode) {
         try {
-            if (tenantCodeOp.isEmpty()) {
-                return null;
-            }
-            strategyOp = tenantCodeOp.flatMap(getTenantManager()::getConfig).flatMap(TenantConfig::getDbMigrationStrategy);
-            return strategyOp.map(s -> Enum.valueOf(DatabaseMigrationStrategy.class, s.toUpperCase())).orElse(DatabaseMigrationStrategy.SKIP);
-        } catch (IllegalArgumentException e) {
-            logger.warn(String.format("Migration Strategy, Tenant '%s', Invalid value '%s' - Allowed values skip|disabled|auto|generate_sql",
-                    tenantCodeOp.orElse(null), strategyOp.orElse(null)));
+            return getTenantManager().getConfig(tenantCode)
+                .flatMap(TenantConfig::getDbMigrationStrategy)
+                .map(s -> Enum.valueOf(DatabaseMigrationStrategy.class, s.toUpperCase()))
+                .orElse(DatabaseMigrationStrategy.SKIP);
+
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Migration Strategy, Tenant '{}', Invalid value - Allowed values skip|disabled|auto|generate_sql", tenantCode);
             return DatabaseMigrationStrategy.SKIP;
         }
     }
-    
+
     private String checkRestore(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) {
         String lastLocalBackupFolder = null;
         if (!DatabaseMigrationStrategy.DISABLED.equals(migrationStrategy) && !Environment.test.equals(this.getEnvironment())) {
