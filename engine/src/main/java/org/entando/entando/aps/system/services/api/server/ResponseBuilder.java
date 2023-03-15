@@ -47,7 +47,7 @@ import org.springframework.web.context.ServletContextAware;
  */
 public class ResponseBuilder implements IResponseBuilder, BeanFactoryAware, ServletContextAware {
    
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ApiRestStatusServer.class);
+	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ResponseBuilder.class);
 	
 	@Override
     @Deprecated
