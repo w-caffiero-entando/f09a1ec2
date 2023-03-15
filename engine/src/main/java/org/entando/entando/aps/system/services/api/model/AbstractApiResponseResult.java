@@ -14,9 +14,7 @@
 package org.entando.entando.aps.system.services.api.model;
 
 import java.io.Serializable;
-
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * @author E.Santoboni
@@ -38,8 +36,7 @@ public abstract class AbstractApiResponseResult implements Serializable {
         }
         this._html = html;
     }
-    
-	@XmlJavaTypeAdapter(CDataXmlTypeAdapter.class)
+
     @XmlElement(name = "html", required = true)
     public String getHtml() {
          return this._html;

@@ -13,6 +13,7 @@
  */
 package org.entando.entando.plugins.jacms.aps.system.services.api;
 
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.attribute.AbstractComplexAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.AbstractListAttribute;
@@ -31,9 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import javax.ws.rs.core.MediaType;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.UnmarshalUtils;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
@@ -42,35 +42,36 @@ import org.entando.entando.plugins.jacms.aps.system.services.api.model.JAXBConte
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 /**
  * @author E.Santoboni
  */
-class TestApiContentInterface extends ApiBaseTestCase {
+class ApiContentInterfaceIntegrationTest extends ApiBaseTestCase {
 
 	@Test
     void testGetXmlContent() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+		MediaType mediaType = MediaType.APPLICATION_XML;
 		this.testGetContent(mediaType, "admin", "ALL4", "it");
 		this.testGetContent(mediaType, "admin", "ART111", "it");
 	}
 
 	@Test
     void testGetJsonContent() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+		MediaType mediaType = MediaType.APPLICATION_JSON;
 		this.testGetContent(mediaType, "admin", "ALL4", "en");
 		this.testGetContent(mediaType, "admin", "ART111", "en");
 	}
 
 	@Test
     void testCreateNewContentFromXml() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+		MediaType mediaType = MediaType.APPLICATION_XML;
 		this.testCreateNewContent(mediaType, "ALL4");
 	}
 
 	@Test
     void testCreateNewContentFromJson() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+		MediaType mediaType = MediaType.APPLICATION_JSON;
 		this.testCreateNewContent(mediaType, "ALL4");
 		this.testCreateNewContent(mediaType, "ART111");
 	}
@@ -79,7 +80,7 @@ class TestApiContentInterface extends ApiBaseTestCase {
 		String dateNow = DateConverter.getFormattedDate(new Date(), JacmsSystemConstants.CONTENT_METADATA_DATE_FORMAT);
 		EntitySearchFilter filter = new EntitySearchFilter(IContentManager.CONTENT_CREATION_DATE_FILTER_KEY, false, dateNow, null);
 		EntitySearchFilter[] filters = {filter};
-		List<String> ids = this._contentManager.searchId(filters);
+		List<String> ids = this.contentManager.searchId(filters);
 		Assertions.assertTrue(ids.isEmpty());
 		JAXBContent jaxbContent = this.testGetContent(mediaType, "admin", contentId, "it");
 		ApiResource contentResource = this.getApiCatalogManager().getResource("jacms", "content");
@@ -91,12 +92,12 @@ class TestApiContentInterface extends ApiBaseTestCase {
 			Assertions.assertNotNull(response);
 			Assertions.assertTrue(response instanceof CmsApiResponse);
 			Assertions.assertEquals(IResponseBuilder.SUCCESS, ((CmsApiResponse) response).getResult().getStatus());
-			ids = this._contentManager.searchId(filters);
+			ids = this.contentManager.searchId(filters);
 			Assertions.assertEquals(1, ids.size());
 			String newContentId = ids.get(0);
 			Assertions.assertNotEquals(newContentId, contentId);
-			Content newContent = this._contentManager.loadContent(newContentId, false);
-			Content masterContent = this._contentManager.loadContent(contentId, true);
+			Content newContent = this.contentManager.loadContent(newContentId, false);
+			Content masterContent = this.contentManager.loadContent(contentId, true);
 			List<AttributeInterface> attributes = masterContent.getAttributeList();
 			for (int i = 0; i < attributes.size(); i++) {
 				AttributeInterface attribute = attributes.get(i);
@@ -106,12 +107,12 @@ class TestApiContentInterface extends ApiBaseTestCase {
 		} catch (Exception e) {
 			throw e;
 		} finally {
-			ids = this._contentManager.searchId(filters);
+			ids = this.contentManager.searchId(filters);
 			if (!ids.isEmpty()) {
 				for (int i = 0; i < ids.size(); i++) {
 					String id = ids.get(i);
-					Content content = this._contentManager.loadContent(id, false);
-					this._contentManager.deleteContent(content);
+					Content content = this.contentManager.loadContent(id, false);
+					this.contentManager.deleteContent(content);
 				}
 			}
 		}
@@ -166,7 +167,7 @@ class TestApiContentInterface extends ApiBaseTestCase {
 		Assertions.assertNotNull(singleResult);
 		String toString = this.marshall(singleResult, mediaType);
 		InputStream stream = new ByteArrayInputStream(toString.getBytes());
-		JAXBContent jaxbContent = (JAXBContent) UnmarshalUtils.unmarshal(super.getApplicationContext(), JAXBContent.class, stream, mediaType);
+		JAXBContent jaxbContent = unmarshaller.unmarshal(mediaType, stream, JAXBContent.class);
 		Assertions.assertNotNull(jaxbContent);
 		return jaxbContent;
 	}
@@ -175,9 +176,11 @@ class TestApiContentInterface extends ApiBaseTestCase {
     @BeforeEach
 	public void init() {
         super.init();
-		this._contentManager = (IContentManager) this.getApplicationContext().getBean(JacmsSystemConstants.CONTENT_MANAGER);
+		this.contentManager = (IContentManager) this.getApplicationContext().getBean(JacmsSystemConstants.CONTENT_MANAGER);
+		this.unmarshaller = (LegacyApiUnmarshaller) this.getApplicationContext().getBean(SystemConstants.LEGACY_API_UNMARSHALLER);
 	}
 
-	private IContentManager _contentManager;
+	private IContentManager contentManager;
+	private LegacyApiUnmarshaller unmarshaller;
 
 }

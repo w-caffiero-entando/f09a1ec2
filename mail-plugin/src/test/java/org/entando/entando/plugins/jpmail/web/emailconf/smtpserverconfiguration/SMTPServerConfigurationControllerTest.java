@@ -13,8 +13,14 @@
  */
 package org.entando.entando.plugins.jpmail.web.emailconf.smtpserverconfiguration;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.FileTextReader;
+import java.io.InputStream;
 import org.entando.entando.plugins.jpmail.ent.system.services.SMTPServerConfigurationService;
 import org.entando.entando.plugins.jpmail.web.emailconfig.SMTPServerConfigurationController;
 import org.entando.entando.plugins.jpmail.web.emailconfig.validator.SMTPServerConfigurationValidator;
@@ -29,13 +35,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.io.InputStream;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class SMTPServerConfigurationControllerTest extends AbstractControllerTest {
@@ -58,6 +57,7 @@ class SMTPServerConfigurationControllerTest extends AbstractControllerTest {
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
+                .setMessageConverters(getMessageConverters())
                 .setHandlerExceptionResolvers(createHandlerExceptionResolver())
                 .build();
     }

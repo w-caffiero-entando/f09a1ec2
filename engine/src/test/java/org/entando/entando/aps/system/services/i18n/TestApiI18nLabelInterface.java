@@ -21,15 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.i18n.II18nManager;
 import com.agiletec.aps.util.ApsProperties;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Properties;
-
-import javax.ws.rs.core.MediaType;
-
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.UnmarshalUtils;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
@@ -37,6 +33,7 @@ import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
 import org.entando.entando.aps.system.services.i18n.model.JAXBI18nLabel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 /**
  * @author E.Santoboni
@@ -44,32 +41,32 @@ import org.junit.jupiter.api.Test;
 class TestApiI18nLabelInterface extends ApiBaseTestCase {
 	
     @Test
-	public void testGetXmlLabel() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+	void testGetXmlLabel() throws Throwable {
+		MediaType mediaType = MediaType.APPLICATION_XML;
 		this.testGetLabel(mediaType, "admin", "PAGE_TITLE");
 	}
 	
 	@Test
-	public void testGetJsonLabel() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+	void testGetJsonLabel() throws Throwable {
+		MediaType mediaType = MediaType.APPLICATION_JSON;
 		this.testGetLabel(mediaType, "admin", "PAGE_TITLE");
 	}
 	
 	@Test
-	public void testCreateNewLabelFromXml() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+	void testCreateNewLabelFromXml() throws Throwable {
+		MediaType mediaType = MediaType.APPLICATION_XML;
 		this.testCreateNewLabel(mediaType);
 	}
 	
 	@Test
-	public void testCreateNewContentFromJson() throws Throwable {
-		MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+	void testCreateNewContentFromJson() throws Throwable {
+		MediaType mediaType = MediaType.APPLICATION_JSON;
 		this.testCreateNewLabel(mediaType);
 	}
 	
 	protected void testCreateNewLabel(MediaType mediaType) throws Throwable {
 		String key = "TEST_LABEL_KEY";
-		String label = this._i18nManager.getLabel(key, "it");
+		String label = this.i18nManager.getLabel(key, "it");
 		assertNull(label);
 		ApsProperties labels = new ApsProperties();
 		labels.put("en", "Test label");
@@ -83,12 +80,12 @@ class TestApiI18nLabelInterface extends ApiBaseTestCase {
 			assertNotNull(response);
 			assertTrue(response instanceof StringApiResponse);
 			assertEquals(IResponseBuilder.SUCCESS, ((StringApiResponse) response).getResult());
-			label = this._i18nManager.getLabel(key, "it");
+			label = this.i18nManager.getLabel(key, "it");
 			assertEquals("Label di Test", label);
 		} catch (Exception e) {
 			throw e;
 		} finally {
-			this._i18nManager.deleteLabelGroup(key);
+			this.i18nManager.deleteLabelGroup(key);
 		}
 	}
 	
@@ -106,7 +103,7 @@ class TestApiI18nLabelInterface extends ApiBaseTestCase {
 		assertNotNull(singleResult);
 		String toString = this.marshall(singleResult, mediaType);
 		InputStream stream = new ByteArrayInputStream(toString.getBytes());
-		JAXBI18nLabel jaxbLabel = (JAXBI18nLabel) UnmarshalUtils.unmarshal(super.getApplicationContext(), JAXBI18nLabel.class, stream, mediaType);
+		JAXBI18nLabel jaxbLabel = this.unmarshaller.unmarshal(mediaType, stream, JAXBI18nLabel.class);
 		assertNotNull(jaxbLabel);
 		return jaxbLabel;
 	}
@@ -114,9 +111,11 @@ class TestApiI18nLabelInterface extends ApiBaseTestCase {
     @BeforeEach
 	protected void init() {
         super.init();
-    	this._i18nManager = (II18nManager) this.getApplicationContext().getBean(SystemConstants.I18N_MANAGER);
+		this.i18nManager = (II18nManager) this.getApplicationContext().getBean(SystemConstants.I18N_MANAGER);
+		this.unmarshaller = (LegacyApiUnmarshaller) this.getApplicationContext().getBean(SystemConstants.LEGACY_API_UNMARSHALLER);
     }
 	
-	private II18nManager _i18nManager;
+	private II18nManager i18nManager;
+	private LegacyApiUnmarshaller unmarshaller;
 	
 }

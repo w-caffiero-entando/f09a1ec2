@@ -16,40 +16,38 @@ package org.entando.entando.plugins.jacms.aps.system.services.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Properties;
 import org.entando.entando.aps.system.services.api.ApiBaseTestCase;
-import org.entando.entando.aps.system.services.api.UnmarshalUtils;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
 import org.entando.entando.plugins.jacms.aps.system.services.api.model.JAXBContentType;
-
-import javax.ws.rs.core.MediaType;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
-class TestApiContentTypeInterface extends ApiBaseTestCase {
+class ApiContentTypeInterfaceIntegrationTest extends ApiBaseTestCase {
 
     private final static String CONTENT_VIEW = "contentview";
     private final static String CONTENT_VIEW_TEST = "contentviewtest";
     
     @Test
     void testGetXmlContent() throws Throwable {
-        MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+        MediaType mediaType = MediaType.APPLICATION_XML;
         this.testGetContentType(mediaType, "admin", "ART", CONTENT_VIEW, "it");
     }
 
     @Test
     void testCreateNewContentFromXml() throws Throwable {
-        MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+        MediaType mediaType = MediaType.APPLICATION_XML;
         this.testCreateNewContentType(mediaType, "TST");
     }
 
@@ -94,7 +92,7 @@ class TestApiContentTypeInterface extends ApiBaseTestCase {
         assertEquals(viewPage, result.getViewPage());
         String toString = this.marshall(result, mediaType);
         InputStream stream = new ByteArrayInputStream(toString.getBytes());
-        JAXBContentType jaxbContentType = (JAXBContentType) UnmarshalUtils.unmarshal(super.getApplicationContext(), JAXBContentType.class, stream, mediaType);
+        JAXBContentType jaxbContentType = this.unmarshaller.unmarshal(mediaType, stream, JAXBContentType.class);
         assertNotNull(jaxbContentType);
         return jaxbContentType;
     }
@@ -104,8 +102,10 @@ class TestApiContentTypeInterface extends ApiBaseTestCase {
     public void init() {
         super.init();
         this.contentManager = (IContentManager) this.getApplicationContext().getBean(JacmsSystemConstants.CONTENT_MANAGER);
+        this.unmarshaller = (LegacyApiUnmarshaller) this.getApplicationContext().getBean(SystemConstants.LEGACY_API_UNMARSHALLER);
     }
 
     private IContentManager contentManager;
+    private LegacyApiUnmarshaller unmarshaller;
 
 }

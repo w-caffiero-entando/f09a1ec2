@@ -13,7 +13,7 @@
  */
 package org.entando.entando.aps.system.services.api;
 
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
 
 /**
  * Interface implemented by all those services or beans 
@@ -30,6 +30,9 @@ public interface IApiExportable {
 	 * @param mediaType The produces media type
 	 * @return The uniform resource locator of the given object.
 	 */
-	public String getApiResourceUrl(Object object, String applicationBaseUrl, String langCode, MediaType mediaType);
-	
+	String getApiResourceUrl(Object object, String applicationBaseUrl, String langCode, MediaType mediaType);
+
+	default String getExtension(MediaType mediaType) {
+		return mediaType.equals(MediaType.APPLICATION_XML) ? "xml" : "json";
+	}
 }

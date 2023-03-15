@@ -16,6 +16,7 @@ package com.agiletec.aps.system.common.entity.model.attribute.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlTransient;
 import org.jdom.Element;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -50,7 +51,8 @@ public class BaseAttributeValidationRules implements IAttributeValidationRules {
         return clone;
     }
     
-    @Override 
+    @Override
+    @XmlTransient
     public Element getJDOMConfigElement() {
         Element configElement = null;
         try {
@@ -80,7 +82,8 @@ public class BaseAttributeValidationRules implements IAttributeValidationRules {
         }
     }
     
-    @Override 
+    @Override
+    @XmlTransient
     public void setConfig(Element attributeElement) {
         Element validationElement = attributeElement.getChild(VALIDATIONS_ELEMENT_NAME);
         if (null != validationElement) {

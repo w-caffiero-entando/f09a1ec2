@@ -13,32 +13,29 @@
  */
 package org.entando.entando.aps.system.services.userprofile.api;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.ws.rs.core.Response;
-
-import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
-import org.entando.entando.aps.system.services.api.model.ApiException;
-import org.entando.entando.aps.system.services.api.model.StringApiResponse;
-import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
-import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
-import org.entando.entando.aps.system.services.userprofile.api.model.JAXBUserProfile;
-import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.helper.BaseFilterUtils;
 import com.agiletec.aps.system.common.entity.model.AttributeFieldError;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.FieldError;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.group.IGroupManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import org.entando.entando.aps.system.services.api.IApiErrorCodes;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
+import org.entando.entando.aps.system.services.api.model.ApiException;
+import org.entando.entando.aps.system.services.api.model.StringApiResponse;
+import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
+import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
+import org.entando.entando.aps.system.services.userprofile.api.model.JAXBUserProfile;
+import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -47,14 +44,14 @@ public class ApiUserProfileInterface {
 
     private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ApiUserProfileInterface.class);
 
-    public List<String> getUserProfiles(Properties properties) throws Throwable {
-        List<String> usernames = null;
+    public List<String> getUserProfiles(Properties properties) throws ApiException, EntException {
+        List<String> usernames;
         try {
             String userProfileType = properties.getProperty("typeCode");
             IUserProfile prototype = (IUserProfile) this.getUserProfileManager().getEntityPrototype(userProfileType);
             if (null == prototype) {
                 throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
-                        "Profile Type '" + userProfileType + "' does not exist", Response.Status.CONFLICT);
+                        getProfileTypeDoesNotExistMessage(userProfileType), HttpStatus.CONFLICT);
             }
             String langCode = properties.getProperty(SystemConstants.API_LANG_CODE_PARAMETER);
             String filtersParam = properties.getProperty("filters");
@@ -65,20 +62,19 @@ public class ApiUserProfileInterface {
             throw ae;
         } catch (Throwable t) {
             _logger.error("Error searching usernames", t);
-            //ApsSystemUtils.logThrowable(t, this, "getUserProfiles");
             throw new EntException("Error searching usernames", t);
         }
         return usernames;
     }
 
-    public JAXBUserProfile getUserProfile(Properties properties) throws ApiException, Throwable {
-        JAXBUserProfile jaxbUserProfile = null;
+    public JAXBUserProfile getUserProfile(Properties properties) throws ApiException, EntException {
+        JAXBUserProfile jaxbUserProfile;
         try {
             String username = properties.getProperty("username");
             IUserProfile userProfile = this.getUserProfileManager().getProfile(username);
             if (null == userProfile) {
                 throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
-                        "Profile of user '" + username + "' does not exist", Response.Status.CONFLICT);
+                        getProfileDoesNotExistMessage(username), HttpStatus.CONFLICT);
             }
             String langCode = properties.getProperty(SystemConstants.API_LANG_CODE_PARAMETER);
             jaxbUserProfile = new JAXBUserProfile(userProfile, langCode);
@@ -91,21 +87,21 @@ public class ApiUserProfileInterface {
         return jaxbUserProfile;
     }
 
-    public StringApiResponse addUserProfile(JAXBUserProfile jaxbUserProfile) throws Throwable {
+    public StringApiResponse addUserProfile(JAXBUserProfile jaxbUserProfile) throws EntException {
         StringApiResponse response = new StringApiResponse();
         try {
             String username = jaxbUserProfile.getId();
             if (null != this.getUserProfileManager().getProfile(username)) {
                 throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
-                        "Profile of user '" + username + "' already exist", Response.Status.CONFLICT);
+                        getProfileAlreadyExistsMessage(username), HttpStatus.CONFLICT);
             }
             IApsEntity profilePrototype = this.getUserProfileManager().getEntityPrototype(jaxbUserProfile.getTypeCode());
             if (null == profilePrototype) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "User Profile type with code '" + jaxbUserProfile.getTypeCode() + "' does not exist", Response.Status.CONFLICT);
+                        getProfileTypeDoesNotExistMessage(jaxbUserProfile.getTypeCode()), HttpStatus.CONFLICT);
             }
             IUserProfile userProfile = (IUserProfile) jaxbUserProfile.buildEntity(profilePrototype, null);
-            List<ApiError> errors = this.validate(userProfile);
+            List<LegacyApiError> errors = this.validate(userProfile);
             if (errors.size() > 0) {
                 response.addErrors(errors);
                 response.setResult(IResponseBuilder.FAILURE, null);
@@ -123,21 +119,21 @@ public class ApiUserProfileInterface {
         return response;
     }
 
-    public StringApiResponse updateUserProfile(JAXBUserProfile jaxbUserProfile) throws Throwable {
+    public StringApiResponse updateUserProfile(JAXBUserProfile jaxbUserProfile) throws EntException {
         StringApiResponse response = new StringApiResponse();
         try {
             String username = jaxbUserProfile.getId();
             if (null == this.getUserProfileManager().getProfile(username)) {
                 throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
-                        "Profile of user '" + username + "' does not exist", Response.Status.CONFLICT);
+                        getProfileDoesNotExistMessage(username), HttpStatus.CONFLICT);
             }
             IApsEntity profilePrototype = this.getUserProfileManager().getEntityPrototype(jaxbUserProfile.getTypeCode());
             if (null == profilePrototype) {
                 throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "User Profile type with code '" + jaxbUserProfile.getTypeCode() + "' does not exist", Response.Status.CONFLICT);
+                        getProfileTypeDoesNotExistMessage(jaxbUserProfile.getTypeCode()), HttpStatus.CONFLICT);
             }
             IUserProfile userProfile = (IUserProfile) jaxbUserProfile.buildEntity(profilePrototype, null);
-            List<ApiError> errors = this.validate(userProfile);
+            List<LegacyApiError> errors = this.validate(userProfile);
             if (errors.size() > 0) {
                 response.addErrors(errors);
                 response.setResult(IResponseBuilder.FAILURE, null);
@@ -150,14 +146,13 @@ public class ApiUserProfileInterface {
             response.setResult(IResponseBuilder.FAILURE, null);
         } catch (Throwable t) {
             _logger.error("Error updating user profile", t);
-            //ApsSystemUtils.logThrowable(t, this, "updateUserProfile");
             throw new EntException("Error updating user profile", t);
         }
         return response;
     }
 
-    private List<ApiError> validate(IUserProfile userProfile) throws EntException {
-        List<ApiError> errors = new ArrayList<>();
+    private List<LegacyApiError> validate(IUserProfile userProfile) throws EntException {
+        List<LegacyApiError> errors = new ArrayList<>();
         try {
             List<FieldError> fieldErrors = userProfile.validate(this.getGroupManager(), this.getLangManager());
             if (null != fieldErrors) {
@@ -165,30 +160,29 @@ public class ApiUserProfileInterface {
                     FieldError fieldError = fieldErrors.get(i);
                     if (fieldError instanceof AttributeFieldError) {
                         AttributeFieldError attributeError = (AttributeFieldError) fieldError;
-                        errors.add(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                                attributeError.getFullMessage(), Response.Status.CONFLICT));
+                        errors.add(new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+                                attributeError.getFullMessage(), HttpStatus.CONFLICT));
                     } else {
-                        errors.add(new ApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                                fieldError.getMessage(), Response.Status.CONFLICT));
+                        errors.add(new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
+                                fieldError.getMessage(), HttpStatus.CONFLICT));
                     }
                 }
             }
         } catch (Throwable t) {
             _logger.error("Error validating profile", t);
-            //ApsSystemUtils.logThrowable(t, this, "validate");
             throw new EntException("Error validating profile", t);
         }
         return errors;
     }
 
-    public void deleteUserProfile(Properties properties) throws ApiException, Throwable {
+    public StringApiResponse deleteUserProfile(Properties properties) throws ApiException, EntException {
         StringApiResponse response = new StringApiResponse();
         try {
             String username = properties.getProperty("username");
             IUserProfile userProfile = this.getUserProfileManager().getProfile(username);
             if (null == userProfile) {
                 throw new ApiException(IApiErrorCodes.API_PARAMETER_VALIDATION_ERROR,
-                        "Profile of user '" + username + "' does not exist", Response.Status.CONFLICT);
+                        getProfileDoesNotExistMessage(username), HttpStatus.CONFLICT);
             }
             this.getUserProfileManager().deleteProfile(username);
             response.setResult(IResponseBuilder.SUCCESS, null);
@@ -197,9 +191,21 @@ public class ApiUserProfileInterface {
             response.setResult(IResponseBuilder.FAILURE, null);
         } catch (Throwable t) {
             _logger.error("Error deleting user Profile", t);
-            //ApsSystemUtils.logThrowable(t, this, "deleteUserProfile");
             throw new EntException("Error deleting user Profile", t);
         }
+        return response;
+    }
+
+    private static String getProfileDoesNotExistMessage(String username) {
+        return String.format("Profile of user '%s' does not exist", username);
+    }
+
+    private static String getProfileAlreadyExistsMessage(String username) {
+        return String.format("Profile of user '%s' already exist", username);
+    }
+
+    private static String getProfileTypeDoesNotExistMessage(String userProfileType) {
+        return String.format("User Profile type with code '%s' does not exist", userProfileType);
     }
 
     protected IUserProfileManager getUserProfileManager() {

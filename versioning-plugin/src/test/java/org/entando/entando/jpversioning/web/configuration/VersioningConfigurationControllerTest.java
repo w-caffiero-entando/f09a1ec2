@@ -52,6 +52,7 @@ public class VersioningConfigurationControllerTest extends AbstractControllerTes
     public void setUp() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
+                .setMessageConverters(getMessageConverters())
                 .setHandlerExceptionResolvers(createHandlerExceptionResolver())
                 .build();
     }

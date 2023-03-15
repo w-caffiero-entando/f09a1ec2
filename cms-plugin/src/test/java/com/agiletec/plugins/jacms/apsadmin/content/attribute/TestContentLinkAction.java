@@ -158,8 +158,8 @@ class TestContentLinkAction extends AbstractBaseTestContentAction {
 		LinkAttribute attribute = (LinkAttribute) content.getAttribute("VediAnche");
 		SymbolicLink symbolicLink = attribute.getSymbolicLink();
 		assertNotNull(symbolicLink);
-		assertNull(symbolicLink.getPageDest());
-		assertEquals("ART1", symbolicLink.getContentDest());
+		assertNull(symbolicLink.getPageDestination());
+		assertEquals("ART1", symbolicLink.getContentDestination());
 	}
 
 	@Test

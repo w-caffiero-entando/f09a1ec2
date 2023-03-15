@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.entando.entando.aps.system.services.api.model.CDataXmlTypeAdapter;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 
 /**
@@ -77,8 +76,7 @@ public class JAXBGuiFragment {
 	public void setPluginCode(String pluginCode) {
 		this._pluginCode = pluginCode;
 	}
-	
-	@XmlJavaTypeAdapter(CDataXmlTypeAdapter.class)
+
 	@XmlElement(name = "gui", required = true)
 	public String getGui() {
 		return _gui;
@@ -86,8 +84,7 @@ public class JAXBGuiFragment {
 	public void setGui(String gui) {
 		this._gui = gui;
 	}
-	
-	@XmlJavaTypeAdapter(CDataXmlTypeAdapter.class)
+
 	@XmlElement(name = "defaultGui", required = true)
 	public String getDefaultGui() {
 		return _defaultGui;

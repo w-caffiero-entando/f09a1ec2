@@ -13,37 +13,34 @@
  */
 package org.entando.entando.aps.system.init;
 
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.services.lang.ILangManager;
+import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
+import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.aps.util.FileTextReader;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Properties;
-
-import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-
 import org.entando.entando.aps.system.init.model.IPostProcess;
 import org.entando.entando.aps.system.init.model.InvalidPostProcessResultException;
 import org.entando.entando.aps.system.init.model.SelfRestCallPostProcess;
-import org.entando.entando.aps.system.services.api.UnmarshalUtils;
+import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.AbstractApiResponse;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-
-import com.agiletec.aps.system.SystemConstants;
-import org.entando.entando.ent.exception.EntException;
-import com.agiletec.aps.system.services.lang.ILangManager;
-import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
-import com.agiletec.aps.system.services.user.UserDetails;
-import com.agiletec.aps.util.FileTextReader;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -67,10 +64,11 @@ public class SelfRestCaller implements IPostProcessor, BeanFactoryAware {
 				result = responseBuilder.createResponse(method, properties);
 			} else {
 				String contentBody = this.getContentBody(selfRestCall);
-				Object bodyObject = UnmarshalUtils.unmarshal(method, contentBody, selfRestCall.getContentType());
+				LegacyApiUnmarshaller unmarshaller = (LegacyApiUnmarshaller) getBeanFactory().getBean(SystemConstants.LEGACY_API_UNMARSHALLER);
+				Object bodyObject = unmarshaller.unmarshal(selfRestCall.getContentType(), contentBody, method.getExpectedType());
 				result = responseBuilder.createResponse(method, bodyObject, properties);
 			}
-			Response.Status responseStatus = this.extractResponseStatusCode(result);
+			HttpStatus responseStatus = this.extractResponseStatusCode(result);
 			if (selfRestCall.isPrintResponse()) {
 				this.printResponse(selfRestCall, result, responseStatus, method, properties);
 			}
@@ -136,13 +134,13 @@ public class SelfRestCaller implements IPostProcessor, BeanFactoryAware {
 	}
 	
 	private void printResponse(SelfRestCallPostProcess selfRestCall, Object result, 
-			Response.Status responseStatus, ApiMethod method, Properties properties) throws InvalidPostProcessResultException, Throwable {
+			HttpStatus responseStatus, ApiMethod method, Properties properties) throws Throwable {
 		String responseClassName = method.getResponseClassName();
 		Class responseClass = (null != responseClassName) ? Class.forName(responseClassName) : StringApiResponse.class;
 		JAXBContext context = JAXBContext.newInstance(responseClass);
 		Marshaller marshaller = context.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		boolean validResponse = (responseStatus.getStatusCode() == selfRestCall.getExpectedResult());
+		boolean validResponse = (responseStatus.value() == selfRestCall.getExpectedResult());
 		StringBuilder path = new StringBuilder();	
 		path.append("/api/rs/");
 		path.append(properties.get(SystemConstants.API_LANG_CODE_PARAMETER)).append("/");
@@ -161,7 +159,7 @@ public class SelfRestCaller implements IPostProcessor, BeanFactoryAware {
 		log.append("*************** Self Rest Call - response ***************\n");
 		log.append(method.getHttpMethod().toString()).append(" ");
 		log.append(path.toString()).append("\n");
-		log.append("Result   ").append(responseStatus.getStatusCode()).append("\n");
+		log.append("Result   ").append(responseStatus.value()).append("\n");
 		log.append("Expected ").append(selfRestCall.getExpectedResult()).append("\n");
 		if (!validResponse) {
 			log.append("******** INVALID RESPONSE STATUS ********\n");
@@ -178,27 +176,27 @@ public class SelfRestCaller implements IPostProcessor, BeanFactoryAware {
 		}
 		_logger.info(log.toString());
 		if (!validResponse && selfRestCall.isFailOnError()) {
-			throw new InvalidPostProcessResultException(responseStatus.getStatusCode(), 
+			throw new InvalidPostProcessResultException(responseStatus.value(),
 					selfRestCall.getExpectedResult(), path.toString(), method.getHttpMethod());
 		}
 	}
 	
-	protected Response.Status extractResponseStatusCode(Object responseObject) {
+	protected HttpStatus extractResponseStatusCode(Object responseObject) {
 		if (responseObject instanceof AbstractApiResponse) {
-			Response.Status status = Response.Status.OK;
+			HttpStatus status = HttpStatus.OK;
 			AbstractApiResponse mainResponse = (AbstractApiResponse) responseObject;
 			if (null != mainResponse.getErrors()) {
 				for (int i = 0; i < mainResponse.getErrors().size(); i++) {
-					ApiError error = mainResponse.getErrors().get(i);
-					Response.Status errorStatus = error.getStatus();
-					if (null != errorStatus && status.getStatusCode() < errorStatus.getStatusCode()) {
+					LegacyApiError error = mainResponse.getErrors().get(i);
+					HttpStatus errorStatus = error.getStatus();
+					if (null != errorStatus && status.value() < errorStatus.value()) {
 						status = errorStatus;
 					}
 				}
 			}
 			return status;
 		} else {
-			return Response.Status.OK;
+			return HttpStatus.OK;
 		}
 	}
     

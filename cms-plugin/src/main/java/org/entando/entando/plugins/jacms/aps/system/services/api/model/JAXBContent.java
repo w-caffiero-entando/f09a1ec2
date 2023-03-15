@@ -31,6 +31,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.JA
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.JAXBResourceAttribute;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.JAXBResourceValue;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -121,6 +122,7 @@ public class JAXBContent extends JAXBEntity implements Serializable {
         return categories;
     }
 
+    @JsonSetter
     protected void setCategories(Set<String> categories) {
         this.categories = categories;
     }

@@ -16,26 +16,21 @@ package com.agiletec.aps.system.common.entity.model.attribute;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.entando.entando.aps.system.services.api.model.CDataXmlTypeAdapter;
 
 /**
  * @author E.Santoboni
  */
 @XmlType(propOrder = {"htmlValue"})
 public class JAXBHypertextAttribute extends AbstractJAXBAttribute implements Serializable {
-    
-    @XmlJavaTypeAdapter(CDataXmlTypeAdapter.class)
+
+    private String htmlValue;
+
     @XmlElement(name = "htmlValue", required = false)
     public String getHtmlValue() {
-        return _htmlValue;
+        return htmlValue;
     }
-    
+
     public void setHtmlValue(String htmlValue) {
-        this._htmlValue = htmlValue;
+        this.htmlValue = htmlValue;
     }
-    
-    private String _htmlValue;
-    
 }

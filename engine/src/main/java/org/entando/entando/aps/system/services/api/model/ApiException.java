@@ -15,30 +15,31 @@ package org.entando.entando.aps.system.services.api.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.ws.rs.core.Response;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
  */
 public class ApiException extends Exception {
-	
-	public ApiException(ApiError error) {
+
+	private final List<LegacyApiError> errors = new ArrayList<>();
+
+	public ApiException(LegacyApiError error) {
 		super(error.getMessage());
 		this.getErrors().add(error);
 	}
 	
-	public ApiException(ApiError error, Throwable cause) {
+	public ApiException(LegacyApiError error, Throwable cause) {
 		super(cause);
 		this.getErrors().add(error);
 	}
 	
-	public ApiException(List<ApiError> errors, Throwable cause) {
+	public ApiException(List<LegacyApiError> errors, Throwable cause) {
 		super(cause);
 		this.getErrors().addAll(errors);
 	}
 	
-	public ApiException(List<ApiError> errors) {
+	public ApiException(List<LegacyApiError> errors) {
 		super();
 		this.getErrors().addAll(errors);
 	}
@@ -53,7 +54,7 @@ public class ApiException extends Exception {
 		this.addError(errorKey);
 	}
 	
-	public ApiException(String errorKey, String message, Response.Status status) {
+	public ApiException(String errorKey, String message, HttpStatus status) {
 		super(message);
 		this.addError(errorKey, status);
 	}
@@ -64,17 +65,15 @@ public class ApiException extends Exception {
 	}
 	
 	protected void addError(String key) {
-		this.getErrors().add(new ApiError(key, getMessage()));
+		this.getErrors().add(new LegacyApiError(key, getMessage()));
 	}
 	
-	protected void addError(String key, Response.Status status) {
-		this.getErrors().add(new ApiError(key, getMessage(), status));
+	protected void addError(String key, HttpStatus status) {
+		this.getErrors().add(new LegacyApiError(key, getMessage(), status));
 	}
 	
-	public List<ApiError> getErrors() {
-		return this._errors;
+	public List<LegacyApiError> getErrors() {
+		return this.errors;
 	}
-	
-	private final List<ApiError> _errors = new ArrayList<>();
 	
 }

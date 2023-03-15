@@ -13,19 +13,16 @@
  */
 package org.entando.entando.aps.system.services.userprofile.api;
 
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.Properties;
-
-import javax.ws.rs.core.Response;
-
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.userprofile.api.model.JAXBUserDetails;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
-import com.agiletec.aps.system.SystemConstants;
 import org.entando.entando.ent.exception.EntException;
-import com.agiletec.aps.system.services.user.UserDetails;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -38,7 +35,7 @@ public class ApiMyUserProfileInterface {
         try {
             UserDetails userDetail = (UserDetails) properties.get(SystemConstants.API_USER_PARAMETER);
             if (null == userDetail) {
-                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Null user", Response.Status.UNAUTHORIZED);
+                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, "Null user", HttpStatus.UNAUTHORIZED);
             }
             return new JAXBUserDetails(userDetail);
         } catch (ApiException ae) {

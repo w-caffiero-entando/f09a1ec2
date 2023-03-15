@@ -13,20 +13,15 @@
  */
 package org.entando.entando.aps.system.services.i18n.model;
 
+import com.agiletec.aps.util.ApsProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.entando.entando.aps.system.services.api.model.CDataXmlTypeAdapter;
-
-import com.agiletec.aps.util.ApsProperties;
 
 /**
  * @author E.Santoboni
@@ -102,8 +97,7 @@ public class JAXBI18nLabel implements Serializable {
 		public void setLangCode(String langCode) {
 			this._langCode = langCode;
 		}
-		
-		@XmlJavaTypeAdapter(CDataXmlTypeAdapter.class)
+
 		@XmlElement(name = "value", required = true)
 		public String getValue() {
 			return _value;

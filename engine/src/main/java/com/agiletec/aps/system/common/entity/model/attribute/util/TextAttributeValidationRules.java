@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.bind.annotation.XmlTransient;
 import org.jdom.CDATA;
 import org.jdom.Element;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -174,6 +175,7 @@ public class TextAttributeValidationRules extends AbstractAttributeValidationRul
     }
     
 	@Override
+    @XmlTransient
     public boolean isEmpty() {
         return (super.isEmpty()
                 && (null == this.getMaxLength() || this.getMaxLength() < 0)

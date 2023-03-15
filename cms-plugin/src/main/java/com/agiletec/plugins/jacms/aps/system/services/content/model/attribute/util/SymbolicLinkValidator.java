@@ -27,6 +27,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
 import java.util.HashSet;
 import org.apache.commons.collections4.CollectionUtils;
+import org.entando.entando.ent.exception.EntRuntimeException;
 
 /**
  * Classe di utilità per la validazione degli attributi in cui negli elementi
@@ -71,7 +72,7 @@ public class SymbolicLinkValidator {
     }
 
     protected AttributeFieldError checkPageDest(SymbolicLink symbLink, Content content) {
-        String pageCode = symbLink.getPageDest();
+        String pageCode = symbLink.getPageDestination();
         IPage page = this.getPageManager().getOnlinePage(pageCode);
         if (null == page) {
             AttributeFieldError result = new AttributeFieldError(null, ICmsAttributeErrorCodes.INVALID_PAGE, null);
@@ -111,9 +112,9 @@ public class SymbolicLinkValidator {
     protected AttributeFieldError checkContentDest(SymbolicLink symbLink, Content content) {
         Content linkedContent = null;
         try {
-            linkedContent = this.getContentManager().loadContent(symbLink.getContentDest(), true);
+            linkedContent = this.getContentManager().loadContent(symbLink.getContentDestination(), true);
         } catch (Throwable e) {
-            throw new RuntimeException("Errore in caricamento contenuto " + symbLink.getContentDest(), e);
+            throw new EntRuntimeException("Errore in caricamento contenuto " + symbLink.getContentDestination(), e);
         }
         if (null == linkedContent) {
             return new AttributeFieldError(null, ICmsAttributeErrorCodes.INVALID_CONTENT, null);
@@ -133,9 +134,9 @@ public class SymbolicLinkValidator {
     protected AttributeFieldError checkResourceDest(SymbolicLink symbLink, Content content) {
         ResourceInterface linkedResource = null;
         try {
-            linkedResource = _resourceManager.loadResource(symbLink.getResourceDest());
+            linkedResource = _resourceManager.loadResource(symbLink.getResourceDestination());
         } catch (Throwable e) {
-            throw new RuntimeException("Error loading resource " + symbLink.getResourceDest(), e);
+            throw new EntRuntimeException("Error loading resource " + symbLink.getResourceDestination(), e);
         }
         if (null == linkedResource) {
             return new AttributeFieldError(null, ICmsAttributeErrorCodes.INVALID_RESOURCE, null);

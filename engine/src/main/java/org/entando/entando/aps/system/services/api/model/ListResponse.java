@@ -14,7 +14,6 @@
 package org.entando.entando.aps.system.services.api.model;
 
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -23,24 +22,28 @@ import javax.xml.bind.annotation.XmlType;
  * @author E.Santoboni
  */
 @XmlRootElement(name = "items")
-@XmlType(propOrder = {"size", "_entity"})
+@XmlType(propOrder = {"size", "entity"})
 public class ListResponse<T> {
-	
-	public ListResponse() {}
-	
-	public ListResponse(List<T> entity) {
-		this._entity = entity;
-	}
-	
-	@XmlElement(name = "size", required =false)
-	public String getSize() {
-		if (null != this._entity) {
-			return String.valueOf(this._entity.size());
-		}
-		return null;
-	}
-	
-	@XmlElement(name = "item", required = false)
-	private List<T> _entity;
-	
+
+    public ListResponse() {
+    }
+
+    public ListResponse(List<T> entity) {
+        this.entity = entity;
+    }
+
+    @XmlElement(name = "size", required = false)
+    public String getSize() {
+        if (null != this.entity) {
+            return String.valueOf(this.entity.size());
+        }
+        return null;
+    }
+
+    @XmlElement(name = "item", required = false)
+    private List<T> entity;
+
+    public List<T> getEntity() {
+        return this.entity;
+    }
 }

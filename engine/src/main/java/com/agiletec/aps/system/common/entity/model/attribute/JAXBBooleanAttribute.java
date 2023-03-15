@@ -22,15 +22,16 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(propOrder = {"boolean"})
 public class JAXBBooleanAttribute extends AbstractJAXBAttribute implements Serializable {
-    
+
     @XmlElement(name = "value", required = false)
     public Boolean getBoolean() {
-        return _boolean;
+        return value;
     }
+
     public void setBoolean(Boolean booleanValue) {
-        this._boolean = booleanValue;
+        this.value = booleanValue;
     }
-    
-    private Boolean _boolean;
-    
+
+    private Boolean value;
+
 }

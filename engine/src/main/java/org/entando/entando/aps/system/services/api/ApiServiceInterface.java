@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.apache.commons.beanutils.BeanComparator;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethodParameter;
@@ -35,6 +33,7 @@ import org.entando.entando.aps.system.services.api.model.ServiceParameterInfo;
 import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author E.Santoboni
@@ -97,8 +96,8 @@ public class ApiServiceInterface {
     }
     
     public Object getService(Properties properties) throws ApiException {
-        Object response = null;
-        String key = (String) properties.get("key");
+        Object response;
+        String key = properties.getProperty("key");
         try {
             ApiService service = this.getApiCatalogManager().getApiService(key);
             if (null == service) {
@@ -137,12 +136,12 @@ public class ApiServiceInterface {
 			UserDetails user = (UserDetails) properties.get(SystemConstants.API_USER_PARAMETER);
             if (null == user) {
                 throw new ApiException(IApiErrorCodes.API_AUTHENTICATION_REQUIRED, 
-						"Authentication is mandatory for service '" + service.getKey() + "'", Response.Status.UNAUTHORIZED);
+						"Authentication is mandatory for service '" + service.getKey() + "'", HttpStatus.UNAUTHORIZED);
             }
 			if ((null != service.getRequiredGroup() && !this.getAuthorizationManager().isAuthOnGroup(user, service.getRequiredGroup())) 
 					|| (null != service.getRequiredPermission() && !this.getAuthorizationManager().isAuthOnPermission(user, service.getRequiredPermission()))) {
 				throw new ApiException(IApiErrorCodes.API_AUTHORIZATION_REQUIRED, 
-						"Permission denied for service '" + service.getKey() + "'", Status.FORBIDDEN);
+						"Permission denied for service '" + service.getKey() + "'", HttpStatus.FORBIDDEN);
 			}
 		} catch (ApiException ae) {
 			if (throwApiException) {

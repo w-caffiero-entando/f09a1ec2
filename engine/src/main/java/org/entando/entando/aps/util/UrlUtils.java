@@ -22,12 +22,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.owasp.encoder.Encode;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 public final class UrlUtils {
@@ -218,11 +219,15 @@ public final class UrlUtils {
             return this;
         }
 
-        public URI build(){
-            UriBuilder builder = UriBuilder.fromUri(url);
+        public URI build() {
+            UriBuilder builder = UriComponentsBuilder.fromUriString(url);
             for (String path : paths) {
-                if(StringUtils.isNotBlank(path)) {
-                    builder.path(path.trim());
+                if (StringUtils.isNotBlank(path)) {
+                    path = path.trim();
+                    if (!path.startsWith("/")) {
+                        path = "/" + path;
+                    }
+                    builder.path(path);
                 }
             }
             return builder.build();

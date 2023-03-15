@@ -62,6 +62,7 @@ class SeoPageControllerTest extends AbstractControllerTest {
     public void setUp() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
+                .setMessageConverters(getMessageConverters())
                 .setHandlerExceptionResolvers(createHandlerExceptionResolver())
                 .build();
     }

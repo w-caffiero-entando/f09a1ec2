@@ -214,6 +214,10 @@ public final class SystemConstants {
 
     public static final String API_CATALOG_MANAGER = "ApiCatalogManager";
 
+    public static final String LEGACY_API_UNMARSHALLER = "LegacyApiUnmarshaller";
+
+    public static final String LEGACY_API_PREFIX = "legacy";
+
     public static final String API_LANG_CODE_PARAMETER = "apiMethod:langCode";
 
     public static final String API_USER_PARAMETER = "apiMethod:user";
@@ -233,8 +237,6 @@ public final class SystemConstants {
     public static final String OAUTH_TOKEN_MANAGER = "OAuth2TokenManager";
 
     public static final String OAUTH_CONSUMER_MANAGER = "OAuthConsumerManager";
-
-    public static final String LEGACY_API_USER_EXTRACTOR = "LegacyApiUserExtractor";
 
     /**
      * Prefisso del nome del gruppo di oggetti in cache a servizio di una

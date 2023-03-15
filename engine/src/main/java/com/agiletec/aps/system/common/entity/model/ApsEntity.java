@@ -13,6 +13,10 @@
  */
 package com.agiletec.aps.system.common.entity.model;
 
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
+import com.agiletec.aps.system.common.entity.parse.IApsEntityDOM;
+import com.agiletec.aps.system.services.group.IGroupManager;
+import com.agiletec.aps.system.services.lang.ILangManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,16 +25,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
-import org.jdom.Element;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
-import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
-import com.agiletec.aps.system.common.entity.parse.IApsEntityDOM;
-import com.agiletec.aps.system.services.group.IGroupManager;
-import com.agiletec.aps.system.services.lang.ILangManager;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.jdom.Element;
 
 /**
  * This class represents an entity. The structure of the entity, defined during the configuration process, is built

@@ -81,28 +81,28 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
                 case SymbolicLink.PAGE_TYPE:
                     linkElement.setAttribute("type", "page");
                     dest = new Element("pagedest");
-                    dest.addContent(this.getSymbolicLink().getPageDest());
+                    dest.addContent(this.getSymbolicLink().getPageDestination());
                     linkElement.addContent(dest);
                     break;
                 case SymbolicLink.CONTENT_TYPE:
                     linkElement.setAttribute("type", "content");
                     dest = new Element("contentdest");
-                    dest.addContent(this.getSymbolicLink().getContentDest());
+                    dest.addContent(this.getSymbolicLink().getContentDestination());
                     linkElement.addContent(dest);
                     break;
                 case SymbolicLink.CONTENT_ON_PAGE_TYPE:
                     linkElement.setAttribute("type", "contentonpage");
                     dest = new Element("pagedest");
-                    dest.addContent(this.getSymbolicLink().getPageDest());
+                    dest.addContent(this.getSymbolicLink().getPageDestination());
                     linkElement.addContent(dest);
                     dest = new Element("contentdest");
-                    dest.addContent(this.getSymbolicLink().getContentDest());
+                    dest.addContent(this.getSymbolicLink().getContentDestination());
                     linkElement.addContent(dest);
                     break;
                 case SymbolicLink.RESOURCE_TYPE:
                     linkElement.setAttribute("type", "resource");
                     dest = new Element("resourcedest");
-                    dest.addContent(this.getSymbolicLink().getResourceDest());
+                    dest.addContent(this.getSymbolicLink().getResourceDestination());
                     linkElement.addContent(dest);
                     break;
                 default:
@@ -157,8 +157,8 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
         List<CmsAttributeReference> refs = new ArrayList<>();
         SymbolicLink symbLink = this.getSymbolicLink();
         if (null != symbLink && (symbLink.getDestType() != SymbolicLink.URL_TYPE)) {
-            CmsAttributeReference ref = new CmsAttributeReference(symbLink.getPageDest(),
-                    symbLink.getContentDest(), null);
+            CmsAttributeReference ref = new CmsAttributeReference(symbLink.getPageDestination(),
+                    symbLink.getContentDestination(), null);
             refs.add(ref);
         }
         return refs;
@@ -239,8 +239,9 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
             if (null != attributeError) {
                 AttributeFieldError error = new AttributeFieldError(this, attributeError.getErrorCode(), tracer);
                 if (attributeError.getMessage() == null) {
-                    attributeError.setMessage("Invalid link - page " + symbolicLink.getPageDest()
-                            + " - content " + symbolicLink.getContentDest() + " - Error code " + attributeError.getErrorCode());
+                    attributeError.setMessage(String.format("Invalid link - page %s - content %s - Error code %s",
+                            symbolicLink.getPageDestination(), symbolicLink.getContentDestination(),
+                            attributeError.getErrorCode()));
                 }
                 error.setMessage(attributeError.getMessage());
                 errors.add(error);

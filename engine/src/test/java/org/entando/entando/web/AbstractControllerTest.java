@@ -25,6 +25,9 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.entando.entando.aps.system.services.api.DefaultJsonTypesProvider;
+import org.entando.entando.aps.system.services.api.JsonTypesProvider;
+import org.entando.entando.aps.system.services.api.ObjectMapperConfiguration;
 import org.entando.entando.aps.system.services.oauth2.IApiOAuth2TokenManager;
 import org.entando.entando.web.common.handlers.RestExceptionHandler;
 import org.entando.entando.web.common.interceptor.EntandoOauth2Interceptor;
@@ -36,7 +39,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.method.HandlerMethod;
@@ -61,6 +67,12 @@ public class AbstractControllerTest {
 
     @InjectMocks
     protected EntandoOauth2Interceptor entandoOauth2Interceptor;
+
+    protected List<JsonTypesProvider> getJsonTypesProviders() {
+        return List.of(new DefaultJsonTypesProvider());
+    }
+
+    protected ObjectMapperConfiguration mapperConfiguration = new ObjectMapperConfiguration();
 
     /**
      * The returned list contains an {@link HandlerExceptionResolver} built with
@@ -110,6 +122,16 @@ public class AbstractControllerTest {
         return exceptionResolver;
     }
 
+    protected HttpMessageConverter<?>[] getMessageConverters() {
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+        jsonConverter.setSupportedMediaTypes(List.of(MediaType.APPLICATION_JSON));
+        jsonConverter.setObjectMapper(mapperConfiguration.defaultObjectMapper());
+        MappingJackson2XmlHttpMessageConverter xmlConverter = new MappingJackson2XmlHttpMessageConverter();
+        xmlConverter.setSupportedMediaTypes(List.of(MediaType.APPLICATION_XML));
+        xmlConverter.setObjectMapper(mapperConfiguration.xmlMapper());
+        return new HttpMessageConverter<?>[]{jsonConverter, xmlConverter};
+    }
+
     protected Object createPagedMetadata(String json) throws IOException, JsonParseException, JsonMappingException {
         ObjectMapper mapper = new ObjectMapper();
         Object result = mapper.readValue(json, PagedMetadata.class);
@@ -139,6 +161,7 @@ public class AbstractControllerTest {
     @BeforeEach
     public void cleanToken() {
         accessToken = null;
+        mapperConfiguration.setJsonTypesProviders(getJsonTypesProviders());
     }
 
     private String accessToken;

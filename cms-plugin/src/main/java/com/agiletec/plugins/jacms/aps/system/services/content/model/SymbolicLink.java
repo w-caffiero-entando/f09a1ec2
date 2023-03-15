@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -32,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author E.Santoboni - S.Didaci
  */
 @XmlRootElement(name = "symbolicLink")
-@XmlType(propOrder = {"contentDest", "pageDest", "resourceDest", "symbolicDestination"})
+@XmlType(propOrder = {"contentDestination", "pageDestination", "resourceDestination", "symbolicDestination"})
 public class SymbolicLink implements Serializable {
 	
 	/**
@@ -40,8 +41,8 @@ public class SymbolicLink implements Serializable {
 	 * @param url L'URL completo della destinazione del link (esempio: "http;//www.google.com")
 	 */
 	public void setDestinationToUrl(String url) {
-		this._destType = URL_TYPE;
-		_urlDest = url;
+		this.destinationType = URL_TYPE;
+		this.urlDestination = url;
 	}
 	
 	/**
@@ -49,8 +50,8 @@ public class SymbolicLink implements Serializable {
 	 * @param pageCode Il codice della pagina di destinazione.
 	 */
 	public void setDestinationToPage(String pageCode){
-		this._destType = PAGE_TYPE;
-		_pageDest = pageCode;
+		this.destinationType = PAGE_TYPE;
+		pageDestination = pageCode;
 	}
 	
 	/**
@@ -58,8 +59,8 @@ public class SymbolicLink implements Serializable {
 	 * @param contentId Il codice del contenuto di destinazione.
 	 */
 	public void setDestinationToContent(String contentId){
-		this._destType = CONTENT_TYPE;
-		_contentDest = contentId;
+		this.destinationType = CONTENT_TYPE;
+		contentDestination = contentId;
 	}
 	
 	/**
@@ -68,14 +69,14 @@ public class SymbolicLink implements Serializable {
 	 * @param pageCode Il codice della pagina di destinazione.
 	 */
 	public void setDestinationToContentOnPage(String contentId, String pageCode){
-		this._destType = CONTENT_ON_PAGE_TYPE;
-		_contentDest = contentId;
-		_pageDest = pageCode;
+		this.destinationType = CONTENT_ON_PAGE_TYPE;
+		contentDestination = contentId;
+		pageDestination = pageCode;
 	}
 	
 	public void setDestinationToResource(String resourceId){
-		this._destType = RESOURCE_TYPE;
-		this._resourceDest = resourceId;
+		this.destinationType = RESOURCE_TYPE;
+		this.resourceDestination = resourceId;
 	}
 
 	/**
@@ -83,7 +84,12 @@ public class SymbolicLink implements Serializable {
 	 * @return Il tipo, una delle costanti dichiarate in questa classe.
 	 */
 	public int getDestType(){
-		return _destType;
+		return destinationType;
+	}
+
+	@XmlTransient
+	public void setDestType(int destType) {
+		this.destinationType = destType;
 	}
 	
 	/**
@@ -92,8 +98,12 @@ public class SymbolicLink implements Serializable {
 	 * @return L'identificativo del contenuto di destinazione
 	 */
 	@XmlElement(name = "contentDestination", required = false)
-	public String getContentDest(){
-		return _contentDest;
+	public String getContentDestination(){
+		return contentDestination;
+	}
+
+	public void setContentDestination(String contentDestination) {
+		this.contentDestination = contentDestination;
 	}
 
 	/**
@@ -102,8 +112,12 @@ public class SymbolicLink implements Serializable {
 	 * @return Il codice della pagina di destinazione.
 	 */
 	@XmlElement(name = "pageDestination", required = false)
-	public String getPageDest(){
-		return _pageDest;
+	public String getPageDestination(){
+		return pageDestination;
+	}
+
+	public void setPageDestination(String pageDestination) {
+		this.pageDestination = pageDestination;
 	}
 
 	/**
@@ -112,14 +126,23 @@ public class SymbolicLink implements Serializable {
 	 * @return L'URL di destinazione. 
 	 */
 	public String getUrlDest(){
-		return _urlDest;
+		return urlDestination;
 	}
-	
+
+	@XmlTransient
+	public void setUrlDest(String urlDest) {
+		this.urlDestination = urlDest;
+	}
+
 	@XmlElement(name = "resourceDestination", required = false)
-	public String getResourceDest() {
-		return _resourceDest;
+	public String getResourceDestination() {
+		return resourceDestination;
 	}
-	
+
+	public void setResourceDestination(String resourceDestination) {
+		this.resourceDestination = resourceDestination;
+	}
+
 	/**
 	 * Imposta la destinazione del link sulla destinazione specificata. 
 	 * @param symbolicDestination Destinazione simbolica, ottenuta in precedenza
@@ -179,21 +202,21 @@ public class SymbolicLink implements Serializable {
 	public String getSymbolicDestination(){
 		StringBuilder dest = new StringBuilder();
 		dest.append(SymbolicLink.SYMBOLIC_DEST_PREFIX);
-		switch(_destType){
+		switch(destinationType){
 		case URL_TYPE:
-			dest.append("U;").append(_urlDest);
+			dest.append("U;").append(urlDestination);
 			break;
 		case PAGE_TYPE:
-			dest.append("P;").append(this.getPageDest());
+			dest.append("P;").append(this.getPageDestination());
 			break;
 		case CONTENT_TYPE:
-			dest.append("C;").append(this.getContentDest());
+			dest.append("C;").append(this.getContentDestination());
 			break;
 		case CONTENT_ON_PAGE_TYPE:
-			dest.append("O;").append(this.getContentDest()).append(';').append(this.getPageDest());
+			dest.append("O;").append(this.getContentDestination()).append(';').append(this.getPageDestination());
 			break;
 		case RESOURCE_TYPE:
-			dest.append("R;").append(this.getResourceDest());
+			dest.append("R;").append(this.getResourceDestination());
 			break;
 		}
 		dest.append(SymbolicLink.SYMBOLIC_DEST_POSTFIX);
@@ -219,11 +242,11 @@ public class SymbolicLink implements Serializable {
 		return types;
 	}
 	
-	private int _destType;
-	private String _pageDest;
-	private String _contentDest;
-	private String _urlDest;
-	private String _resourceDest;
+	private int destinationType;
+	private String pageDestination;
+	private String contentDestination;
+	private String urlDestination;
+	private String resourceDestination;
 	
 	/**
 	 * Tipo di destinazione del link: URL esterno.

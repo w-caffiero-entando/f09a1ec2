@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlTransient;
 import ognl.Ognl;
 import ognl.OgnlContext;
 import ognl.OgnlException;
@@ -73,7 +74,8 @@ public class OgnlValidationRule implements Serializable {
         clone.setHelpMessageKey(this.getHelpMessageKey());
         return clone;
     }
-    
+
+    @XmlTransient
     public Element getConfigElement() {
         if (null == this.getExpression() || this.getExpression().trim().length() == 0) {
             return null;

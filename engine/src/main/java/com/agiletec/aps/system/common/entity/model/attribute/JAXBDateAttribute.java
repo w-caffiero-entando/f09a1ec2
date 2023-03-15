@@ -23,15 +23,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(propOrder = {"date"})
 public class JAXBDateAttribute extends AbstractJAXBAttribute implements Serializable {
-    
+
+    private Date date;
+
     @XmlElement(name = "value", required = false)
-	public Date getDate() {
-		return _date;
-	}
-	public void setDate(Date date) {
-		this._date = date;
-	}
-    
-	private Date _date;
-    
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 }

@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.model.ApiError;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -61,7 +61,7 @@ public class JAXBEntityType {
     }
     
     public IApsEntity buildEntityType(Class entityClass, Map<String, AttributeInterface> attributes) throws ApiException, Throwable {
-        List<ApiError> errors = new ArrayList<ApiError>();
+        List<LegacyApiError> errors = new ArrayList<>();
         IApsEntity entityType = null;
         try {
             entityType = (IApsEntity) entityClass.newInstance();

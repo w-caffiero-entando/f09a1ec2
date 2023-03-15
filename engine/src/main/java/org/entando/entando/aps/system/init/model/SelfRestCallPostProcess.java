@@ -16,7 +16,7 @@ package org.entando.entando.aps.system.init.model;
 import java.util.List;
 import java.util.Properties;
 
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
 
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.jdom.Element;

@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlElement;
  * @author E.Santoboni
  */
 public class JAXBEnumeratorMapAttribute extends AbstractJAXBAttribute implements Serializable {
-	
+
 	@XmlElement(name = "value", required = false)
 	public JAXBEnumeratorMapValue getMapValue() {
 		return _mapValue;
@@ -33,5 +33,4 @@ public class JAXBEnumeratorMapAttribute extends AbstractJAXBAttribute implements
 	}
 	
 	private JAXBEnumeratorMapValue _mapValue;
-	
 }

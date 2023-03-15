@@ -14,13 +14,15 @@
 package com.agiletec.aps.system.services.pagemodel;
 
 import com.agiletec.aps.system.services.page.Widget;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.entando.entando.aps.system.services.api.model.CDataXmlTypeAdapter;
-
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Representation of a page template. 
@@ -233,7 +235,6 @@ public class PageModel implements Serializable {
 		this.pluginCode = pluginCode;
 	}
 
-	@XmlJavaTypeAdapter(CDataXmlTypeAdapter.class)
 	@XmlElement(name = "template", required = false)
 	public String getTemplate() {
 		return template;

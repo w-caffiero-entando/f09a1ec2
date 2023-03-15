@@ -13,9 +13,6 @@
  */
 package com.agiletec.plugins.jacms.apsadmin.content.attribute.manager.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
@@ -23,6 +20,9 @@ import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
+import java.util.ArrayList;
+import java.util.List;
+import org.entando.entando.ent.exception.EntRuntimeException;
 
 /**
  * Classe di utilità per i manager degli attributi in cui negli elementi
@@ -56,7 +56,7 @@ public class SymbolicLinkErrorMessenger implements ISymbolicLinkErrorMessenger {
 	}
 
 	protected int checkPageDest(SymbolicLink symbLink, Content content) {
-		String pageCode = symbLink.getPageDest();
+		String pageCode = symbLink.getPageDestination();
 		IPage page = this.getPageManager().getOnlinePage(pageCode);
 		if (null == page) {
 			return MESSAGE_CODE_INVALID_PAGE;
@@ -85,9 +85,9 @@ public class SymbolicLinkErrorMessenger implements ISymbolicLinkErrorMessenger {
 	protected int checkContentDest(SymbolicLink symbLink, Content content) {
 		Content linkedContent = null;
 		try {
-			linkedContent = this.getContentManager().loadContent(symbLink.getContentDest(), true);
+			linkedContent = this.getContentManager().loadContent(symbLink.getContentDestination(), true);
 		} catch (Throwable e) {
-			throw new RuntimeException("Errore in caricamento contenuto " + symbLink.getContentDest(), e);
+			throw new EntRuntimeException("Errore in caricamento contenuto " + symbLink.getContentDestination(), e);
 		}
 		if (null == linkedContent) {
 			return MESSAGE_CODE_INVALID_CONTENT;

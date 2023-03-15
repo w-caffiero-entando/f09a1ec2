@@ -33,33 +33,36 @@ import org.entando.entando.aps.system.services.api.model.ApiException;
 @XmlType(propOrder = {"elementTypes"})
 @XmlSeeAlso({DefaultJAXBAttributeType.class, JAXBEnumeratorAttributeType.class})
 public class JAXBCompositeAttributeType extends DefaultJAXBAttributeType {
-    
+
     @Override
     public AttributeInterface createAttribute(Map<String, AttributeInterface> attributes) throws ApiException {
         CompositeAttribute compositeAttribute = (CompositeAttribute) super.createAttribute(attributes);
-        List<Object> jaxbElementTypes = this.getElementTypes();
-        if (null == jaxbElementTypes) return compositeAttribute;
-        for (int i = 0; i < jaxbElementTypes.size(); i++) {
-            DefaultJAXBAttributeType jaxbElementType = (DefaultJAXBAttributeType) jaxbElementTypes.get(i);
+        List<DefaultJAXBAttributeType> jaxbElementTypes = this.getElementTypes();
+        if (null == jaxbElementTypes) {
+            return compositeAttribute;
+        }
+        for (DefaultJAXBAttributeType jaxbElementType : jaxbElementTypes) {
             if (null == attributes.get(jaxbElementType.getType())) {
-                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR, 
-                        "Attribute Element '" + jaxbElementType.getName() + "' - Type '" + jaxbElementType.getType() + "' does not exist");
+                throw new ApiException(IApiErrorCodes.API_VALIDATION_ERROR,
+                        "Attribute Element '" + jaxbElementType.getName() + "' - Type '" + jaxbElementType.getType()
+                                + "' does not exist");
             }
             AttributeInterface attributeElement = jaxbElementType.createAttribute(attributes);
             compositeAttribute.addAttribute(attributeElement);
         }
         return compositeAttribute;
     }
-    
+
     @XmlElement(name = "compositeElementType", required = true)
     @XmlElementWrapper(name = "compositeElementTypes")
-    public List<Object> getElementTypes() {
-        return _elementTypes;
+    public List<DefaultJAXBAttributeType> getElementTypes() {
+        return elementTypes;
     }
-    public void setElementTypes(List<Object> elementTypes) {
-        this._elementTypes = elementTypes;
+
+    public void setElementTypes(List<DefaultJAXBAttributeType> elementTypes) {
+        this.elementTypes = elementTypes;
     }
-    
-    private List<Object> _elementTypes = new ArrayList<>();
-    
+
+    private List<DefaultJAXBAttributeType> elementTypes = new ArrayList<>();
+
 }

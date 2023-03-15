@@ -21,34 +21,36 @@ import java.util.List;
  * @author E.Santoboni
  */
 public final class ApiMethodResult implements Serializable {
-    
+
     public Object getResult() {
-        return _result;
+        return result;
     }
+
     public void setResult(Object result) {
-        this._result = result;
+        this.result = result;
     }
-    
+
     public void addError(String errorCode, String description) {
-        ApiError error = new ApiError(errorCode, description);
+        LegacyApiError error = new LegacyApiError(errorCode, description);
         this.addError(error);
     }
-    
-    public void addError(ApiError error) {
+
+    public void addError(LegacyApiError error) {
         if (null == this.getErrors()) {
-            this.setErrors(new ArrayList<ApiError>());
+            this.setErrors(new ArrayList<>());
         }
         this.getErrors().add(error);
     }
-    
-    public List<ApiError> getErrors() {
-        return _errors;
+
+    public List<LegacyApiError> getErrors() {
+        return errors;
     }
-    public void setErrors(List<ApiError> errors) {
-        this._errors = errors;
+
+    public void setErrors(List<LegacyApiError> errors) {
+        this.errors = errors;
     }
-    
-    private Object _result;
-    private List<ApiError> _errors;
-    
+
+    private Object result;
+    private List<LegacyApiError> errors;
+
 }

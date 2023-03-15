@@ -14,16 +14,13 @@
 package org.entando.entando.aps.system.services.i18n.inlinediting.model;
 
 import com.agiletec.aps.util.ApsProperties;
-import org.entando.entando.aps.system.services.api.model.CDataXmlTypeAdapter;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author E.Santoboni
@@ -105,7 +102,6 @@ public class JAXBI18nLabel implements Serializable {
             this._langCode = langCode;
         }
 
-        @XmlJavaTypeAdapter(CDataXmlTypeAdapter.class)
         @XmlElement(name = "value", required = true)
         public String getValue() {
             return _value;
