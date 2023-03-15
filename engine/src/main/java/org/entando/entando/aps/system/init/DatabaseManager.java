@@ -72,6 +72,7 @@ import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.ServletContextAware;
 
@@ -675,6 +676,7 @@ public class DatabaseManager extends AbstractInitializerManager
     protected ITenantManager getTenantManager() {
         return tenantManager;
     }
+    @Autowired
     public void setTenantManager(ITenantManager tenantManager) {
         this.tenantManager = tenantManager;
     }

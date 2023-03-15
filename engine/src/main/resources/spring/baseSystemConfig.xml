@@ -119,7 +119,6 @@
         <property name="lockFallbackMinutes">
             <value>${entando.liquibase.lock.fallback.minutes:10}</value>
         </property>
-        <property name="tenantManager" ref="TenantManager" />
     </bean>
 
     <bean id="SelfRestCaller" class="org.entando.entando.aps.system.init.SelfRestCaller" />

@@ -14,6 +14,7 @@
 package org.entando.entando.aps.system.services.tenants;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class TenantConfigTest {
         Map<String, String> mapResult = clone.getAll();
 
         Assertions.assertThat(mapResult).hasSize(map2.size()).containsOnlyKeys(map2.keySet());
-        Assertions.assertThat(clone.getDbMigrationStrategy()).isEqualTo("disabled");
+        Assertions.assertThat(clone.getDbMigrationStrategy()).isEqualTo(Optional.of("disabled"));
     }
 
     @Test
