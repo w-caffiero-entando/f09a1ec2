@@ -26,7 +26,6 @@ import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.ResourceAttributeInterface;
-import com.agiletec.plugins.jacms.aps.system.services.searchengine.IIndexerDAO;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Data Access Object dedita alla indicizzazione di documenti.
  */
-public class IndexerDAO implements IIndexerDAO {
+public class IndexerDAO implements ISolrIndexerDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(IndexerDAO.class);
 
@@ -89,6 +88,7 @@ public class IndexerDAO implements IIndexerDAO {
         }
     }
 
+    @Override
     public void addBulk(Stream<IApsEntity> entityStream) throws EntException {
         try {
             entityStream.forEach(entity -> {
@@ -271,4 +271,15 @@ public class IndexerDAO implements IIndexerDAO {
         this.treeNodeManager = treeNodeManager;
     }
 
+    @Override
+    public boolean deleteAllDocuments() {
+        try {
+            solrClient.deleteByQuery(this.solrCore, "*:*");
+            this.solrClient.commit(this.solrCore);
+        } catch (IOException | SolrServerException ex) {
+            logger.error("Error deleting documents", ex);
+            return false;
+        }
+        return true;
+    }
 }

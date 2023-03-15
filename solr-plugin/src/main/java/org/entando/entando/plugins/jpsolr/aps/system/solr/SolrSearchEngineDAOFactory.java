@@ -19,12 +19,10 @@ import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.IIndexerDAO;
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.ISearcherDAO;
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
@@ -50,76 +48,23 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
         this.tenantManager = tenantManager;
     }
 
-    private static class SolrDAOResources {
-
-        private final SolrClient solrClient;
-        private final IndexerDAO indexerDAO;
-        private final SearcherDAO searcherDAO;
-
-        public SolrDAOResources(String solrAddress, String solrCore, ILangManager langManager,
-                ICategoryManager categoryManager) {
-            this.solrClient = new HttpSolrClient.Builder(solrAddress)
-                    .withConnectionTimeout(10000)
-                    .withSocketTimeout(60000)
-                    .build();
-
-            this.indexerDAO = new IndexerDAO(solrClient, solrCore);
-            this.indexerDAO.setLangManager(langManager);
-            this.indexerDAO.setTreeNodeManager(categoryManager);
-
-            this.searcherDAO = new SearcherDAO(solrClient, solrCore);
-            this.searcherDAO.setLangManager(langManager);
-            this.searcherDAO.setTreeNodeManager(categoryManager);
-        }
-
-        public void close() throws IOException {
-            solrClient.close();
-        }
-    }
-
-    private SolrDAOResources primaryDAOResources;
-    private final Map<String, SolrDAOResources> tenantDAOResources = new ConcurrentHashMap<>();
+    private SolrTenantResources primaryResources;
+    private final Map<String, SolrTenantResources> tenantResources = new ConcurrentHashMap<>();
 
     @Override
     public void init() throws Exception {
-        this.primaryDAOResources = newSolrDAOResources();
+        this.primaryResources = newSolrDAOResources();
     }
 
-    private SolrDAOResources newSolrDAOResources() {
-        return new SolrDAOResources(this.getSolrAddress(), this.getSolrCore(), this.langManager, this.categoryManager);
+    private SolrTenantResources newSolrDAOResources() {
+        return new SolrTenantResources(this.getSolrAddress(), this.getSolrCore(), this.langManager, this.categoryManager);
     }
 
     @Override
     public void close() throws IOException {
-        this.primaryDAOResources.close();
-        for (SolrDAOResources tenantResources : tenantDAOResources.values()) {
+        for (SolrTenantResources tenantResources : this.getAllSolrTenantResources()) {
             tenantResources.close();
         }
-    }
-
-    @Override
-    public List<Map<String, Serializable>> getFields() {
-        return SolrSchemaClient.getFields(this.getSolrAddress(), this.getSolrCore());
-    }
-
-    @Override
-    public boolean addField(Map<String, Serializable> properties) {
-        return SolrSchemaClient.addField(this.getSolrAddress(), this.getSolrCore(), properties);
-    }
-
-    @Override
-    public boolean replaceField(Map<String, Serializable> properties) {
-        return SolrSchemaClient.replaceField(this.getSolrAddress(), this.getSolrCore(), properties);
-    }
-
-    @Override
-    public boolean deleteField(String fieldKey) {
-        return SolrSchemaClient.deleteField(this.getSolrAddress(), this.getSolrCore(), fieldKey);
-    }
-
-    @Override
-    public boolean deleteAllDocuments() {
-        return SolrSchemaClient.deleteAllDocuments(this.getSolrAddress(), this.getSolrCore());
     }
 
     @Override
@@ -129,19 +74,33 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
     }
 
     @Override
-    public IIndexerDAO getIndexer() throws EntException {
-        return ApsTenantApplicationUtils.getTenant()
-                .map(tenantCode -> tenantDAOResources
-                        .computeIfAbsent(tenantCode, t -> newSolrDAOResources()).indexerDAO)
-                .orElse(primaryDAOResources.indexerDAO);
+    public ISolrIndexerDAO getIndexer() throws EntException {
+        return getSolrTenantResources().getIndexerDAO();
     }
 
     @Override
-    public ISearcherDAO getSearcher() throws EntException {
+    public ISolrSearcherDAO getSearcher() throws EntException {
+        return getSolrTenantResources().getSearcherDAO();
+    }
+
+    @Override
+    public ISolrSchemaDAO getSolrSchemaDao() {
+        return getSolrTenantResources().getSolrSchemaDAO();
+    }
+
+    @Override
+    public SolrTenantResources getSolrTenantResources() {
         return ApsTenantApplicationUtils.getTenant()
-                .map(tenantCode -> tenantDAOResources
-                        .computeIfAbsent(tenantCode, t -> newSolrDAOResources()).searcherDAO)
-                .orElse(primaryDAOResources.searcherDAO);
+                .map(tenantCode -> tenantResources
+                        .computeIfAbsent(tenantCode, t -> newSolrDAOResources()))
+                .orElse(primaryResources);
+    }
+
+    @Override
+    public List<SolrTenantResources> getAllSolrTenantResources() {
+        List<SolrTenantResources> allTenantResources = new ArrayList<>(tenantResources.values());
+        allTenantResources.add(0, primaryResources);
+        return allTenantResources;
     }
 
     @Override

@@ -14,23 +14,21 @@
 package org.entando.entando.plugins.jpsolr.aps.system.solr;
 
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.ISearchEngineDAOFactory;
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * @author E.Santoboni
  */
 public interface ISolrSearchEngineDAOFactory extends ISearchEngineDAOFactory {
-    
-    public List<Map<String, Serializable>> getFields();
 
-    public boolean addField(Map<String, Serializable> properties);
+    ISolrSchemaDAO getSolrSchemaDao();
 
-    public boolean replaceField(Map<String, Serializable> properties);
+    ISolrIndexerDAO getIndexer() throws EntException;
 
-    public boolean deleteField(String fieldKey);
-    
-    public boolean deleteAllDocuments();
-    
+    ISolrSearcherDAO getSearcher() throws EntException;
+
+    SolrTenantResources getSolrTenantResources();
+
+    List<SolrTenantResources> getAllSolrTenantResources();
 }
