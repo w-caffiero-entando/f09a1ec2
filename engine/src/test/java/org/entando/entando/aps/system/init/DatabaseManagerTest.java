@@ -303,22 +303,13 @@ class DatabaseManagerTest {
     }
     
     @Test
-    void testMigrationStrategyForTenant_1() throws Exception {
-        this.testMigrationStrategyForTenant("disabled", DatabaseMigrationStrategy.GENERATE_SQL);
-    }
-    
-    @Test
-    void testMigrationStrategyForTenant_2() throws Exception {
-        this.testMigrationStrategyForTenant("wrongValue", DatabaseMigrationStrategy.DISABLED);
-    }
-    
-    private void testMigrationStrategyForTenant(String migrationStrategyString, DatabaseMigrationStrategy toExecute) throws Exception {
+    void testMigrationStrategyForTenant() throws Exception {
         Mockito.lenient().doReturn(null).when(databaseManager).getBackupReports();
         databaseManager.setEnvironment(Environment.production);
         EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, "tenant1");
         try {
             TenantConfig tenantConfig = Mockito.mock(TenantConfig.class);
-            Mockito.lenient().when(tenantConfig.getDbMigrationStrategy()).thenReturn(migrationStrategyString);
+            Mockito.lenient().when(tenantConfig.getDbMigrationStrategy()).thenReturn(Optional.of("disabled"));
             Mockito.lenient().when(tenantManager.getConfig("tenant1")).thenReturn(Optional.of(tenantConfig));
             Map<String, String> liquibaseChangeSets = new HashMap<>();
             liquibaseChangeSets.put("portDataSource", "changeSetPort.xml");
@@ -338,7 +329,7 @@ class DatabaseManagerTest {
             });  MockedStatic<DatabaseFactory> dbFactory = Mockito.mockStatic(DatabaseFactory.class)) {
                 dbFactory.when(DatabaseFactory::getInstance).thenReturn(Mockito.mock(DatabaseFactory.class));
                 Assertions.assertThrows(DatabaseMigrationException.class, () -> {
-                    databaseManager.installDatabase(getMockedReport(), toExecute);
+                    databaseManager.installDatabase(getMockedReport(), DatabaseMigrationStrategy.GENERATE_SQL);
                 });
                 Mockito.verifyNoInteractions(storageManager);
             }
@@ -348,12 +339,17 @@ class DatabaseManagerTest {
     }
     
     @Test
-    void testMigrationStrategyForTenant_3() throws Exception {
+    void testSkippedMigrationStrategyForTenant() throws Exception {
+        this.testSkippedMigrationStrategyForTenant(null);
+        this.testSkippedMigrationStrategyForTenant("wrongValue");
+    }
+    
+    private void testSkippedMigrationStrategyForTenant(String tenantStrategy) throws Exception {
         databaseManager.setEnvironment(Environment.production);
         EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, "tenant1");
         try {
             TenantConfig tenantConfig = Mockito.mock(TenantConfig.class);
-            Mockito.lenient().when(tenantConfig.getDbMigrationStrategy()).thenReturn(null);
+            Mockito.lenient().when(tenantConfig.getDbMigrationStrategy()).thenReturn(Optional.ofNullable(tenantStrategy));
             Mockito.lenient().when(tenantManager.getConfig("tenant1")).thenReturn(Optional.of(tenantConfig));
             SystemInstallationReport report = Mockito.mock(SystemInstallationReport.class);
             databaseManager.installDatabase(Mockito.mock(SystemInstallationReport.class), DatabaseMigrationStrategy.GENERATE_SQL);

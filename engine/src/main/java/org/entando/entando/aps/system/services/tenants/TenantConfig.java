@@ -123,8 +123,8 @@ public class TenantConfig {
         return configs.get(DB_PASSWORD_PROPERTY);
     }
 
-    public String getDbMigrationStrategy() {
-        return configs.get(DB_MIGRATION_STRATEGY);
+    public Optional<String> getDbMigrationStrategy() {
+        return this.getProperty(DB_MIGRATION_STRATEGY);
     }
 
     public List<String> getFqdns() {

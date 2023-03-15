@@ -72,7 +72,6 @@ import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.ServletContextAware;
 
@@ -102,14 +101,14 @@ public class DatabaseManager extends AbstractInitializerManager
     private ITenantManager tenantManager;
 
     public void init() {
-        logger.debug("{} ready", this.getClass().getName());
+        logger.debug("DatabaseManager ready");
     }
 
     @Override
     public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy defaultMigrationStrategy) throws Exception {
         String lastLocalBackupFolder = null;
-        DatabaseMigrationStrategy strategy = Optional.ofNullable(this.getTenantMigrationStrategy())
-                .orElse(Optional.ofNullable(defaultMigrationStrategy).orElse(DatabaseMigrationStrategy.DISABLED));
+        DatabaseMigrationStrategy defaultComputedStrategy = Optional.ofNullable(defaultMigrationStrategy).orElse(DatabaseMigrationStrategy.DISABLED);
+        DatabaseMigrationStrategy strategy = Optional.ofNullable(getTenantMigrationStrategy()).orElse(defaultComputedStrategy);
         if (DatabaseMigrationStrategy.SKIP.equals(strategy)) {
             Optional<String> tenantCodeOp = ApsTenantApplicationUtils.getTenant();
             logger.warn(String.format("Database Migration Strategy, Tenant '%s', SKIPPED", tenantCodeOp.orElse("*primary*")));
@@ -125,8 +124,7 @@ public class DatabaseManager extends AbstractInitializerManager
 
         try {
             initComponents(report, strategy);
-            if (DatabaseMigrationStrategy.AUTO.equals(strategy) && report.getStatus()
-                    .equals(Status.RESTORE)) {
+            if (DatabaseMigrationStrategy.AUTO.equals(strategy) && Status.RESTORE.equals(report.getStatus())) {
                 //ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH:MI:SS.FF'
                 if (null != lastLocalBackupFolder) {
                     this.restoreBackup(lastLocalBackupFolder);
@@ -147,7 +145,7 @@ public class DatabaseManager extends AbstractInitializerManager
         }
         return report;
     }
-
+    
     private DatabaseMigrationStrategy getTenantMigrationStrategy() {
         Optional<String> tenantCodeOp = ApsTenantApplicationUtils.getTenant();
         Optional<String> strategyOp = Optional.empty();
@@ -155,16 +153,15 @@ public class DatabaseManager extends AbstractInitializerManager
             if (tenantCodeOp.isEmpty()) {
                 return null;
             }
-            strategyOp = (tenantCodeOp.map(tenantCode -> getTenantManager().getConfig(tenantCode))
-					.orElse(Optional.empty())).map(TenantConfig::getDbMigrationStrategy).or(() -> Optional.of(DatabaseMigrationStrategy.SKIP.toString()));
-            return strategyOp.map(s -> Enum.valueOf(DatabaseMigrationStrategy.class, s.toUpperCase())).orElse(null);
+            strategyOp = tenantCodeOp.flatMap(getTenantManager()::getConfig).flatMap(TenantConfig::getDbMigrationStrategy);
+            return strategyOp.map(s -> Enum.valueOf(DatabaseMigrationStrategy.class, s.toUpperCase())).orElse(DatabaseMigrationStrategy.SKIP);
         } catch (IllegalArgumentException e) {
             logger.warn(String.format("Migration Strategy, Tenant '%s', Invalid value '%s' - Allowed values skip|disabled|auto|generate_sql",
                     tenantCodeOp.orElse(null), strategyOp.orElse(null)));
-            return null;
+            return DatabaseMigrationStrategy.SKIP;
         }
     }
-
+    
     private String checkRestore(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) {
         String lastLocalBackupFolder = null;
         if (!DatabaseMigrationStrategy.DISABLED.equals(migrationStrategy) && !Environment.test.equals(this.getEnvironment())) {
@@ -200,9 +197,10 @@ public class DatabaseManager extends AbstractInitializerManager
     }
 
     private void legacyDatabaseCheck() throws DatabaseMigrationException, SQLException {
-        Optional<DataSource> tenantDs = ApsTenantApplicationUtils.getTenant()
-					.map(tenantCode -> this.getTenantManager().getDatasource(tenantCode));
-        List<DataSource> dss = tenantDs.isPresent() ? Arrays.asList(tenantDs.get()) : this.defaultDataSources;
+        List<DataSource> dss = ApsTenantApplicationUtils.getTenant()
+                                .map(getTenantManager()::getDatasource)
+                                .map(ds -> Arrays.asList(ds))
+                                .orElse(this.defaultDataSources);
         for (DataSource dataSource : dss) {
             Connection connection = null;
             ResultSet rs = null;
@@ -288,7 +286,7 @@ public class DatabaseManager extends AbstractInitializerManager
         Liquibase liquibase = null;
         Writer writer = null;
         try {
-            DataSource dataSource = this.getRightDatasource(dataSourceName);
+            DataSource dataSource = this.fetchFromTenantOrGetDefaultByName(dataSourceName);
             connection = dataSource.getConnection();
             JdbcConnection liquibaseConnection = new JdbcConnection(connection);
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(liquibaseConnection);
@@ -331,7 +329,7 @@ public class DatabaseManager extends AbstractInitializerManager
         return changeSetToExecute;
     }
 
-    private DataSource getRightDatasource(String dataSourceName) {
+    private DataSource fetchFromTenantOrGetDefaultByName(String dataSourceName) {
         return ApsTenantApplicationUtils.getTenant()
 					.map(tenantCode -> this.getTenantManager().getDatasource(tenantCode))
 					.orElse((DataSource) this.getBeanFactory().getBean(dataSourceName));
@@ -386,7 +384,7 @@ public class DatabaseManager extends AbstractInitializerManager
                 return;
             }
             for (String dataSourceName : dataSourceNames) {
-                DataSource dataSource = this.getRightDatasource(dataSourceName);
+                DataSource dataSource = this.fetchFromTenantOrGetDefaultByName(dataSourceName);
                 Resource resource = defaultDump.get(dataSourceName);
                 String script = this.readFile(resource);
                 if (null != script && script.trim().length() > 0) {
@@ -673,7 +671,6 @@ public class DatabaseManager extends AbstractInitializerManager
     protected ITenantManager getTenantManager() {
         return tenantManager;
     }
-    @Autowired
     public void setTenantManager(ITenantManager tenantManager) {
         this.tenantManager = tenantManager;
     }
