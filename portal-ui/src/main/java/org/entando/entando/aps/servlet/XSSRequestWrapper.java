@@ -19,12 +19,12 @@ import org.owasp.esapi.errors.ValidationException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XSSRequestWrapper extends HttpServletRequestWrapper {
 
-    private static final Logger LOGGER = Logger.getLogger(XSSRequestWrapper.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(XSSRequestWrapper.class.getName());
 
     public XSSRequestWrapper(HttpServletRequest servletRequest) {
         super(servletRequest);
@@ -62,10 +62,10 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
         try {
             value = ESAPI.validator().getValidInput("HTTP parameter value: " + value, value, "HTTPParameterValue", 2000, true);
         } catch (ValidationException e) {
-            LOGGER.log(Level.SEVERE, String.format("Invalid parameter (%s - %s), encoding as HTML attribute", name, value), e);
+            log.error("Invalid parameter ('{}' - ''{}), encoding as HTML attribute", name, value, e);
             value = ESAPI.encoder().encodeForHTMLAttribute(value);
         } catch (Throwable e) {
-            LOGGER.log(Level.FINE, String.format("Invalid parameter (%s - %s) - error message %s", name, value, e.getMessage()));
+            log.debug("Invalid parameter ('{}' - '{}') - error message {}", name, value, e.getMessage());
         }
         return value;
     }
@@ -78,10 +78,10 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
         try {
             value = ESAPI.validator().getValidInput("HTTP header value: " + value, value, "HTTPHeaderValue", 150, false);
         } catch (ValidationException e) {
-            LOGGER.log(Level.SEVERE, String.format("Invalid header (%s - %s), encoding as HTML attribute", name, value), e);
+            log.error("Invalid parameter ('{}' - ''{}), encoding as HTML attribute", name, value, e);
             value = ESAPI.encoder().encodeForHTMLAttribute(value);
         } catch (Throwable e) {
-            LOGGER.log(Level.FINE, String.format("Invalid parameter (%s - %s) - error message %s", name, value, e.getMessage()));
+            log.debug("Invalid parameter ('{}' - '{}') - error message {}", name, value, e.getMessage());
         }
         return value;
     }
