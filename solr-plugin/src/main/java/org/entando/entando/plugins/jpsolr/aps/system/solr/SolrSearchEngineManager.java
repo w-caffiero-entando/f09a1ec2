@@ -58,6 +58,7 @@ import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrFields;
 public class SolrSearchEngineManager extends SearchEngineManager
         implements ISolrSearchEngineManager, PublicContentChangedObserver, EntityTypesChangingObserver {
 
+    public static final String RELOAD_FIELDS_NAME = "RELOAD_FIELDS";
     private static final String LAST_RELOAD_CACHE_PARAM_NAME = "SolrSearchEngine_lastReloadInfo";
 
     @Setter
@@ -70,7 +71,9 @@ public class SolrSearchEngineManager extends SearchEngineManager
     public void init() throws Exception {
         this.factory.init();
         log.info("** Solr Search Engine active **");
-        this.refreshAllTenantsFields();
+        Thread t = new Thread(() -> refreshAllTenantsFields());
+        t.setName(RELOAD_FIELDS_NAME);
+        t.start();
     }
 
     private void refreshAllTenantsFields() {
@@ -311,5 +314,14 @@ public class SolrSearchEngineManager extends SearchEngineManager
     private String getLastReloadCacheKey() {
         String suffix = ApsTenantApplicationUtils.getTenant().orElse("_primary_");
         return LAST_RELOAD_CACHE_PARAM_NAME + "_" + suffix;
+    }
+
+    @Override
+    public int getStatus() {
+        return this.factory.getSolrTenantResources().getStatus();
+    }
+
+    protected void setStatus(int status) {
+        this.factory.getSolrTenantResources().setStatus(status);
     }
 }

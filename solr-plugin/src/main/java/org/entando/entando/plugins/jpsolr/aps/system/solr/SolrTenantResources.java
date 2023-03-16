@@ -5,6 +5,7 @@ import com.agiletec.aps.system.services.lang.ILangManager;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -23,6 +24,9 @@ public class SolrTenantResources {
     private final ISolrSchemaDAO solrSchemaDAO;
     @Getter
     private final String solrCore;
+    @Getter
+    @Setter
+    private int status;
 
     public SolrTenantResources(String solrAddress, String solrCore, ILangManager langManager,
             ICategoryManager categoryManager) {
