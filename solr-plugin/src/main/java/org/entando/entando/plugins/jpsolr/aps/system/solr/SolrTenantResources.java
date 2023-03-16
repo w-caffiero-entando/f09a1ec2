@@ -30,6 +30,8 @@ public class SolrTenantResources {
         log.debug("Creating Solr resources for {}", solrCore);
         this.solrCore = solrCore;
         this.solrClient = new HttpSolrClient.Builder(solrAddress)
+                // FIXME: configure http client?
+                //.withHttpClient()
                 .withConnectionTimeout(10000)
                 .withSocketTimeout(60000)
                 .build();
@@ -45,7 +47,11 @@ public class SolrTenantResources {
         this.solrSchemaDAO = new SolrSchemaDAO(solrClient, solrCore);
     }
 
-    public void close() throws IOException {
-        solrClient.close();
+    public void close() {
+        try {
+            solrClient.close();
+        } catch (IOException ex) {
+            log.error("Error closing SolrClient", ex);
+        }
     }
 }

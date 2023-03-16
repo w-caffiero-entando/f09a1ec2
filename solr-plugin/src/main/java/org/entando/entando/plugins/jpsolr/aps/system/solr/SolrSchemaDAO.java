@@ -53,7 +53,6 @@ public class SolrSchemaDAO implements ISolrSchemaDAO {
             }
             SchemaRequest.MultiUpdate multiUpdateRequest = new MultiUpdate(updates);
             solrClient.request(multiUpdateRequest, this.solrCore);
-            solrClient.commit(this.solrCore);
         } catch (SolrServerException | IOException ex) {
             log.error("Error executing Solr multi-update request", ex);
             return false;

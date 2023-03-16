@@ -52,13 +52,15 @@ import org.entando.entando.plugins.jpsolr.aps.system.solr.SolrFieldsChecker.Chec
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.ContentTypeSettings;
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrFacetedContentsResult;
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrFields;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author E.Santoboni
  */
 @Slf4j
 public class SolrSearchEngineManager extends SearchEngineManager
-        implements ISolrSearchEngineManager, PublicContentChangedObserver, EntityTypesChangingObserver {
+        implements ISolrSearchEngineManager, PublicContentChangedObserver, EntityTypesChangingObserver,
+        InitializingBean {
 
     public static final String RELOAD_FIELDS_NAME = "RELOAD_FIELDS";
     private static final String LAST_RELOAD_CACHE_PARAM_NAME = "SolrSearchEngine_lastReloadInfo";
@@ -72,12 +74,28 @@ public class SolrSearchEngineManager extends SearchEngineManager
     private static final Striped<Lock> tenantsLock = Striped.lazyWeakLock(64);
 
     @Override
+    public void afterPropertiesSet() throws Exception {
+        try {
+            Thread t = new Thread(this::refreshAllTenantsFields);
+            t.setName(RELOAD_FIELDS_NAME);
+            t.start();
+        } catch (Throwable t) {
+            log.error("Unable to start refresh field thread", t);
+        }
+    }
+
+    @Override
     public void init() throws Exception {
-        this.factory.init();
         log.info("** Solr Search Engine active **");
-        Thread t = new Thread(this::refreshAllTenantsFields);
-        t.setName(RELOAD_FIELDS_NAME);
-        t.start();
+    }
+
+    @Override
+    protected void release() {
+        try {
+            this.factory.close();
+        } catch (Exception ex) {
+            log.error("Error closing Solr DAO factory {}", ex);
+        }
     }
 
     private void refreshAllTenantsFields() {
@@ -96,15 +114,6 @@ public class SolrSearchEngineManager extends SearchEngineManager
             } finally {
                 lock.unlock();
             }
-        }
-    }
-
-    @Override
-    public void destroy() {
-        try {
-            this.factory.close();
-        } catch (Exception ex) {
-            throw new EntRuntimeException("Exception in destroy", ex);
         }
     }
 

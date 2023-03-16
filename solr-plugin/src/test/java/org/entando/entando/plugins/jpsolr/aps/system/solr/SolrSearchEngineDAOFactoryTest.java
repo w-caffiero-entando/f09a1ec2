@@ -47,7 +47,7 @@ class SolrSearchEngineDAOFactoryTest {
                     Mockito.when(builder.withSocketTimeout(anyInt())).thenReturn(builder);
                     Mockito.when(builder.build()).thenReturn(solrClient);
                 });
-        factory.init();
+        factory.afterPropertiesSet();
     }
 
     @AfterEach
@@ -67,6 +67,7 @@ class SolrSearchEngineDAOFactoryTest {
         try (MockedStatic<ApsTenantApplicationUtils> tenantUtils
                 = Mockito.mockStatic(ApsTenantApplicationUtils.class)) {
             tenantUtils.when(() -> ApsTenantApplicationUtils.getTenant()).thenReturn(Optional.of(TENANT_1));
+            factory.init();
             Assertions.assertNotNull(factory.getIndexer());
             Assertions.assertNotNull(factory.getSearcher());
         }

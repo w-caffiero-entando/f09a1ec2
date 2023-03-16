@@ -23,16 +23,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Classe factory degli elementi ad uso del SearchEngine.
  *
  * @author E.Santoboni
  */
-public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
+@Slf4j
+public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory, InitializingBean {
 
     private static final String SOLR_ADDRESS_TENANT_PARAM = "solrAddress";
     private static final String SOLR_CORE_TENANT_PARAM = "solrCore";
@@ -41,6 +45,8 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
     private final ICategoryManager categoryManager;
     private final ITenantManager tenantManager;
 
+    private final Map<String, SolrTenantResources> tenantResources = new ConcurrentHashMap<>();
+
     public SolrSearchEngineDAOFactory(ILangManager langManager, ICategoryManager categoryManager,
             ITenantManager tenantManager) {
         this.langManager = langManager;
@@ -48,12 +54,18 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
         this.tenantManager = tenantManager;
     }
 
-    private SolrTenantResources primaryResources;
-    private final Map<String, SolrTenantResources> tenantResources = new ConcurrentHashMap<>();
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        log.debug("Initializing Solr tenant resources for primary tenant");
+        tenantResources.put(ITenantManager.PRIMARY_CODE, newSolrDAOResources());
+    }
 
     @Override
     public void init() throws Exception {
-        this.primaryResources = newSolrDAOResources();
+        ApsTenantApplicationUtils.getTenant().ifPresent(tenantCode -> {
+            log.debug("Initializing Solr tenant resources for {}", tenantCode);
+            tenantResources.put(tenantCode, newSolrDAOResources());
+        });
     }
 
     private SolrTenantResources newSolrDAOResources() {
@@ -62,9 +74,17 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
 
     @Override
     public void close() throws IOException {
-        for (SolrTenantResources resources : this.getAllSolrTenantsResources()) {
-            resources.close();
+        String tenantCode = ApsTenantApplicationUtils.getTenant().orElse(ITenantManager.PRIMARY_CODE);
+        if (tenantResources.containsKey(tenantCode)) {
+            tenantResources.get(tenantCode).close();
+            tenantResources.remove(tenantCode);
         }
+    }
+
+    @PreDestroy
+    public void destroy() {
+        tenantResources.values().stream().forEach(r -> r.close());
+        tenantResources.clear();
     }
 
     @Override
@@ -90,17 +110,13 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
 
     @Override
     public SolrTenantResources getSolrTenantResources() {
-        return ApsTenantApplicationUtils.getTenant()
-                .map(tenantCode -> tenantResources
-                        .computeIfAbsent(tenantCode, t -> newSolrDAOResources()))
-                .orElse(primaryResources);
+        String tenantCode = ApsTenantApplicationUtils.getTenant().orElse(ITenantManager.PRIMARY_CODE);
+        return tenantResources.computeIfAbsent(tenantCode, code -> newSolrDAOResources());
     }
 
     @Override
     public List<SolrTenantResources> getAllSolrTenantsResources() {
-        List<SolrTenantResources> allTenantResources = new ArrayList<>(tenantResources.values());
-        allTenantResources.add(0, primaryResources);
-        return allTenantResources;
+        return new ArrayList<>(tenantResources.values());
     }
 
     @Override

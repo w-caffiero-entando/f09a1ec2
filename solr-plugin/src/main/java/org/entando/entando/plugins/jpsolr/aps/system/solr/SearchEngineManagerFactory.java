@@ -34,6 +34,7 @@ public class SearchEngineManagerFactory {
             SolrSearchEngineDAOFactory factory = new SolrSearchEngineDAOFactory(
                     langManager, categoryManager, tenantManager
             );
+            factory.afterPropertiesSet();
             SolrSearchEngineManager solrSearchEngineManager = new SolrSearchEngineManager();
             solrSearchEngineManager.setFactory(factory);
             solrSearchEngineManager.setContentManager(contentManager);

@@ -16,6 +16,7 @@ package com.agiletec.aps.system;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public final class EntThreadLocal {
             if (parentValue == null) {
                 return null;
             }
-            Map<String, Serializable> map = new HashMap<>();
+            Map<String, Serializable> map = new ConcurrentHashMap<>();
             for (Map.Entry<String, Serializable> entry : parentValue.entrySet()) {
                 if (entry.getValue() == null) {
                     continue;
