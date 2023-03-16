@@ -1,4 +1,5 @@
-<configuration>
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
     <property name="LOG_LEVEL" value="${LOG_LEVEL:-WARN}"/>
     <property name="ROOT_LOG_LEVEL" value="${ROOT_LOG_LEVEL:-DEBUG}"/>
     <property name="LOG_JSON_LEVEL" value="${LOG_JSON_LEVEL:-OFF}"/>
@@ -72,7 +73,7 @@
             <level>${LOG_LEVEL}</level>
         </filter>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
@@ -86,4 +87,4 @@
     </root>
     <!-- uncomment the following line to enable printing of MockMVC responses in tests -->
     <!--<logger name="org.entando.entando.web.AbstractControllerIntegrationTest" level="DEBUG"/>-->
-</configuration>
+</included>

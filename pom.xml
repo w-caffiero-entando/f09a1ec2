@@ -112,6 +112,7 @@
         <ormlite-jdbc.version>4.40</ormlite-jdbc.version>
         <liquibase-core.version>4.4.3</liquibase-core.version>
         <slf4j.version>1.7.31</slf4j.version>
+        <log4j2slf4j.version>2.20.0</log4j2slf4j.version>
         <jettison.version>1.4.1</jettison.version>
         <json.version>20210307</json.version>
         <httpclient.version>4.5.13</httpclient.version>
@@ -1163,6 +1164,17 @@
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-to-slf4j</artifactId>
+                <version>${log4j2slf4j.version}</version>
+            </dependency>
+
             <!-- json -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
