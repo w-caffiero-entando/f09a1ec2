@@ -75,7 +75,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
     public void init() throws Exception {
         this.factory.init();
         log.info("** Solr Search Engine active **");
-        Thread t = new Thread(() -> refreshAllTenantsFields());
+        Thread t = new Thread(this::refreshAllTenantsFields);
         t.setName(RELOAD_FIELDS_NAME);
         t.start();
     }
@@ -343,6 +343,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
         return this.factory.getSolrTenantResources().getStatus();
     }
 
+    @Override
     protected void setStatus(int status) {
         this.factory.getSolrTenantResources().setStatus(status);
     }

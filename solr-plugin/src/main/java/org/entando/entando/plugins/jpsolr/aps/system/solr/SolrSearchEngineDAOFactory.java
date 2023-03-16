@@ -62,8 +62,8 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory {
 
     @Override
     public void close() throws IOException {
-        for (SolrTenantResources tenantResources : this.getAllSolrTenantsResources()) {
-            tenantResources.close();
+        for (SolrTenantResources resources : this.getAllSolrTenantsResources()) {
+            resources.close();
         }
     }
 
