@@ -3,7 +3,6 @@ package org.entando.entando.plugins.jpsolr.aps.system.solr;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import java.io.IOException;
-import java.util.concurrent.locks.ReentrantLock;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +11,6 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
 @Slf4j
 public class SolrTenantResources {
-
-    private final ReentrantLock lock = new ReentrantLock();
 
     private final SolrClient solrClient;
     @Getter
@@ -50,17 +47,5 @@ public class SolrTenantResources {
 
     public void close() throws IOException {
         solrClient.close();
-    }
-
-    public void lock() {
-        lock.lock();
-    }
-
-    public void unlock() {
-        lock.unlock();
-    }
-
-    public boolean isLocked() {
-        return lock.isLocked();
     }
 }

@@ -113,6 +113,7 @@ class SolrSearchEngineManagerIntegrationTest {
         }
         ISolrSearchEngineManager solrSearchEngineManager = applicationContext.getBean(ISolrSearchEngineManager.class);
         solrSearchEngineManager.refreshCmsFields();
+        while (solrSearchEngineManager.getStatus() != ICmsSearchEngineManager.STATUS_READY);
     }
 
     @AfterAll

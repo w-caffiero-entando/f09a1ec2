@@ -32,6 +32,7 @@ import com.agiletec.plugins.jacms.aps.system.services.searchengine.ISearchEngine
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.ISearcherDAO;
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.LastReloadInfo;
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.SearchEngineManager;
+import com.google.common.util.concurrent.Striped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +69,8 @@ public class SolrSearchEngineManager extends SearchEngineManager
     private transient ICacheInfoManager cacheInfoManager;
     private transient ISolrSearchEngineDAOFactory factory;
 
+    private static final Striped<Lock> tenantsLock = Striped.lazyWeakLock(64);
+
     @Override
     public void init() throws Exception {
         this.factory.init();
@@ -78,8 +82,9 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     private void refreshAllTenantsFields() {
         for (SolrTenantResources tenantResources : this.factory.getAllSolrTenantsResources()) {
+            Lock lock = tenantsLock.get(tenantResources.getSolrCore());
+            lock.lock();
             try {
-                tenantResources.lock();
                 boolean refresh = this.getContentTypesSettings(tenantResources.getSolrSchemaDAO())
                         .stream().anyMatch(settings -> !settings.isValid());
                 if (refresh) {
@@ -89,7 +94,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
             } catch (EntException ex) {
                 log.error("Error refreshing CMS fields", ex);
             } finally {
-                tenantResources.unlock();
+                lock.unlock();
             }
         }
     }
@@ -169,8 +174,9 @@ public class SolrSearchEngineManager extends SearchEngineManager
     }
 
     private void refreshCmsFields(SolrTenantResources tenantResources) throws EntException {
+        Lock lock = tenantsLock.get(tenantResources.getSolrCore());
+        lock.lock();
         try {
-            tenantResources.lock();
             List<Map<String, ?>> fields = tenantResources.getSolrSchemaDAO().getFields();
             List<AttributeInterface> attributes = this.getContentManager().getSmallEntityTypes().stream()
                     .flatMap(entityType -> getAttributesToCheck(entityType.getCode()).stream())
@@ -179,20 +185,21 @@ public class SolrSearchEngineManager extends SearchEngineManager
         } catch (Exception ex) {
             throw new EntException("Error refreshing config", ex);
         } finally {
-            tenantResources.unlock();
+            lock.unlock();
         }
     }
 
     @Override
     public void refreshContentType(String typeCode) throws EntException {
+        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        lock.lock();
         try {
-            this.factory.getSolrTenantResources().lock();
             List<Map<String, ?>> fields = this.factory.getSolrSchemaDao().getFields();
             refreshFields(fields, getAttributesToCheck(typeCode));
         } catch (Exception ex) {
             throw new EntException("Error refreshing contentType " + typeCode, ex);
         } finally {
-            this.factory.getSolrTenantResources().unlock();
+            lock.unlock();
         }
     }
 
@@ -207,14 +214,20 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public void deleteIndexedEntity(String entityId) throws EntException {
-        checkLocked();
-        this.getIndexerDao().delete(SolrFields.SOLR_CONTENT_ID_FIELD_NAME, entityId);
+        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        lock.lock();
+        try {
+            this.getIndexerDao().delete(SolrFields.SOLR_CONTENT_ID_FIELD_NAME, entityId);
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public void updateFromEntityTypesChanging(EntityTypesChangingEvent event) {
+        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        lock.lock();
         try {
-            this.factory.getSolrTenantResources().lock();
             super.updateFromEntityTypesChanging(event);
             List<Map<String, ?>> fields = this.factory.getSolrSchemaDao().getFields();
             List<AttributeInterface> attributes;
@@ -227,7 +240,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
             }
             refreshFields(fields, attributes);
         } finally {
-            this.factory.getSolrTenantResources().unlock();
+            lock.unlock();
         }
     }
 
@@ -246,26 +259,35 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public Thread startReloadContentsReferencesByType(String typeCode) throws EntException {
-        checkLocked();
-        return this.startReloadContentsReferencesPrivate(typeCode);
+        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        lock.lock();
+        try {
+            return this.startReloadContentsReferencesPrivate(typeCode);
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public Thread startReloadContentsReferences() throws EntException {
-        checkLocked();
-        this.factory.getIndexer().deleteAllDocuments();
-        return this.startReloadContentsReferencesPrivate(null);
+        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        lock.lock();
+        try {
+            this.factory.getIndexer().deleteAllDocuments();
+            return this.startReloadContentsReferencesPrivate(null);
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public void addEntityToIndex(IApsEntity entity) throws EntException {
-        checkLocked();
-        super.addEntityToIndex(entity);
-    }
-
-    private void checkLocked() throws EntException {
-        if (this.factory.getSolrTenantResources().isLocked()) {
-            throw new EntException("Solr resources are locked. Try again later.");
+        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        lock.lock();
+        try {
+            super.addEntityToIndex(entity);
+        } finally {
+            lock.unlock();
         }
     }
 

@@ -2,6 +2,11 @@ package org.entando.entando.plugins.jpsolr;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.request.schema.SchemaRequest;
+import org.apache.solr.common.SolrException;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.GenericContainer;
@@ -30,6 +35,29 @@ public class SolrTestExtension implements BeforeAllCallback {
             solrContainer.execInContainer("bin/solr", "delete", "-c", SOLR_CORE);
             solrContainer.execInContainer("bin/solr", "create_core", "-c", SOLR_CORE);
         }
+
+        waitSolrReady();
+    }
+
+    /**
+     * Sometimes Solr is not ready even if the container is ready. This method attempts to read the schema fields.
+     */
+    private void waitSolrReady() throws Exception {
+        int attempt = 0;
+        do {
+            SolrClient solrClient = new HttpSolrClient.Builder(SolrEnvironmentVariables.solrAddress())
+                    .withConnectionTimeout(10000)
+                    .withSocketTimeout(60000)
+                    .build();
+            try {
+                solrClient.request(new SchemaRequest.Fields(), SolrEnvironmentVariables.solrCore());
+                return;
+            } catch (SolrServerException | SolrException ex) {
+                attempt++;
+            } finally {
+                solrClient.close();
+            }
+        } while (attempt < 10);
     }
 
     /**
