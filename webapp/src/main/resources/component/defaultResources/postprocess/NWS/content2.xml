@@ -4,12 +4,12 @@
 	<typeDescription>News</typeDescription>	
 	<mainGroup>free</mainGroup>
 	<attributes>
-		<attribute xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="jaxbDateAttribute">
+		<attribute classType="JAXBDateAttribute">
 			<name>date</name>
 			<type>Date</type>
 			<value>2020-09-04T00:00:00+02:00</value>
 		</attribute>
-		<attribute xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="jaxbTextAttribute">
+		<attribute classType="JAXBTextAttribute">
 			<name>title</name>
 			<type>Text</type>
 			<value>Entando and JHipster: How It Works</value>
@@ -17,7 +17,7 @@
 				<role>jacms:title</role>
 			</roles>
 		</attribute>
-		<attribute xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="jaxbHypertextAttribute">
+		<attribute classType="JAXBHypertextAttribute">
 			<name>abstract</name>
 			<type>Hypertext</type>
 			<htmlValue>
@@ -26,7 +26,7 @@
 			]]>
 			</htmlValue>
 		</attribute>
-		<attribute xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="jaxbHypertextAttribute">
+		<attribute classType="JAXBHypertextAttribute">
 			<name>body</name>
 			<type>Hypertext</type>
 			<htmlValue>
@@ -38,17 +38,16 @@
 			]]>
 			</htmlValue>
 		</attribute>
-		<attribute xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="jaxbResourceAttribute">
+		<attribute classType="JAXBResourceAttribute">
 			<type>Image</type>
 			<name>image</name>
 			<resource>
 				<text>HTML Code</text>
-				<path>/test-image-rest/resources/cms/images/sample-image-1_d0.jpg</path>
 				<resourceId>htmlCode</resourceId>
-				<restResourcePath>http://localhost:8080/test-image-rest/api/rs/en/jacms/image?id=htmlCode</restResourcePath>
+				<restResourcePath>http://localhost:8080/test-image-rest/api/legacy/en/jacms/image?id=htmlCode</restResourcePath>
 			</resource>	
 		</attribute>
-		<attribute xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="jaxbTextAttribute">
+		<attribute classType="JAXBTextAttribute">
 			<name>category</name>
 			<type>Text</type>
 			<value>ENGINEERING</value>

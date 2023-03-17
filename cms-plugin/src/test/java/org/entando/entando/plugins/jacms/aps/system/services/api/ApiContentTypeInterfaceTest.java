@@ -51,7 +51,7 @@ class ApiContentTypeInterfaceTest {
         Assertions.assertEquals(1, response.getErrors().size());
         LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
+        Assertions.assertEquals(HttpStatus.ACCEPTED, error.getStatus());
         Assertions.assertEquals("Content model with id '999' does not exist", error.getMessage());
     }
 
@@ -72,7 +72,7 @@ class ApiContentTypeInterfaceTest {
         Assertions.assertEquals(1, response.getErrors().size());
         LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
+        Assertions.assertEquals(HttpStatus.ACCEPTED, error.getStatus());
         Assertions.assertEquals("Content model with id '999' is for contents of type 'BNR'", error.getMessage());
     }
 
@@ -90,7 +90,7 @@ class ApiContentTypeInterfaceTest {
         Assertions.assertEquals(1, response.getErrors().size());
         LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
+        Assertions.assertEquals(HttpStatus.ACCEPTED, error.getStatus());
         Assertions.assertEquals("View Page with id 'viewPage' does not exist", error.getMessage());
     }
 
@@ -114,7 +114,7 @@ class ApiContentTypeInterfaceTest {
         Assertions.assertEquals(1, response.getErrors().size());
         LegacyApiError error = response.getErrors().get(0);
         Assertions.assertEquals(IApiErrorCodes.API_VALIDATION_ERROR, error.getCode());
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
+        Assertions.assertEquals(HttpStatus.ACCEPTED, error.getStatus());
         Assertions.assertEquals("Main frame for Page with id 'viewPage' not present", error.getMessage());
     }
 }

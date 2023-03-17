@@ -9,11 +9,11 @@
 			<name>date</name>
 			<type>Date</type>
 			<searchable>true</searchable>
-			<validationRules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="dateAttributeValidationRules">
+			<validationRules classType="DateAttributeValidationRules">
 				<required>true</required>
 			</validationRules>
 		</attribute>
-		<attribute>
+		<attribute classType="DefaultJAXBAttributeType">
 			<name>title</name>
 			<type>Text</type>
 			<roles>
@@ -21,7 +21,7 @@
 			</roles>
 			<searchable>true</searchable>
 			<indexable>true</indexable>
-			<validationRules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="textAttributeValidationRules">
+			<validationRules classType="TextAttributeValidationRules">
 				<required>true</required>
 			</validationRules>
 		</attribute>
@@ -50,7 +50,7 @@
 			<type>Text</type>
 			<indexable>true</indexable>
 		</attribute>
-		<attribute xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="jaxbEnumeratorAttributeType">
+		<attribute classType="JAXBEnumeratorAttributeType">
 			<name>direction</name>
 			<description>Direction or orientation of the content</description>
 			<type>Enumerator</type>

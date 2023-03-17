@@ -128,7 +128,7 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
             IPage viewPage =  this.getPageManager().getOnlinePage(viewPageCode);
             if (null == viewPage) {
                 LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "View Page with id '" + viewPageCode + "' does not exist", HttpStatus.BAD_REQUEST);
+                        "View Page with id '" + viewPageCode + "' does not exist", HttpStatus.ACCEPTED);
                 response.addError(error);
                 return false;
             }
@@ -137,7 +137,7 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
             final boolean mainFramePresent = Arrays.stream(configuration).anyMatch(Frame::isMainFrame);
             if (!mainFramePresent) {
                 LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-                        "Main frame for Page with id '" + viewPage.getCode() + "' not present", HttpStatus.BAD_REQUEST);
+                        "Main frame for Page with id '" + viewPage.getCode() + "' not present", HttpStatus.ACCEPTED);
                 response.addError(error);
                 return false;
             }
@@ -153,13 +153,13 @@ public class ApiContentTypeInterface extends ApiEntityTypeInterface {
         ContentModel contentModel = this.getContentModelManager().getContentModel(modelId);
         if (null == contentModel) {
             LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-					"Content model with id '" + modelId + "' does not exist", HttpStatus.BAD_REQUEST);
+					"Content model with id '" + modelId + "' does not exist", HttpStatus.ACCEPTED);
             response.addError(error);
             return false;
         }
         if (!contentType.getTypeCode().equals(contentModel.getContentType())) {
             LegacyApiError error = new LegacyApiError(IApiErrorCodes.API_VALIDATION_ERROR,
-					"Content model with id '" + modelId + "' is for contents of type '" + contentModel.getContentType() + "'", HttpStatus.BAD_REQUEST);
+					"Content model with id '" + modelId + "' is for contents of type '" + contentModel.getContentType() + "'", HttpStatus.ACCEPTED);
             response.addError(error);
             return false;
         }

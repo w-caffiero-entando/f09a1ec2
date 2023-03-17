@@ -4,7 +4,7 @@
     <typeCode>BNR</typeCode>
 	<typeDescription>Banner</typeDescription>
 	<attributes>
-		<attribute>
+		<attribute classType="DefaultJAXBAttributeType">
 			<name>title</name>
 			<description>Title</description>
 			<type>Text</type>
@@ -13,7 +13,7 @@
 			</roles>
 			<searchable>false</searchable>
 			<indexable>true</indexable>
-			<validationRules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="textAttributeValidationRules">
+			<validationRules classType="TextAttributeValidationRules">
 				<required>true</required>
 			</validationRules>
 		</attribute>
@@ -33,7 +33,7 @@
 			<description>Image</description>
 			<type>Image</type>
 		</attribute>
-		<attribute xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="jaxbEnumeratorAttributeType">
+		<attribute classType="JAXBEnumeratorAttributeType">
 			<name>placement</name>
 			<description>Image Placement</description>
 			<type>Enumerator</type>
