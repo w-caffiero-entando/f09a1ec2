@@ -69,7 +69,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
     private transient ILangManager langManager;
     @Setter
     private transient ICacheInfoManager cacheInfoManager;
-    private transient ISolrSearchEngineDAOFactory factory;
+    private transient ISolrResourcesManager resourcesManager;
 
     private static final Striped<Lock> tenantsLock = Striped.lazyWeakLock(64);
 
@@ -90,16 +90,25 @@ public class SolrSearchEngineManager extends SearchEngineManager
     }
 
     @Override
+    public void refresh() throws Throwable {
+        this.release();
+        this.setLastReloadInfo(null);
+        this.setStatus(STATUS_READY);
+        this.resourcesManager.init();
+        this.init();
+    }
+
+    @Override
     protected void release() {
         try {
-            this.factory.close();
+            this.resourcesManager.close();
         } catch (Exception ex) {
-            log.error("Error closing Solr DAO factory {}", ex);
+            log.error("Error closing Solr resources {}", ex);
         }
     }
 
     private void refreshAllTenantsFields() {
-        for (SolrTenantResources tenantResources : this.factory.getAllSolrTenantsResources()) {
+        for (ISolrTenantResources tenantResources : this.resourcesManager.getAllSolrTenantsResources()) {
             Lock lock = tenantsLock.get(tenantResources.getSolrCore());
             lock.lock();
             try {
@@ -118,19 +127,18 @@ public class SolrSearchEngineManager extends SearchEngineManager
     }
 
     @Override
-    public void setFactory(ISearchEngineDAOFactory factory) {
-        this.factory = (ISolrSearchEngineDAOFactory) factory;
+    protected ISearchEngineDAOFactory getFactory() {
+        throw new UnsupportedOperationException("Solr search engine manager doesn't need a DAO factory");
     }
 
-    @Override
-    protected ISearchEngineDAOFactory getFactory() {
-        return this.factory;
+    public void setSolrResourcesManager(ISolrResourcesManager resourcesManager) {
+        this.resourcesManager = resourcesManager;
     }
 
     @Override
     protected ISearcherDAO getSearcherDao() {
         try {
-            return this.getFactory().getSearcher();
+            return this.resourcesManager.getSearcherDAO();
         } catch (Exception e) {
             throw new EntRuntimeException("Error extracting searcher", e);
         }
@@ -139,7 +147,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
     @Override
     protected IIndexerDAO getIndexerDao() {
         try {
-            return this.getFactory().getIndexer();
+            return this.resourcesManager.getIndexerDAO();
         } catch (Exception e) {
             throw new EntRuntimeException("Error extracting indexer", e);
         }
@@ -147,7 +155,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public List<ContentTypeSettings> getContentTypesSettings() throws EntException {
-        return getContentTypesSettings(this.factory.getSolrSchemaDao());
+        return getContentTypesSettings(this.resourcesManager.getSolrSchemaDAO());
     }
 
     private List<ContentTypeSettings> getContentTypesSettings(ISolrSchemaDAO schemaDAO) throws EntException {
@@ -179,10 +187,10 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public void refreshCmsFields() throws EntException {
-        refreshCmsFields(factory.getSolrTenantResources());
+        refreshCmsFields(resourcesManager.getSolrTenantResources());
     }
 
-    private void refreshCmsFields(SolrTenantResources tenantResources) throws EntException {
+    private void refreshCmsFields(ISolrTenantResources tenantResources) throws EntException {
         Lock lock = tenantsLock.get(tenantResources.getSolrCore());
         lock.lock();
         try {
@@ -200,10 +208,10 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public void refreshContentType(String typeCode) throws EntException {
-        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        Lock lock = tenantsLock.get(this.resourcesManager.getSolrCore());
         lock.lock();
         try {
-            List<Map<String, ?>> fields = this.factory.getSolrSchemaDao().getFields();
+            List<Map<String, ?>> fields = this.resourcesManager.getSolrSchemaDAO().getFields();
             refreshFields(fields, getAttributesToCheck(typeCode));
         } catch (Exception ex) {
             throw new EntException("Error refreshing contentType " + typeCode, ex);
@@ -223,7 +231,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public void deleteIndexedEntity(String entityId) throws EntException {
-        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        Lock lock = tenantsLock.get(this.resourcesManager.getSolrCore());
         lock.lock();
         try {
             this.getIndexerDao().delete(SolrFields.SOLR_CONTENT_ID_FIELD_NAME, entityId);
@@ -234,11 +242,11 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public void updateFromEntityTypesChanging(EntityTypesChangingEvent event) {
-        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        Lock lock = tenantsLock.get(this.resourcesManager.getSolrCore());
         lock.lock();
         try {
             super.updateFromEntityTypesChanging(event);
-            List<Map<String, ?>> fields = this.factory.getSolrSchemaDao().getFields();
+            List<Map<String, ?>> fields = this.resourcesManager.getSolrSchemaDAO().getFields();
             List<AttributeInterface> attributes;
             if (this.getContentManager().getName().equals(event.getEntityManagerName())
                     && event.getOperationCode() != EntityTypesChangingEvent.REMOVE_OPERATION_CODE) {
@@ -254,7 +262,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
     }
 
     private void refreshFields(List<Map<String, ?>> fields, List<AttributeInterface> attributes) {
-        refreshFields(fields, attributes, factory.getSolrSchemaDao());
+        refreshFields(fields, attributes, resourcesManager.getSolrSchemaDAO());
     }
 
     private void refreshFields(List<Map<String, ?>> fields, List<AttributeInterface> attributes,
@@ -268,7 +276,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public Thread startReloadContentsReferencesByType(String typeCode) throws EntException {
-        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        Lock lock = tenantsLock.get(this.resourcesManager.getSolrCore());
         lock.lock();
         try {
             return this.startReloadContentsReferencesPrivate(typeCode);
@@ -279,10 +287,10 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public Thread startReloadContentsReferences() throws EntException {
-        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        Lock lock = tenantsLock.get(this.resourcesManager.getSolrCore());
         lock.lock();
         try {
-            this.factory.getIndexer().deleteAllDocuments();
+            this.resourcesManager.getIndexerDAO().deleteAllDocuments();
             return this.startReloadContentsReferencesPrivate(null);
         } finally {
             lock.unlock();
@@ -290,8 +298,14 @@ public class SolrSearchEngineManager extends SearchEngineManager
     }
 
     @Override
+    @Deprecated(since = "7.2.0")
+    public Thread startReloadContentsReferences(String subDirectory) throws EntException {
+        throw new UnsupportedOperationException("This method is not supported if Solr is active");
+    }
+
+    @Override
     public void addEntityToIndex(IApsEntity entity) throws EntException {
-        Lock lock = tenantsLock.get(this.factory.getSolrTenantResources().getSolrCore());
+        Lock lock = tenantsLock.get(this.resourcesManager.getSolrCore());
         lock.lock();
         try {
             super.addEntityToIndex(entity);
@@ -304,7 +318,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
         SolrIndexLoaderThread loaderThread = null;
         if (this.getStatus() == STATUS_READY || this.getStatus() == STATUS_NEED_TO_RELOAD_INDEXES) {
             try {
-                IIndexerDAO newIndexer = this.factory.getIndexer();
+                IIndexerDAO newIndexer = this.resourcesManager.getIndexerDAO();
                 loaderThread = new SolrIndexLoaderThread(typeCode, this, this.getContentManager(), newIndexer);
                 String threadName = ICmsSearchEngineManager.RELOAD_THREAD_NAME_PREFIX
                         + DateConverter.getFormattedDate(new Date(), "yyyyMMddHHmmss")
@@ -349,11 +363,11 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public int getStatus() {
-        return this.factory.getSolrTenantResources().getStatus();
+        return this.resourcesManager.getStatus();
     }
 
     @Override
     protected void setStatus(int status) {
-        this.factory.getSolrTenantResources().setStatus(status);
+        this.resourcesManager.setStatus(status);
     }
 }

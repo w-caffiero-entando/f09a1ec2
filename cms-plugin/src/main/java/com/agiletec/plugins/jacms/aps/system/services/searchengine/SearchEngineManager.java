@@ -126,7 +126,11 @@ public class SearchEngineManager extends AbstractService
         return this.startReloadContentsReferences(newTempSubDir);
     }
 
+    /**
+     * @deprecated in the interface: this method should be private
+     */
     @Override
+    @Deprecated(since = "7.2.0")
     public Thread startReloadContentsReferences(String subDirectory) throws EntException {
         IndexLoaderThread loaderThread = null;
         if (this.getStatus() == STATUS_READY || this.getStatus() == STATUS_NEED_TO_RELOAD_INDEXES) {
@@ -241,6 +245,10 @@ public class SearchEngineManager extends AbstractService
         return this.lastReloadInfo;
     }
 
+    protected void setLastReloadInfo(LastReloadInfo lastReloadInfo) {
+        this.lastReloadInfo = lastReloadInfo;
+    }
+
     @Override
     public List<String> searchId(String sectionCode, String langCode,
             String word, Collection<String> allowedGroups) throws EntException {
@@ -352,7 +360,7 @@ public class SearchEngineManager extends AbstractService
         return indexerDao;
     }
 
-    protected void setIndexerDao(IIndexerDAO indexerDao) {
+    private void setIndexerDao(IIndexerDAO indexerDao) {
         this.indexerDao = indexerDao;
     }
 
@@ -361,7 +369,7 @@ public class SearchEngineManager extends AbstractService
         return searcherDao;
     }
 
-    protected void setSearcherDao(ISearcherDAO searcherDao) {
+    private void setSearcherDao(ISearcherDAO searcherDao) {
         this.searcherDao = searcherDao;
     }
 

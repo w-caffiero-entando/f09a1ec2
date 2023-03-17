@@ -16,8 +16,6 @@ package org.entando.entando.plugins.jpsolr.aps.system.solr;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
-import com.agiletec.plugins.jacms.aps.system.services.searchengine.IIndexerDAO;
-import com.agiletec.plugins.jacms.aps.system.services.searchengine.ISearcherDAO;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
-import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -36,7 +33,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author E.Santoboni
  */
 @Slf4j
-public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory, InitializingBean {
+public class SolrResourcesManager implements ISolrResourcesManager, InitializingBean {
 
     private static final String SOLR_ADDRESS_TENANT_PARAM = "solrAddress";
     private static final String SOLR_CORE_TENANT_PARAM = "solrCore";
@@ -47,7 +44,7 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory, 
 
     private final Map<String, SolrTenantResources> tenantResources = new ConcurrentHashMap<>();
 
-    public SolrSearchEngineDAOFactory(ILangManager langManager, ICategoryManager categoryManager,
+    public SolrResourcesManager(ILangManager langManager, ICategoryManager categoryManager,
             ITenantManager tenantManager) {
         this.langManager = langManager;
         this.categoryManager = categoryManager;
@@ -69,7 +66,8 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory, 
     }
 
     private SolrTenantResources newSolrDAOResources() {
-        return new SolrTenantResources(this.getSolrAddress(), this.getSolrCore(), this.langManager, this.categoryManager);
+        return new SolrTenantResources(this.getSolrAddress(), this.getSolrCore(), this.langManager,
+                this.categoryManager);
     }
 
     @Override
@@ -88,63 +86,48 @@ public class SolrSearchEngineDAOFactory implements ISolrSearchEngineDAOFactory, 
     }
 
     @Override
-    public boolean checkCurrentSubfolder() throws EntException {
-        // nothing to do
-        return true;
-    }
-
-    @Override
-    public ISolrIndexerDAO getIndexer() throws EntException {
+    public ISolrIndexerDAO getIndexerDAO() {
         return getSolrTenantResources().getIndexerDAO();
     }
 
     @Override
-    public ISolrSearcherDAO getSearcher() throws EntException {
+    public ISolrSearcherDAO getSearcherDAO() {
         return getSolrTenantResources().getSearcherDAO();
     }
 
     @Override
-    public ISolrSchemaDAO getSolrSchemaDao() {
+    public ISolrSchemaDAO getSolrSchemaDAO() {
         return getSolrTenantResources().getSolrSchemaDAO();
     }
 
     @Override
-    public SolrTenantResources getSolrTenantResources() {
+    public String getSolrCore() {
+        return this.getTenantParameter(SOLR_CORE_TENANT_PARAM, SolrEnvironmentVariables.solrCore());
+    }
+
+    @Override
+    public int getStatus() {
+        return this.getSolrTenantResources().getStatus();
+    }
+
+    @Override
+    public void setStatus(int status) {
+        this.getSolrTenantResources().setStatus(status);
+    }
+
+    @Override
+    public ISolrTenantResources getSolrTenantResources() {
         String tenantCode = ApsTenantApplicationUtils.getTenant().orElse(ITenantManager.PRIMARY_CODE);
         return tenantResources.computeIfAbsent(tenantCode, code -> newSolrDAOResources());
     }
 
     @Override
-    public List<SolrTenantResources> getAllSolrTenantsResources() {
+    public List<ISolrTenantResources> getAllSolrTenantsResources() {
         return new ArrayList<>(tenantResources.values());
-    }
-
-    @Override
-    public IIndexerDAO getIndexer(String subDir) throws EntException {
-        return this.getIndexer();
-    }
-
-    @Override
-    public ISearcherDAO getSearcher(String subDir) throws EntException {
-        return this.getSearcher();
-    }
-
-    @Override
-    public void updateSubDir(String newSubDirectory) throws EntException {
-        // nothing to do
-    }
-
-    @Override
-    public void deleteSubDirectory(String subDirectory) {
-        // nothing to do
     }
 
     public String getSolrAddress() {
         return this.getTenantParameter(SOLR_ADDRESS_TENANT_PARAM, SolrEnvironmentVariables.solrAddress());
-    }
-
-    public String getSolrCore() {
-        return this.getTenantParameter(SOLR_CORE_TENANT_PARAM, SolrEnvironmentVariables.solrCore());
     }
 
     private String getTenantParameter(String paramName, String defaultValue) {

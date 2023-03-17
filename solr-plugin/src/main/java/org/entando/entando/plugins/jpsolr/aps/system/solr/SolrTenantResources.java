@@ -10,7 +10,7 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
 @Slf4j
-public class SolrTenantResources {
+public class SolrTenantResources implements ISolrTenantResources {
 
     private final SolrClient solrClient;
     @Getter

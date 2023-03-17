@@ -13,22 +13,18 @@
  */
 package org.entando.entando.plugins.jpsolr.aps.system.solr;
 
-import com.agiletec.plugins.jacms.aps.system.services.searchengine.ISearchEngineDAOFactory;
 import java.util.List;
-import org.entando.entando.ent.exception.EntException;
 
 /**
  * @author E.Santoboni
  */
-public interface ISolrSearchEngineDAOFactory extends ISearchEngineDAOFactory {
+public interface ISolrResourcesManager extends ISolrTenantResources {
 
-    ISolrSchemaDAO getSolrSchemaDao();
+    void init() throws Exception;
 
-    ISolrIndexerDAO getIndexer() throws EntException;
+    void close() throws Exception;
 
-    ISolrSearcherDAO getSearcher() throws EntException;
+    ISolrTenantResources getSolrTenantResources();
 
-    SolrTenantResources getSolrTenantResources();
-
-    List<SolrTenantResources> getAllSolrTenantsResources();
+    List<ISolrTenantResources> getAllSolrTenantsResources();
 }
