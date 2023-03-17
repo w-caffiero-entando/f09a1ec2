@@ -976,6 +976,7 @@
                         <jettyEnvXml>${project.basedir}/src/main/jetty/jetty-env.xml</jettyEnvXml>
                     </webApp>
                     <systemProperties>
+                        <logback.configurationFile>logback-default.xml</logback.configurationFile>
                         <org.eclipse.jetty.LEVEL>FATAL</org.eclipse.jetty.LEVEL>
                         <entando.version>${entando.version}</entando.version>
                         <db.migration.strategy>auto</db.migration.strategy>
