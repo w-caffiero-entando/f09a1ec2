@@ -29,14 +29,12 @@ public class SystemConfigurationService implements ISystemConfigurationService {
 
     @Override
     public SystemConfigurationDto getSystemConfiguration() {
-        SystemConfigurationDto config = SystemConfigurationDto.builder()
+        return SystemConfigurationDto.builder()
                 .advancedSearch(AdvancedSearchDto.builder().enabled(SolrEnvironmentVariables.active()).build())
                 .distributedCache(DistributedCacheDto.builder().enabled(RedisEnvironmentVariables.active()).build())
                 .contentDistributedSystem(ContentDistributedSystemDto.builder()
                         .enabled(CdsEnvironmentVariables.active()).build())
                 .build();
-
-        return config;
     }
 
 }
