@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.cache.RedisEnvironmentVariables;
 import org.entando.entando.plugins.jpredis.aps.system.redis.conditions.RedisActive;
 import org.entando.entando.plugins.jpredis.aps.system.redis.conditions.RedisSentinel;
 import org.slf4j.Logger;
