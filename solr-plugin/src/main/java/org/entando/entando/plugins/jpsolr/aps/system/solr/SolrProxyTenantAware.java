@@ -33,7 +33,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author E.Santoboni
  */
 @Slf4j
-public class SolrResourcesManager implements ISolrResourcesManager, InitializingBean {
+public class SolrProxyTenantAware implements ISolrProxyTenantAware, InitializingBean {
 
     private static final String SOLR_ADDRESS_TENANT_PARAM = "solrAddress";
     private static final String SOLR_CORE_TENANT_PARAM = "solrCore";
@@ -42,9 +42,9 @@ public class SolrResourcesManager implements ISolrResourcesManager, Initializing
     private final ICategoryManager categoryManager;
     private final ITenantManager tenantManager;
 
-    private final Map<String, SolrTenantResources> tenantResources = new ConcurrentHashMap<>();
+    private final Map<String, SolrResourcesAccessor> tenantResources = new ConcurrentHashMap<>();
 
-    public SolrResourcesManager(ILangManager langManager, ICategoryManager categoryManager,
+    public SolrProxyTenantAware(ILangManager langManager, ICategoryManager categoryManager,
             ITenantManager tenantManager) {
         this.langManager = langManager;
         this.categoryManager = categoryManager;
@@ -65,8 +65,8 @@ public class SolrResourcesManager implements ISolrResourcesManager, Initializing
         });
     }
 
-    private SolrTenantResources newSolrDAOResources() {
-        return new SolrTenantResources(this.getSolrAddress(), this.getSolrCore(), this.langManager,
+    private SolrResourcesAccessor newSolrDAOResources() {
+        return new SolrResourcesAccessor(this.getSolrAddress(), this.getSolrCore(), this.langManager,
                 this.categoryManager);
     }
 
@@ -116,13 +116,13 @@ public class SolrResourcesManager implements ISolrResourcesManager, Initializing
     }
 
     @Override
-    public ISolrTenantResources getSolrTenantResources() {
+    public ISolrResourcesAccessor getSolrTenantResources() {
         String tenantCode = ApsTenantApplicationUtils.getTenant().orElse(ITenantManager.PRIMARY_CODE);
         return tenantResources.computeIfAbsent(tenantCode, code -> newSolrDAOResources());
     }
 
     @Override
-    public List<ISolrTenantResources> getAllSolrTenantsResources() {
+    public List<ISolrResourcesAccessor> getAllSolrTenantsResources() {
         return new ArrayList<>(tenantResources.values());
     }
 

@@ -31,12 +31,12 @@ public class SearchEngineManagerFactory {
 
     public ICmsSearchEngineManager createSearchEngineManager() throws Exception {
         if (SolrEnvironmentVariables.active()) {
-            SolrResourcesManager resourcesManager = new SolrResourcesManager(
+            SolrProxyTenantAware solrProxy = new SolrProxyTenantAware(
                     langManager, categoryManager, tenantManager
             );
-            resourcesManager.afterPropertiesSet();
+            solrProxy.afterPropertiesSet();
             SolrSearchEngineManager solrSearchEngineManager = new SolrSearchEngineManager();
-            solrSearchEngineManager.setSolrResourcesManager(resourcesManager);
+            solrSearchEngineManager.setSolrProxy(solrProxy);
             solrSearchEngineManager.setContentManager(contentManager);
             solrSearchEngineManager.setLangManager(langManager);
             solrSearchEngineManager.setCacheInfoManager(cacheInfoManager);

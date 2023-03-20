@@ -18,13 +18,13 @@ import java.util.List;
 /**
  * @author E.Santoboni
  */
-public interface ISolrResourcesManager extends ISolrTenantResources {
+public interface ISolrProxyTenantAware extends ISolrResourcesAccessor {
 
     void init() throws Exception;
 
     void close() throws Exception;
 
-    ISolrTenantResources getSolrTenantResources();
+    ISolrResourcesAccessor getSolrTenantResources();
 
-    List<ISolrTenantResources> getAllSolrTenantsResources();
+    List<ISolrResourcesAccessor> getAllSolrTenantsResources();
 }

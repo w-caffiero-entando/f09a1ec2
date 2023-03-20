@@ -34,7 +34,7 @@ class SolrResourcesManagerTest {
     private ITenantManager tenantManager;
 
     @InjectMocks
-    private SolrResourcesManager resourcesManager;
+    private SolrProxyTenantAware resourcesManager;
 
     private MockedConstruction<HttpSolrClient.Builder> mockedConstructionSolrClientBuilder;
 

@@ -52,7 +52,7 @@ class SearchEngineManagerFactoryTest {
     void shouldLoadSolrSearchEngineIfSolrIsActive() throws Exception {
         try (MockedStatic<SolrEnvironmentVariables> solrEnvStaticMock =
                 Mockito.mockStatic(SolrEnvironmentVariables.class);
-                MockedConstruction<SolrTenantResources> c = Mockito.mockConstruction(SolrTenantResources.class)) {
+                MockedConstruction<SolrResourcesAccessor> c = Mockito.mockConstruction(SolrResourcesAccessor.class)) {
             solrEnvStaticMock.when(() -> SolrEnvironmentVariables.active()).thenReturn(true);
             ICmsSearchEngineManager manager = factory.createSearchEngineManager();
             Assertions.assertEquals(SolrSearchEngineManager.class, manager.getClass());

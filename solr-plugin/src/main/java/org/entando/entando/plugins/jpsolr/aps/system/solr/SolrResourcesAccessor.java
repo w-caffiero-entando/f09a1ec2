@@ -10,7 +10,7 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
 @Slf4j
-public class SolrTenantResources implements ISolrTenantResources {
+public class SolrResourcesAccessor implements ISolrResourcesAccessor {
 
     private final SolrClient solrClient;
     @Getter
@@ -25,7 +25,7 @@ public class SolrTenantResources implements ISolrTenantResources {
     @Setter
     private int status;
 
-    public SolrTenantResources(String solrAddress, String solrCore, ILangManager langManager,
+    public SolrResourcesAccessor(String solrAddress, String solrCore, ILangManager langManager,
             ICategoryManager categoryManager) {
         log.debug("Creating Solr resources for {}", solrCore);
         this.solrCore = solrCore;
