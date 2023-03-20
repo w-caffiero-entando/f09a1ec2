@@ -6,6 +6,7 @@ import java.io.IOException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
@@ -26,12 +27,11 @@ public class SolrResourcesAccessor implements ISolrResourcesAccessor {
     private int status;
 
     public SolrResourcesAccessor(String solrAddress, String solrCore, ILangManager langManager,
-            ICategoryManager categoryManager) {
+            ICategoryManager categoryManager, HttpClientBuilder httpClientBuilder) {
         log.debug("Creating Solr resources for {}", solrCore);
         this.solrCore = solrCore;
         this.solrClient = new HttpSolrClient.Builder(solrAddress)
-                // FIXME: configure http client?
-                //.withHttpClient()
+                .withHttpClient(httpClientBuilder.build())
                 .withConnectionTimeout(10000)
                 .withSocketTimeout(60000)
                 .build();

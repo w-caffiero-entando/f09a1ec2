@@ -1,11 +1,13 @@
 package org.entando.entando.plugins.jpsolr.aps.system.solr;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.Optional;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
@@ -32,6 +34,8 @@ class SolrResourcesManagerTest {
     private ICategoryManager categoryManager;
     @Mock
     private ITenantManager tenantManager;
+    @Mock
+    private HttpClientBuilder solrHttpClientBuilder;
 
     @InjectMocks
     private SolrProxyTenantAware resourcesManager;
@@ -43,6 +47,7 @@ class SolrResourcesManagerTest {
         mockedConstructionSolrClientBuilder = Mockito.mockConstruction(HttpSolrClient.Builder.class,
                 (builder, context) -> {
                     HttpSolrClient solrClient = Mockito.mock(HttpSolrClient.class);
+                    Mockito.when(builder.withHttpClient(any())).thenReturn(builder);
                     Mockito.when(builder.withConnectionTimeout(anyInt())).thenReturn(builder);
                     Mockito.when(builder.withSocketTimeout(anyInt())).thenReturn(builder);
                     Mockito.when(builder.build()).thenReturn(solrClient);

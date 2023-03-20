@@ -18,6 +18,7 @@
         <property name="contentManager" ref="jacmsContentManager"/>
         <property name="tenantManager" ref="tenantManager"/>
         <property name="cacheInfoManager" ref="CacheInfoManager"/>
+        <property name="solrHttpClientBuilder" ref="solrHttpClientBuilder"/>
     </bean>
 
     <bean id="jacmsSearchEngineManager" factory-bean="searchEngineManagerFactory"

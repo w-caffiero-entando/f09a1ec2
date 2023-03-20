@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,14 +42,16 @@ public class SolrProxyTenantAware implements ISolrProxyTenantAware, Initializing
     private final ILangManager langManager;
     private final ICategoryManager categoryManager;
     private final ITenantManager tenantManager;
+    private final HttpClientBuilder httpClientBuilder;
 
     private final Map<String, SolrResourcesAccessor> tenantResources = new ConcurrentHashMap<>();
 
     public SolrProxyTenantAware(ILangManager langManager, ICategoryManager categoryManager,
-            ITenantManager tenantManager) {
+            ITenantManager tenantManager, HttpClientBuilder httpClientBuilder) {
         this.langManager = langManager;
         this.categoryManager = categoryManager;
         this.tenantManager = tenantManager;
+        this.httpClientBuilder = httpClientBuilder;
     }
 
     @Override
@@ -67,7 +70,7 @@ public class SolrProxyTenantAware implements ISolrProxyTenantAware, Initializing
 
     private SolrResourcesAccessor newSolrDAOResources() {
         return new SolrResourcesAccessor(this.getSolrAddress(), this.getSolrCore(), this.langManager,
-                this.categoryManager);
+                this.categoryManager, this.httpClientBuilder);
     }
 
     @Override

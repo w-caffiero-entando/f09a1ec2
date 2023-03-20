@@ -8,6 +8,7 @@ import com.agiletec.plugins.jacms.aps.system.services.searchengine.ICmsSearchEng
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.SearchEngineDAOFactory;
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.SearchEngineManager;
 import lombok.Setter;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
@@ -28,11 +29,13 @@ public class SearchEngineManagerFactory {
     private ITenantManager tenantManager;
     @Setter
     private ICacheInfoManager cacheInfoManager;
+    @Setter
+    private HttpClientBuilder solrHttpClientBuilder;
 
     public ICmsSearchEngineManager createSearchEngineManager() throws Exception {
         if (SolrEnvironmentVariables.active()) {
             SolrProxyTenantAware solrProxy = new SolrProxyTenantAware(
-                    langManager, categoryManager, tenantManager
+                    langManager, categoryManager, tenantManager, solrHttpClientBuilder
             );
             solrProxy.afterPropertiesSet();
             SolrSearchEngineManager solrSearchEngineManager = new SolrSearchEngineManager();
