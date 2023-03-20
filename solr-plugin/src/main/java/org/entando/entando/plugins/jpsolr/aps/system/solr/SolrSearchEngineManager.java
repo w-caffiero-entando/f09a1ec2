@@ -169,14 +169,15 @@ public class SolrSearchEngineManager extends SearchEngineManager
                 Content prototype = this.getContentManager().createContentType(entityType.getCode());
                 for (AttributeInterface attribute : prototype.getAttributeList()) {
                     Map<String, Map<String, Serializable>> currentConfig = new HashMap<>();
-                    for (Lang lang : this.langManager.getLangs()) {
+                    List<Lang> languages = this.langManager.getLangs();
+                    for (Lang lang : languages) {
                         String fieldName = lang.getCode().toLowerCase() + "_" + attribute.getName();
                         fields.stream()
                                 .filter(f -> f.get(SOLR_FIELD_NAME).equals(fieldName))
                                 .findFirst().ifPresent(currentField ->
                                         currentConfig.put(fieldName, (Map<String, Serializable>) currentField));
                     }
-                    typeSettings.addAttribute(attribute, currentConfig);
+                    typeSettings.addAttribute(attribute, currentConfig, languages);
                 }
             }
         } catch (Exception e) {

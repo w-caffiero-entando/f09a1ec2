@@ -21,11 +21,13 @@ import com.agiletec.aps.system.common.entity.model.attribute.BooleanAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.DateAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.NumberAttribute;
 import com.agiletec.aps.system.common.searchengine.IndexableAttributeInterface;
+import com.agiletec.aps.system.services.lang.Lang;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author E.Santoboni
@@ -65,8 +67,8 @@ public class ContentTypeSettings implements Serializable {
         this.attributeSettings = attributeSettings;
     }
 
-    public void addAttribute(AttributeInterface attribute, Map<String, Map<String, Serializable>> currentField) {
-        AttributeSettings settings = new AttributeSettings(attribute);
+    public void addAttribute(AttributeInterface attribute, Map<String, Map<String, Serializable>> currentField, List<Lang> languages) {
+        AttributeSettings settings = new AttributeSettings(attribute, languages);
         this.getAttributeSettings().add(settings);
         settings.setCurrentConfig(currentField);
         if (attribute instanceof IndexableAttributeInterface
@@ -99,10 +101,12 @@ public class ContentTypeSettings implements Serializable {
         private String typeCode;
         private Map<String, Map<String, Serializable>> currentConfig;
         private Map<String, Serializable> expectedConfig;
+        private final List<String> expectedLanguages;
 
-        public AttributeSettings(AttributeInterface attribute) {
+        public AttributeSettings(AttributeInterface attribute, List<Lang> expectedLanguages) {
             this.setCode(attribute.getName());
             this.setTypeCode(attribute.getType());
+            this.expectedLanguages = expectedLanguages.stream().map(Lang::getCode).collect(Collectors.toList());
         }
 
         public String getCode() {
@@ -140,7 +144,7 @@ public class ContentTypeSettings implements Serializable {
         public boolean isValid() {
             if (null == this.getExpectedConfig()) {
                 return true;
-            } else if (null == this.getCurrentConfig() || this.getCurrentConfig().isEmpty()) {
+            } else if (null == this.getCurrentConfig() || this.getCurrentConfig().isEmpty() || !this.languagesMatch()) {
                 return false;
             } else {
                 return this.getCurrentConfig().values().stream().allMatch(m ->
@@ -149,6 +153,19 @@ public class ContentTypeSettings implements Serializable {
                                         .equals(this.getExpectedConfig().get(SOLR_FIELD_MULTIVALUED))
                 );
             }
+        }
+
+        private boolean languagesMatch() {
+            if (this.getCurrentConfig().size() != this.expectedLanguages.size()) {
+                return false;
+            }
+            for (String fieldName : this.getCurrentConfig().keySet()) {
+                String extractedLang = fieldName.substring(0, fieldName.indexOf("_"));
+                if (!this.expectedLanguages.contains(extractedLang)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
