@@ -1,6 +1,6 @@
 {
     "charset": "utf-8",
-    "code": "seoTest3",
+    "code": "seoTest8",
     "contentType": "text/html",
     "displayedInMenu": true,
     "ownerGroup": "free",
@@ -9,7 +9,6 @@
     "joinGroups":[ ],
     "seo": true,
     "seoData": {
-        "friendlyCode": "test_page_2",
         "seoDataByLang": {
             "en": {
                 "description": "test",
@@ -36,7 +35,8 @@
                     }
                 ],
                 "inheritDescriptionFromDefaultLang": false,
-                "inheritKeywordsFromDefaultLang": false
+                "inheritKeywordsFromDefaultLang": false,
+                "inheritFriendlyCodeFromDefaultLang": true
             },
             "it": {
                 "description": "",
