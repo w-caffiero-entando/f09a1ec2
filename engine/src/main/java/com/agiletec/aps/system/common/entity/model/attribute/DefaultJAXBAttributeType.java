@@ -44,7 +44,7 @@ import org.entando.entando.aps.system.services.api.model.ApiException;
 @XmlType(propOrder = {"name", "names", "description", "type", "roles", "searchable", "indexable", "validationRules"})
 @XmlSeeAlso({ArrayList.class, BaseAttributeValidationRules.class, DateAttributeValidationRules.class,
         NumberAttributeValidationRules.class, TextAttributeValidationRules.class, OgnlValidationRule.class})
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "classType")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "classType", defaultImpl = DefaultJAXBAttributeType.class)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = JAXBCompositeAttributeType.class),
         @JsonSubTypes.Type(value = JAXBEnumeratorAttributeType.class),

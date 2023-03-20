@@ -4,12 +4,12 @@
     <typeCode>TCL</typeCode>
 	<typeDescription>2 columns</typeDescription>
 	<attributes>
-    <attribute>
+    	<attribute>
 			<name>image</name>
 			<description>Image</description>
 			<type>Image</type>
 		</attribute>
-		<attribute>
+		<attribute classType="DefaultJAXBAttributeType">
 			<name>title</name>
 			<description>Title</description>
 			<type>Text</type>
@@ -18,7 +18,7 @@
 			</roles>
 			<searchable>true</searchable>
 			<indexable>true</indexable>
-			<validationRules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="textAttributeValidationRules">
+			<validationRules classType="TextAttributeValidationRules">
 				<required>true</required>
 			</validationRules>
 		</attribute>
@@ -27,14 +27,14 @@
 			<description>Subtitle</description>
 			<type>Hypertext</type>
 			<indexable>true</indexable>
-    </attribute>
-    <attribute>
+        </attribute>
+        <attribute>
 			<name>col1</name>
 			<description>Column 1 content</description>
 			<type>Hypertext</type>
 			<indexable>true</indexable>
-    </attribute>
-    <attribute>
+        </attribute>
+        <attribute>
 			<name>col2</name>
 			<description>Column 2 content</description>
 			<type>Hypertext</type>

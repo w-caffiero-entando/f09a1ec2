@@ -17,8 +17,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -92,6 +90,8 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     private static String SEO_TEST_2_FC = "seoTest2fc";
     private static String SEO_TEST_7 = "seoTest7";
     private static String SEO_TEST_7_FC = "seoTest7fc";
+
+    private static String SEO_TEST_8 = "seoTest8";
 
     @Test
     void testGetBuiltInSeoPage() throws Exception {
@@ -284,20 +284,20 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     void testPostSeoPageDuplicateFriendlyCode() throws Exception {
         try {
             String accessToken = this.createAccessToken();
-            ResultActions result1 = this.executePostSeoPage("2_POST_valid.json", accessToken, status().isOk());
-            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_2, IPageService.STATUS_DRAFT));
+            ResultActions result1 = this.executePostSeoPage("8_POST_valid.json", accessToken, status().isOk());
+            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_8, IPageService.STATUS_DRAFT));
             result1.andExpect(jsonPath("$.errors.size()", is(0)))
-                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_2)))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is("test_page_2_en")))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_2_it")));
+                    .andExpect(jsonPath("$.payload.code", is(SEO_TEST_8)))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.friendlyCode", is("test_page_8_en")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.friendlyCode", is("test_page_8_it")));
             
             ResultActions result2 = this.executePostSeoPage("3_POST_invalid.json", accessToken, status().isConflict());
             Assertions.assertNull(this.pageManager.getDraftPage(SEO_TEST_3));
             result2.andExpect(jsonPath("$.errors.size()", is(1)));
         } finally {
-            this.pageManager.deletePage(SEO_TEST_2);
+            this.pageManager.deletePage(SEO_TEST_8);
             this.pageManager.deletePage(SEO_TEST_3);
-            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_2);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_8);
             seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_3);
         }
     }
