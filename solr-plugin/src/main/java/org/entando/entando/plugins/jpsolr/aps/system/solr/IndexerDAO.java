@@ -209,7 +209,7 @@ public class IndexerDAO implements ISolrIndexerDAO {
             attribute.setRenderingLang(lang.getCode());
             if (!attribute.isSimple()) {
                 this.indexComplexAttribute(document, (AbstractComplexAttribute) attribute, lang);
-            } else {
+            } else if (attribute instanceof IndexableAttributeInterface){
                 String valueToIndex = ((IndexableAttributeInterface) attribute).getIndexeableFieldValue();
                 this.addFieldForFullTextSearch(document, attribute, lang, valueToIndex);
             }
