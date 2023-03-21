@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.common.FieldSearchFilter.Order;
 import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
@@ -47,25 +46,23 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.servlet.ServletContext;
+import org.entando.entando.TestEntandoJndiUtils;
 import org.entando.entando.aps.system.services.searchengine.FacetedContentsResult;
 import org.entando.entando.aps.system.services.searchengine.SearchEngineFilter;
 import org.entando.entando.aps.system.services.searchengine.SearchEngineFilter.TextSearchOption;
-import org.entando.entando.plugins.jpsolr.CustomConfigTestUtils;
 import org.entando.entando.plugins.jpsolr.SolrTestExtension;
 import org.entando.entando.plugins.jpsolr.SolrTestUtils;
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrSearchEngineFilter;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.mock.web.MockServletContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Test del servizio detentore delle operazioni sul motore di ricerca.
@@ -73,72 +70,61 @@ import org.springframework.mock.web.MockServletContext;
  * @author E.Santoboni
  */
 @ExtendWith(SolrTestExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = {
+        "classpath*:spring/testpropertyPlaceholder.xml",
+        "classpath*:spring/baseSystemConfig.xml",
+        "classpath*:spring/aps/**/**.xml",
+        "classpath*:spring/apsadmin/**/**.xml",
+        "classpath*:spring/plugins/**/aps/**/**.xml",
+        "classpath*:spring/plugins/**/apsadmin/**/**.xml",
+        "classpath*:spring/plugins/jpsolr/aps/**.xml",
+        "classpath*:spring/plugins/jpsolr/apsadmin/**.xml",
+        "classpath*:spring/web/**.xml",
+        "classpath:spring/dateAttributeRoleManagerConfig.xml",
+        "classpath:spring/plugins/jpsolr/aps/baseManagersConfig.xml"
+})
+@WebAppConfiguration(value = "")
 class SolrSearchEngineManagerIntegrationTest {
 
     private static final String ROLE_FOR_TEST = "jacmstest:date";
 
-    private IContentManager contentManager = null;
-    private IResourceManager resourceManager = null;
-    private ISolrSearchEngineManager searchEngineManager = null;
+    @Autowired
+    private IContentManager contentManager;
+    @Autowired
+    private IResourceManager resourceManager;
+    @Autowired
+    private ISolrSearchEngineManager searchEngineManager;
+    @Autowired
     private ICategoryManager categoryManager;
 
-    private static ApplicationContext applicationContext;
-
-    public static ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
-
-    public static void setApplicationContext(ApplicationContext applicationContext) {
-        SolrSearchEngineManagerIntegrationTest.applicationContext = applicationContext;
-    }
-
     @BeforeAll
-    public static void startUp() throws Exception {
-        ServletContext srvCtx = new MockServletContext("", new FileSystemResourceLoader());
-        ApplicationContext applicationContext = new CustomConfigTestUtils().createApplicationContext(srvCtx);
-        setApplicationContext(applicationContext);
-        IContentManager contentManager = applicationContext.getBean(IContentManager.class);
-        AttributeRole role = contentManager.getAttributeRole(ROLE_FOR_TEST);
-        Assertions.assertNotNull(role);
-        Content artType = contentManager.createContentType("ART");
-        DateAttribute dateAttrArt = (DateAttribute) artType.getAttribute("Data");
-        if (null == dateAttrArt.getRoles() || !Arrays.asList(dateAttrArt.getRoles()).contains(ROLE_FOR_TEST)) {
-            dateAttrArt.setRoles(new String[]{ROLE_FOR_TEST});
-            ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(artType);
-        }
-        Content evnType = contentManager.createContentType("EVN");
-        DateAttribute dateAttrEnv = (DateAttribute) evnType.getAttribute("DataInizio");
-        if (null == dateAttrEnv.getRoles() || !Arrays.asList(dateAttrEnv.getRoles()).contains(ROLE_FOR_TEST)) {
-            dateAttrEnv.setRoles(new String[]{ROLE_FOR_TEST});
-            ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(evnType);
-        }
-        ISolrSearchEngineManager solrSearchEngineManager = applicationContext.getBean(ISolrSearchEngineManager.class);
-        solrSearchEngineManager.refreshCmsFields();
+    public static void setup() throws Exception {
+        TestEntandoJndiUtils.setupJndi();
     }
 
-    @AfterAll
-    public static void tearDown() throws Exception {
-        try {
-            IContentManager contentManager = getApplicationContext().getBean(IContentManager.class);
-            Content artType = contentManager.createContentType("ART");
-            DateAttribute dateAttrArt = (DateAttribute) artType.getAttribute("Data");
-            dateAttrArt.setRoles(new String[0]);
-            ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(artType);
-            Content evnType = contentManager.createContentType("EVN");
-            DateAttribute dateAttrEnv = (DateAttribute) evnType.getAttribute("DataInizio");
-            dateAttrEnv.setRoles(new String[0]);
-            ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(evnType);
-        } finally {
-            BaseTestCase.tearDown();
-        }
-    }
+    private boolean initialized = false;
 
     @BeforeEach
-    protected void init() {
-        this.contentManager = getApplicationContext().getBean(IContentManager.class);
-        this.resourceManager = getApplicationContext().getBean(IResourceManager.class);
-        this.searchEngineManager = getApplicationContext().getBean(ISolrSearchEngineManager.class);
-        this.categoryManager = getApplicationContext().getBean(ICategoryManager.class);
+    protected synchronized void init() throws Exception {
+        if (!initialized) {
+            AttributeRole role = contentManager.getAttributeRole(ROLE_FOR_TEST);
+            Assertions.assertNotNull(role);
+            Content artType = contentManager.createContentType("ART");
+            DateAttribute dateAttrArt = (DateAttribute) artType.getAttribute("Data");
+            if (null == dateAttrArt.getRoles() || !Arrays.asList(dateAttrArt.getRoles()).contains(ROLE_FOR_TEST)) {
+                dateAttrArt.setRoles(new String[]{ROLE_FOR_TEST});
+                ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(artType);
+            }
+            Content evnType = contentManager.createContentType("EVN");
+            DateAttribute dateAttrEnv = (DateAttribute) evnType.getAttribute("DataInizio");
+            if (null == dateAttrEnv.getRoles() || !Arrays.asList(dateAttrEnv.getRoles()).contains(ROLE_FOR_TEST)) {
+                dateAttrEnv.setRoles(new String[]{ROLE_FOR_TEST});
+                ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(evnType);
+            }
+            searchEngineManager.refreshCmsFields();
+            initialized = true;
+        }
     }
 
     @AfterEach
@@ -524,7 +510,6 @@ class SolrSearchEngineManagerIntegrationTest {
     }
 
     @Test
-    @Disabled
     void testSearchContentsId_9() throws Exception {
         SearchEngineManager sem = (SearchEngineManager) this.searchEngineManager;
         List<String> allowedGroup = new ArrayList<>();

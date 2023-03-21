@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -49,8 +50,9 @@ class SearchEngineManagerFactoryTest {
 
     @Test
     void shouldLoadSolrSearchEngineIfSolrIsActive() throws Exception {
-        try (MockedStatic<SolrEnvironmentVariables> solrEnvStaticMock = Mockito.mockStatic(
-                SolrEnvironmentVariables.class)) {
+        try (MockedStatic<SolrEnvironmentVariables> solrEnvStaticMock =
+                Mockito.mockStatic(SolrEnvironmentVariables.class);
+                MockedConstruction<SolrResourcesAccessor> c = Mockito.mockConstruction(SolrResourcesAccessor.class)) {
             solrEnvStaticMock.when(() -> SolrEnvironmentVariables.active()).thenReturn(true);
             ICmsSearchEngineManager manager = factory.createSearchEngineManager();
             Assertions.assertEquals(SolrSearchEngineManager.class, manager.getClass());

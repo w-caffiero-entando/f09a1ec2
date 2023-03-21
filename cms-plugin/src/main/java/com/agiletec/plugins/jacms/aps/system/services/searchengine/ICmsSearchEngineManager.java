@@ -14,14 +14,12 @@
 package com.agiletec.plugins.jacms.aps.system.services.searchengine;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
-import org.entando.entando.aps.system.services.searchengine.IEntitySearchEngineManager;
-
-import org.entando.entando.ent.exception.EntException;
-import com.agiletec.aps.system.services.category.Category;
 import java.util.Collection;
 import java.util.List;
 import org.entando.entando.aps.system.services.searchengine.FacetedContentsResult;
+import org.entando.entando.aps.system.services.searchengine.IEntitySearchEngineManager;
 import org.entando.entando.aps.system.services.searchengine.SearchEngineFilter;
+import org.entando.entando.ent.exception.EntException;
 
 /**
  * Interfaccia base per i servizi detentori delle operazioni di indicizzazione
@@ -47,6 +45,7 @@ public interface ICmsSearchEngineManager extends IEntitySearchEngineManager {
      */
     public Thread startReloadContentsReferences() throws EntException;
 
+    @Deprecated(since = "7.2.0")
     public Thread startReloadContentsReferences(String subDirectory) throws EntException;
 
     /**

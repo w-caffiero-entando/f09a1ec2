@@ -1,11 +1,12 @@
 package org.entando.entando.plugins.jpsolr.aps.system.solr;
 
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.Optional;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
@@ -22,7 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class SolrSearchEngineDAOFactoryTest {
+class SolrResourcesManagerTest {
 
     private static final String TENANT_1 = "tenant1";
 
@@ -32,9 +33,11 @@ class SolrSearchEngineDAOFactoryTest {
     private ICategoryManager categoryManager;
     @Mock
     private ITenantManager tenantManager;
+    @Mock
+    private HttpClientBuilder solrHttpClientBuilder;
 
     @InjectMocks
-    private SolrSearchEngineDAOFactory factory;
+    private SolrProxyTenantAware resourcesManager;
 
     private MockedConstruction<HttpSolrClient.Builder> mockedConstructionSolrClientBuilder;
 
@@ -43,11 +46,10 @@ class SolrSearchEngineDAOFactoryTest {
         mockedConstructionSolrClientBuilder = Mockito.mockConstruction(HttpSolrClient.Builder.class,
                 (builder, context) -> {
                     HttpSolrClient solrClient = Mockito.mock(HttpSolrClient.class);
-                    Mockito.when(builder.withConnectionTimeout(anyInt())).thenReturn(builder);
-                    Mockito.when(builder.withSocketTimeout(anyInt())).thenReturn(builder);
+                    Mockito.when(builder.withHttpClient(any())).thenReturn(builder);
                     Mockito.when(builder.build()).thenReturn(solrClient);
                 });
-        factory.init();
+        resourcesManager.afterPropertiesSet();
     }
 
     @AfterEach
@@ -57,8 +59,8 @@ class SolrSearchEngineDAOFactoryTest {
 
     @Test
     void shouldCreatePrimaryIndexerAndSearcher() throws Exception {
-        Assertions.assertNotNull(factory.getIndexer());
-        Assertions.assertNotNull(factory.getSearcher());
+        Assertions.assertNotNull(resourcesManager.getIndexerDAO());
+        Assertions.assertNotNull(resourcesManager.getSearcherDAO());
     }
 
     @Test
@@ -67,8 +69,9 @@ class SolrSearchEngineDAOFactoryTest {
         try (MockedStatic<ApsTenantApplicationUtils> tenantUtils
                 = Mockito.mockStatic(ApsTenantApplicationUtils.class)) {
             tenantUtils.when(() -> ApsTenantApplicationUtils.getTenant()).thenReturn(Optional.of(TENANT_1));
-            Assertions.assertNotNull(factory.getIndexer());
-            Assertions.assertNotNull(factory.getSearcher());
+            resourcesManager.init();
+            Assertions.assertNotNull(resourcesManager.getIndexerDAO());
+            Assertions.assertNotNull(resourcesManager.getSearcherDAO());
         }
     }
 
