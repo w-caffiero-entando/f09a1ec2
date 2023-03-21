@@ -19,6 +19,8 @@ import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import java.util.Arrays;
 import java.util.List;
 import org.entando.entando.aps.system.services.searchengine.FacetedContentsResult;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jpsolr.aps.system.content.IAdvContentFacetManager;
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrFacetedContentsResult;
 import org.entando.entando.plugins.jpsolr.conditions.SolrActive;
@@ -28,8 +30,6 @@ import org.entando.entando.plugins.jpsolr.web.content.model.SolrFacetedPagedMeta
 import org.entando.entando.web.common.model.PagedRestResponse;
 import org.entando.entando.web.common.model.RestResponse;
 import org.entando.entando.web.common.validator.AbstractPaginationValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/plugins/advcontentsearch")
 public class AdvContentSearchController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AdvContentSearchController.class);
+    private static final EntLogger logger = EntLogFactory.getSanitizedLogger(AdvContentSearchController.class);
 
     private final IAdvContentFacetManager advContentFacetManager;
 

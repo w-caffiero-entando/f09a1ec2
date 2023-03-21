@@ -21,12 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Classe factory degli elementi ad uso del SearchEngine.
@@ -34,7 +32,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author E.Santoboni
  */
 @Slf4j
-public class SolrProxyTenantAware implements ISolrProxyTenantAware, InitializingBean {
+public class SolrProxyTenantAware implements ISolrProxyTenantAware {
 
     private static final String SOLR_ADDRESS_TENANT_PARAM = "solrAddress";
     private static final String SOLR_CORE_TENANT_PARAM = "solrCore";
@@ -54,7 +52,6 @@ public class SolrProxyTenantAware implements ISolrProxyTenantAware, Initializing
         this.httpClientBuilder = httpClientBuilder;
     }
 
-    @Override
     public void afterPropertiesSet() throws Exception {
         log.debug("Initializing Solr tenant resources for primary tenant");
         tenantResources.put(ITenantManager.PRIMARY_CODE, newSolrDAOResources());
@@ -82,7 +79,7 @@ public class SolrProxyTenantAware implements ISolrProxyTenantAware, Initializing
         }
     }
 
-    @PreDestroy
+    @Override
     public void destroy() {
         tenantResources.values().stream().forEach(r -> r.close());
         tenantResources.clear();
@@ -104,18 +101,13 @@ public class SolrProxyTenantAware implements ISolrProxyTenantAware, Initializing
     }
 
     @Override
+    public ISolrIndexStatus getIndexStatus() {
+        return getSolrTenantResources().getIndexStatus();
+    }
+
+    @Override
     public String getSolrCore() {
         return this.getTenantParameter(SOLR_CORE_TENANT_PARAM, SolrEnvironmentVariables.solrCore());
-    }
-
-    @Override
-    public int getStatus() {
-        return this.getSolrTenantResources().getStatus();
-    }
-
-    @Override
-    public void setStatus(int status) {
-        this.getSolrTenantResources().setStatus(status);
     }
 
     @Override

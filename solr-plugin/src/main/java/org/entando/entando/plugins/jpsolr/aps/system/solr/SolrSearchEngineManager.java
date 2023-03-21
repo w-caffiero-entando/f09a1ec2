@@ -108,6 +108,15 @@ public class SolrSearchEngineManager extends SearchEngineManager
         }
     }
 
+    @Override
+    public void destroy() {
+        try {
+            this.solrProxy.destroy();
+        } catch (Exception ex) {
+            log.error("Error destroying Solr resources {}", ex);
+        }
+    }
+
     private void refreshAllTenantsFields() {
         for (ISolrResourcesAccessor tenantResources : this.solrProxy.getAllSolrTenantsResources()) {
             Lock lock = tenantsLock.get(tenantResources.getSolrCore());
@@ -312,9 +321,9 @@ public class SolrSearchEngineManager extends SearchEngineManager
         }
     }
 
-    private Thread startReloadContentsReferencesPrivate(String typeCode) throws EntException {
+    private synchronized Thread startReloadContentsReferencesPrivate(String typeCode) throws EntException {
         SolrIndexLoaderThread loaderThread = null;
-        if (this.getStatus() == STATUS_READY || this.getStatus() == STATUS_NEED_TO_RELOAD_INDEXES) {
+        if (this.solrProxy.getIndexStatus().canReloadIndexes()) {
             try {
                 IIndexerDAO newIndexer = this.solrProxy.getIndexerDAO();
                 loaderThread = new SolrIndexLoaderThread(typeCode, this, this.getContentManager(), newIndexer);
@@ -322,10 +331,11 @@ public class SolrSearchEngineManager extends SearchEngineManager
                         + DateConverter.getFormattedDate(new Date(), "yyyyMMddHHmmss")
                         + typeCode;
                 loaderThread.setName(threadName);
-                this.setStatus(STATUS_RELOADING_INDEXES_IN_PROGRESS);
+                this.solrProxy.getIndexStatus().setReloadInProgress();
                 loaderThread.start();
                 log.info("Reload Contents References job started");
-            } catch (RuntimeException ex) {
+            } catch (Throwable ex) {
+                this.solrProxy.getIndexStatus().rollbackStatus();
                 throw new EntException("Error reloading Contents References", ex);
             }
         } else {
@@ -343,9 +353,7 @@ public class SolrSearchEngineManager extends SearchEngineManager
     @Override
     public void notifyEndingIndexLoading(LastReloadInfo info, IIndexerDAO newIndexerDAO) {
         this.cacheInfoManager.putInCache(ICacheInfoManager.DEFAULT_CACHE_NAME, this.getLastReloadCacheKey(), info);
-        if (this.getStatus() != STATUS_NEED_TO_RELOAD_INDEXES) {
-            this.setStatus(STATUS_READY);
-        }
+        this.solrProxy.getIndexStatus().setReadyIfPossible();
     }
 
     @Override
@@ -361,11 +369,11 @@ public class SolrSearchEngineManager extends SearchEngineManager
 
     @Override
     public int getStatus() {
-        return this.solrProxy.getStatus();
+        return this.solrProxy.getIndexStatus().getValue();
     }
 
     @Override
     protected void setStatus(int status) {
-        this.solrProxy.setStatus(status);
+        this.solrProxy.getIndexStatus().setValue(status);
     }
 }

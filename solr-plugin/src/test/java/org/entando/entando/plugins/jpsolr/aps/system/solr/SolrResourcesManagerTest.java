@@ -1,7 +1,6 @@
 package org.entando.entando.plugins.jpsolr.aps.system.solr;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
@@ -48,8 +47,6 @@ class SolrResourcesManagerTest {
                 (builder, context) -> {
                     HttpSolrClient solrClient = Mockito.mock(HttpSolrClient.class);
                     Mockito.when(builder.withHttpClient(any())).thenReturn(builder);
-                    Mockito.when(builder.withConnectionTimeout(anyInt())).thenReturn(builder);
-                    Mockito.when(builder.withSocketTimeout(anyInt())).thenReturn(builder);
                     Mockito.when(builder.build()).thenReturn(solrClient);
                 });
         resourcesManager.afterPropertiesSet();

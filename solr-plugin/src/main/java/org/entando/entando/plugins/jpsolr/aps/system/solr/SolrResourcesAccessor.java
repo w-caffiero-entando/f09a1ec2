@@ -4,7 +4,6 @@ import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import java.io.IOException;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.solr.client.solrj.SolrClient;
@@ -13,7 +12,11 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 @Slf4j
 public class SolrResourcesAccessor implements ISolrResourcesAccessor {
 
+    @Getter
+    private final String solrCore;
+
     private final SolrClient solrClient;
+
     @Getter
     private final ISolrIndexerDAO indexerDAO;
     @Getter
@@ -21,10 +24,7 @@ public class SolrResourcesAccessor implements ISolrResourcesAccessor {
     @Getter
     private final ISolrSchemaDAO solrSchemaDAO;
     @Getter
-    private final String solrCore;
-    @Getter
-    @Setter
-    private int status;
+    private final ISolrIndexStatus indexStatus;
 
     public SolrResourcesAccessor(String solrAddress, String solrCore, ILangManager langManager,
             ICategoryManager categoryManager, HttpClientBuilder httpClientBuilder) {
@@ -32,8 +32,6 @@ public class SolrResourcesAccessor implements ISolrResourcesAccessor {
         this.solrCore = solrCore;
         this.solrClient = new HttpSolrClient.Builder(solrAddress)
                 .withHttpClient(httpClientBuilder.build())
-                .withConnectionTimeout(10000)
-                .withSocketTimeout(60000)
                 .build();
 
         this.indexerDAO = new IndexerDAO(solrClient, solrCore);
@@ -45,6 +43,8 @@ public class SolrResourcesAccessor implements ISolrResourcesAccessor {
         this.searcherDAO.setTreeNodeManager(categoryManager);
 
         this.solrSchemaDAO = new SolrSchemaDAO(solrClient, solrCore);
+
+        this.indexStatus = new SolrIndexStatus();
     }
 
     public void close() {

@@ -24,6 +24,8 @@ public interface ISolrProxyTenantAware extends ISolrResourcesAccessor {
 
     void close() throws Exception;
 
+    void destroy() throws Exception;
+
     ISolrResourcesAccessor getSolrTenantResources();
 
     List<ISolrResourcesAccessor> getAllSolrTenantsResources();

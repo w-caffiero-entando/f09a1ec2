@@ -12,9 +12,7 @@ public interface ISolrResourcesAccessor {
 
     ISolrSchemaDAO getSolrSchemaDAO();
 
+    ISolrIndexStatus getIndexStatus();
+
     String getSolrCore();
-
-    int getStatus();
-
-    void setStatus(int status);
 }
