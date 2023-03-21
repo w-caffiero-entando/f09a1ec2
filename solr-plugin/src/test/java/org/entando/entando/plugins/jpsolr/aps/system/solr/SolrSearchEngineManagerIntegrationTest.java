@@ -19,10 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.common.FieldSearchFilter.Order;
 import com.agiletec.aps.system.common.entity.IEntityTypesConfigurer;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
+import com.agiletec.aps.system.common.entity.model.attribute.CompositeAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.DateAttribute;
+import com.agiletec.aps.system.common.entity.model.attribute.MonoListAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.NumberAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.TextAttribute;
 import com.agiletec.aps.system.common.searchengine.IndexableAttributeInterface;
@@ -46,23 +50,27 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.entando.entando.TestEntandoJndiUtils;
+import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
+import javax.servlet.ServletContext;
 import org.entando.entando.aps.system.services.searchengine.FacetedContentsResult;
 import org.entando.entando.aps.system.services.searchengine.SearchEngineFilter;
 import org.entando.entando.aps.system.services.searchengine.SearchEngineFilter.TextSearchOption;
+import org.entando.entando.ent.exception.EntRuntimeException;
+import org.entando.entando.plugins.jpsolr.CustomConfigTestUtils;
 import org.entando.entando.plugins.jpsolr.SolrTestExtension;
 import org.entando.entando.plugins.jpsolr.SolrTestUtils;
 import org.entando.entando.plugins.jpsolr.aps.system.solr.model.SolrSearchEngineFilter;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.mock.web.MockServletContext;
 
 /**
  * Test del servizio detentore delle operazioni sul motore di ricerca.
@@ -70,68 +78,114 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * @author E.Santoboni
  */
 @ExtendWith(SolrTestExtension.class)
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = {
-        "classpath*:spring/testpropertyPlaceholder.xml",
-        "classpath*:spring/baseSystemConfig.xml",
-        "classpath*:spring/aps/**/**.xml",
-        "classpath*:spring/apsadmin/**/**.xml",
-        "classpath*:spring/plugins/**/aps/**/**.xml",
-        "classpath*:spring/plugins/**/apsadmin/**/**.xml",
-        "classpath*:spring/plugins/jpsolr/aps/**.xml",
-        "classpath*:spring/plugins/jpsolr/apsadmin/**.xml",
-        "classpath*:spring/web/**.xml",
-        "classpath:spring/dateAttributeRoleManagerConfig.xml",
-        "classpath:spring/plugins/jpsolr/aps/baseManagersConfig.xml"
-})
-@WebAppConfiguration(value = "")
 class SolrSearchEngineManagerIntegrationTest {
 
     private static final String ROLE_FOR_TEST = "jacmstest:date";
 
-    @Autowired
-    private IContentManager contentManager;
-    @Autowired
-    private IResourceManager resourceManager;
-    @Autowired
-    private ISolrSearchEngineManager searchEngineManager;
-    @Autowired
+    private IContentManager contentManager = null;
+    private IResourceManager resourceManager = null;
+    private ISolrSearchEngineManager searchEngineManager = null;
     private ICategoryManager categoryManager;
 
-    @BeforeAll
-    public static void setup() throws Exception {
-        TestEntandoJndiUtils.setupJndi();
+    private static ApplicationContext applicationContext;
+
+    public static ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
-    private boolean initialized = false;
+    public static void setApplicationContext(ApplicationContext applicationContext) {
+        SolrSearchEngineManagerIntegrationTest.applicationContext = applicationContext;
+    }
 
-    @BeforeEach
-    protected synchronized void init() throws Exception {
-        if (!initialized) {
-            AttributeRole role = contentManager.getAttributeRole(ROLE_FOR_TEST);
-            Assertions.assertNotNull(role);
+    @BeforeAll
+    public static void startUp() throws Exception {
+        ServletContext srvCtx = new MockServletContext("", new FileSystemResourceLoader());
+        ApplicationContext applicationContext = new CustomConfigTestUtils().createApplicationContext(srvCtx);
+        setApplicationContext(applicationContext);
+        IContentManager contentManager = applicationContext.getBean(IContentManager.class);
+        AttributeRole role = contentManager.getAttributeRole(ROLE_FOR_TEST);
+        Assertions.assertNotNull(role);
+        Content artType = contentManager.createContentType("ART");
+        DateAttribute dateAttrArt = (DateAttribute) artType.getAttribute("Data");
+        if (null == dateAttrArt.getRoles() || !Arrays.asList(dateAttrArt.getRoles()).contains(ROLE_FOR_TEST)) {
+            dateAttrArt.setRoles(new String[]{ROLE_FOR_TEST});
+        }
+        TextAttribute textElement1 = (TextAttribute) contentManager.getEntityAttributePrototypes().get("Text");
+        MonoListAttribute list1 = (MonoListAttribute) contentManager.getEntityAttributePrototypes().get("Monolist");
+        list1.setName("texts");
+        textElement1.setName("texts");
+        textElement1.setIndexingType(IndexableAttributeInterface.INDEXING_TYPE_TEXT);
+        list1.setNestedAttributeType(textElement1);
+        artType.addAttribute(list1);
+        TextAttribute textElement2 = (TextAttribute) contentManager.getEntityAttributePrototypes().get("Text");
+        TextAttribute textElement3 = (TextAttribute) contentManager.getEntityAttributePrototypes().get("Longtext");
+        CompositeAttribute composite = (CompositeAttribute) contentManager.getEntityAttributePrototypes().get("Composite");
+        MonoListAttribute list2 = (MonoListAttribute) contentManager.getEntityAttributePrototypes().get("Monolist");
+        list2.setName("composite");
+        textElement2.setName("text");
+        textElement2.setIndexingType(IndexableAttributeInterface.INDEXING_TYPE_TEXT);
+        textElement3.setName("longtext");
+        composite.setName("composite");
+        composite.getAttributes().add(textElement2);
+        composite.getAttributeMap().put(textElement2.getName(), textElement2);
+        composite.getAttributes().add(textElement3);
+        composite.getAttributeMap().put(textElement3.getName(), textElement3);
+        list2.setNestedAttributeType(composite);
+        artType.addAttribute(list2);
+        ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(artType);
+        Content evnType = contentManager.createContentType("EVN");
+        DateAttribute dateAttrEnv = (DateAttribute) evnType.getAttribute("DataInizio");
+        if (null == dateAttrEnv.getRoles() || !Arrays.asList(dateAttrEnv.getRoles()).contains(ROLE_FOR_TEST)) {
+            dateAttrEnv.setRoles(new String[]{ROLE_FOR_TEST});
+            ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(evnType);
+        }
+        ISolrSearchEngineManager solrSearchEngineManager = applicationContext.getBean(ISolrSearchEngineManager.class);
+        solrSearchEngineManager.refreshCmsFields();
+    }
+
+    @AfterAll
+    public static void tearDown() throws Exception {
+        try {
+            IContentManager contentManager = getApplicationContext().getBean(IContentManager.class);
             Content artType = contentManager.createContentType("ART");
             DateAttribute dateAttrArt = (DateAttribute) artType.getAttribute("Data");
-            if (null == dateAttrArt.getRoles() || !Arrays.asList(dateAttrArt.getRoles()).contains(ROLE_FOR_TEST)) {
-                dateAttrArt.setRoles(new String[]{ROLE_FOR_TEST});
-                ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(artType);
-            }
+            dateAttrArt.setRoles(new String[0]);
+            List<AttributeInterface> attributes = artType.getAttributeList();
+            BiConsumer<List<AttributeInterface>, String> removeCompElement = new BiConsumer<>() {
+                @Override
+                public void accept(List<AttributeInterface> attributes, String name) {
+                    int index = IntStream.range(0, attributes.size())
+                            .filter(position -> attributes.get(position).getName().equals(name))
+                            .findFirst().getAsInt();
+                    attributes.remove(index);
+                    artType.getAttributeMap().remove(name);
+                }
+            };
+            removeCompElement.accept(attributes, "texts");
+            removeCompElement.accept(attributes, "composite");
+            ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(artType);
             Content evnType = contentManager.createContentType("EVN");
             DateAttribute dateAttrEnv = (DateAttribute) evnType.getAttribute("DataInizio");
-            if (null == dateAttrEnv.getRoles() || !Arrays.asList(dateAttrEnv.getRoles()).contains(ROLE_FOR_TEST)) {
-                dateAttrEnv.setRoles(new String[]{ROLE_FOR_TEST});
-                ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(evnType);
-            }
-            searchEngineManager.refreshCmsFields();
-            initialized = true;
+            dateAttrEnv.setRoles(new String[0]);
+            ((IEntityTypesConfigurer) contentManager).updateEntityPrototype(evnType);
+        } finally {
+            BaseTestCase.tearDown();
         }
+    }
+
+    @BeforeEach
+    protected void init() {
+        this.contentManager = getApplicationContext().getBean(IContentManager.class);
+        this.resourceManager = getApplicationContext().getBean(IResourceManager.class);
+        this.searchEngineManager = getApplicationContext().getBean(ISolrSearchEngineManager.class);
+        this.categoryManager = getApplicationContext().getBean(ICategoryManager.class);
     }
 
     @AfterEach
     protected void dispose() throws Exception {
         SolrTestUtils.waitThreads(ICmsSearchEngineManager.RELOAD_THREAD_NAME_PREFIX);
     }
-
+    
     @Test
     void testSearchAllContents() throws Exception {
         Thread thread = this.searchEngineManager.startReloadContentsReferences();
@@ -926,6 +980,69 @@ class SolrSearchEngineManagerIntegrationTest {
                 this.contentManager.deleteContent(contentToDelete);
             }
             this.waitForSearchEngine();
+        }
+    }
+    
+    @Test
+    void testSearchContentByListElement() throws Exception {
+        String newId1 = null;
+        String newId2 = null;
+        try {
+            Content contentForTest1 = this.contentManager.loadContent("ART1", true);
+            contentForTest1.setId(null);
+            MonoListAttribute listAttribute = (MonoListAttribute) contentForTest1.getAttribute("texts");
+            TextAttribute textAttr1 = (TextAttribute) listAttribute.addAttribute();
+            textAttr1.setText("openshift", "it");
+            TextAttribute textAttr2 = (TextAttribute) listAttribute.addAttribute();
+            textAttr2.setText("kubernetes", "it");
+            newId1 = this.contentManager.insertOnLineContent(contentForTest1);
+            assertNotNull(newId1);
+            
+            Content contentForTest2 = this.contentManager.loadContent("ART1", true);
+            contentForTest2.setId(null);
+            MonoListAttribute listCompositeAttribute = (MonoListAttribute) contentForTest2.getAttribute("composite");
+            CompositeAttribute composite = (CompositeAttribute) listCompositeAttribute.addAttribute();
+            TextAttribute textElement1 = (TextAttribute) composite.getAttribute("text");
+            textElement1.setText("openshift", "it");
+            TextAttribute textElement2 = (TextAttribute) composite.getAttribute("longtext");
+            textElement2.setText("kubernetes", "it");
+            newId2 = this.contentManager.insertOnLineContent(contentForTest2);
+            assertNotNull(newId2);
+            
+            BaseTestCase.waitNotifyingThread();
+            BaseTestCase.waitThreads(ICmsSearchEngineManager.RELOAD_THREAD_NAME_PREFIX);
+            List<String> allowedGroup = new ArrayList<>();
+            allowedGroup.add(Group.FREE_GROUP_NAME);
+            
+            List<String> contentsId = this.searchEngineManager.searchEntityId("it", "kubernetes", allowedGroup);
+            assertNotNull(contentsId);
+            assertEquals(1, contentsId.size());
+            assertTrue(contentsId.contains(newId1));
+            
+            contentsId = this.searchEngineManager.searchEntityId("it", "openshift", allowedGroup);
+            assertNotNull(contentsId);
+            assertEquals(2, contentsId.size());
+            assertTrue(contentsId.contains(newId1));
+            assertTrue(contentsId.contains(newId2));
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            BiConsumer<IContentManager, String> deleteContent = new BiConsumer<>() {
+                @Override
+                public void accept(IContentManager contentManager, String newId1) {
+                    try {
+                        Content contentToDelete1 = contentManager.loadContent(newId1, false);
+                        if (null != contentToDelete1) {
+                            contentManager.removeOnLineContent(contentToDelete1);
+                            contentManager.deleteContent(contentToDelete1);
+                        }
+                    } catch (Exception e) {
+                        throw new EntRuntimeException("Error", e);
+                    }
+                }
+            };
+            deleteContent.accept(this.contentManager, newId1);
+            deleteContent.accept(this.contentManager, newId2);
         }
     }
 

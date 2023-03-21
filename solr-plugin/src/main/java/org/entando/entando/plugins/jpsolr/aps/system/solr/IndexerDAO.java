@@ -209,7 +209,7 @@ public class IndexerDAO implements ISolrIndexerDAO {
             attribute.setRenderingLang(lang.getCode());
             if (!attribute.isSimple()) {
                 this.indexComplexAttribute(document, (AbstractComplexAttribute) attribute, lang);
-            } else if (attribute instanceof ResourceAttributeInterface) {
+            } else if (attribute instanceof IndexableAttributeInterface){
                 String valueToIndex = ((IndexableAttributeInterface) attribute).getIndexeableFieldValue();
                 this.addFieldForFullTextSearch(document, attribute, lang, valueToIndex);
             }
@@ -225,8 +225,7 @@ public class IndexerDAO implements ISolrIndexerDAO {
         }
         String indexingType = attribute.getIndexingType();
         if (null != indexingType
-                && (IndexableAttributeInterface.INDEXING_TYPE_UNSTORED.equalsIgnoreCase(indexingType)
-                || IndexableAttributeInterface.INDEXING_TYPE_TEXT.equalsIgnoreCase(indexingType))) {
+                && !IndexableAttributeInterface.INDEXING_TYPE_NONE.equalsIgnoreCase(indexingType)) {
             document.addField(fieldName, valueToIndex);
         }
     }
