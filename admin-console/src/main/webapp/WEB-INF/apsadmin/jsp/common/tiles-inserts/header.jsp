@@ -62,6 +62,7 @@
                 <s:text name="note.goToPortal" />
             </a>
         </li>
+        <% if( "true".equalsIgnoreCase(System.getenv().get("ACTIVITY_STREAM_NOTIFICATION_ENABLED")) ) { %>
         <s:if test="#appBuilderIntegrationEnabled == 'true'">
             <li></li>
         </s:if>
@@ -72,6 +73,7 @@
                 </a>
             </li>
         </s:else>
+        <% } %>
         <li id="infoHeader" class="dropdown">
             <a class="dropdown-toggle nav-item-iconic" id="infoDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 <span title="Info" class="fa pficon-info"></span>
@@ -130,6 +132,7 @@
         </li>
     </ul>
 </nav>
+<% if( "true".equalsIgnoreCase(System.getenv().get("ACTIVITY_STREAM_NOTIFICATION_ENABLED")) ) { %>
 <script>
     $(document).ready(function () {
         // Show/Hide Notifications Drawer
@@ -180,3 +183,4 @@
     });
 
 </script>
+<% } %>
