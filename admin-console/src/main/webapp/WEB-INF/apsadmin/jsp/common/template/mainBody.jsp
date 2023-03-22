@@ -7,6 +7,7 @@
 
 
 <div id="main" role="main">
+    <% if( "true".equalsIgnoreCase(System.getenv().get("ACTIVITY_STREAM_NOTIFICATION_ENABLED")) ) { %>
     <!--<h1><s:text name="title.activityStream" /></h1>-->
     <s:set var="currentUsernameVar"><c:out value="${sessionScope.currentUser.username}" /></s:set>
         <wpsa:activityStream var="activityStreamListVar" />
@@ -26,6 +27,7 @@
     <s:else>
         <s:text name="activity.stream.note.no.activity" />
     </s:else>
+    <% } %>
 </div> 
 </html>
 
