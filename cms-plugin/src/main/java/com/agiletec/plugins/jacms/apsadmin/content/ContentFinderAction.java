@@ -215,13 +215,17 @@ public class ContentFinderAction extends AbstractApsEntityFinderAction {
             ContentFinderSearchInfo searchInfo = this.getContentSearchInfo();
             List<String> allowedGroups = this.getContentGroupCodes();
             String[] categories = null;
-            Category category = this.getCategoryManager().getCategory(this.getCategoryCode());
-            if (null != category && !category.isRoot()) {
-                String catCode = this.getCategoryCode().trim();
-                categories = new String[]{catCode};
-                searchInfo.setCategoryCode(catCode);
-            } else {
+            if (this.getCategoryCode() == null) {
                 searchInfo.setCategoryCode(null);
+            } else {
+                Category category = this.getCategoryManager().getCategory(this.getCategoryCode());
+                if (null != category && !category.isRoot()) {
+                    String catCode = this.getCategoryCode().trim();
+                    categories = new String[]{catCode};
+                    searchInfo.setCategoryCode(catCode);
+                } else {
+                    searchInfo.setCategoryCode(null);
+                }
             }
             EntitySearchFilter[] filters = this.getFilters();
             if (null != limit) {
