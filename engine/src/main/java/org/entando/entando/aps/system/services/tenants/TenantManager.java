@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -40,7 +41,7 @@ public class TenantManager extends AbstractService implements ITenantManager, In
 
     private final String tenantsConfigAsString;
     private final ObjectMapper objectMapper;
-    private transient Map<String, DataSource> dataSources = new HashMap<>();
+    private transient Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
     private transient Map<String, TenantConfig> tenantsMap = new HashMap<>();
 
     @Autowired
