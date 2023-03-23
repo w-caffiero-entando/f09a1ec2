@@ -178,7 +178,7 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
 
     @Override
     @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME,
-            key = "'GuiFragment_uniqueByWidgetType_'.concat(#widgetTypeCode)", unless = "#result == null")
+            key = "'" + UNIQUE_BY_TYPE_CACHE_PREFIX + "'.concat(#widgetTypeCode)", unless = "#result == null")
     public GuiFragment getUniqueGuiFragmentByWidgetType(String widgetTypeCode) throws EntException {
         GuiFragment guiFragment = null;
         try {
@@ -199,7 +199,7 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     }
 
     @Override
-    @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'GuiFragment_codesByWidgetType_'.concat(#widgetTypeCode)")
+    @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'" + CODES_BY_TYPE_CACHE_PREXIX + "'.concat(#widgetTypeCode)")
     public List<String> getGuiFragmentCodesByWidgetType(String widgetTypeCode) throws EntException {
         List<String> codes = null;
         try {
