@@ -1,6 +1,6 @@
 package org.entando.entando.plugins.jpsolr.conditions;
 
-import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
+import org.entando.entando.aps.system.services.searchengine.SolrEnvironmentVariables;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
