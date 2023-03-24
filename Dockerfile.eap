@@ -1,4 +1,4 @@
-FROM registry.hub.docker.com/entando/entando-eap73-clustered-base:7.2.0-ENG-4528-PR-21
+FROM registry.hub.docker.com/entando/entando-eap73-clustered-base:7.2.0-ENG-4718-PR-23
 ARG VERSION
 
 ### Required OpenShift Labels
