@@ -169,7 +169,7 @@ public class PageActionAspect {
             if (StringUtils.isBlank(code)) {
                 continue;
             }
-            Pattern pattern = Pattern.compile("([a-z0-9_])+");
+            Pattern pattern = Pattern.compile("([a-z0-9_-])+");
             Matcher matcher = pattern.matcher(code);
             if (!matcher.matches()) {
                 action.addFieldError(PARAM_FRIENDLY_CODES,

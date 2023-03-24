@@ -49,7 +49,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import org.entando.entando.ent.exception.EntException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -428,12 +427,13 @@ class TestPageAction extends ApsAdminBaseTestCase {
     @Test
 	void testValidateSavePage() throws Throwable {
         String pageCode = "pagina_test";
+        String validPageCode = "test-page-valid";
         String longPageCode = "very_long_page_code__very_long_page_code";
         assertNull(this._pageManager.getDraftPage(pageCode));
         assertNull(this._pageManager.getDraftPage(longPageCode));
         try {
             IPage root = this._pageManager.getDraftRoot();
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("strutsAction", String.valueOf(ApsAdminSystemConstants.ADD));
             String result = this.executeSave(params, "admin");
             assertEquals(Action.INPUT, result);
@@ -491,8 +491,17 @@ class TestPageAction extends ApsAdminBaseTestCase {
             assertEquals(2, fieldErrors.size());
             assertTrue(fieldErrors.containsKey("pageCode"));
             assertTrue(fieldErrors.containsKey("langen"));
+            
+            params.put("pageCode", validPageCode);
+            result = this.executeSave(params, "admin");
+            assertEquals(Action.INPUT, result);
+            fieldErrors = this.getAction().getFieldErrors();
+            assertEquals(1, fieldErrors.size());
+            assertTrue(fieldErrors.containsKey("langen"));
+            
         } catch (Throwable t) {
             this._pageManager.deletePage(pageCode);
+            this._pageManager.deletePage(validPageCode);
             this._pageManager.deletePage(longPageCode);
             throw t;
         }

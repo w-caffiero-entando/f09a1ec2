@@ -23,7 +23,7 @@ public class PageCloneRequest {
 
     @Size(max = 30, message = "string.size.invalid")
     @NotNull(message = "page.code.notBlank")
-    @Pattern(regexp = "[a-zA-Z0-9_]+", message="page.code.wrongCharacters")
+    @Pattern(regexp = "[a-zA-Z0-9-_]+", message="page.code.wrongCharacters")
     private String newPageCode;
     private String parentCode;
     private Map<String, String> titles = new HashMap<>();

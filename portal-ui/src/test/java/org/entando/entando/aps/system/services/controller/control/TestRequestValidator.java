@@ -27,6 +27,12 @@ import com.agiletec.aps.system.services.controller.control.ControlServiceInterfa
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.page.Page;
+import com.agiletec.aps.system.services.page.PageMetadata;
+import com.agiletec.aps.system.services.page.PageTestUtil;
+import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
 import java.util.HashMap;
 import java.util.Map;
 import org.entando.entando.ent.exception.EntException;
@@ -50,6 +56,49 @@ class TestRequestValidator extends BaseTestCase {
         assertNotNull(lang);
         assertEquals("it", lang.getCode());
         assertEquals("homepage", page.getCode());
+    }
+    
+    @Test
+    void testServiceWithNewPage() throws EntException {
+        this.testServiceWithNewPage("it", "req_validator_page_code", false);
+        this.testServiceWithNewPage("en", "req-validator-page-code", false);
+        this.testServiceWithNewPage("it", "req_validator_page_code", true);
+        this.testServiceWithNewPage("en", "req-validator-page-code", true);
+    }
+
+    void testServiceWithNewPage(String langCode, String pageCode, boolean breadcrumbs) throws EntException {
+        String pathInfo = (breadcrumbs) ? "/"+langCode+"/homepage/"+pageCode : "/"+langCode+"/"+pageCode+".page";
+        IPage parentPage = pageManager.getDraftPage("service");
+        String parentForNewPage = parentPage.getParentCode();
+        PageModel pageModel = this.pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
+        PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel,
+                true, "temp page", null, null, false, null, null);
+        Page pageToAdd = PageTestUtil.createPage(pageCode, parentForNewPage, 
+                "free", pageModel, metadata, new Widget[pageModel.getFrames().length]);
+        try {
+            this.pageManager.addPage(pageToAdd);
+            this.pageManager.setPageOnline(pageCode);
+            RequestContext reqCtx = this.getRequestContext();
+            if (breadcrumbs) {
+                ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/pages");
+                ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo(pathInfo);
+            } else {
+                ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath(pathInfo);
+            }
+            int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+            assertEquals(ControllerManager.CONTINUE, status);
+            Lang lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+            IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+            assertNotNull(page);
+            assertNotNull(lang);
+            assertEquals(langCode, lang.getCode());
+            assertEquals(pageCode, page.getCode());
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.pageManager.setPageOffline(pageCode);
+            this.pageManager.deletePage(pageCode);
+        }
     }
 
     @Test
@@ -99,12 +148,13 @@ class TestRequestValidator extends BaseTestCase {
         String redirectUrl = (String) reqCtx.getExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL);
         assertEquals("http://www.entando.com/Entando/it/errorpage.page?redirectflag=1", redirectUrl);
     }
-
+    
     @BeforeEach
-    private void init() throws Exception {
+    void init() throws Exception {
         try {
             this.requestValidator = (ControlServiceInterface) this.getApplicationContext().getBean("RequestValidatorControlService");
             this.pageManager = this.getApplicationContext().getBean(SystemConstants.PAGE_MANAGER, IPageManager.class);
+            this.pageModelManager = this.getApplicationContext().getBean(IPageModelManager.class);
         } catch (Throwable e) {
             throw new Exception(e);
         }
@@ -112,5 +162,6 @@ class TestRequestValidator extends BaseTestCase {
     
     private ControlServiceInterface requestValidator;
     private IPageManager pageManager;
+    private IPageModelManager pageModelManager;
 
 }

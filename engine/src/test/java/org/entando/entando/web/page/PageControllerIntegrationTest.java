@@ -918,7 +918,7 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
             this.pageManager.deletePage(ecrPageCode);
         }
     }
-
+    
     private PageRequest createPageRequest(String pageCode, String groupCode, String parentCode) {
         PageRequest pageRequest = new PageRequest();
         pageRequest.setCode(pageCode);
@@ -931,7 +931,86 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
         pageRequest.setParentCode(parentCode);
         return pageRequest;
     }
-
+    
+    @Test
+    void testValidatePage() throws Throwable {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        String defaultParentCode = this.pageManager.getDraftRoot().getCode();
+        String wrongPageCode = "wrong@pageCode";
+        String pageWithNullTitle = "page-With-Null-Title";
+        String pageWithNullParent = "pegeWithNullParent";
+        String pageWithNullOwner = "pege_With_Null_Owner";
+        String pageWithNullModel = "pegeWithNullModel";
+        try {
+            ResultActions result = mockMvc.perform(post("/pages", wrongPageCode)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(
+                            createPageRequest(
+                                    wrongPageCode,
+                                    Group.FREE_GROUP_NAME,
+                                    defaultParentCode))))
+                    .andDo(resultPrint());
+            result.andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.payload.size()", is(0)))
+                    .andExpect(jsonPath("$.errors.size()", is(1)))
+                    .andExpect(jsonPath("$.errors[0].code", is("58")));
+            /*
+            PageRequest request1 = this.createPageRequest(pageWithNullTitle, Group.FREE_GROUP_NAME, defaultParentCode);
+            request1.getTitles().remove("it");
+            mockMvc.perform(post("/pages", pageWithNullTitle)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(request1)))
+                    .andDo(resultPrint())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.payload.size()", is(0)))
+                    .andExpect(jsonPath("$.errors.size()", is(1)))
+                    .andExpect(jsonPath("$.errors[0].code", is("2")));
+            */
+            PageRequest request2 = this.createPageRequest(pageWithNullParent, Group.FREE_GROUP_NAME, null);
+            mockMvc.perform(post("/pages", pageWithNullParent)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(request2)))
+                    .andDo(resultPrint())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.payload.size()", is(0)))
+                    .andExpect(jsonPath("$.errors.size()", is(1)))
+                    .andExpect(jsonPath("$.errors[0].code", is("51")));
+            
+            PageRequest request3 = this.createPageRequest(pageWithNullOwner, null, defaultParentCode);
+            mockMvc.perform(post("/pages", pageWithNullOwner)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(request3)))
+                    .andDo(resultPrint())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.payload.size()", is(0)))
+                    .andExpect(jsonPath("$.errors.size()", is(1)))
+                    .andExpect(jsonPath("$.errors[0].code", is("51")));
+            
+            PageRequest request4 = this.createPageRequest(pageWithNullModel, Group.FREE_GROUP_NAME, defaultParentCode);
+            request4.setPageModel(null);
+            mockMvc.perform(post("/pages", pageWithNullModel)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(request4)))
+                    .andDo(resultPrint())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.payload.size()", is(0)))
+                    .andExpect(jsonPath("$.errors.size()", is(1)))
+                    .andExpect(jsonPath("$.errors[0].code", is("51")));
+        } finally {
+            this.pageManager.deletePage(wrongPageCode);
+            this.pageManager.deletePage(pageWithNullTitle);
+            this.pageManager.deletePage(pageWithNullParent);
+            this.pageManager.deletePage(pageWithNullOwner);
+            this.pageManager.deletePage(pageWithNullModel);
+        }
+    }
+    
     @Test
     void testAddPublishUnpublishDelete() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
