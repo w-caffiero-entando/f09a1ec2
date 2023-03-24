@@ -15,9 +15,9 @@ package com.agiletec.aps.tags.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Contenitore di informazioni da inserire nella testata della pagina html.
@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class HeadInfoContainer implements Serializable {
 
-    private final Map<String, List<String>> container = new HashMap<>();
+    private final Map<String, List<String>> container = new ConcurrentHashMap<>();
 
     /**
      * Inserisce nel contenitore un'informazione di un dato tipo. Nel caso dei fogli di stile, il tipo è "StyleSheet" e
