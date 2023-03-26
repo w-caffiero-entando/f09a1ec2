@@ -208,10 +208,10 @@ public class RequestValidator extends AbstractControlService {
     private ILangManager _langManager;
 
     @Deprecated
-    protected Pattern _oldPattern = Pattern.compile("^/(\\w+)/(([a-z0-9-_]+)*)\\Q.wp\\E");
+    protected Pattern _oldPattern = Pattern.compile("^/(\\w+)/([-\\w]+)\\Q.wp\\E");
     
-    protected Pattern _pattern = Pattern.compile("^/(\\w+)/(([a-z0-9-_]+)*)\\Q.page\\E");
+    protected Pattern _pattern = Pattern.compile("^/(\\w+)/([-\\w]+)\\Q.page\\E");
     
-    protected Pattern _patternFullPath = Pattern.compile("^/pages/(\\w+)((/[a-z0-9-_]+)*)");
+    protected Pattern _patternFullPath = Pattern.compile("^/pages/(\\w+)((/[-\\w]+)*)");
 
 }
