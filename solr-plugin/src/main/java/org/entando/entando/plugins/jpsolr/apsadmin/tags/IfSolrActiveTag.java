@@ -2,7 +2,7 @@ package org.entando.entando.plugins.jpsolr.apsadmin.tags;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
+import org.entando.entando.aps.system.services.searchengine.SolrEnvironmentVariables;
 
 /**
  * Includes the content only if Solr is active.

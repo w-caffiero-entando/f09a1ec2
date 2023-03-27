@@ -13,6 +13,7 @@
 
     <context:annotation-config />
     <context:component-scan base-package="org.entando.entando.aps.system.services.tenants,
+       org.entando.entando.aps.system.services.systemconfiguration,
        org.entando.entando.aps.system.services.storage" />
 
     <jee:jndi-lookup id="portDataSource" jndi-name="${portdb.jndi:java:comp/env/jdbc/portDataSource}"/>

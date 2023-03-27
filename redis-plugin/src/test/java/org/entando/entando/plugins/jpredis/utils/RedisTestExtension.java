@@ -1,6 +1,6 @@
 package org.entando.entando.plugins.jpredis.utils;
 
-import org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables;
+import org.entando.entando.aps.system.services.cache.RedisEnvironmentVariables;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;

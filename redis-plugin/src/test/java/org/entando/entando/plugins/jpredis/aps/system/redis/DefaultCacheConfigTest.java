@@ -1,6 +1,7 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis;
 
 import org.entando.entando.TestEntandoJndiUtils;
+import org.entando.entando.aps.system.services.cache.RedisEnvironmentVariables;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

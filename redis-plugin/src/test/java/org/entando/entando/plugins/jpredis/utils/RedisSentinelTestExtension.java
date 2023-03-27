@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.List;
-import org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables;
+import org.entando.entando.aps.system.services.cache.RedisEnvironmentVariables;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
