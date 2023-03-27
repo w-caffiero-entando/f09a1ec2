@@ -194,11 +194,12 @@ public class OpenIDConnectService {
         return new HttpEntity<>(body, headers);
     }
 
-    public String getLogoutUrl(final String redirectUri) throws UnsupportedEncodingException {
+    public String getLogoutUrl(final String redirectUri, String accessToken) throws UnsupportedEncodingException {
         return new StringBuilder(configuration.getAuthUrl())
                 .append("/realms/").append(configuration.getRealm())
                 .append("/protocol/openid-connect/logout")
-                .append("?redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"))
+                .append("?post_logout_redirect_uri=").append(URLEncoder.encode(redirectUri, "UTF-8"))
+                .append("&id_token_hint=").append(accessToken)
                 .toString();
     }
 

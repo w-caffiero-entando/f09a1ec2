@@ -262,7 +262,7 @@ class KeycloakFilterTest {
         when(request.getRequestURL()).thenReturn(new StringBuffer(loginEndpoint));
 
         final String redirect = "http://dev.entando.org/auth/realms/entando/protocol/openid-connect/logout";
-        when(oidcService.getLogoutUrl(any())).thenReturn(redirect);
+        when(oidcService.getLogoutUrl(any(),any())).thenReturn(redirect);
 
         try ( MockedStatic<WebApplicationContextUtils> wacUtil = Mockito.mockStatic(WebApplicationContextUtils.class)) {
             wacUtil.when(() -> WebApplicationContextUtils.getWebApplicationContext(svCtx)).thenReturn(wac);

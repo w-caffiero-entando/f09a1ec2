@@ -211,9 +211,10 @@ public class KeycloakFilter implements Filter {
 
     private void doLogout(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         final HttpSession session = request.getSession();
+        final String accessToken = (String)session.getAttribute(SESSION_PARAM_ACCESS_TOKEN);
         final String redirectUri = request.getRequestURL().toString().replace("/do/logout.action", "");
         session.invalidate();
-        response.sendRedirect(oidcService.getLogoutUrl(redirectUri));
+        response.sendRedirect(oidcService.getLogoutUrl(redirectUri, accessToken));
     }
 
     private void doLogin(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws IOException, ServletException {
