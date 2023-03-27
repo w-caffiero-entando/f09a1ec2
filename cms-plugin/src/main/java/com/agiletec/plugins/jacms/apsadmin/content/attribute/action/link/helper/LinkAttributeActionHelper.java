@@ -26,6 +26,7 @@ import com.agiletec.plugins.jacms.apsadmin.content.ContentActionConstants;
 import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.ILinkAttributeAction;
 
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Classe helper base per le action delegata 
@@ -117,18 +118,24 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
 		if (attribute instanceof CompositeAttribute) {
 			String includedAttributeName = (String) session.getAttribute(INCLUDED_ELEMENT_NAME_SESSION_PARAM);
 			AttributeInterface includedAttribute = ((CompositeAttribute) attribute).getAttribute(includedAttributeName);
-			updateLink(includedAttribute, destinations, destType, properties);
+			updateLink(includedAttribute, destinations, destType, properties, request);
 		} else if (attribute instanceof MonoListAttribute) {
 			Integer elementIndex = (Integer) session.getAttribute(LIST_ELEMENT_INDEX_SESSION_PARAM);
 			AttributeInterface attributeElement = ((MonoListAttribute) attribute).getAttribute(elementIndex.intValue());
 			joinLink(attributeElement, destinations, destType, properties, request);
 		} else if (attribute instanceof LinkAttribute) {
-			updateLink(attribute, destinations, destType, properties);
+			updateLink(attribute, destinations, destType, properties, request);
 		}
 	}
 	
-	protected void updateLink(AttributeInterface currentAttribute, String[] destinations, int destType, Map<String,String> properties) {
-		if (destinations.length!=3) {
+	protected void updateLink(AttributeInterface currentAttribute, 
+            String[] destinations, int destType, Map<String,String> properties, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String langCode = (String) session.getAttribute(LINK_LANG_CODE_SESSION_PARAM);
+        if (StringUtils.isBlank(langCode)) {
+            throw new RuntimeException("Missing link lang code");
+        }
+		if (destinations.length != 3) {
 			throw new RuntimeException("Destinazioni non riconosciute");
 		}
     	SymbolicLink symbolicLink = new SymbolicLink();
@@ -152,8 +159,8 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
             symbolicLink.setDestinationToContent("");
             break;
         }
-		((LinkAttribute) currentAttribute).setSymbolicLink(symbolicLink);
-		((LinkAttribute) currentAttribute).setLinkProperties(properties);
+		((LinkAttribute) currentAttribute).setSymbolicLink(langCode, symbolicLink);
+		((LinkAttribute) currentAttribute).getLinkProperties().put(langCode, properties);
     }
 	
 	protected void removeLink(AttributeInterface attribute, HttpServletRequest request) {

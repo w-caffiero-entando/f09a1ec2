@@ -19,6 +19,8 @@ import org.xml.sax.SAXException;
 import com.agiletec.aps.system.common.entity.parse.attribute.TextAttributeHandler;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.LinkAttribute;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Classe handler per l'interpretazione della porzione di xml 
@@ -48,17 +50,18 @@ public class LinkAttributeHandler extends TextAttributeHandler {
 		}
 	}
 
+    private void startProperties(Attributes attributes, String qName) throws SAXException {
+	    this.langCode = extractAttribute(attributes, "lang", qName, false);
+    }
+
     private void startProperty(Attributes attributes, String qName) throws SAXException {
         this.propertyKey = extractAttribute(attributes, "key", qName, true);
     }
 
-    private void startProperties(Attributes attributes, String qName) {
-	    // nothing to do
-    }
-
     private void startLink(Attributes attributes, String qName) throws SAXException {
 		this.linkType = extractAttribute(attributes, "type", qName, true);
-		((LinkAttribute) this.getCurrentAttr()).setSymbolicLink(new SymbolicLink());
+        this.langCode = extractAttribute(attributes, "lang", qName, false);
+		((LinkAttribute) this.getCurrentAttr()).setSymbolicLink(this.langCode, new SymbolicLink());
 	}
 	
 	private void startUrlDest(Attributes attributes, String qName) throws SAXException {
@@ -99,20 +102,25 @@ public class LinkAttributeHandler extends TextAttributeHandler {
 	}
 
     private void endProperties(StringBuffer textBuffer) {
-	    // nothing to do
+	    this.langCode = null;
     }
 
     private void endProperty(StringBuffer textBuffer) {
         if (null != textBuffer) {
-            String propertyValue = textBuffer.toString();
-            ((LinkAttribute) this.getCurrentAttr()).getLinkProperties().put(this.propertyKey, propertyValue);
+            LinkAttribute linkAttribute = (LinkAttribute) this.getCurrentAttr();
+            String currentLangCode = (null == this.langCode) ? linkAttribute.getDefaultLangCode() : this.langCode;
+            Map<String, String> map = linkAttribute.getLinkProperties().get(currentLangCode);
+            if (null == map) {
+                map = new HashMap<>();
+                linkAttribute.getLinkProperties().put(currentLangCode, map);
+            }
+            map.put(this.propertyKey, textBuffer.toString());
         }
         this.propertyKey = null;
     }
 
     private void endLink() {
-		SymbolicLink symLink = 
-			((LinkAttribute) this.getCurrentAttr()).getSymbolicLink();
+		SymbolicLink symLink = ((LinkAttribute) this.getCurrentAttr()).getSymbolicLink(this.langCode);
 		if (null != symLink && null != linkType) {
 			if (linkType.equals("content")) {
 				symLink.setDestinationToContent(contentDest);
@@ -126,10 +134,11 @@ public class LinkAttributeHandler extends TextAttributeHandler {
 				symLink.setDestinationToResource(resourceDest);
 			}
 		}
-		contentDest = null;
-		urlDest = null;
-		pageDest = null;
-		resourceDest = null;
+        this.langCode = null;
+		this.contentDest = null;
+		this.urlDest = null;
+		this.pageDest = null;
+		this.resourceDest = null;
 	}
 	
 	private void endUrlDest(StringBuffer textBuffer){
@@ -156,6 +165,7 @@ public class LinkAttributeHandler extends TextAttributeHandler {
 		}
 	}
 	
+    private String langCode;
 	private String linkType;
 	private String urlDest;
 	private String pageDest;

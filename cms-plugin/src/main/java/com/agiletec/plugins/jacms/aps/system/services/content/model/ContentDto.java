@@ -321,7 +321,8 @@ public class ContentDto extends EntityDto implements Serializable {
                 Map<String, String> additionalLinkAttributes = processLinkAttribute(attributeDto, link);
                 linkAttribute.setSymbolicLink(link);
                 if (!additionalLinkAttributes.isEmpty()) {
-                    linkAttribute.setLinkProperties(additionalLinkAttributes);
+                    String langCode = linkAttribute.getDefaultLangCode();
+                    linkAttribute.getLinkProperties().put(langCode, additionalLinkAttributes);
                 }
             }
         }
