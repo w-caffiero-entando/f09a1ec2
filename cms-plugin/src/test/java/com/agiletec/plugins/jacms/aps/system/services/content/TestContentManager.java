@@ -1674,9 +1674,11 @@ class TestContentManager extends BaseTestCase {
             assertNotNull(monoListAttribute10);
             assertEquals(2, monoListAttribute10.getAttributes().size());
             LinkAttribute attributeModified = (LinkAttribute) monoListAttribute10.getAttributes().get(0);
-            assertEquals(2, attributeModified.getLinkProperties().size());
-            assertEquals("value1", attributeModified.getLinkProperties().get("key1"));
-            assertEquals("value2", attributeModified.getLinkProperties().get("key2"));
+            assertEquals(1, attributeModified.getLinkProperties().size());
+            Map<String, String> mapForDefaultLang = attributeModified.getLinkProperties().get(attributeToModify.getDefaultLangCode());
+            assertEquals(2, mapForDefaultLang.size());
+            assertEquals("value1", mapForDefaultLang.get("key1"));
+            assertEquals("value2", mapForDefaultLang.get("key2"));
         } catch (Exception e) {
             throw e;
         } finally {

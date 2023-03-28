@@ -211,7 +211,7 @@ public class ContentController {
                 if (bindingResult.hasErrors()) {
                     throw new ValidationGenericException(bindingResult);
                 }
-                return result;
+                return result;  
             })
             .collect(Collectors.toList());
 

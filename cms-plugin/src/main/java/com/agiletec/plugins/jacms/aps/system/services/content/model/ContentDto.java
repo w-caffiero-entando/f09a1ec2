@@ -21,7 +21,6 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.Ab
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.LinkAttribute;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.ContentRestriction;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.AttachResource;
-import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResource;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -29,7 +28,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -260,7 +258,7 @@ public class ContentDto extends EntityDto implements Serializable {
         if (LinkAttribute.class.isAssignableFrom(attribute.getClass())) {
             LinkAttribute linkAttribute = (LinkAttribute) attribute;
             linkAttribute.getTextMap().clear();
-            linkAttribute.setSymbolicLink(null);
+            linkAttribute.getSymbolicLinks().clear();
         }
     }
 
@@ -314,12 +312,13 @@ public class ContentDto extends EntityDto implements Serializable {
     private void fillLinkAttribute(AttributeInterface attribute, EntityAttributeDto attributeDto) {
         if (LinkAttribute.class.isAssignableFrom(attribute.getClass())) {
             LinkAttribute linkAttribute = (LinkAttribute) attribute;
+            String defaultLangCode = linkAttribute.getDefaultLangCode();
             if (attributeDto.getValue() != null && attributeDto.getValue() instanceof SymbolicLink) {
-                linkAttribute.setSymbolicLink((SymbolicLink) attributeDto.getValue());
+                linkAttribute.setSymbolicLink(defaultLangCode, (SymbolicLink) attributeDto.getValue());
             } else {
                 SymbolicLink link = new SymbolicLink();
                 Map<String, String> additionalLinkAttributes = processLinkAttribute(attributeDto, link);
-                linkAttribute.setSymbolicLink(link);
+                linkAttribute.setSymbolicLink(defaultLangCode, link);
                 if (!additionalLinkAttributes.isEmpty()) {
                     String langCode = linkAttribute.getDefaultLangCode();
                     linkAttribute.getLinkProperties().put(langCode, additionalLinkAttributes);

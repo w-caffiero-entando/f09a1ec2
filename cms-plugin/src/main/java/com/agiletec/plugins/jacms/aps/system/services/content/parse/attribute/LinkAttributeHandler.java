@@ -61,7 +61,6 @@ public class LinkAttributeHandler extends TextAttributeHandler {
     private void startLink(Attributes attributes, String qName) throws SAXException {
 		this.linkType = extractAttribute(attributes, "type", qName, true);
         this.langCode = extractAttribute(attributes, "lang", qName, false);
-		((LinkAttribute) this.getCurrentAttr()).setSymbolicLink(this.langCode, new SymbolicLink());
 	}
 	
 	private void startUrlDest(Attributes attributes, String qName) throws SAXException {
@@ -120,8 +119,8 @@ public class LinkAttributeHandler extends TextAttributeHandler {
     }
 
     private void endLink() {
-		SymbolicLink symLink = ((LinkAttribute) this.getCurrentAttr()).getSymbolicLink(this.langCode);
-		if (null != symLink && null != linkType) {
+		SymbolicLink symLink = new SymbolicLink();
+		if (null != linkType) {
 			if (linkType.equals("content")) {
 				symLink.setDestinationToContent(contentDest);
 			} else if (linkType.equals("external")) {
@@ -133,6 +132,7 @@ public class LinkAttributeHandler extends TextAttributeHandler {
 			} else if (linkType.equals("resource")) {
 				symLink.setDestinationToResource(resourceDest);
 			}
+            ((LinkAttribute) this.getCurrentAttr()).setSymbolicLink(this.langCode, symLink);
 		}
         this.langCode = null;
 		this.contentDest = null;

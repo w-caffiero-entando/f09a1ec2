@@ -19,7 +19,8 @@
             {
                 "code":"link",
                 "value":{
-
+                    "destType":2,
+                    "pageDest":"homepage"
                 },
                 "values":{
                     "it":"a"

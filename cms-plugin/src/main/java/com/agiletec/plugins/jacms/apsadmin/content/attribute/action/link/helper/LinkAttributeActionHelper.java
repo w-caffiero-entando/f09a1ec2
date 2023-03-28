@@ -50,7 +50,7 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
 		if (action.getElementIndex()>=0) {
 			session.setAttribute(LIST_ELEMENT_INDEX_SESSION_PARAM, new Integer(action.getElementIndex()));
 		}
-		session.setAttribute(LINK_LANG_CODE_SESSION_PARAM, action.getLangCode());
+		session.setAttribute(LINK_LANG_CODE_SESSION_PARAM, action.getLinkLangCode());
 		LinkAttribute linkAttribute = (LinkAttribute) getLinkAttribute(attribute, request);
 		session.setAttribute(SYMBOLIC_LINK_SESSION_PARAM, linkAttribute.getSymbolicLink());
 		session.setAttribute(LINK_PROPERTIES_MAP_SESSION_PARAM, linkAttribute.getLinkProperties());
@@ -170,8 +170,9 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
 			AttributeInterface includedAttribute = ((CompositeAttribute) attribute).getAttribute(includedAttributeName);
 			removeLink(includedAttribute, request);
 		} else if (attribute instanceof LinkAttribute) {
-			((LinkAttribute) attribute).setSymbolicLink(null);
-			((LinkAttribute) attribute).getTextMap().clear();
+            String langCode = (String) session.getAttribute(LINK_LANG_CODE_SESSION_PARAM);
+			((LinkAttribute) attribute).getSymbolicLinks().remove(langCode);
+			((LinkAttribute) attribute).getTextMap().remove(langCode);
 		} else if (attribute instanceof MonoListAttribute) {
 			Integer elementIndex = (Integer) session.getAttribute(LIST_ELEMENT_INDEX_SESSION_PARAM);
 			AttributeInterface attributeElement = ((MonoListAttribute) attribute).getAttribute(elementIndex.intValue());
