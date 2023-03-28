@@ -81,14 +81,14 @@
             </a>
             <s:if test="#appBuilderIntegrationEnabled == 'true'">
                 <ul class="dropdown-menu" aria-labelledby="infoDropdownMenu">
-                    <li><a href='<c:out value="${appBuilderBaseURL}"/>about'>About</a></li>
-                    <li><a href='<c:out value="${appBuilderBaseURL}"/>license'>License</a></li>
+                    <li><a href='<c:out value="${appBuilderBaseURL}"/>about'><s:text name="about.title" /></a></li>
+                    <li><a href='<c:out value="${appBuilderBaseURL}"/>license'><s:text name="license.title" /></a></li>
                 </ul>
             </s:if>
             <s:else>
                 <ul class="dropdown-menu" aria-labelledby="infoDropdownMenu">
-                    <li><a href='#'>About</a></li>
-                    <li><a href='#'>License</a></li>
+                    <li><a href='<s:url namespace="/do/BaseAdmin" action="about"/>'><s:text name="about.title" /></a></li>
+                    <li><a href='<s:url namespace="/do/BaseAdmin" action="license"/>'><s:text name="license.title" /></a></li>
                 </ul>
             </s:else>
         </li>
