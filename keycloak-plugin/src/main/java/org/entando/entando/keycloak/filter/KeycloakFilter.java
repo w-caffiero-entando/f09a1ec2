@@ -183,7 +183,7 @@ public class KeycloakFilter implements Filter {
         if (refreshToken != null) {
             try {
                 final ResponseEntity<AuthResponse> refreshResponse = oidcService.refreshToken(refreshToken);
-                if (HttpStatus.OK.equals(refreshResponse.getStatusCode()) && refreshResponse.getBody() != null) {
+                if (refreshResponse!= null && HttpStatus.OK.equals(refreshResponse.getStatusCode()) && refreshResponse.getBody() != null) {
                     session.setAttribute(SESSION_PARAM_ACCESS_TOKEN, refreshResponse.getBody().getAccessToken());
                     session.setAttribute(SESSION_PARAM_ID_TOKEN, refreshResponse.getBody().getIdToken());
                     session.setAttribute(SESSION_PARAM_REFRESH_TOKEN, refreshResponse.getBody().getRefreshToken());
@@ -350,7 +350,6 @@ public class KeycloakFilter implements Filter {
             session.setAttribute(SESSION_PARAM_REDIRECT, redirectPathWithoutContextRoot);
         }
     }
-
 
     private void saveUserOnSession(final HttpServletRequest request, final UserDetails user) {
         request.getSession().setAttribute("user", user);

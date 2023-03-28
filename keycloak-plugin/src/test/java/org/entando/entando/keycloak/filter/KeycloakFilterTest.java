@@ -387,6 +387,40 @@ class KeycloakFilterTest {
     }
 
     @Test
+    void testTokenValidationWithTokenAndRefreshReturnResponseNull() throws IOException, ServletException {
+        final String path = "/do/main";
+        final String endpoint = "https://dev.entando.org/entando-app" + path;
+
+        when(configuration.isEnabled()).thenReturn(true);
+        when(request.getServletPath()).thenReturn(path);
+        Mockito.lenient().when(request.getRequestURL()).thenReturn(new StringBuffer(endpoint));
+
+        when(session.getAttribute(eq(KeycloakFilter.SESSION_PARAM_ACCESS_TOKEN))).thenReturn("access-token-over-here");
+        when(session.getAttribute(eq(KeycloakFilter.SESSION_PARAM_REFRESH_TOKEN))).thenReturn("refresh-token-over-here");
+        when(oidcService.validateToken(anyString())).thenReturn(accessTokenResponse);
+        when(accessTokenResponse.getStatusCode()).thenReturn(HttpStatus.OK);
+        when(accessTokenResponse.getBody()).thenReturn(accessToken);
+        when(accessToken.isActive()).thenReturn(false);
+
+        when(oidcService.refreshToken(anyString())).thenReturn(refreshResponse);
+        when(refreshResponse.getStatusCode()).thenReturn(HttpStatus.OK);
+        when(refreshResponse.getBody()).thenReturn(null);
+
+        when(userManager.getGuestUser()).thenReturn(userDetails);
+
+        try (MockedStatic<WebApplicationContextUtils> wacUtil = Mockito.mockStatic(WebApplicationContextUtils.class)) {
+            wacUtil.when(() -> WebApplicationContextUtils.getWebApplicationContext(svCtx)).thenReturn(wac);
+            keycloakFilter.doFilter(request, response, filterChain);
+        }
+        verify(filterChain, times(1)).doFilter(any(), any());
+        verify(userManager, times(1)).getGuestUser();
+        verify(session, times(1)).setAttribute(eq("user"), same(userDetails));
+        verify(session, times(1)).setAttribute(eq(SystemConstants.SESSIONPARAM_CURRENT_USER), same(userDetails));
+        verify(session, times(1)).setAttribute(eq(KeycloakFilter.SESSION_PARAM_ACCESS_TOKEN), isNull());
+        verify(session, times(1)).setAttribute(eq(KeycloakFilter.SESSION_PARAM_ID_TOKEN), isNull());
+    }
+
+    @Test
     void apiCallShouldNotSaveUserOnSession() throws Exception {
         when(configuration.isEnabled()).thenReturn(true);
         when(request.getServletPath()).thenReturn("/api");
@@ -645,7 +679,6 @@ class KeycloakFilterTest {
         verify(response).sendRedirect(redirect);
 
     }
-
 
     static class ServletOutputStreamWrapper extends ServletOutputStream {
         private final StringWriter writer;
