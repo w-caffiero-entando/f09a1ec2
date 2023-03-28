@@ -63,6 +63,7 @@ public class KeycloakFilter implements Filter {
     public static final String SESSION_PARAM_STATE = "keycloak-plugin-state";
     public static final String SESSION_PARAM_REDIRECT = "keycloak-plugin-redirectTo";
     public static final String SESSION_PARAM_ACCESS_TOKEN = "keycloak-plugin-access-token";
+    public static final String SESSION_PARAM_ID_TOKEN = "keycloak-plugin-id-token";
     public static final String SESSION_PARAM_REFRESH_TOKEN = "keycloak-plugin-refresh-token";
 
     private final KeycloakConfiguration configuration;
@@ -184,6 +185,7 @@ public class KeycloakFilter implements Filter {
                 final ResponseEntity<AuthResponse> refreshResponse = oidcService.refreshToken(refreshToken);
                 if (HttpStatus.OK.equals(refreshResponse.getStatusCode()) && refreshResponse.getBody() != null) {
                     session.setAttribute(SESSION_PARAM_ACCESS_TOKEN, refreshResponse.getBody().getAccessToken());
+                    session.setAttribute(SESSION_PARAM_ID_TOKEN, refreshResponse.getBody().getIdToken());
                     session.setAttribute(SESSION_PARAM_REFRESH_TOKEN, refreshResponse.getBody().getRefreshToken());
                     return true;
                 }
@@ -207,14 +209,15 @@ public class KeycloakFilter implements Filter {
         SecurityContextHolder.getContext().setAuthentication(guestAuthentication);
         saveUserOnSession(request, guestUser);
         request.getSession().setAttribute(SESSION_PARAM_ACCESS_TOKEN, null);
+        request.getSession().setAttribute(SESSION_PARAM_ID_TOKEN, null);
     }
 
     private void doLogout(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         final HttpSession session = request.getSession();
-        final String accessToken = (String)session.getAttribute(SESSION_PARAM_ACCESS_TOKEN);
+        final String idToken = (String)session.getAttribute(SESSION_PARAM_ID_TOKEN);
         final String redirectUri = request.getRequestURL().toString().replace("/do/logout.action", "");
         session.invalidate();
-        response.sendRedirect(oidcService.getLogoutUrl(redirectUri, accessToken));
+        response.sendRedirect(oidcService.getLogoutUrl(redirectUri, idToken));
     }
 
     private void doLogin(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws IOException, ServletException {
@@ -250,6 +253,7 @@ public class KeycloakFilter implements Filter {
                 }
                 final UserDetails user = providerManager.getUser(tokenResponse.getBody().getUsername());
                 session.setAttribute(SESSION_PARAM_ACCESS_TOKEN, responseEntity.getBody().getAccessToken());
+                session.setAttribute(SESSION_PARAM_ID_TOKEN, responseEntity.getBody().getIdToken());
                 session.setAttribute(SESSION_PARAM_REFRESH_TOKEN, responseEntity.getBody().getRefreshToken());
 
                 keycloakGroupManager.processNewUser(user);

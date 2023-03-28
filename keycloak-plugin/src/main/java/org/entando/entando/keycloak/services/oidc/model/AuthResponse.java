@@ -13,6 +13,9 @@ public class AuthResponse {
     @JsonProperty("refresh_expires_in")
     private String refreshExpiresIn;
 
+    @JsonProperty("id_token")
+    private String idToken;
+
     @JsonProperty("refresh_token")
     private String refreshToken;
 
@@ -21,6 +24,7 @@ public class AuthResponse {
 
     @JsonProperty("session_state")
     private String sessionState;
+
 
     private String scope;
 
@@ -46,6 +50,14 @@ public class AuthResponse {
 
     public void setRefreshExpiresIn(final String refreshExpiresIn) {
         this.refreshExpiresIn = refreshExpiresIn;
+    }
+
+    public String getIdToken() {
+        return idToken;
+    }
+
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
     }
 
     public String getRefreshToken() {
