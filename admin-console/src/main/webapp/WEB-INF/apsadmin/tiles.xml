@@ -568,4 +568,14 @@
 	
 	<!-- ************************* DATA TYPE ************************* -->
 
+    <definition extends="layout.default" name="admin.BaseAdmin.license">
+        <put-attribute name="title" value="document.title.main" />
+        <put-attribute name="body" value="/WEB-INF/apsadmin/jsp/common/license.jsp" />
+    </definition>
+
+    <definition extends="layout.default" name="admin.BaseAdmin.about">
+        <put-attribute name="title" value="document.title.main" />
+        <put-attribute name="body" value="/WEB-INF/apsadmin/jsp/common/about.jsp" />
+    </definition>
+
 </tiles-definitions>

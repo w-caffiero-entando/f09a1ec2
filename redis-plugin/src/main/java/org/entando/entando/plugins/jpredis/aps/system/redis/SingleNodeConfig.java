@@ -4,6 +4,7 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.resource.DefaultClientResources;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.cache.RedisEnvironmentVariables;
 import org.entando.entando.plugins.jpredis.aps.system.redis.conditions.RedisActive;
 import org.entando.entando.plugins.jpredis.aps.system.redis.conditions.RedisSentinel;
 import org.slf4j.Logger;

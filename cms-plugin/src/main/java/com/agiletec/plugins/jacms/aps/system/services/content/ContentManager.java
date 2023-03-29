@@ -463,6 +463,9 @@ public class ContentManager extends ApsEntityManager
     
     @Override
     public Content getEntityPrototype(String typeCode) {
+        if (typeCode == null) {
+            return null;
+        }
         Content type = null;
         try {
             String cacheKey = CONTENT_TYPE_CACHE_PREFIX + typeCode;

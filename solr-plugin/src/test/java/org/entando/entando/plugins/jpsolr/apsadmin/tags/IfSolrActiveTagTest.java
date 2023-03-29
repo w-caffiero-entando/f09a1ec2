@@ -1,6 +1,6 @@
 package org.entando.entando.plugins.jpsolr.apsadmin.tags;
 
-import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
+import org.entando.entando.aps.system.services.searchengine.SolrEnvironmentVariables;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;

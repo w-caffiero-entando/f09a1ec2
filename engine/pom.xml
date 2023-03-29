@@ -124,6 +124,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <environmentVariables>
+                        <REDIS_ADDRESS>redis://localhost:6380</REDIS_ADDRESS>
+                        <REDIS_ACTIVE>true</REDIS_ACTIVE>
+                        <SOLR_ACTIVE>true</SOLR_ACTIVE>
+                    </environmentVariables>
+                    <trimStackTrace>false</trimStackTrace>
+                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>

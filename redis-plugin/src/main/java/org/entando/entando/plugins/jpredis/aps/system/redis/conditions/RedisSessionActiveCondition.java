@@ -1,6 +1,6 @@
 package org.entando.entando.plugins.jpredis.aps.system.redis.conditions;
 
-import org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables;
+import org.entando.entando.aps.system.services.cache.RedisEnvironmentVariables;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;

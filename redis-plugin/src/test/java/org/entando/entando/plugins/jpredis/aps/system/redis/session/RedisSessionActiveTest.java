@@ -5,7 +5,7 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import java.util.List;
 import javax.servlet.Filter;
 import org.entando.entando.TestEntandoJndiUtils;
-import org.entando.entando.plugins.jpredis.aps.system.redis.RedisEnvironmentVariables;
+import org.entando.entando.aps.system.services.cache.RedisEnvironmentVariables;
 import org.entando.entando.plugins.jpredis.utils.RedisTestExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
