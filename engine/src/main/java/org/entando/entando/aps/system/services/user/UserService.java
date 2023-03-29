@@ -14,12 +14,24 @@
 package org.entando.entando.aps.system.services.user;
 
 import com.agiletec.aps.system.common.FieldSearchFilter;
+import com.agiletec.aps.system.common.FieldSearchFilter.LikeOptionType;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
 import com.agiletec.aps.system.services.authorization.Authorization;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.group.Group;
-import com.agiletec.aps.system.services.user.*;
+import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
+import com.agiletec.aps.system.services.user.IUserManager;
+import com.agiletec.aps.system.services.user.User;
+import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.aps.system.services.user.UserGroupPermissions;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.IDtoBuilder;
@@ -37,15 +49,12 @@ import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.user.model.UserAuthoritiesRequest;
-import org.entando.entando.web.user.model.UserUpdatePasswordRequest;
 import org.entando.entando.web.user.model.UserRequest;
+import org.entando.entando.web.user.model.UserUpdatePasswordRequest;
 import org.entando.entando.web.user.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -56,6 +65,8 @@ public class UserService implements IUserService {
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
     private static final String ERRCODE_USER_NOT_FOUND = "1";
+
+    private static final String WITH_PROFILE_CODE = "1";
 
     @Autowired
     private IUserManager userManager;
@@ -120,10 +131,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserAuthorityDto> getUserAuthorities(String username) {
-        UserDetails user = this.loadUser(username);
-        if (null == user) {
-            return null;
-        }
+        this.loadUser(username, true);
         List<UserAuthorityDto> dtos = new ArrayList<>();
         try {
             List<Authorization> auths = this.getAuthorizationManager().getUserAuthorizations(username);
@@ -139,10 +147,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserAuthorityDto> addUserAuthorities(String username, UserAuthoritiesRequest request) {
-        UserDetails user = this.loadUser(username);
-        if (null == user) {
-            return null;
-        }
+        UserDetails user = this.loadUser(username, true);
         List<UserAuthorityDto> authorizations = new ArrayList<>();
         request.forEach(authorization -> {
             try {
@@ -180,28 +185,53 @@ public class UserService implements IUserService {
             //transforms the filters by overriding the key specified in the request with the correct one known by the dto
             List<FieldSearchFilter> filters = new ArrayList<>(requestList.buildFieldSearchFilters());
             List<EntitySearchFilter> entityFilters = new ArrayList<>(requestList.buildEntitySearchFilters());
+            boolean filterOnProfileAttributes = !entityFilters.isEmpty();
             filters.stream()
                     .filter(i -> ((i.getKey() != null) && (UserDto.getEntityFieldName(i.getKey()) != null)))
                     .forEach(i -> i.setKey(UserDto.getEntityFieldName(i.getKey())));
-            List<String> userNames = null;
+            List<String> userNames;
             List<UserDetails> users = new ArrayList<>(),
                     allUsers = new ArrayList<>();
 
             //username filter
-            List<FieldSearchFilter> usernameFilter = filters.stream().filter(filter
-                    -> filter.getValue() != null && filter.getKey().equals("username")).collect(Collectors.toList());
-            if (usernameFilter.size() > 0) {
-                String text = (String) filters.get(0).getValue();
+            Optional<String> usernameFilter = filters.stream().filter(filter
+                    -> filter.getValue() != null && filter.getKey().equals("username"))
+                    .map(filter -> (String) filter.getValue()).findFirst();
+
+            if (usernameFilter.isPresent()) {
+                String text = usernameFilter.get();
                 userNames = this.getUserManager().searchUsernames(text);
+                EntitySearchFilter<String> profileUsernameFilter = new EntitySearchFilter<>(
+                        "username", false, text, true, LikeOptionType.COMPLETE);
+                entityFilters.add(profileUsernameFilter);
             } else {
                 userNames = this.getUserManager().getUsernames();
             }
-            userNames.forEach(username -> allUsers.add(this.loadUser(username)));
 
-            // Profile and attributes filters
-            users.addAll(allUsers.stream().filter(user
-                    -> (withProfile == null || withProfile.equals("1"))
-                    && checkAttributesFilter(filters, entityFilters, user)).collect(Collectors.toList()));
+            List<String> profiles = this.getUserProfileManager().searchId(entityFilters.toArray(EntitySearchFilter[]::new));
+
+            if (withProfile == null && !filterOnProfileAttributes) {
+                for (String username : profiles) {
+                    if (!userNames.contains(username)) {
+                        userNames.add(username);
+                    }
+                }
+                Collections.sort(userNames);
+            } else if ((withProfile != null && withProfile.equals(WITH_PROFILE_CODE)) || filterOnProfileAttributes) {
+                userNames = profiles;
+            } else {
+                userNames.removeAll(profiles);
+            }
+
+            userNames.forEach(username -> allUsers.add(this.loadUser(username, true)));
+
+            if (withProfile == null || withProfile.equals(WITH_PROFILE_CODE)) {
+                // Profile and attributes filters
+                users.addAll(allUsers.stream().filter(user
+                        -> checkAttributesFilter(filters, entityFilters, user)).collect(Collectors.toList()));
+            } else {
+                users = allUsers;
+            }
 
             List<UserDto> dtoList = dtoBuilder.convert(users);
             SearcherDaoPaginatedResult<UserDetails> result = new SearcherDaoPaginatedResult<>(users.size(), users);
@@ -245,13 +275,13 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto getUser(String username) {
-        UserDetails user = this.loadUser(username);
+        UserDetails user = this.loadUser(username, true);
         return dtoBuilder.convert(user);
     }
 
     @Override
     public UserDto updateUser(UserRequest userRequest) {
-        UserDetails oldUser = this.loadUser(userRequest.getUsername());
+        UserDetails oldUser = this.loadUser(userRequest.getUsername(), false);
         try {
             UserDetails newUser = this.updateUser(oldUser, userRequest);
             if (userRequest.isReset() && (oldUser instanceof User)) {
@@ -292,6 +322,7 @@ public class UserService implements IUserService {
     @Override
     public void removeUser(String username) {
         try {
+            this.loadUser(username, true);
             this.getUserManager().removeUser(username);
         } catch (EntException e) {
             logger.error("Error in deleting user {}", username, e);
@@ -302,8 +333,9 @@ public class UserService implements IUserService {
     @Override
     public UserDto updateUserPassword(UserUpdatePasswordRequest userUpdatePasswordRequest) {
         try {
-            this.getUserManager().changePassword(userUpdatePasswordRequest.getUsername(), userUpdatePasswordRequest.getNewPassword());
-            UserDetails user = this.loadUser(userUpdatePasswordRequest.getUsername());
+            String username = userUpdatePasswordRequest.getUsername();
+            this.getUserManager().changePassword(username, userUpdatePasswordRequest.getNewPassword());
+            UserDetails user = this.loadUser(username, false);
             return dtoBuilder.convert(user);
         } catch (EntException e) {
             logger.error("Error in updating password for user {}", userUpdatePasswordRequest.getUsername(), e);
@@ -352,16 +384,24 @@ public class UserService implements IUserService {
         return authorizationManager.isAuthOnGroup(user, Group.ADMINS_GROUP_NAME);
     }
 
-
-    private UserDetails loadUser(String username) {
+    private UserDetails loadUser(String username, boolean includeProfileOnlyUser) {
         try {
             UserDetails user = this.getUserManager().getUser(username);
-            if (user == null) {
+            if (user != null) {
+                return user;
+            }
+            if (!includeProfileOnlyUser) {
                 throw new ResourceNotFoundException(ERRCODE_USER_NOT_FOUND, "user", username);
             }
-            return user;
-        } catch (ResourceNotFoundException e) {
-            throw e;
+            IUserProfile profile = this.getUserProfileManager().getProfile(username);
+            if (profile == null) {
+                throw new ResourceNotFoundException(ERRCODE_USER_NOT_FOUND, "user", username);
+            }
+            User profileOnlyUser = new User();
+            profileOnlyUser.setUsername(username);
+            profileOnlyUser.setProfile(profile);
+            profileOnlyUser.setDisabled(true);
+            return profileOnlyUser;
         } catch (EntException e) {
             logger.error("Error in loading user {}", username, e);
             throw new RestServerError("Error in loading user", e);

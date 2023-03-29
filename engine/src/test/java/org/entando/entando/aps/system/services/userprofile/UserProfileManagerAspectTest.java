@@ -13,24 +13,23 @@
  */
 package org.entando.entando.aps.system.services.userprofile;
 
+import static org.mockito.Mockito.when;
+
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoTextAttribute;
 import com.agiletec.aps.system.common.entity.parse.attribute.MonoTextAttributeHandler;
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.user.User;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
-import static org.mockito.Mockito.when;
-
+import org.entando.entando.ent.exception.EntException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -146,7 +145,7 @@ class UserProfileManagerAspectTest {
         userProfileManagerAspect.deleteProfile(null);
         Mockito.verify(userProfileManager, Mockito.times(0)).deleteProfile("test");
     }
-    
+
 	private IUserProfile createFakeProfile(String username, String defaultProfileTypeCode) {
 		UserProfile userProfile = new UserProfile();
         userProfile.setId(username);
