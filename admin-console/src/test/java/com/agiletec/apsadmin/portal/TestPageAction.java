@@ -427,10 +427,7 @@ class TestPageAction extends ApsAdminBaseTestCase {
     @Test
 	void testValidateSavePage() throws Throwable {
         String pageCode = "pagina_test";
-        String validPageCode = "test-page-valid";
-        String longPageCode = "very_long_page_code__very_long_page_code";
         assertNull(this._pageManager.getDraftPage(pageCode));
-        assertNull(this._pageManager.getDraftPage(longPageCode));
         try {
             IPage root = this._pageManager.getDraftRoot();
             Map<String, String> params = new HashMap<>();
@@ -466,44 +463,81 @@ class TestPageAction extends ApsAdminBaseTestCase {
             assertTrue(fieldErrors.containsKey("pageCode"));
             assertTrue(fieldErrors.containsKey("group"));
             assertTrue(fieldErrors.containsKey("langen"));
-
-            assertNotNull(this._pageManager.getDraftPage("pagina_1"));
-            params.put("langen", "Test Page");
-            params.put("group", Group.FREE_GROUP_NAME);
-            params.put("pageCode", "pagina_1");// page already present
-            result = this.executeSave(params, "admin");
-            assertEquals(Action.INPUT, result);
-            fieldErrors = this.getAction().getFieldErrors();
-            assertEquals(1, fieldErrors.size());
-            assertTrue(fieldErrors.containsKey("pageCode"));
-
-            params.put("pageCode", longPageCode);
-            result = this.executeSave(params, "admin");
-            assertEquals(Action.INPUT, result);
-            fieldErrors = this.getAction().getFieldErrors();
-            assertEquals(1, fieldErrors.size());
-            assertTrue(fieldErrors.containsKey("pageCode"));
-            
-            params.put("langen", String.join("", Collections.nCopies(71, "x"))); // very long title
-            result = this.executeSave(params, "admin");
-            assertEquals(Action.INPUT, result);
-            fieldErrors = this.getAction().getFieldErrors();
-            assertEquals(2, fieldErrors.size());
-            assertTrue(fieldErrors.containsKey("pageCode"));
-            assertTrue(fieldErrors.containsKey("langen"));
-            
-            params.put("pageCode", validPageCode);
-            result = this.executeSave(params, "admin");
-            assertEquals(Action.INPUT, result);
-            fieldErrors = this.getAction().getFieldErrors();
-            assertEquals(1, fieldErrors.size());
-            assertTrue(fieldErrors.containsKey("langen"));
-            
         } catch (Throwable t) {
             this._pageManager.deletePage(pageCode);
-            this._pageManager.deletePage(validPageCode);
-            this._pageManager.deletePage(longPageCode);
             throw t;
+        }
+    }
+    
+    @Test
+	void testValidateSavePageWithCodeAlreadyPresent() throws Throwable {
+        String pageCode = "pagina_1";
+        assertNotNull(this._pageManager.getDraftPage(pageCode));
+        try {
+            Map<String, String> params = this.getAddPageParamsForTest(pageCode);
+            String result = this.executeSave(params, "admin");
+            assertEquals(Action.INPUT, result);
+            Map<String, List<String>> fieldErrors = this.getAction().getFieldErrors();
+            assertEquals(1, fieldErrors.size());
+            assertTrue(fieldErrors.containsKey("pageCode"));
+        } catch (Throwable t) {
+            throw t;
+        }
+    }
+    
+    @Test
+	void testValidateSavePageWithLongPageCode() throws Throwable {
+        String longPageCode = "very_long_page_code__very_long_page_code";
+        assertNull(this._pageManager.getDraftPage(longPageCode));
+        try {
+            Map<String, String> params = this.getAddPageParamsForTest(longPageCode);
+            String result = this.executeSave(params, "admin");
+            assertEquals(Action.INPUT, result);
+            Map<String, List<String>> fieldErrors = this.getAction().getFieldErrors();
+            assertEquals(1, fieldErrors.size());
+            assertTrue(fieldErrors.containsKey("pageCode"));
+        } catch (Throwable t) {
+            throw t;
+        } finally {
+            this._pageManager.deletePage(longPageCode);
+        }
+    }
+    
+    @Test
+	void testValidateSavePageWithLongTitle() throws Throwable {
+        String validPageCode = "test-page-valid";
+        assertNull(this._pageManager.getDraftPage(validPageCode));
+        try {
+            Map<String, String> params = this.getAddPageParamsForTest(validPageCode);
+            params.put("langen", String.join("", Collections.nCopies(71, "x"))); // very long title
+            String result = this.executeSave(params, "admin");
+            assertEquals(Action.INPUT, result);
+            Map<String, List<String>> fieldErrors = this.getAction().getFieldErrors();
+            assertEquals(1, fieldErrors.size());
+            assertTrue(fieldErrors.containsKey("langen"));
+        } catch (Throwable t) {
+            throw t;
+        } finally {
+            this._pageManager.deletePage(validPageCode);
+        }
+    }
+    
+    @Test
+	void testValidateSavePageWithEmptyTitle() throws Throwable {
+        String validPageCode = "test-page-valid";
+        assertNull(this._pageManager.getDraftPage(validPageCode));
+        try {
+            Map<String, String> params = this.getAddPageParamsForTest(validPageCode);
+            params.remove("langen");
+            String result = this.executeSave(params, "admin");
+            assertEquals(Action.INPUT, result);
+            Map<String, List<String>> fieldErrors = this.getAction().getFieldErrors();
+            assertEquals(1, fieldErrors.size());
+            assertTrue(fieldErrors.containsKey("langen"));
+        } catch (Throwable t) {
+            throw t;
+        } finally {
+            this._pageManager.deletePage(validPageCode);
         }
     }
 
@@ -512,25 +546,32 @@ class TestPageAction extends ApsAdminBaseTestCase {
         String pageCode = "pagina_test_1";
         assertNull(this._pageManager.getDraftPage(pageCode));
         try {
-            IPage root = this._pageManager.getDraftRoot();
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("strutsAction", String.valueOf(ApsAdminSystemConstants.ADD));
-            params.put("parentPageCode", root.getCode());
-            params.put("langit", "Pagina Test 1");
-            params.put("langen", "Test Page 1");
-            params.put("model", "home");
-            params.put("group", Group.FREE_GROUP_NAME);
-            params.put("pageCode", pageCode);
+            String itaTitle = "Custom Italian title";
+            Map<String, String> params = this.getAddPageParamsForTest(pageCode);
+            params.put("langit", itaTitle);
             String result = this.executeSave(params, "admin");
             assertEquals(Action.SUCCESS, result);
             IPage addedPage = this._pageManager.getDraftPage(pageCode);
             assertNotNull(addedPage);
-            assertEquals("Pagina Test 1", addedPage.getMetadata().getTitles().getProperty("it"));
+            assertEquals(itaTitle, addedPage.getMetadata().getTitles().getProperty("it"));
         } catch (Throwable t) {
             throw t;
         } finally {
             this._pageManager.deletePage(pageCode);
         }
+    }
+    
+    private Map<String, String> getAddPageParamsForTest(String pageCode) {
+        IPage root = this._pageManager.getDraftRoot();
+        Map<String, String> params = new HashMap<>();
+        params.put("strutsAction", String.valueOf(ApsAdminSystemConstants.ADD));
+        params.put("parentPageCode", root.getCode());
+        params.put("langit", "Pagina Test");
+        params.put("langen", "Test Page");
+        params.put("model", "home");
+        params.put("group", Group.FREE_GROUP_NAME);
+        params.put("pageCode", pageCode);
+        return params;
     }
     
     @Test

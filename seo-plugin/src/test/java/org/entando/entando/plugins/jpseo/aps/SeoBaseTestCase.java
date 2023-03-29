@@ -27,7 +27,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.context.ApplicationContext;
 
-public class SeoBaseTestCase {
+public abstract class SeoBaseTestCase {
     
     @BeforeAll
     public static void setUp() throws Exception {
