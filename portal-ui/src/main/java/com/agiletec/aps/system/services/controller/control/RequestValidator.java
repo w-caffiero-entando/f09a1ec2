@@ -208,7 +208,8 @@ public class RequestValidator extends AbstractControlService {
     private transient ILangManager langManager;
 
     /**
-     * @deprecated pattern for old suffix ".wp"
+     * @deprecated pattern for old suffix ".wp". 
+     * Pattern no longer used but maintained to ensure compatibility with links used in older installations
      */
     @Deprecated
     protected Pattern oldPattern = Pattern.compile("^/(\\w+)/([-\\w]+)\\Q.wp\\E");

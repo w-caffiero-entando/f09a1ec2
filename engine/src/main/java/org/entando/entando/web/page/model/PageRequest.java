@@ -27,10 +27,12 @@ import javax.validation.constraints.Size;
  * @author paddeo
  */
 public class PageRequest {
-
+    
+    public static final String PAGE_CODE_PATTERN = "[a-zA-Z0-9-_]+";
+    
     @Size(max = 30, message = "string.size.invalid")
     @NotNull(message = "page.code.notBlank")
-    @Pattern(regexp = "[a-zA-Z0-9-_]+", message="page.code.wrongCharacters")
+    @Pattern(regexp = PAGE_CODE_PATTERN, message="page.code.wrongCharacters")
     private String code;
     private String status;
     private boolean displayedInMenu;
