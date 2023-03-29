@@ -104,7 +104,7 @@ public class RequestValidator extends AbstractControlService {
         IPage page = null;
         if (this.getResourcePath(reqCtx).equals("/pages")) {
             resourcePath = getFullResourcePath(reqCtx);
-            matcher = this._patternFullPath.matcher(resourcePath);
+            matcher = this.patternFullPath.matcher(resourcePath);
             if (matcher.lookingAt()) {
                 ok = true;
                 String sect1 = matcher.group(1);
@@ -113,7 +113,7 @@ public class RequestValidator extends AbstractControlService {
             }
         } else {
             resourcePath = getResourcePath(reqCtx);
-            matcher = this._pattern.matcher(resourcePath);
+            matcher = this.pattern.matcher(resourcePath);
             if (matcher.lookingAt()) {
                 ok = true;
                 String sect1 = matcher.group(1);
@@ -122,7 +122,7 @@ public class RequestValidator extends AbstractControlService {
                 page = this.getPageManager().getOnlinePage(sect2);
             } else {
                 // to preserve url with ".wp" suffix
-                matcher = this._oldPattern.matcher(resourcePath);
+                matcher = this.oldPattern.matcher(resourcePath);
                 if (matcher.lookingAt()) {
                     ok = true;
                     String sect1 = matcher.group(1);
@@ -198,20 +198,24 @@ public class RequestValidator extends AbstractControlService {
     }
 
     protected ILangManager getLangManager() {
-        return _langManager;
+        return langManager;
     }
 
     public void setLangManager(ILangManager langManager) {
-        this._langManager = langManager;
+        this.langManager = langManager;
     }
 
-    private ILangManager _langManager;
+    private transient ILangManager langManager;
 
+    /**
+     * @deprecated pattern for old suffix ".wp". 
+     * Pattern no longer used but maintained to ensure compatibility with links used in older installations
+     */
     @Deprecated
-    protected Pattern _oldPattern = Pattern.compile("^/(\\w+)/(\\w+)\\Q.wp\\E");
-
-    protected Pattern _pattern = Pattern.compile("^/(\\w+)/(\\w+)\\Q.page\\E");
-
-    protected Pattern _patternFullPath = Pattern.compile("^/pages/(\\w+)((/\\w+)*)");
+    protected Pattern oldPattern = Pattern.compile("^/(\\w+)/([-\\w]+)\\Q.wp\\E");
+    
+    protected Pattern pattern = Pattern.compile("^/(\\w+)/([-\\w]+)\\Q.page\\E");
+    
+    protected Pattern patternFullPath = Pattern.compile("^/pages/(\\w+)((/[-\\w]+)*+)");
 
 }

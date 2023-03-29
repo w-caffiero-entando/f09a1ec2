@@ -54,12 +54,16 @@ public class BaseTestCase {
 
     @BeforeAll
     public static void setUp() throws Exception {
+        setUp(getConfigUtils());
+    }
+    
+    public static void setUp(ConfigTestUtils configTestUtils) throws Exception {
         boolean refresh = false;
         EntThreadLocal.clear();
         if (null == applicationContext) {
             // Link the servlet context and the Spring context
             servletContext = new MockServletContext("", new FileSystemResourceLoader());
-            applicationContext = getConfigUtils().createApplicationContext(servletContext);
+            applicationContext = configTestUtils.createApplicationContext(servletContext);
             servletContext.setAttribute(
                     WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
         } else {
@@ -157,17 +161,17 @@ public class BaseTestCase {
      * @return The required user.
      * @throws Exception In case of error.
      */
-    protected static UserDetails getUser(String username) throws Exception {
+    public static UserDetails getUser(String username) throws Exception {
         return getUser(username, username);
     }
 
-    protected static void setUserOnSession(String username) throws Exception {
+    public static void setUserOnSession(String username) throws Exception {
         UserDetails currentUser = getUser(username);
         HttpSession session = request.getSession();
         session.setAttribute(SystemConstants.SESSIONPARAM_CURRENT_USER, currentUser);
     }
 
-    protected static RequestContext getRequestContext() {
+    public static RequestContext getRequestContext() {
         return reqCtx;
     }
 

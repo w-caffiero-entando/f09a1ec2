@@ -41,11 +41,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
-import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.SeoMappingManager;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -335,8 +333,8 @@ class PageActionIntegrationTest extends ApsAdminBaseTestCase {
         assertNull(this.pageManager.getDraftPage(pageCode));
         String friendlyCodeIt_1 = "friendly_code_it_test_3";
         String friendlyCodeEn_1 = "friendly_code_en_test_3";
-        String friendlyCodeIt_2 = "friendly_code_it_test_3_bis";
-        String friendlyCodeEn_2 = "friendly_code_en_test_3_bis";
+        String friendlyCodeIt_2 = "friendly-code-it-test-3_bis";
+        String friendlyCodeEn_2 = "friendly-code-en-test-3-bis";
         try {
             assertNull(this.seoMappingManager.getReference(friendlyCodeIt_1));
             assertNull(this.seoMappingManager.getReference(friendlyCodeEn_1));
