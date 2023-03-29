@@ -363,6 +363,32 @@ class CdsStorageManagerTest {
     }
 
     @Test
+    void shouldWorkFineWhenCallExistsWithRootAsEmpty() throws Exception {
+        String testFilePath = "";
+
+        Map<String,String> configMap = Map.of("cdsPublicUrl","http://my-server/tenant1/cms-resources",
+                "cdsPrivateUrl","http://cds-tenant1-kube-service:8081/",
+                "cdsPath","/mytenant/api/v1/");
+        TenantConfig tc = new TenantConfig(configMap);
+        Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
+
+        ApsTenantApplicationUtils.setTenant("my-tenant");
+
+        CdsFileAttributeViewDto bundlesDir = new CdsFileAttributeViewDto();
+        bundlesDir.setName("bundles");
+        bundlesDir.setDirectory(true);
+        CdsFileAttributeViewDto cmsDir = new CdsFileAttributeViewDto();
+        cmsDir.setName("cms");
+        cmsDir.setDirectory(true);
+
+        Mockito.when(cdsRemoteCaller.getFileAttributeView(eq(URI.create(
+                        "http://cds-tenant1-kube-service:8081/mytenant/api/v1/list/public")),
+                any())).thenReturn(Optional.ofNullable(new CdsFileAttributeViewDto[]{ bundlesDir, cmsDir }));
+        Assertions.assertThat(cdsStorageManager.exists(testFilePath,false)).isTrue();
+
+    }
+
+    @Test
     void shouldWorkFineWhenCallGetAttributes() throws Exception {
         String testFilePath = "/test-folder/test.txt";
 
