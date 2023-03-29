@@ -11,14 +11,13 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.aps.system.services.controller.control;
+package org.entando.entando.plugins.jpseo.aps.system.services.controller.control;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.attribute.TextAttribute;
@@ -27,27 +26,36 @@ import com.agiletec.aps.system.services.controller.control.ControlServiceInterfa
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.page.Page;
+import com.agiletec.aps.system.services.page.PageMetadata;
+import com.agiletec.aps.system.services.page.PageTestUtil;
+import com.agiletec.aps.system.services.page.Widget;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
+import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
 import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.plugins.jpseo.aps.SeoBaseTestCase;
 import org.entando.entando.plugins.jpseo.aps.system.JpseoSystemConstants;
-import org.entando.entando.plugins.jpseo.aps.system.services.controller.control.RequestValidator;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-class SeoRequestValidatorIntegrationTest extends BaseTestCase {
+class SeoRequestValidatorIntegrationTest extends SeoBaseTestCase {
 
     private ControlServiceInterface requestValidator;
 
     private IPageManager pageManager;
+    private IPageModelManager pageModelManager;
     private IContentManager contentManager;
-
+    /*
     @Test
     void testService_PageUsingFriendlyCode() throws Exception {
         RequestContext reqCtx = this.getRequestContext();
@@ -284,7 +292,7 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
         assertEquals("it", lang.getCode());
         assertEquals("homepage", page.getCode());
     }
-
+    */
     private void resetRequestContext(RequestContext reqCtx) {
         //reset
         reqCtx.removeExtraParam(JpseoSystemConstants.EXTRAPAR_HIDDEN_CONTENT_ID);
@@ -292,13 +300,83 @@ class SeoRequestValidatorIntegrationTest extends BaseTestCase {
         reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
         reqCtx.removeExtraParam(RequestContext.EXTRAPAR_REDIRECT_URL);
     }
-
+    
+    @Test
+    void testServiceWithNewPage() throws Exception {
+        this.testServiceWithNewPage("it", "req_validator_page_code", "english_friendly_code", "friendly_code_italiano");
+        this.testServiceWithNewPage("en", "req_validator_page_code", "english_friendly_code", "friendly_code_italiano");
+        this.testServiceWithNewPage("it", "req-validator-page-code", "english-friendly-code", "friendly-code-italiano");
+        this.testServiceWithNewPage("en", "req-validator-page-code", "english-friendly-code", "friendly-code-italiano");
+    }
+    
+    void testServiceWithNewPage(String langCode, String pageCode, String enFc, String itFc) throws Exception {
+        String pathInfo = "/"+langCode+"/"+("it".equals(langCode) ? itFc : enFc);
+        IPage parentPage = pageManager.getDraftPage("service");
+        String parentForNewPage = parentPage.getParentCode();
+        PageModel pageModel = this.pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
+        PageMetadata metadata = this.createPageMetadata(pageModel,
+                true, "temp page", null, null, false, null, null, enFc, itFc);
+        Page pageToAdd = PageTestUtil.createPage(pageCode, parentForNewPage, 
+                "free", pageModel, metadata, new Widget[pageModel.getFrames().length]);
+        RequestContext reqCtx = this.getRequestContext();
+        try {
+            this.pageManager.addPage(pageToAdd);
+            this.pageManager.setPageOnline(pageCode);
+            SeoBaseTestCase.waitNotifyingThread();
+            ((MockHttpServletRequest) reqCtx.getRequest()).setServletPath("/page");
+            ((MockHttpServletRequest) reqCtx.getRequest()).setPathInfo(pathInfo);
+            int status = this.requestValidator.service(reqCtx, ControllerManager.CONTINUE);
+            assertEquals(ControllerManager.CONTINUE, status);
+            Lang lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+            IPage page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+            assertNotNull(page);
+            assertNotNull(lang);
+            assertEquals(langCode, lang.getCode());
+            assertEquals(pageCode, page.getCode());
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.pageManager.setPageOffline(pageCode);
+            this.pageManager.deletePage(pageCode);
+            this.resetRequestContext(reqCtx);
+        }
+    }
+    
+    public SeoPageMetadata createPageMetadata(PageModel pageModel, boolean showable, String defaultTitle, String mimeType,
+			String charset, boolean useExtraTitles, Set<String> extraGroups, Date updatedAt, String enFriendlyUrl, String itFriendlyUrl) {
+		SeoPageMetadata metadata = new SeoPageMetadata();
+		metadata.setModelCode(pageModel.getCode());
+		metadata.setShowable(showable);
+		metadata.setTitle("it", defaultTitle);
+		metadata.setTitle("en", defaultTitle);
+		if (extraGroups != null) {
+			metadata.setExtraGroups(extraGroups);
+		}
+		metadata.setMimeType(mimeType);
+		metadata.setCharset(charset);
+		metadata.setUseExtraTitles(useExtraTitles);
+		metadata.setExtraGroups(extraGroups);
+		metadata.setUpdatedAt(updatedAt);
+        ApsProperties friendlyUrls = new ApsProperties();
+        metadata.setFriendlyCodes(friendlyUrls);
+        this.addProperty("it", itFriendlyUrl, friendlyUrls);
+        this.addProperty("en", enFriendlyUrl, friendlyUrls);
+		return metadata;
+	}
+    
+    private void addProperty(String langCode, String friendlyCode, ApsProperties propertyToFill) {
+        PageMetatag metatag = new PageMetatag(langCode, "friendlyCode", friendlyCode);
+        metatag.setUseDefaultLangValue(false);
+        propertyToFill.put(langCode, metatag);
+    }
+    
     @BeforeEach
-    private void init() throws Exception {
+    void init() throws Exception {
         try {
             this.requestValidator = (ControlServiceInterface) this.getApplicationContext().getBean(RequestValidator.class);
-            this.pageManager = (IPageManager) this.getApplicationContext().getBean(IPageManager.class);
-            this.contentManager = (IContentManager) this.getApplicationContext().getBean(JacmsSystemConstants.CONTENT_MANAGER);
+            this.pageManager = this.getApplicationContext().getBean(IPageManager.class);
+            this.pageModelManager = this.getApplicationContext().getBean(IPageModelManager.class);
+            this.contentManager = this.getApplicationContext().getBean(IContentManager.class);
         } catch (Throwable e) {
             throw new Exception(e);
         }

@@ -10,8 +10,8 @@ import com.agiletec.plugins.jacms.aps.system.services.searchengine.SearchEngineM
 import lombok.Setter;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
+import org.entando.entando.aps.system.services.searchengine.SolrEnvironmentVariables;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
-import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
 
 public class SearchEngineManagerFactory {
 

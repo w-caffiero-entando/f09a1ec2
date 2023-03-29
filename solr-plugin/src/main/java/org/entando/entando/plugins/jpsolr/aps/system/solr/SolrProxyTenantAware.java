@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.entando.entando.aps.system.services.searchengine.SolrEnvironmentVariables;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
-import org.entando.entando.plugins.jpsolr.SolrEnvironmentVariables;
 
 /**
  * Classe factory degli elementi ad uso del SearchEngine.

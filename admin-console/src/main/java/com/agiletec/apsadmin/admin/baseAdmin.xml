@@ -36,6 +36,16 @@
         	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
         </action>
 
+        <action name="license">
+            <result type="tiles">admin.BaseAdmin.license</result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">enterBackend</param></interceptor-ref>
+        </action>
+
+        <action name="about">
+            <result type="tiles">admin.BaseAdmin.about</result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">enterBackend</param></interceptor-ref>
+        </action>
+
     </package>
 
     <package name="core_do/BaseAdmin/Ajax" namespace="/do/BaseAdmin/Ajax" extends="entando-default">

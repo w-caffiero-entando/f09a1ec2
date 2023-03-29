@@ -82,10 +82,13 @@ public class URLManager extends com.agiletec.aps.system.services.url.URLManager 
 	}
 
 	private Lang extractLang(com.agiletec.aps.system.services.url.PageURL pageUrl, RequestContext reqCtx) {
+		Lang lang = null;
 		String langCode = pageUrl.getLangCode();
-		Lang lang = this.getLangManager().getLang(langCode);
-		if (lang == null && null != reqCtx) {
-			lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+		if (langCode != null) {
+			lang = this.getLangManager().getLang(langCode);
+			if (lang == null && null != reqCtx) {
+				lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+			}
 		}
 		if (lang == null) {
 			lang = this.getLangManager().getDefaultLang();
@@ -94,10 +97,13 @@ public class URLManager extends com.agiletec.aps.system.services.url.URLManager 
 	}
 
 	private IPage extractDestPage(com.agiletec.aps.system.services.url.PageURL pageUrl, RequestContext reqCtx) {
+		IPage page = null;
 		String pageCode = pageUrl.getPageCode();
-		IPage page = this.getPageManager().getOnlinePage(pageCode);
-		if (page == null && null != reqCtx) {
-			page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+		if (pageCode != null) {
+			page = this.getPageManager().getOnlinePage(pageCode);
+			if (page == null && null != reqCtx) {
+				page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+			}
 		}
 		if (page == null) {
 			page = this.getPageManager().getOnlineRoot();
