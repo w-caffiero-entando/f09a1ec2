@@ -10,12 +10,12 @@
                 <s:text name="note.URLLinkTo"></s:text>: <s:property value="symbolicLink.urlDest"/>.
             </s:if>
             <s:if test="symbolicLink.destType == 2 || symbolicLink.destType == 4">
-                <wpsa:page key="%{symbolicLink.pageDest}" var="prevTargetPageVar" />
+                <wpsa:page key="%{symbolicLink.pageDestination}" var="prevTargetPageVar" />
                 <s:text name="note.pageLinkTo"></s:text>: <s:property value="getTitle(#prevTargetPageVar.code, #prevTargetPageVar.titles)" />
             </s:if>
             <s:if test="symbolicLink.destType == 4"> &ndash; </s:if>
             <s:if test="symbolicLink.destType == 3 || symbolicLink.destType == 4">
-                <jacmsapsadmin:content var="prevTargetContentVoVar" contentId="%{symbolicLink.contentDest}" />
+                <jacmsapsadmin:content var="prevTargetContentVoVar" contentId="%{symbolicLink.contentDestination}" />
                 <s:text name="note.contentLinkTo"></s:text>: <s:property value="symbolicLink.contentDest"/> &ndash; <s:property value="#prevTargetContentVoVar.descr"/>.
             </s:if>
         </p>

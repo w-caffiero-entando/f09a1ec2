@@ -19,6 +19,8 @@ import javax.servlet.http.HttpSession;
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
 import com.agiletec.aps.system.common.entity.model.attribute.CompositeAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoListAttribute;
+import com.agiletec.aps.system.services.lang.ILangManager;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.LinkAttribute;
@@ -52,7 +54,7 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
 		}
 		session.setAttribute(LINK_LANG_CODE_SESSION_PARAM, action.getLinkLangCode());
 		LinkAttribute linkAttribute = (LinkAttribute) getLinkAttribute(attribute, request);
-		session.setAttribute(SYMBOLIC_LINK_SESSION_PARAM, linkAttribute.getSymbolicLink());
+		session.setAttribute(SYMBOLIC_LINK_SESSION_PARAM, linkAttribute.getSymbolicLink(action.getLinkLangCode()));
 		session.setAttribute(LINK_PROPERTIES_MAP_SESSION_PARAM, linkAttribute.getLinkProperties());
 	}
 	
@@ -171,8 +173,13 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
 			removeLink(includedAttribute, request);
 		} else if (attribute instanceof LinkAttribute) {
             String langCode = (String) session.getAttribute(LINK_LANG_CODE_SESSION_PARAM);
-			((LinkAttribute) attribute).getSymbolicLinks().remove(langCode);
-			((LinkAttribute) attribute).getTextMap().remove(langCode);
+            ILangManager langManager = ApsWebApplicationUtils.getBean(ILangManager.class, request);
+            if (langCode.equalsIgnoreCase(langManager.getDefaultLang().getCode())) {
+                ((LinkAttribute) attribute).getSymbolicLinks().clear();
+                ((LinkAttribute) attribute).getTextMap().clear();
+            } else {
+                ((LinkAttribute) attribute).getSymbolicLinks().remove(langCode);
+            }
 		} else if (attribute instanceof MonoListAttribute) {
 			Integer elementIndex = (Integer) session.getAttribute(LIST_ELEMENT_INDEX_SESSION_PARAM);
 			AttributeInterface attributeElement = ((MonoListAttribute) attribute).getAttribute(elementIndex.intValue());
