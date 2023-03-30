@@ -4,13 +4,22 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class TenantAsynchInitService implements ITenantAsynchInitService {
 
-    public CompletableFuture<Void> initializeNotMandatoryTenants(Map<String, TenantStatus> statuses){
+    private final ITenantManager tenantManager;
+
+    @Autowired
+    public TenantAsynchInitService(ITenantManager tm){
+        this.tenantManager = tm;
+    }
+
+    public CompletableFuture<Void> startAsynchInitializeTenants(){
+        Map<String,TenantStatus> statuses = ((TenantManager)tenantManager).getInternalStatuses();
         return CompletableFuture.runAsync(() -> manageTenantsInit(statuses), Executors.newSingleThreadExecutor());
     }
 

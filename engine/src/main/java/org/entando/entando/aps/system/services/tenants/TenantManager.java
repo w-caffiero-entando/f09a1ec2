@@ -41,17 +41,15 @@ public class TenantManager implements ITenantManager, InitializingBean {
 
     private final String tenantsConfigAsString;
     private final ObjectMapper objectMapper;
-    private final ITenantAsynchInitService asynchInitService;
     private transient Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
     private transient Map<String, TenantConfig> tenantsConfigs = new HashMap<>();
 
     private transient Map<String, TenantStatus> tenantsStatuses = new ConcurrentHashMap<>();
 
     @Autowired
-    public TenantManager(@Value("${ENTANDO_TENANTS:}") String s, ObjectMapper o, ITenantAsynchInitService asynchInitService){
+    public TenantManager(@Value("${ENTANDO_TENANTS:}") String s, ObjectMapper o){
         this.tenantsConfigAsString = s;
         this.objectMapper = o;
-        this.asynchInitService = asynchInitService;
     }
 
 
@@ -90,6 +88,11 @@ public class TenantManager implements ITenantManager, InitializingBean {
         return Map.copyOf(tenantsStatuses);
     }
 
+    /* WARNING not change visibilitry package it's too dangerous change status from outside */
+    Map<String,TenantStatus> getInternalStatuses() {
+        return tenantsStatuses;
+    }
+
     @Override
     public String getTenantCodeByDomain(String domain) {
         String tenantCode =  tenantsConfigs.values().stream()
@@ -118,11 +121,6 @@ public class TenantManager implements ITenantManager, InitializingBean {
     @Override
     public Optional<TenantConfig> getConfig(String tenantCode) {
         return Optional.ofNullable(tenantCode).map(this::identityIfStatusReadyOrThrow).map(tenantsConfigs::get);
-    }
-
-    @Override
-    public CompletableFuture<Void> startAsynchInitializeTenants() {
-        return asynchInitService.initializeNotMandatoryTenants(tenantsStatuses);
     }
 
     private void initTenantsCodes() throws Exception {

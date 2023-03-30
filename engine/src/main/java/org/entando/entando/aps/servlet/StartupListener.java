@@ -18,6 +18,7 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import org.entando.entando.aps.system.exception.CSRFProtectionException;
+import org.entando.entando.aps.system.services.tenants.ITenantAsynchInitService;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -74,6 +75,7 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
         }
 
         ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, svCtx);
+        ITenantAsynchInitService tenantAsynchInitService = ApsWebApplicationUtils.getBean(ITenantAsynchInitService.class, svCtx);
         InitializerManager initManager = ApsWebApplicationUtils.getBean(InitializerManager.class, svCtx);
         tenantManager.getCodes().stream().forEach(tenantCode -> {
             ApsTenantApplicationUtils.setTenant(tenantCode);
@@ -87,7 +89,7 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
                 LOGGER.error("Error initializing '{}' tenant", tenantCode, t);
             }
         });
-        tenantManager.startAsynchInitializeTenants().join();
+        tenantAsynchInitService.startAsynchInitializeTenants().join();
 
         long endMs = System.currentTimeMillis();
         String executionTimeMsg = String.format("%s: contextInitialized takes ms:'%s' of execution",

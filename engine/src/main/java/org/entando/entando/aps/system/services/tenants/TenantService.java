@@ -18,12 +18,15 @@ import static org.entando.entando.aps.system.services.tenants.ITenantManager.PRI
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.web.tenant.model.TenantDto;
+import org.entando.entando.web.tenant.model.TenantStatsAndStatusesDto;
+import org.entando.entando.web.tenant.model.TenantStatsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +65,34 @@ public class TenantService implements ITenantService {
 
         return tenants;
 
+    }
+
+    @Override
+    public TenantStatsAndStatusesDto getTenantStatsAndStatuses() {
+        Map<String, TenantStatus> statuses = tenantManager.getStatuses();
+        return TenantStatsAndStatusesDto.builder().statuses(statuses).stats(calculate(statuses)).build();
+    }
+
+    private TenantStatsDto calculate(Map<String, TenantStatus> statuses) {
+        TenantStatsDto d = new TenantStatsDto(0,0,0,0,0);
+        statuses.values().stream().forEach(s -> {
+            d.setCount(d.getCount()+1);
+            switch (s) {
+                case UNKNOWN:
+                    d.setUnknown(d.getUnknown() + 1);
+                    break;
+                case FAILED:
+                    d.setFailed(d.getFailed() + 1);
+                    break;
+                case PENDING:
+                    d.setPending(d.getPending() + 1);
+                    break;
+                case READY:
+                    d.setReady(d.getReady() + 1);
+                    break;
+            }
+        });
+        return d;
     }
 
     private TenantDto mapTenantToTenantDto(TenantConfig config){

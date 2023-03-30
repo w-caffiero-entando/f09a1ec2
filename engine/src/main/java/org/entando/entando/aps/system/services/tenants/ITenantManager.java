@@ -39,5 +39,4 @@ public interface ITenantManager {
 
     String getTenantCodeByDomain(String domain);
 
-    CompletableFuture<Void> startAsynchInitializeTenants();
 }

@@ -93,9 +93,10 @@ class TenantManagerTest {
 
     @Test
     void shouldAllOperationWorkFineWithConfigMapsWithCustomFields() throws Throwable {
-        TenantManager tm = new TenantManager(tenantConfigsWithCustomFields, new ObjectMapper(), new TenantAsynchInitService());
+        TenantManager tm = new TenantManager(tenantConfigsWithCustomFields, new ObjectMapper());
         tm.afterPropertiesSet();
-        tm.startAsynchInitializeTenants().join();
+        ITenantAsynchInitService tenantAsynchInitService = new TenantAsynchInitService(tm);
+        tenantAsynchInitService.startAsynchInitializeTenants().join();
 
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
         Assertions.assertThat(otc).isNotEmpty();
@@ -110,9 +111,10 @@ class TenantManagerTest {
     @Test
     void shouldAllOperationWorkFineWithCorrectInput() throws Throwable {
 
-        TenantManager tm = new TenantManager(tenantConfigs, new ObjectMapper(), new TenantAsynchInitService());
+        TenantManager tm = new TenantManager(tenantConfigs, new ObjectMapper());
         tm.afterPropertiesSet();
-        tm.startAsynchInitializeTenants().join();
+        ITenantAsynchInitService tenantAsynchInitService = new TenantAsynchInitService(tm);
+        tenantAsynchInitService.startAsynchInitializeTenants().join();
 
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
         Assertions.assertThat(otc).isNotEmpty();
@@ -134,7 +136,7 @@ class TenantManagerTest {
 
     @Test
     void shouldAllOperationWorkFineWithBadInput() throws Throwable {
-        TenantManager tm = new TenantManager("[\"pippo\"pippo]", new ObjectMapper(), new TenantAsynchInitService());
+        TenantManager tm = new TenantManager("[\"pippo\"pippo]", new ObjectMapper());
         Assertions.catchThrowableOfType(() -> tm.afterPropertiesSet(), JsonMappingException.class);
 
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
@@ -150,7 +152,7 @@ class TenantManagerTest {
 
     @Test
     void shouldInitThrowExceptionWithTenantCodeWithValuePrimary() throws Throwable {
-        TenantManager tm = new TenantManager(tenantWithPrimaryCodeConfigs, new ObjectMapper(), new TenantAsynchInitService());
+        TenantManager tm = new TenantManager(tenantWithPrimaryCodeConfigs, new ObjectMapper());
         RuntimeException ex = Assertions.catchThrowableOfType(() -> tm.afterPropertiesSet(), RuntimeException.class);
         Assertions.assertThat(ex.getMessage()).isEqualTo("You cannot use 'primary' as tenant code");
 
@@ -167,7 +169,7 @@ class TenantManagerTest {
 
     @Test
     void shouldOperationThrowExceptionWithTenantNotInitiated() throws Throwable {
-        TenantManager tm = new TenantManager(tenantConfigs, new ObjectMapper(), new TenantAsynchInitService());
+        TenantManager tm = new TenantManager(tenantConfigs, new ObjectMapper());
         tm.afterPropertiesSet();
 
         RuntimeException ex = Assertions.catchThrowableOfType(() -> tm.getConfig("TE_nant1"), RuntimeException.class);

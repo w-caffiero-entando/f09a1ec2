@@ -14,8 +14,11 @@
 package org.entando.entando.aps.system.services.tenants;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.entando.entando.web.tenant.model.TenantDto;
+import org.entando.entando.web.tenant.model.TenantStatsAndStatusesDto;
+import org.entando.entando.web.tenant.model.TenantStatsDto;
 
 public interface ITenantService {
 
@@ -24,5 +27,7 @@ public interface ITenantService {
     Optional<TenantDto> getTenant(String tenantCode);
 
     List<TenantDto> getTenants();
+
+    TenantStatsAndStatusesDto getTenantStatsAndStatuses();
 
 }

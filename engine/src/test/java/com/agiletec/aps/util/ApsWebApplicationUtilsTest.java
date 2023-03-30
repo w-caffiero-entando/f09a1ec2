@@ -56,7 +56,7 @@ class ApsWebApplicationUtilsTest {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> {ApsWebApplicationUtils.getBean(TenantManager.class, servletContext);});
 
-        Mockito.when(wac.getBean(TenantManager.class)).thenReturn(new TenantManager("{}", new ObjectMapper(), new TenantAsynchInitService()));
+        Mockito.when(wac.getBean(TenantManager.class)).thenReturn(new TenantManager("{}", new ObjectMapper()));
         TenantManager tm = ApsWebApplicationUtils.getBean(TenantManager.class, servletContext);
         Assertions.assertNotNull(tm);
 
@@ -84,7 +84,7 @@ class ApsWebApplicationUtilsTest {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> {ApsWebApplicationUtils.getBean("tenantManager", TenantManager.class, servletContext);});
 
-        Mockito.when(wac.getBean("tenantManager", TenantManager.class)).thenReturn(new TenantManager("{}", new ObjectMapper(), new TenantAsynchInitService()));
+        Mockito.when(wac.getBean("tenantManager", TenantManager.class)).thenReturn(new TenantManager("{}", new ObjectMapper()));
         TenantManager tm = ApsWebApplicationUtils.getBean("tenantManager", TenantManager.class, servletContext);
         Assertions.assertNotNull(tm);
 

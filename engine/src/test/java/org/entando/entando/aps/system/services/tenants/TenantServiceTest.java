@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.web.tenant.model.TenantDto;
+import org.entando.entando.web.tenant.model.TenantStatsAndStatusesDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -173,6 +174,27 @@ class TenantServiceTest {
         Assertions.assertEquals(2, tenants.size());
         Assertions.assertEquals("tenant1", tenants.get(0).getCode());
         Assertions.assertEquals("primary", tenants.get(1).getCode());
+
+    }
+
+    @Test
+    void shouldGetTenantStatsAndStatusesWorkFine() {
+        // CDS disabled
+
+        // Cds enabled with 1 tenant
+        when(tenantManager.getStatuses()).thenReturn(Map.of("t1",
+                TenantStatus.UNKNOWN, "t2", TenantStatus.PENDING, "t3",  TenantStatus.READY, "t4", TenantStatus.FAILED));
+
+
+        TenantStatsAndStatusesDto tenants = tenantService.getTenantStatsAndStatuses();
+        Assertions.assertNotNull(tenants);
+        Assertions.assertEquals(4, tenants.getStats().getCount());
+        Assertions.assertEquals(1, tenants.getStats().getPending());
+        Assertions.assertEquals(1, tenants.getStats().getUnknown());
+        Assertions.assertEquals(1, tenants.getStats().getReady());
+        Assertions.assertEquals(1, tenants.getStats().getFailed());
+        Assertions.assertEquals(TenantStatus.UNKNOWN, tenants.getStatuses().get("t1"));
+        Assertions.assertEquals(TenantStatus.PENDING, tenants.getStatuses().get("t2"));
 
     }
 
