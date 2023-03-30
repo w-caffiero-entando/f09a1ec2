@@ -1663,7 +1663,7 @@ class TestContentManager extends BaseTestCase {
             Map<String, String> map = new HashMap<>();
             map.put("key1", "value1");
             map.put("key2", "value2");
-            attributeToModify.getLinkProperties().put(attributeToModify.getDefaultLangCode(), map);
+            attributeToModify.getLinksProperties().put(attributeToModify.getDefaultLangCode(), map);
 
             content.setId(null);
             String id = this._contentManager.saveContent(content);
@@ -1674,8 +1674,8 @@ class TestContentManager extends BaseTestCase {
             assertNotNull(monoListAttribute10);
             assertEquals(2, monoListAttribute10.getAttributes().size());
             LinkAttribute attributeModified = (LinkAttribute) monoListAttribute10.getAttributes().get(0);
-            assertEquals(1, attributeModified.getLinkProperties().size());
-            Map<String, String> mapForDefaultLang = attributeModified.getLinkProperties().get(attributeToModify.getDefaultLangCode());
+            assertEquals(1, attributeModified.getLinksProperties().size());
+            Map<String, String> mapForDefaultLang = attributeModified.getLinksProperties().get(attributeToModify.getDefaultLangCode());
             assertEquals(2, mapForDefaultLang.size());
             assertEquals("value1", mapForDefaultLang.get("key1"));
             assertEquals("value2", mapForDefaultLang.get("key2"));

@@ -108,10 +108,10 @@ public class LinkAttributeHandler extends TextAttributeHandler {
         if (null != textBuffer) {
             LinkAttribute linkAttribute = (LinkAttribute) this.getCurrentAttr();
             String currentLangCode = (null == this.langCode) ? linkAttribute.getDefaultLangCode() : this.langCode;
-            Map<String, String> map = linkAttribute.getLinkProperties().get(currentLangCode);
+            Map<String, String> map = linkAttribute.getLinksProperties().get(currentLangCode);
             if (null == map) {
                 map = new HashMap<>();
-                linkAttribute.getLinkProperties().put(currentLangCode, map);
+                linkAttribute.getLinksProperties().put(currentLangCode, map);
             }
             map.put(this.propertyKey, textBuffer.toString());
         }

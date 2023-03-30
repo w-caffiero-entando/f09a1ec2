@@ -321,7 +321,7 @@ public class ContentDto extends EntityDto implements Serializable {
                 linkAttribute.setSymbolicLink(defaultLangCode, link);
                 if (!additionalLinkAttributes.isEmpty()) {
                     String langCode = linkAttribute.getDefaultLangCode();
-                    linkAttribute.getLinkProperties().put(langCode, additionalLinkAttributes);
+                    linkAttribute.getLinksProperties().put(langCode, additionalLinkAttributes);
                 }
             }
         }

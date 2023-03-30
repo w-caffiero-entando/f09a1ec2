@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.ILinkAttributeAction;
+import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.ILinkAttributeTypeAction;
 
 import java.util.Map;
 
@@ -38,6 +39,7 @@ public interface ILinkAttributeActionHelper {
 	 * Aggiunge il link.
 	 * @param destinations Un array contenente i parametri di destinazione del link.
 	 * @param destType Il tipo di link di destinazione.
+     * @param properties The link properties
 	 * @param request La request.
 	 */
 	public void joinLink(String[] destinations, int destType, Map<String,String> properties, HttpServletRequest request);
@@ -55,6 +57,10 @@ public interface ILinkAttributeActionHelper {
 	public void removeSessionParams(HttpSession session);
 	
 	public String buildEntryContentAnchorDest(HttpSession session);
+    
+    public Map<String,String> createLinkProperties(ILinkAttributeTypeAction action);
+    
+    public void initLinkProperties(ILinkAttributeTypeAction action, HttpServletRequest request);
 	
 	public static final String ATTRIBUTE_NAME_SESSION_PARAM = "contentAttributeName";
 	public static final String LINK_LANG_CODE_SESSION_PARAM = "linkLangCode";

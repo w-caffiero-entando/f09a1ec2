@@ -17,6 +17,7 @@ import com.agiletec.aps.system.common.entity.model.AttributeFieldError;
 import com.agiletec.aps.system.common.entity.model.AttributeTracer;
 import com.agiletec.aps.system.common.entity.model.FieldError;
 import com.agiletec.aps.system.common.entity.model.attribute.AbstractJAXBAttribute;
+import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface.Status;
 import com.agiletec.aps.system.common.entity.model.attribute.TextAttribute;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
@@ -118,8 +119,8 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
             }
         }
         super.addTextElements(attributeElement);
-        if (null != this.getLinkProperties()) {
-            this.getLinkProperties().entrySet().stream().forEach(e -> {
+        if (null != this.getLinksProperties()) {
+            this.getLinksProperties().entrySet().stream().forEach(e -> {
                 Element propertiesLangElement = new Element("properties");
                 propertiesLangElement.setAttribute("lang", e.getKey());
                 e.getValue().entrySet().stream().forEach(pr -> {
@@ -286,11 +287,6 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
         }
         return slink;
     }
-
-    @Deprecated
-    public void setSymbolicLink(SymbolicLink symbolicLink) {
-        this.setSymbolicLink(super.getDefaultLangCode(), symbolicLink);
-    }
     
     public SymbolicLink getSymbolicLink() {
         return this.getSymbolicLink(this.getRenderingLang());
@@ -303,28 +299,35 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
         this.symbolicLinks = symbolicLinks;
     }
 
-    public Map<String, Map<String, String>> getLinkProperties() {
-        return linkProperties;
+    public Map<String, String> getLinkProperties(String langCode) {
+        Map<String, String> properties = this.getLinksProperties().get(langCode);
+        if (null == properties) {
+            properties = this.getLinksProperties().get(super.getDefaultLangCode());
+        }
+        return properties;
     }
 
-    public void setLinkProperties(Map<String, Map<String, String>> linkProperties) {
-        this.linkProperties = linkProperties;
+    public Map<String, Map<String, String>> getLinksProperties() {
+        return linksProperties;
+    }
+    public void setLinksProperties(Map<String, Map<String, String>> linkProperties) {
+        this.linksProperties = linkProperties;
     }
     
-    public String getRel(String langCode) {
-        return this.getProperty(REL_ATTRIBUTE, langCode);
+    public String getRel() {
+        return this.getProperty(REL_ATTRIBUTE, this.getRenderingLang());
     }
     
-    public String getTarget(String langCode) {
-        return this.getProperty(TARGET_ATTRIBUTE, langCode);
+    public String getTarget() {
+        return this.getProperty(TARGET_ATTRIBUTE, this.getRenderingLang());
     }
     
-    public String getHrefLang(String langCode) {
-        return this.getProperty(HREFLANG_ATTRIBUTE, langCode);
+    public String getHrefLang() {
+        return this.getProperty(HREFLANG_ATTRIBUTE, this.getRenderingLang());
     }
     
-    public String getProperty(String key, String langCode) {
-        Map<String, String> map = Optional.ofNullable(this.getLinkProperties().get(langCode)).orElse(this.getLinkProperties().get(this.getDefaultLangCode()));
+    private String getProperty(String key, String langCode) {
+        Map<String, String> map = Optional.ofNullable(this.getLinksProperties().get(langCode)).orElse(this.getLinksProperties().get(this.getDefaultLangCode()));
         return Optional.ofNullable(map).map(m -> m.get(key)).orElse(null);
     }
     
@@ -370,7 +373,7 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
     
     private Map<String, SymbolicLink> symbolicLinks = new HashMap<>();
     
-    private Map<String, Map<String, String>> linkProperties = new HashMap<>();
+    private Map<String, Map<String, String>> linksProperties = new HashMap<>();
     
     private transient IContentManager contentManager;
     private transient IPageManager pageManager;
@@ -391,4 +394,5 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
         this.resourceManager = ctx.getBean(IResourceManager.class);
         this.setLangManager(ctx.getBean(ILangManager.class));
     }
+    
 }

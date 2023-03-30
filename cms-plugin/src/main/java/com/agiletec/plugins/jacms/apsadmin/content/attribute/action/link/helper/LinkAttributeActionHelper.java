@@ -26,6 +26,8 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.LinkAttribute;
 import com.agiletec.plugins.jacms.apsadmin.content.ContentActionConstants;
 import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.ILinkAttributeAction;
+import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.ILinkAttributeTypeAction;
+import java.util.HashMap;
 
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +57,7 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
 		session.setAttribute(LINK_LANG_CODE_SESSION_PARAM, action.getLinkLangCode());
 		LinkAttribute linkAttribute = (LinkAttribute) getLinkAttribute(attribute, request);
 		session.setAttribute(SYMBOLIC_LINK_SESSION_PARAM, linkAttribute.getSymbolicLink(action.getLinkLangCode()));
-		session.setAttribute(LINK_PROPERTIES_MAP_SESSION_PARAM, linkAttribute.getLinkProperties());
+		session.setAttribute(LINK_PROPERTIES_MAP_SESSION_PARAM, linkAttribute.getLinkProperties(action.getLinkLangCode()));
 	}
 	
 	@Override
@@ -162,7 +164,7 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
             break;
         }
 		((LinkAttribute) currentAttribute).setSymbolicLink(langCode, symbolicLink);
-		((LinkAttribute) currentAttribute).getLinkProperties().put(langCode, properties);
+		((LinkAttribute) currentAttribute).getLinksProperties().put(langCode, properties);
     }
 	
 	protected void removeLink(AttributeInterface attribute, HttpServletRequest request) {
@@ -177,8 +179,10 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
             if (langCode.equalsIgnoreCase(langManager.getDefaultLang().getCode())) {
                 ((LinkAttribute) attribute).getSymbolicLinks().clear();
                 ((LinkAttribute) attribute).getTextMap().clear();
+                ((LinkAttribute) attribute).getLinksProperties().clear();
             } else {
                 ((LinkAttribute) attribute).getSymbolicLinks().remove(langCode);
+                ((LinkAttribute) attribute).getLinksProperties().remove(langCode);
             }
 		} else if (attribute instanceof MonoListAttribute) {
 			Integer elementIndex = (Integer) session.getAttribute(LIST_ELEMENT_INDEX_SESSION_PARAM);
@@ -209,4 +213,30 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
 		}
 		return contentOnSessionMarker;
 	}
+    
+    @Override
+	public Map<String,String> createLinkProperties(ILinkAttributeTypeAction action) {
+		Map<String,String> properties = new HashMap<>();
+		if (StringUtils.isNotBlank(action.getLinkAttributeRel())) {
+			properties.put(LinkAttribute.REL_ATTRIBUTE, action.getLinkAttributeRel());
+		}
+		if (StringUtils.isNotBlank(action.getLinkAttributeTarget())) {
+			properties.put(LinkAttribute.TARGET_ATTRIBUTE, action.getLinkAttributeTarget());
+		}
+		if (StringUtils.isNotBlank(action.getLinkAttributeHRefLang())) {
+			properties.put(LinkAttribute.HREFLANG_ATTRIBUTE, action.getLinkAttributeHRefLang());
+		}
+		return properties;
+	}
+    
+    @Override
+    public void initLinkProperties(ILinkAttributeTypeAction action, HttpServletRequest request) {
+        Map<String, String> properties = (Map<String, String>) request.getSession().getAttribute(LINK_PROPERTIES_MAP_SESSION_PARAM);
+        if (null != properties) {
+            action.setLinkAttributeRel(properties.get(LinkAttribute.REL_ATTRIBUTE));
+            action.setLinkAttributeHRefLang(properties.get(LinkAttribute.HREFLANG_ATTRIBUTE));
+            action.setLinkAttributeTarget(properties.get(LinkAttribute.TARGET_ATTRIBUTE));
+        }
+    }
+    
 }

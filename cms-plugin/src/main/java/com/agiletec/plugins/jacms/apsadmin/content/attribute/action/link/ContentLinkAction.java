@@ -16,13 +16,11 @@ package com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -40,7 +38,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * operazioni sugli attributi tipo Link.
  * @author E.Santoboni
  */
-public class ContentLinkAction extends ContentFinderAction {
+public class ContentLinkAction extends ContentFinderAction implements ILinkAttributeTypeAction {
 
 	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ContentLinkAction.class);
 	
@@ -58,17 +56,12 @@ public class ContentLinkAction extends ContentFinderAction {
 	private String linkAttributeTarget;
 
 	private String linkAttributeHRefLang;
-
-	@Override
+    
+    @Override
 	public String execute()  {
 		String result= super.execute();
 		if (result.equals(SUCCESS)) {
-			Map<String, String> properties = (Map<String, String>) this.getRequest().getSession().getAttribute(ILinkAttributeActionHelper.LINK_PROPERTIES_MAP_SESSION_PARAM);
-			if (null != properties) {
-				this.linkAttributeRel = properties.get("rel");
-				this.linkAttributeTarget = properties.get("target");
-				this.linkAttributeHRefLang = properties.get("hreflang");
-			}
+			this.getLinkAttributeHelper().initLinkProperties(this, this.getRequest());
 		}
 		return result;
 	}
@@ -116,7 +109,8 @@ public class ContentLinkAction extends ContentFinderAction {
 		} else {
 			String[] destinations = {null, this.getContentId(), null};
 			this.buildEntryContentAnchorDest();
-			this.getLinkAttributeHelper().joinLink(destinations, SymbolicLink.CONTENT_TYPE, createPropertiesMap() ,this.getRequest());
+            Map<String, String> linkProperties = this.getLinkAttributeHelper().createLinkProperties(this);
+			this.getLinkAttributeHelper().joinLink(destinations, SymbolicLink.CONTENT_TYPE, linkProperties, this.getRequest());
 			return SUCCESS;
 		}
 	}
@@ -150,37 +144,29 @@ public class ContentLinkAction extends ContentFinderAction {
 				.getAttribute(ContentActionConstants.SESSION_PARAM_NAME_CURRENT_CONTENT_PREXIX + this.getContentOnSessionMarker());
 	}
 
-	private Map<String,String> createPropertiesMap(){
-		Map<String,String> properties = new HashMap<>();
-		if (StringUtils.isNotBlank(getLinkAttributeRel())) {
-			properties.put("rel", getLinkAttributeRel());
-		}
-		if (StringUtils.isNotBlank(getLinkAttributeTarget())) {
-			properties.put("target", getLinkAttributeTarget());
-		}
-		if (StringUtils.isNotBlank(getLinkAttributeHRefLang())) {
-			properties.put("hrefLang",getLinkAttributeHRefLang());
-		}
-		return properties;
-	}
-
+	@Override
 	public String getLinkAttributeRel() {
 		return linkAttributeRel;
 	}
+	@Override
 	public void setLinkAttributeRel(String linkAttributeRel) {
 		this.linkAttributeRel = linkAttributeRel;
 	}
 
+	@Override
 	public String getLinkAttributeTarget() {
 		return linkAttributeTarget;
 	}
+	@Override
 	public void setLinkAttributeTarget(String linkAttributeTarget) {
 		this.linkAttributeTarget = linkAttributeTarget;
 	}
 
+	@Override
 	public String getLinkAttributeHRefLang() {
 		return linkAttributeHRefLang;
 	}
+	@Override
 	public void setLinkAttributeHRefLang(String linkAttributeHRefLang) {
 		this.linkAttributeHRefLang = linkAttributeHRefLang;
 	}

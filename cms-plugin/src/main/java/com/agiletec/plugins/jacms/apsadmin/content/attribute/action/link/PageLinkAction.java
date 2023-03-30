@@ -38,21 +38,15 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
  * operazioni sugli attributi tipo Link.
  * @author E.Santoboni
  */
-public class PageLinkAction extends PageTreeAction {
+public class PageLinkAction extends PageTreeAction implements ILinkAttributeTypeAction {
 	
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageLinkAction.class);
-
-
+    
 	@Override
 	public String execute() throws Exception {
 		String result= super.execute();
 		if (result.equals(SUCCESS)) {
-			Map<String, String> properties = (Map<String, String>) this.getRequest().getSession().getAttribute(ILinkAttributeActionHelper.LINK_PROPERTIES_MAP_SESSION_PARAM);
-			if (null != properties) {
-				this.linkAttributeRel = properties.get("rel");
-				this.linkAttributeTarget = properties.get("target");
-				this.linkAttributeHRefLang = properties.get("hreflang");
-			}
+			this.getLinkAttributeHelper().initLinkProperties(this, this.getRequest());
 		}
 		return result;
 	}
@@ -77,22 +71,9 @@ public class PageLinkAction extends PageTreeAction {
 		int destType = this.getLinkType();
 		String[] destinations = {null, this.getContentId(), this.getSelectedNode()};
 		this.buildEntryContentAnchorDest();
-		this.getLinkAttributeHelper().joinLink(destinations, destType, createPropertiesMap(),this.getRequest());
+        Map<String, String> linkProperties = this.getLinkAttributeHelper().createLinkProperties(this);
+		this.getLinkAttributeHelper().joinLink(destinations, destType, linkProperties, this.getRequest());
 		return SUCCESS;
-	}
-
-	private Map<String,String> createPropertiesMap(){
-		Map<String,String> properties = new HashMap<>();
-		if (StringUtils.isNotBlank(getLinkAttributeRel())) {
-			properties.put("rel", getLinkAttributeRel());
-		}
-		if (StringUtils.isNotBlank(getLinkAttributeTarget())) {
-			properties.put("target", getLinkAttributeTarget());
-		}
-		if (StringUtils.isNotBlank(getLinkAttributeHRefLang())) {
-			properties.put("hrefLang",getLinkAttributeHRefLang());
-		}
-		return properties;
 	}
 
 	private void buildEntryContentAnchorDest() {
@@ -162,29 +143,33 @@ public class PageLinkAction extends PageTreeAction {
 		this._linkType = linkType;
 	}
 
+	@Override
 	public String getLinkAttributeRel() {
 		return linkAttributeRel;
 	}
-
+	@Override
 	public void setLinkAttributeRel(String linkAttributeRel) {
 		this.linkAttributeRel = linkAttributeRel;
 	}
 
+	@Override
 	public String getLinkAttributeTarget() {
 		return linkAttributeTarget;
 	}
-
+	@Override
 	public void setLinkAttributeTarget(String linkAttributeTarget) {
 		this.linkAttributeTarget = linkAttributeTarget;
 	}
 
+	@Override
 	public String getLinkAttributeHRefLang() {
 		return linkAttributeHRefLang;
 	}
-
-	public void setLinkAttributeHRrefLang(String linkAttributeHRrefLang) {
+	@Override
+	public void setLinkAttributeHRefLang(String linkAttributeHRrefLang) {
 		this.linkAttributeHRefLang = linkAttributeHRrefLang;
 	}
+    
 	public String getEntryContentAnchorDest() {
 		if (null == this._entryContentAnchorDest) {
 			this.buildEntryContentAnchorDest();

@@ -92,7 +92,7 @@ class TestValidateContent extends BaseTestCase {
             linkAttribute.setText("Descrizione link", "it");
             SymbolicLink symbolicLink = new SymbolicLink();
             symbolicLink.setDestinationToContent("EVN103");//Contenuto di coach
-            linkAttribute.setSymbolicLink(symbolicLink);
+            linkAttribute.setSymbolicLink(this._langManager.getDefaultLang().getCode(), symbolicLink);
             
             errors = content.validate(this._groupManager, this._langManager);
             assertNotNull(errors);

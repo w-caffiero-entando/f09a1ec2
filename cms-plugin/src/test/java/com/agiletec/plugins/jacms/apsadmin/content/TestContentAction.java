@@ -26,6 +26,7 @@ import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.common.entity.model.attribute.BooleanAttribute;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoListAttribute;
 import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.apsadmin.system.BaseAction;
@@ -163,7 +164,8 @@ class TestContentAction extends AbstractBaseTestContentAction {
             linkAttribute.setText("Descrizione link", "it");
             SymbolicLink symbolicLink = new SymbolicLink();
             symbolicLink.setDestinationToContent("EVN103");//Contenuto di coach
-            linkAttribute.setSymbolicLink(symbolicLink);
+            ILangManager langManager = super.getApplicationContext().getBean(ILangManager.class);
+            linkAttribute.setSymbolicLink(langManager.getDefaultLang().getCode(), symbolicLink);
 
             this.getRequest().getSession().setAttribute(ContentActionConstants.SESSION_PARAM_NAME_CURRENT_CONTENT_PREXIX + contentOnSessionMarker, contentForTest);
 

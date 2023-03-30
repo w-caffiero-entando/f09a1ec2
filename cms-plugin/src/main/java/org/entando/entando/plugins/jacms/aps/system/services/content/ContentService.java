@@ -220,11 +220,10 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     private void fillLinkAttributes(final AttributeInterface attribute, final EntityAttributeDto attributeDto) {
         if (attributeDto.getElements() != null && (LinkAttribute.class.isAssignableFrom(attribute.getClass()))) {
-            ((LinkAttribute) attribute).setLinkProperties(((LinkAttribute) attribute).getLinkProperties());
             Lang defaultLang = this.getLangManager().getDefaultLang();
             final SymbolicLink symbolicLink = ((LinkAttribute) attribute).getSymbolicLink(defaultLang.getCode());
             if (symbolicLink != null) {
-                final Map<String, String> linkProperties = ((LinkAttribute) attribute).getLinkProperties().get(defaultLang.getCode());
+                final Map<String, String> linkProperties = ((LinkAttribute) attribute).getLinksProperties().get(defaultLang.getCode());
                 final String contentDest = symbolicLink.getContentDestination();
                 final String pageDest = symbolicLink.getPageDestination();
                 final String resourceDest = symbolicLink.getResourceDestination();

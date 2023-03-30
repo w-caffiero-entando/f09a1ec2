@@ -95,7 +95,7 @@
 		</entry>
 		<entry>
 			<key><value>Link</value></key>
-			<value><![CDATA[text;destination;getTextForLang(\"<LANG_CODE>\");textMap[\"<LANG_CODE>\"];symbolicLink]]></value>
+			<value><![CDATA[text;destination;getTextForLang(\"<LANG_CODE>\");textMap[\"<LANG_CODE>\"];symbolicLink;rel;target;hrefLang]]></value>
 		</entry>
 		<entry>
 			<key><value>Image</value></key>
