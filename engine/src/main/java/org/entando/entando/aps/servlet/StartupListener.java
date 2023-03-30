@@ -87,6 +87,8 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
                 LOGGER.error("Error initializing '{}' tenant", tenantCode, t);
             }
         });
+        tenantManager.startAsynchInitializeTenants().join();
+
         long endMs = System.currentTimeMillis();
         String executionTimeMsg = String.format("%s: contextInitialized takes ms:'%s' of execution",
                 this.getClass().getName(), endMs - startMs);

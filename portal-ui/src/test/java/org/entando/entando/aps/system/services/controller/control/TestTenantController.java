@@ -14,6 +14,7 @@
 package org.entando.entando.aps.system.services.controller.control;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.entando.entando.aps.system.services.tenants.ITenantAsynchInitService;
 import org.entando.entando.aps.system.services.tenants.TenantManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -127,8 +128,10 @@ class TestTenantController extends BaseTestCase {
         DefaultSingletonBeanRegistry registry = (DefaultSingletonBeanRegistry) applicationContext.getAutowireCapableBeanFactory();
         registry.destroySingleton("tenantManager");
         ObjectMapper om = applicationContext.getBean(ObjectMapper.class);
-        TenantManager tm = new TenantManager(tenants, om);
+        ITenantAsynchInitService asynchInitService = applicationContext.getBean(ITenantAsynchInitService.class);
+        TenantManager tm = new TenantManager(tenants, om, asynchInitService);
         tm.afterPropertiesSet();
+        tm.startAsynchInitializeTenants().join();
         registry.registerSingleton("tenantManager", tm);
     }
 }

@@ -13,7 +13,6 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
-import com.agiletec.aps.system.common.AbstractService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
@@ -34,34 +34,32 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TenantManager extends AbstractService implements ITenantManager, InitializingBean {
+public class TenantManager implements ITenantManager, InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantManager.class);
 
 
     private final String tenantsConfigAsString;
     private final ObjectMapper objectMapper;
+    private final ITenantAsynchInitService asynchInitService;
     private transient Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
-    private transient Map<String, TenantConfig> tenantsMap = new HashMap<>();
+    private transient Map<String, TenantConfig> tenantsConfigs = new HashMap<>();
+
+    private transient Map<String, TenantStatus> tenantsStatuses = new ConcurrentHashMap<>();
 
     @Autowired
-    public TenantManager(@Value("${ENTANDO_TENANTS:}") String s, ObjectMapper o){
+    public TenantManager(@Value("${ENTANDO_TENANTS:}") String s, ObjectMapper o, ITenantAsynchInitService asynchInitService){
         this.tenantsConfigAsString = s;
         this.objectMapper = o;
+        this.asynchInitService = asynchInitService;
     }
 
-    @Override
-    public void init() throws Exception {
-        this.initTenantsCodes();
-    }
 
-    @Override
     protected void release() {
         try {
-            super.release();
             dataSources.values().forEach(this::destroyDataSource);
             initTenantsCodes();
-            this.getDataSources().clear();
+            dataSources.clear();
         } catch (Exception e) {
             logger.error("Error releasing resources", e);
         }
@@ -84,12 +82,17 @@ public class TenantManager extends AbstractService implements ITenantManager, In
 
     @Override
     public List<String> getCodes() {
-        return new ArrayList<>(tenantsMap.keySet());
+        return new ArrayList<>(tenantsConfigs.keySet());
+    }
+
+    @Override
+    public Map<String,TenantStatus> getStatuses() {
+        return Map.copyOf(tenantsStatuses);
     }
 
     @Override
     public String getTenantCodeByDomain(String domain) {
-        String tenantCode =  tenantsMap.values().stream()
+        String tenantCode =  tenantsConfigs.values().stream()
                 .filter(v -> v.getFqdns().contains(domain))
                 .map(tc -> tc.getTenantCode())
                 .filter(StringUtils::isNotBlank)
@@ -99,7 +102,7 @@ public class TenantManager extends AbstractService implements ITenantManager, In
             logger.debug("From domain:'{}' retrieved tenantCode:'{}' from codes:'{}'",
                     domain, tenantCode, getCodes().stream().collect(Collectors.joining(",")));
         }
-        return tenantCode;
+        return identityIfStatusReadyOrThrow(tenantCode);
     }
 
     @Override
@@ -109,16 +112,17 @@ public class TenantManager extends AbstractService implements ITenantManager, In
 
     @Override
     public DataSource getDatasource(String tenantCode) {
-        return dataSources.computeIfAbsent(tenantCode, this::createDataSource);
+        return dataSources.computeIfAbsent(identityIfStatusReadyOrThrow(tenantCode), this::createDataSource);
     }
 
     @Override
     public Optional<TenantConfig> getConfig(String tenantCode) {
-        return Optional.ofNullable(tenantsMap.get(tenantCode));
+        return Optional.ofNullable(tenantCode).map(this::identityIfStatusReadyOrThrow).map(tenantsConfigs::get);
     }
 
-    private Map<String, DataSource> getDataSources() {
-        return dataSources;
+    @Override
+    public CompletableFuture<Void> startAsynchInitializeTenants() {
+        return asynchInitService.initializeNotMandatoryTenants(tenantsStatuses);
     }
 
     private void initTenantsCodes() throws Exception {
@@ -133,8 +137,21 @@ public class TenantManager extends AbstractService implements ITenantManager, In
                 throw new RuntimeException("You cannot use 'primary' as tenant code");
             });
 
-            tenantsMap = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
+            tenantsConfigs = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
         }
+    }
+
+    private void initTenantStatuses() {
+        tenantsStatuses = tenantsConfigs.keySet().stream().collect(Collectors.toMap(k -> k, k -> TenantStatus.UNKNOWN));
+    }
+
+    private String identityIfStatusReadyOrThrow(String tenantCode){
+        if( tenantCode == null
+                || !tenantsConfigs.containsKey(tenantCode)
+                || TenantStatus.READY.equals(tenantsStatuses.get(tenantCode)) ) {
+            return tenantCode;
+        }
+        throw new RuntimeException(String.format("Error status for tenant with code '%s' is not ready please visit health status endpoint to check", tenantCode));
     }
 
     private BasicDataSource createDataSource(String tenantCode){
@@ -153,11 +170,11 @@ public class TenantManager extends AbstractService implements ITenantManager, In
             logger.warn("No tenant for code '{}'", tenantCode);
             return null;
         });
-
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        init();
+        initTenantsCodes();
+        initTenantStatuses();
     }
 }
