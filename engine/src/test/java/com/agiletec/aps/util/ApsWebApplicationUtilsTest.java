@@ -18,6 +18,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.entando.entando.aps.system.services.tenants.TenantAsynchInitService;
+import org.entando.entando.aps.system.services.tenants.TenantDataAccessor;
 import org.entando.entando.aps.system.services.tenants.TenantManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ class ApsWebApplicationUtilsTest {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> {ApsWebApplicationUtils.getBean(TenantManager.class, servletContext);});
 
-        Mockito.when(wac.getBean(TenantManager.class)).thenReturn(new TenantManager("{}", new ObjectMapper()));
+        Mockito.when(wac.getBean(TenantManager.class)).thenReturn(new TenantManager("{}", new ObjectMapper(), new TenantDataAccessor()));
         TenantManager tm = ApsWebApplicationUtils.getBean(TenantManager.class, servletContext);
         Assertions.assertNotNull(tm);
 
@@ -84,7 +85,8 @@ class ApsWebApplicationUtilsTest {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> {ApsWebApplicationUtils.getBean("tenantManager", TenantManager.class, servletContext);});
 
-        Mockito.when(wac.getBean("tenantManager", TenantManager.class)).thenReturn(new TenantManager("{}", new ObjectMapper()));
+        Mockito.when(wac.getBean("tenantManager", TenantManager.class))
+                .thenReturn(new TenantManager("{}", new ObjectMapper(), new TenantDataAccessor()));
         TenantManager tm = ApsWebApplicationUtils.getBean("tenantManager", TenantManager.class, servletContext);
         Assertions.assertNotNull(tm);
 

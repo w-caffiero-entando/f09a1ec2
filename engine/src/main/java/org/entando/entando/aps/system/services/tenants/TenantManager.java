@@ -16,12 +16,9 @@ package org.entando.entando.aps.system.services.tenants;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -41,23 +38,21 @@ public class TenantManager implements ITenantManager, InitializingBean {
 
     private final String tenantsConfigAsString;
     private final ObjectMapper objectMapper;
-    private transient Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
-    private transient Map<String, TenantConfig> tenantsConfigs = new HashMap<>();
-
-    private transient Map<String, TenantStatus> tenantsStatuses = new ConcurrentHashMap<>();
+    private final TenantDataAccessor tenantDataAccessor;
 
     @Autowired
-    public TenantManager(@Value("${ENTANDO_TENANTS:}") String s, ObjectMapper o){
+    public TenantManager(@Value("${ENTANDO_TENANTS:}") String s, ObjectMapper o, TenantDataAccessor tenantDataAccessor){
         this.tenantsConfigAsString = s;
         this.objectMapper = o;
+        this.tenantDataAccessor = tenantDataAccessor;
     }
 
 
     protected void release() {
         try {
-            dataSources.values().forEach(this::destroyDataSource);
+            tenantDataAccessor.getTenantDataSources().values().forEach(this::destroyDataSource);
             initTenantsCodes();
-            dataSources.clear();
+            tenantDataAccessor.getTenantDataSources().clear();
         } catch (Exception e) {
             logger.error("Error releasing resources", e);
         }
@@ -80,22 +75,17 @@ public class TenantManager implements ITenantManager, InitializingBean {
 
     @Override
     public List<String> getCodes() {
-        return new ArrayList<>(tenantsConfigs.keySet());
+        return new ArrayList<>(tenantDataAccessor.getTenantConfigs().keySet());
     }
 
     @Override
     public Map<String,TenantStatus> getStatuses() {
-        return Map.copyOf(tenantsStatuses);
-    }
-
-    /* WARNING not change visibilitry package it's too dangerous change status from outside */
-    Map<String,TenantStatus> getInternalStatuses() {
-        return tenantsStatuses;
+        return Map.copyOf(tenantDataAccessor.getTenantStatuses());
     }
 
     @Override
     public String getTenantCodeByDomain(String domain) {
-        String tenantCode =  tenantsConfigs.values().stream()
+        String tenantCode =  tenantDataAccessor.getTenantConfigs().values().stream()
                 .filter(v -> v.getFqdns().contains(domain))
                 .map(tc -> tc.getTenantCode())
                 .filter(StringUtils::isNotBlank)
@@ -115,12 +105,12 @@ public class TenantManager implements ITenantManager, InitializingBean {
 
     @Override
     public DataSource getDatasource(String tenantCode) {
-        return dataSources.computeIfAbsent(identityIfStatusReadyOrThrow(tenantCode), this::createDataSource);
+        return tenantDataAccessor.getTenantDatasource(identityIfStatusReadyOrThrow(tenantCode));
     }
 
     @Override
     public Optional<TenantConfig> getConfig(String tenantCode) {
-        return Optional.ofNullable(tenantCode).map(this::identityIfStatusReadyOrThrow).map(tenantsConfigs::get);
+        return Optional.ofNullable(tenantCode).map(this::identityIfStatusReadyOrThrow).map(tenantDataAccessor.getTenantConfigs()::get);
     }
 
     private void initTenantsCodes() throws Exception {
@@ -134,26 +124,26 @@ public class TenantManager implements ITenantManager, InitializingBean {
                 logger.error("You cannot use 'primary' as tenant code");
                 throw new RuntimeException("You cannot use 'primary' as tenant code");
             });
-
-            tenantsConfigs = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
+            list.stream().forEach(tc -> tenantDataAccessor.getTenantConfigs().put(tc.getTenantCode(), tc));
         }
     }
 
     private void initTenantStatuses() {
-        tenantsStatuses = tenantsConfigs.keySet().stream().collect(Collectors.toMap(k -> k, k -> TenantStatus.UNKNOWN));
+        tenantDataAccessor.getTenantConfigs().keySet().stream()
+                .forEach(k -> tenantDataAccessor.getTenantStatuses().put(k, TenantStatus.UNKNOWN));
     }
 
     private String identityIfStatusReadyOrThrow(String tenantCode){
         if( tenantCode == null
-                || !tenantsConfigs.containsKey(tenantCode)
-                || TenantStatus.READY.equals(tenantsStatuses.get(tenantCode)) ) {
+                || !tenantDataAccessor.getTenantConfigs().containsKey(tenantCode)
+                || TenantStatus.READY.equals(tenantDataAccessor.getTenantStatuses().get(tenantCode)) ) {
             return tenantCode;
         }
         throw new RuntimeException(String.format("Error status for tenant with code '%s' is not ready please visit health status endpoint to check", tenantCode));
     }
 
     private BasicDataSource createDataSource(String tenantCode){
-        return getConfig(tenantCode).map(config -> {
+        return Optional.ofNullable(tenantDataAccessor.getTenantConfigs().get(tenantCode)).map(config -> {
                 BasicDataSource basicDataSource = new BasicDataSource();
                 basicDataSource.setDriverClassName(config.getDbDriverClassName());
                 basicDataSource.setUsername(config.getDbUsername());

@@ -15,11 +15,9 @@ package org.entando.entando.aps.servlet;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import org.entando.entando.aps.system.exception.CSRFProtectionException;
 import org.entando.entando.aps.system.services.tenants.ITenantAsynchInitService;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -27,7 +25,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.init.InitializerManager;
 
 /**
  * Init the system when the web application is started
@@ -74,22 +71,8 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
             LOGGER.warn("Content Security Policy (CSP) header is not enabled");
         }
 
-        ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, svCtx);
         ITenantAsynchInitService tenantAsynchInitService = ApsWebApplicationUtils.getBean(ITenantAsynchInitService.class, svCtx);
-        InitializerManager initManager = ApsWebApplicationUtils.getBean(InitializerManager.class, svCtx);
-        tenantManager.getCodes().stream().forEach(tenantCode -> {
-            ApsTenantApplicationUtils.setTenant(tenantCode);
-            try {
-                LOGGER.info("refresh bean for tenant:'{}'", tenantCode);
-                initManager.init();
-                ApsWebApplicationUtils.executeSystemRefresh(svCtx);
-                String tenantMsg = String.format("%s: Tenant '%s' inizialized", this.getClass().getName(), tenantCode);
-                ApsSystemUtils.directStdoutTrace(tenantMsg, true);
-            } catch (Throwable t) {
-                LOGGER.error("Error initializing '{}' tenant", tenantCode, t);
-            }
-        });
-        tenantAsynchInitService.startAsynchInitializeTenants().join();
+        tenantAsynchInitService.startAsynchInitializeTenants(svCtx);
 
         long endMs = System.currentTimeMillis();
         String executionTimeMsg = String.format("%s: contextInitialized takes ms:'%s' of execution",

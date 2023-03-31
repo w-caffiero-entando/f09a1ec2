@@ -13,16 +13,24 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.assertj.core.api.Assertions;
+import org.entando.entando.aps.system.init.InitializerManager;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class TenantManagerTest {
 
-    private String tenantConfigs="[{\n"
+    public final static String TENANT_CONFIGS = "[{\n"
             + "    \"tenantCode\": \"TE_nant1\",\n"
             + "    \"kcEnabled\": true,\n"
             + "    \"fqdns\": \"tenant1.com,tenant2.com\",\n"
@@ -91,12 +99,16 @@ class TenantManagerTest {
 
     private String errorToCheck = "Error status for tenant with code '%s' is not ready please visit health status endpoint to check";
 
+    @Mock
+    InitializerManager initializerManager;
+
     @Test
     void shouldAllOperationWorkFineWithConfigMapsWithCustomFields() throws Throwable {
-        TenantManager tm = new TenantManager(tenantConfigsWithCustomFields, new ObjectMapper());
+        TenantDataAccessor data = new TenantDataAccessor();
+        TenantManager tm = new TenantManager(tenantConfigsWithCustomFields, new ObjectMapper(), data);
         tm.afterPropertiesSet();
-        ITenantAsynchInitService tenantAsynchInitService = new TenantAsynchInitService(tm);
-        tenantAsynchInitService.startAsynchInitializeTenants().join();
+        Map<String, TenantStatus> statuses = data.getTenantStatuses();
+        data.getTenantStatuses().keySet().stream().forEach(k -> statuses.put(k, TenantStatus.READY));
 
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
         Assertions.assertThat(otc).isNotEmpty();
@@ -108,13 +120,14 @@ class TenantManagerTest {
         Assertions.assertThat(customValue2).isNotEmpty().hasValue("custom_value_2");
         Assertions.assertThat(customValue3).isEmpty();
     }
+
     @Test
     void shouldAllOperationWorkFineWithCorrectInput() throws Throwable {
-
-        TenantManager tm = new TenantManager(tenantConfigs, new ObjectMapper());
+        TenantDataAccessor data = new TenantDataAccessor();
+        TenantManager tm = new TenantManager(tenantConfigsWithCustomFields, new ObjectMapper(), data);
         tm.afterPropertiesSet();
-        ITenantAsynchInitService tenantAsynchInitService = new TenantAsynchInitService(tm);
-        tenantAsynchInitService.startAsynchInitializeTenants().join();
+        Map<String, TenantStatus> statuses = data.getTenantStatuses();
+        data.getTenantStatuses().keySet().stream().forEach(k -> statuses.put(k, TenantStatus.READY));
 
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
         Assertions.assertThat(otc).isNotEmpty();
@@ -136,7 +149,7 @@ class TenantManagerTest {
 
     @Test
     void shouldAllOperationWorkFineWithBadInput() throws Throwable {
-        TenantManager tm = new TenantManager("[\"pippo\"pippo]", new ObjectMapper());
+        TenantManager tm = new TenantManager("[\"pippo\"pippo]", new ObjectMapper(), new TenantDataAccessor());
         Assertions.catchThrowableOfType(() -> tm.afterPropertiesSet(), JsonMappingException.class);
 
         Optional<TenantConfig> otc = tm.getConfig("TE_nant1");
@@ -152,7 +165,7 @@ class TenantManagerTest {
 
     @Test
     void shouldInitThrowExceptionWithTenantCodeWithValuePrimary() throws Throwable {
-        TenantManager tm = new TenantManager(tenantWithPrimaryCodeConfigs, new ObjectMapper());
+        TenantManager tm = new TenantManager(tenantWithPrimaryCodeConfigs, new ObjectMapper(), new TenantDataAccessor());
         RuntimeException ex = Assertions.catchThrowableOfType(() -> tm.afterPropertiesSet(), RuntimeException.class);
         Assertions.assertThat(ex.getMessage()).isEqualTo("You cannot use 'primary' as tenant code");
 
@@ -169,7 +182,7 @@ class TenantManagerTest {
 
     @Test
     void shouldOperationThrowExceptionWithTenantNotInitiated() throws Throwable {
-        TenantManager tm = new TenantManager(tenantConfigs, new ObjectMapper());
+        TenantManager tm = new TenantManager(TENANT_CONFIGS, new ObjectMapper(), new TenantDataAccessor());
         tm.afterPropertiesSet();
 
         RuntimeException ex = Assertions.catchThrowableOfType(() -> tm.getConfig("TE_nant1"), RuntimeException.class);

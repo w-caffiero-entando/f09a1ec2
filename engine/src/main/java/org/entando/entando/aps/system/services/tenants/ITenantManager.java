@@ -16,7 +16,6 @@ package org.entando.entando.aps.system.services.tenants;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import javax.sql.DataSource;
 
 public interface ITenantManager {

@@ -13,12 +13,23 @@
  */
 package org.entando.entando.aps.system.services.controller.control;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.common.RefreshableBean;
+import com.agiletec.aps.system.services.baseconfig.BaseConfigManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.servlet.ServletContext;
+import org.entando.entando.aps.system.init.InitializerManager;
 import org.entando.entando.aps.system.services.tenants.ITenantAsynchInitService;
 import org.entando.entando.aps.system.services.tenants.TenantAsynchInitService;
+import org.entando.entando.aps.system.services.tenants.TenantDataAccessor;
 import org.entando.entando.aps.system.services.tenants.TenantManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -33,6 +44,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * @author E.Santoboni
@@ -127,13 +139,23 @@ class TestTenantController extends BaseTestCase {
     private static void recreateTenantManager(String tenants) throws Exception {
         ApplicationContext applicationContext = BaseTestCase.getApplicationContext();
         DefaultSingletonBeanRegistry registry = (DefaultSingletonBeanRegistry) applicationContext.getAutowireCapableBeanFactory();
-        registry.destroySingleton("tenantManager");
+        //registry.destroySingleton("tenantManager");
         ObjectMapper om = applicationContext.getBean(ObjectMapper.class);
-        ITenantAsynchInitService asynchInitService = applicationContext.getBean(ITenantAsynchInitService.class);
-        TenantManager tm = new TenantManager(tenants, om);
+        TenantDataAccessor tenantData = applicationContext.getBean(TenantDataAccessor.class);
+        TenantManager tm = new TenantManager(tenants, om, tenantData);
         tm.afterPropertiesSet();
-        ITenantAsynchInitService srv = new TenantAsynchInitService(tm);
-        srv.startAsynchInitializeTenants().join();
+        InitializerManager im = Mockito.mock(InitializerManager.class);
+        WebApplicationContext wac = Mockito.mock(WebApplicationContext.class);
+        BaseConfigManager conf = Mockito.mock(BaseConfigManager.class);
+        ServletContext svCtx = Mockito.mock(ServletContext.class);
+        when(svCtx.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)).thenReturn(wac);
+        when(wac.getBean(SystemConstants.BASE_CONFIG_MANAGER)).thenReturn(conf);
+        when(wac.getBeanNamesForType(RefreshableBean.class)).thenReturn(new String[]{});
+        doNothing().when(im).initTenant(any(), any());
+        ITenantAsynchInitService srv = new TenantAsynchInitService(tenantData, im, null);
+        srv.startAsynchInitializeTenants(svCtx).join();
+
+        registry.destroySingleton("tenantManager");
         registry.registerSingleton("tenantManager", tm);
     }
 }

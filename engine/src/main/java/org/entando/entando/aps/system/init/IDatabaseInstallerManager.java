@@ -13,6 +13,9 @@
  */
 package org.entando.entando.aps.system.init;
 
+import java.util.Map;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.entando.entando.aps.system.init.IInitializerManager.DatabaseMigrationStrategy;
 import org.entando.entando.aps.system.init.model.SystemInstallationReport;
 
@@ -21,6 +24,8 @@ import org.entando.entando.aps.system.init.model.SystemInstallationReport;
  */
 public interface IDatabaseInstallerManager {
 	
-	public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy defaultMigrationStrategy) throws Exception;
+	public SystemInstallationReport installDatabase(SystemInstallationReport report,
+			DatabaseMigrationStrategy defaultMigrationStrategy,
+			Optional<Map<String, DataSource>> datasources) throws Exception;
 	
 }
