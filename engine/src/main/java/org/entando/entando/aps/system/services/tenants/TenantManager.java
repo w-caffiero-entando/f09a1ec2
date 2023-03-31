@@ -105,7 +105,7 @@ public class TenantManager implements ITenantManager, InitializingBean {
 
     @Override
     public DataSource getDatasource(String tenantCode) {
-        return tenantDataAccessor.getTenantDatasource(identityIfStatusReadyOrThrow(tenantCode));
+        return tenantDataAccessor.getTenantDatasource(tenantCode);
     }
 
     @Override
