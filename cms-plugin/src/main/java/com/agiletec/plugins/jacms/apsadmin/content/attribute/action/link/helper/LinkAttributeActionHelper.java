@@ -31,6 +31,7 @@ import java.util.HashMap;
 
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.ent.exception.EntRuntimeException;
 
 /**
  * Classe helper base per le action delegata 
@@ -137,10 +138,10 @@ public class LinkAttributeActionHelper implements ILinkAttributeActionHelper {
         HttpSession session = request.getSession();
         String langCode = (String) session.getAttribute(LINK_LANG_CODE_SESSION_PARAM);
         if (StringUtils.isBlank(langCode)) {
-            throw new RuntimeException("Missing link lang code");
+            throw new EntRuntimeException("Missing link lang code");
         }
 		if (destinations.length != 3) {
-			throw new RuntimeException("Destinazioni non riconosciute");
+			throw new EntRuntimeException("Destinations not recognized");
 		}
     	SymbolicLink symbolicLink = new SymbolicLink();
         switch (destType) {

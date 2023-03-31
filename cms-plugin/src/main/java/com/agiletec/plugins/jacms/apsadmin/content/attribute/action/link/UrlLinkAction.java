@@ -22,6 +22,8 @@ import com.agiletec.plugins.jacms.apsadmin.content.ContentActionConstants;
 import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.helper.ILinkAttributeActionHelper;
 
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Classe action delegata alla gestione dei link esterni nelle 
@@ -72,40 +74,13 @@ public class UrlLinkAction extends BaseAction implements ILinkAttributeTypeActio
 	public SymbolicLink getSymbolicLink() {
 		return (SymbolicLink) this.getRequest().getSession().getAttribute(ILinkAttributeActionHelper.SYMBOLIC_LINK_SESSION_PARAM);
 	}
-	
+
 	public String getUrl() {
 		return _url;
 	}
 
 	public void setUrl(String url) {
 		this._url = url;
-	}
-
-    @Override
-	public String getLinkAttributeRel() {
-		return linkAttributeRel;
-	}
-	@Override
-	public void setLinkAttributeRel(String linkAttributeRel) {
-		this.linkAttributeRel = linkAttributeRel;
-	}
-
-	@Override
-	public String getLinkAttributeTarget() {
-		return linkAttributeTarget;
-	}
-	@Override
-	public void setLinkAttributeTarget(String linkAttributeTarget) {
-		this.linkAttributeTarget = linkAttributeTarget;
-	}
-
-	@Override
-	public String getLinkAttributeHRefLang() {
-		return linkAttributeHRefLang;
-	}
-	@Override
-	public void setLinkAttributeHRefLang(String linkAttributeHRrefLang) {
-		this.linkAttributeHRefLang = linkAttributeHRrefLang;
 	}
 
 	public String getEntryContentAnchorDest() {
@@ -141,10 +116,13 @@ public class UrlLinkAction extends BaseAction implements ILinkAttributeTypeActio
 	
 	private ILinkAttributeActionHelper _linkAttributeHelper;
 
+    @Getter@Setter
 	private String linkAttributeRel;
 
+    @Getter@Setter
 	private String linkAttributeTarget;
 
+    @Getter@Setter
 	private String linkAttributeHRefLang;
 
 }

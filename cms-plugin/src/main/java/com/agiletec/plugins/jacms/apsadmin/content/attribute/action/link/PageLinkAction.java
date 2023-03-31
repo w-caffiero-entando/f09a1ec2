@@ -28,6 +28,8 @@ import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.helper.
 import java.util.*;
 
 import javax.servlet.http.HttpSession;
+import lombok.Getter;
+import lombok.Setter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -128,7 +130,7 @@ public class PageLinkAction extends PageTreeAction implements ILinkAttributeType
 	public SymbolicLink getSymbolicLink() {
 		return (SymbolicLink) this.getRequest().getSession().getAttribute(ILinkAttributeActionHelper.SYMBOLIC_LINK_SESSION_PARAM);
 	}
-	
+    
 	public String getContentId() {
 		return _contentId;
 	}
@@ -141,33 +143,6 @@ public class PageLinkAction extends PageTreeAction implements ILinkAttributeType
 	}
 	public void setLinkType(int linkType) {
 		this._linkType = linkType;
-	}
-
-	@Override
-	public String getLinkAttributeRel() {
-		return linkAttributeRel;
-	}
-	@Override
-	public void setLinkAttributeRel(String linkAttributeRel) {
-		this.linkAttributeRel = linkAttributeRel;
-	}
-
-	@Override
-	public String getLinkAttributeTarget() {
-		return linkAttributeTarget;
-	}
-	@Override
-	public void setLinkAttributeTarget(String linkAttributeTarget) {
-		this.linkAttributeTarget = linkAttributeTarget;
-	}
-
-	@Override
-	public String getLinkAttributeHRefLang() {
-		return linkAttributeHRefLang;
-	}
-	@Override
-	public void setLinkAttributeHRefLang(String linkAttributeHRrefLang) {
-		this.linkAttributeHRefLang = linkAttributeHRrefLang;
 	}
     
 	public String getEntryContentAnchorDest() {
@@ -196,7 +171,7 @@ public class PageLinkAction extends PageTreeAction implements ILinkAttributeType
 	}
 	
 	private String _contentOnSessionMarker;
-	
+    
 	private String _contentId;
 	private int _linkType;
 	
@@ -204,10 +179,13 @@ public class PageLinkAction extends PageTreeAction implements ILinkAttributeType
 	
 	private ILinkAttributeActionHelper _linkAttributeHelper;
 
+    @Getter@Setter
 	private String linkAttributeRel;
 
+    @Getter@Setter
 	private String linkAttributeTarget;
 
+    @Getter@Setter
 	private String linkAttributeHRefLang;
 
 }

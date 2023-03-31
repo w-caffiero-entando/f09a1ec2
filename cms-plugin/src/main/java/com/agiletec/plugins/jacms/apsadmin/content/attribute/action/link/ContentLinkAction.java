@@ -31,6 +31,8 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink
 import com.agiletec.plugins.jacms.apsadmin.content.ContentActionConstants;
 import com.agiletec.plugins.jacms.apsadmin.content.ContentFinderAction;
 import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.helper.ILinkAttributeActionHelper;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -49,12 +51,15 @@ public class ContentLinkAction extends ContentFinderAction implements ILinkAttri
 	
 	private String entryContentAnchorDest;
 	
-	private ILinkAttributeActionHelper linkAttributeHelper;
+    private ILinkAttributeActionHelper linkAttributeHelper;
 
+    @Getter@Setter
 	private String linkAttributeRel;
 
+    @Getter@Setter
 	private String linkAttributeTarget;
 
+    @Getter@Setter
 	private String linkAttributeHRefLang;
     
     @Override
@@ -143,34 +148,7 @@ public class ContentLinkAction extends ContentFinderAction implements ILinkAttri
 		return (Content) this.getRequest().getSession()
 				.getAttribute(ContentActionConstants.SESSION_PARAM_NAME_CURRENT_CONTENT_PREXIX + this.getContentOnSessionMarker());
 	}
-
-	@Override
-	public String getLinkAttributeRel() {
-		return linkAttributeRel;
-	}
-	@Override
-	public void setLinkAttributeRel(String linkAttributeRel) {
-		this.linkAttributeRel = linkAttributeRel;
-	}
-
-	@Override
-	public String getLinkAttributeTarget() {
-		return linkAttributeTarget;
-	}
-	@Override
-	public void setLinkAttributeTarget(String linkAttributeTarget) {
-		this.linkAttributeTarget = linkAttributeTarget;
-	}
-
-	@Override
-	public String getLinkAttributeHRefLang() {
-		return linkAttributeHRefLang;
-	}
-	@Override
-	public void setLinkAttributeHRefLang(String linkAttributeHRefLang) {
-		this.linkAttributeHRefLang = linkAttributeHRefLang;
-	}
-    
+	
 	public String getContentOnSessionMarker() {
 		return contentOnSessionMarker;
 	}
@@ -201,14 +179,14 @@ public class ContentLinkAction extends ContentFinderAction implements ILinkAttri
 	protected void setEntryContentAnchorDest(String entryContentAnchorDest) {
 		this.entryContentAnchorDest = entryContentAnchorDest;
 	}
-	
+
 	/**
 	 * Restituisce la classe helper della gestione degli attributi di tipo Link.
 	 * @return La classe helper degli attributi di tipo Link.
 	 */
 	protected ILinkAttributeActionHelper getLinkAttributeHelper() {
 		return linkAttributeHelper;
-	}
+}
 	/**
 	 * Setta la classe helper della gestione degli attributi di tipo Link.
 	 * @param linkAttributeHelper La classe helper degli attributi di tipo Link.

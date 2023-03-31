@@ -15,6 +15,7 @@ package com.agiletec.plugins.jacms.apsadmin.content.attribute;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 import java.util.Map;
@@ -28,10 +29,10 @@ import com.agiletec.apsadmin.system.ITreeAction;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.LinkAttribute;
-import com.agiletec.plugins.jacms.apsadmin.content.AbstractContentAction;
 import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.helper.ILinkAttributeActionHelper;
 import com.agiletec.plugins.jacms.apsadmin.content.util.AbstractBaseTestContentAction;
 import com.opensymphony.xwork2.Action;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -143,28 +144,113 @@ class TestPageLinkAction extends AbstractBaseTestContentAction {
 
 	@Test
     void testJoinPageLink_1() throws Throwable {
-		String contentOnSessionMarker = this.initJoinLinkTest("admin", "ART1", "VediAnche", "it");
+        String contentOnSessionMarker = this.initJoinLinkTest("admin", "ART1", "VediAnche", "it");
 		this.initContentAction("/do/jacms/Content/Link", "joinPageLink", contentOnSessionMarker);
 		this.addParameter("linkType", String.valueOf(SymbolicLink.PAGE_TYPE));
 		this.addParameter("selectedNode", "pagina_11");
+        this.addParameter("linkAttributeRel", "it rel value");
+        this.addParameter("linkAttributeTarget", "it target value");
+        this.addParameter("linkAttributeHRefLang", "it hrefLang value");
+        
 		String result = this.executeAction();
 		assertEquals(Action.SUCCESS, result);
 		Content content = this.getContentOnEdit(contentOnSessionMarker);
 		LinkAttribute attribute = (LinkAttribute) content.getAttribute("VediAnche");
-		SymbolicLink symbolicLink = attribute.getSymbolicLink();
-		assertNotNull(symbolicLink);
-		assertEquals("pagina_11", symbolicLink.getPageDestination());
-	}
+		SymbolicLink symbolicLinkIt = attribute.getSymbolicLinks().get("it");
+		assertNotNull(symbolicLinkIt);
+		assertEquals("pagina_11", symbolicLinkIt.getPageDestination());
+        SymbolicLink symbolicLinkEn = attribute.getSymbolicLinks().get("en");
+        Assertions.assertNull(symbolicLinkEn);
+        Map<String, String> itProperties = attribute.getLinksProperties().get("it");
+        assertNotNull(itProperties);
+        assertEquals(3, itProperties.size());
+        assertEquals("it rel value", itProperties.get(LinkAttribute.REL_ATTRIBUTE));
+        assertEquals("it target value", itProperties.get(LinkAttribute.TARGET_ATTRIBUTE));
+        assertEquals("it hrefLang value", itProperties.get(LinkAttribute.HREFLANG_ATTRIBUTE));
+        Map<String, String> enProperties = attribute.getLinksProperties().get("en");
+        assertNull(enProperties);
+        
+        contentOnSessionMarker = this.initJoinLinkTest("admin", "ART1", "VediAnche", "en", false);
+        
+        this.initContentAction("/do/jacms/Content/Link", "joinPageLink", contentOnSessionMarker);
+		this.addParameter("linkType", String.valueOf(SymbolicLink.PAGE_TYPE));
+		this.addParameter("selectedNode", "pagina_12");
+        this.addParameter("linkAttributeRel", "en rel value");
+        this.addParameter("linkAttributeTarget", "en target value");
+        this.addParameter("linkAttributeHRefLang", "en hrefLang value");
+		result = this.executeAction();
+		assertEquals(Action.SUCCESS, result);
+		content = this.getContentOnEdit(contentOnSessionMarker);
+		attribute = (LinkAttribute) content.getAttribute("VediAnche");
+		symbolicLinkIt = attribute.getSymbolicLinks().get("it");
+		assertNotNull(symbolicLinkIt);
+		assertEquals("pagina_11", symbolicLinkIt.getPageDestination());
+        symbolicLinkEn = attribute.getSymbolicLinks().get("en");
+        Assertions.assertNotNull(symbolicLinkEn);
+        assertEquals("pagina_12", symbolicLinkEn.getPageDestination());
+        itProperties = attribute.getLinksProperties().get("it");
+        assertNotNull(itProperties);
+        assertEquals(3, itProperties.size());
+        assertEquals("it rel value", itProperties.get(LinkAttribute.REL_ATTRIBUTE));
+        assertEquals("it target value", itProperties.get(LinkAttribute.TARGET_ATTRIBUTE));
+        assertEquals("it hrefLang value", itProperties.get(LinkAttribute.HREFLANG_ATTRIBUTE));
+        enProperties = attribute.getLinksProperties().get("en");
+        assertNotNull(enProperties);
+        assertEquals(3, enProperties.size());
+        assertEquals("en rel value", enProperties.get(LinkAttribute.REL_ATTRIBUTE));
+        assertEquals("en target value", enProperties.get(LinkAttribute.TARGET_ATTRIBUTE));
+        assertEquals("en hrefLang value", enProperties.get(LinkAttribute.HREFLANG_ATTRIBUTE));
+        attribute.setRenderingLang("it");
+        assertEquals("it rel value", attribute.getRel());
+        attribute.setRenderingLang("en");
+        assertEquals("en target value", attribute.getTarget());
+        assertEquals("en hrefLang value", attribute.getHrefLang());
+        attribute.setRenderingLang("it");
+        
+        this.initContentAction("/do/jacms/Content", "removeLink", contentOnSessionMarker);
+		this.addParameter("attributeName", "VediAnche");
+		this.addParameter("linkLangCode", "en");
+		result = this.executeAction();
+		assertEquals(Action.SUCCESS, result);
+        
+        content = this.getContentOnEdit(contentOnSessionMarker);
+		attribute = (LinkAttribute) content.getAttribute("VediAnche");
+		symbolicLinkIt = attribute.getSymbolicLinks().get("it");
+		assertNotNull(symbolicLinkIt);
+		assertEquals("pagina_11", symbolicLinkIt.getPageDestination());
+        symbolicLinkEn = attribute.getSymbolicLinks().get("en");
+        Assertions.assertNull(symbolicLinkEn);
+        itProperties = attribute.getLinksProperties().get("it");
+        assertNotNull(itProperties);
+        assertEquals(3, itProperties.size());
+        enProperties = attribute.getLinksProperties().get("en");
+        assertNull(enProperties);
+        
+        assertEquals("it rel value", attribute.getRel());
+        attribute.setRenderingLang("en");
+        assertEquals("it target value", attribute.getTarget());
 
-	private String initJoinLinkTest(String username, String contentId, String simpleLinkAttributeName, String langCode) throws Throwable {
-		Content content = this.getContentManager().loadContent(contentId, false);
-		this.executeEdit(contentId, username);
-		String contentOnSessionMarker = AbstractContentAction.buildContentOnSessionMarker(content, ApsAdminSystemConstants.EDIT);
-		//iniziazione parametri sessione
-		HttpSession session = this.getRequest().getSession();
-		session.setAttribute(ILinkAttributeActionHelper.ATTRIBUTE_NAME_SESSION_PARAM, simpleLinkAttributeName);
-		session.setAttribute(ILinkAttributeActionHelper.LINK_LANG_CODE_SESSION_PARAM, langCode);
-		return contentOnSessionMarker;
+	}
+    
+    private String initJoinLinkTest(String username, String contentId, String simpleLinkAttributeName, String initEditContent) throws Throwable {
+        return this.initJoinLinkTest(username, contentId, simpleLinkAttributeName, initEditContent, true);
+    }
+    
+	private String initJoinLinkTest(String username, String contentId, String simpleLinkAttributeName, String langCode, boolean initEditContent) throws Throwable {
+        String contentOnSessionMarker = this.extractSessionMarker(contentId, ApsAdminSystemConstants.EDIT);
+        if (initEditContent) {
+            this.executeEdit(contentId, username);
+        }
+        this.initContentAction("/do/jacms/Content", "chooseLink", contentOnSessionMarker);
+		this.addParameter("attributeName", simpleLinkAttributeName);
+		this.addParameter("linkLangCode", langCode);
+        String result = this.executeAction();
+		assertEquals(Action.SUCCESS, result);
+        HttpSession session = this.getRequest().getSession();
+		assertEquals(simpleLinkAttributeName, session.getAttribute(ILinkAttributeActionHelper.ATTRIBUTE_NAME_SESSION_PARAM));
+		assertEquals(langCode, session.getAttribute(ILinkAttributeActionHelper.LINK_LANG_CODE_SESSION_PARAM));
+		assertNull(session.getAttribute(ILinkAttributeActionHelper.LIST_ELEMENT_INDEX_SESSION_PARAM));
+        return contentOnSessionMarker;
 	}
 
 }
