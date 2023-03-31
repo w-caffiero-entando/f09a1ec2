@@ -67,9 +67,10 @@ public class TenantInitializerService implements ITenantInitializerService {
 
                 ApsTenantApplicationUtils.setTenant(tenantCode);
                 initDb(tenantCode);
-                refreshBeanForTenantCode(svCtx);
 
                 statuses.put(tenantCode,TenantStatus.READY);
+
+                refreshBeanForTenantCode(svCtx);
 
             } catch (Throwable th) {
                 statuses.put(tenantCode,TenantStatus.FAILED);
