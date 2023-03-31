@@ -31,9 +31,11 @@ import com.agiletec.apsadmin.system.ITreeAction;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.LinkAttribute;
+import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.PageLinkAction;
 import com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.helper.ILinkAttributeActionHelper;
 import com.agiletec.plugins.jacms.apsadmin.content.util.AbstractBaseTestContentAction;
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -328,6 +330,15 @@ class TestPageLinkAction extends AbstractBaseTestContentAction {
         assertEquals("comp en rel value", enProperties.get(LinkAttribute.REL_ATTRIBUTE));
         assertEquals("comp en target value", enProperties.get(LinkAttribute.TARGET_ATTRIBUTE));
         assertEquals("comp en hrefLang value", enProperties.get(LinkAttribute.HREFLANG_ATTRIBUTE));
+        this.executeChooseLink(properties, contentOnSessionMarker);
+        this.initContentAction("/do/jacms/Content/Link", "configPageLink", contentOnSessionMarker);
+        result = this.executeAction();
+        assertEquals(Action.SUCCESS, result);
+        ActionSupport action = this.getAction();
+        Assertions.assertTrue(action instanceof PageLinkAction);
+        assertEquals(enProperties.get(LinkAttribute.REL_ATTRIBUTE), ((PageLinkAction) action).getLinkAttributeRel());
+        assertEquals(enProperties.get(LinkAttribute.TARGET_ATTRIBUTE), ((PageLinkAction) action).getLinkAttributeTarget());
+        assertEquals(enProperties.get(LinkAttribute.HREFLANG_ATTRIBUTE), ((PageLinkAction) action).getLinkAttributeHRefLang());
 	}
     
     private String initJoinLinkTest(String username, String contentId, String simpleLinkAttributeName, String initEditContent) throws Throwable {
