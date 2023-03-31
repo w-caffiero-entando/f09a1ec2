@@ -191,8 +191,8 @@ class TenantManagerTest {
         ex = Assertions.catchThrowableOfType(() -> tm.getTenantConfigByDomain("tenant2.com"), RuntimeException.class);
         Assertions.assertThat(ex.getMessage()).isEqualTo(String.format(errorToCheck,"TE_nant1"));
 
-        ex = Assertions.catchThrowableOfType(() -> tm.getDatasource("TE_nant1"), RuntimeException.class);
-        Assertions.assertThat(ex.getMessage()).isEqualTo(String.format(errorToCheck,"TE_nant1"));
+        BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant1");
+        Assertions.assertThat(ds.getDriverClassName()).isEqualTo("org.postgresql.Driver");
 
         Optional<TenantConfig> otc = tm.getConfig("TE_pippo123");
         Assertions.assertThat(otc).isEmpty();
@@ -200,7 +200,7 @@ class TenantManagerTest {
         otc = tm.getTenantConfigByDomain("pippo123.com");
         Assertions.assertThat(otc).isEmpty();
 
-        BasicDataSource ds = (BasicDataSource)tm.getDatasource("TE_nant_not_found");
+        ds = (BasicDataSource)tm.getDatasource("TE_nant_not_found");
         Assertions.assertThat(ds).isNull();
 
     }
