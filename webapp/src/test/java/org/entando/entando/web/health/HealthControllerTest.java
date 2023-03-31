@@ -57,13 +57,17 @@ class HealthControllerTest {
     void isHealthyWithTenantsAndWorkingSystemShouldReturnStatus200() {
 
         when(healthService.isHealthy()).thenReturn(true);
-        when(tenantService.getTenantStatsAndStatuses()).thenReturn(TenantStatsAndStatusesDto.builder().statuses(Map.of("t1",
-                TenantStatus.UNKNOWN, "t2", TenantStatus.PENDING)).stats(new TenantStatsDto(2,1,1,0,0)).build());
+        when(tenantService.getTenantStatsAndStatuses()).thenReturn(
+                TenantStatsAndStatusesDto.builder()
+                        .additionalStatuses(Map.of("t1",TenantStatus.UNKNOWN, "t2", TenantStatus.PENDING))
+                        .mandatoryStatuses(Map.of("t3",TenantStatus.READY, "t4", TenantStatus.FAILED))
+                        .stats(new TenantStatsDto(4,1,1,1,1)).build());
 
         ResponseEntity<HealthDto> resp = (ResponseEntity<HealthDto>) healthController.isHealthy(Optional.of(true));
         assertEquals(HttpStatus.OK.value(), resp.getStatusCodeValue());
         assertEquals(TenantStatus.UNKNOWN, resp.getBody().getAdditionals().get("t1"));
-        assertEquals(2, resp.getBody().getStats().getCount());
+        assertEquals(TenantStatus.READY, resp.getBody().getMandatory().get("t3"));
+        assertEquals(4, resp.getBody().getStats().getCount());
     }
 
 }

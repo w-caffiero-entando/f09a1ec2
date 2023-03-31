@@ -20,14 +20,14 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class TenantAsynchInitService implements ITenantAsynchInitService {
+public class TenantInitializerService implements ITenantInitializerService {
 
     private final TenantDataAccessor tenantDataAccessor;
     private final InitializerManager initializerManager;
     private final DatabaseMigrationStrategy defaultDbInitStrategy;
 
     @Autowired
-    public TenantAsynchInitService(TenantDataAccessor acecssor, InitializerManager im, @Value("${db.migration.strategy:}") String defaultStrategy){
+    public TenantInitializerService(TenantDataAccessor acecssor, InitializerManager im, @Value("${db.migration.strategy:}") String defaultStrategy){
         this.tenantDataAccessor = acecssor;
         this.initializerManager = im;
         this.defaultDbInitStrategy = Optional.ofNullable(defaultStrategy)
@@ -35,18 +35,33 @@ public class TenantAsynchInitService implements ITenantAsynchInitService {
                 .orElse(DatabaseMigrationStrategy.DISABLED);
     }
 
-    public CompletableFuture<Void> startAsynchInitializeTenants(ServletContext svCtx){
-        Map<String,TenantStatus> statuses = tenantDataAccessor.getTenantStatuses();
-        return CompletableFuture.runAsync(() -> manageTenantsInit(statuses, svCtx), Executors.newSingleThreadExecutor());
+    @Override
+    public CompletableFuture<Void> startTenantsInitialization(ServletContext svCtx){
+        return startTenantsInitializationCore(svCtx, InitializationTenantFilter.ALL);
     }
 
-    private void manageTenantsInit(Map<String, TenantStatus> statuses, ServletContext svCtx) {
+    @Override
+    public CompletableFuture<Void> startTenantsInitializationWithFilter(ServletContext svCtx, InitializationTenantFilter filter){
+        return startTenantsInitializationCore(svCtx, filter);
+    }
+
+    private CompletableFuture<Void> startTenantsInitializationCore(ServletContext svCtx, InitializationTenantFilter filter){
+        Map<String,TenantStatus> statuses = tenantDataAccessor.getTenantStatuses();
+        return CompletableFuture.runAsync(() -> manageTenantsInit(statuses, filter, svCtx), Executors.newSingleThreadExecutor());
+    }
+
+
+    private void manageTenantsInit(Map<String, TenantStatus> statuses, InitializationTenantFilter filter, ServletContext svCtx) {
         log.info("Start asynch initialization for not mandatory tenants");
         long startTenants = System.currentTimeMillis();
 
-        statuses.entrySet().stream().forEach(entry -> {
+        statuses.entrySet().stream()
+                .map(e -> tenantDataAccessor.getTenantConfigs().get(e.getKey()))
+                .filter(Objects::nonNull)
+                .filter(tc -> wantsAll(filter) || isTypeIWant(tc, filter))
+                .map(tc -> tc.getTenantCode())
+                .forEach(tenantCode -> {
             long startTenant = System.currentTimeMillis();
-            String tenantCode = entry.getKey();
             try {
                 statuses.put(tenantCode,TenantStatus.PENDING);
 
@@ -64,6 +79,14 @@ public class TenantAsynchInitService implements ITenantAsynchInitService {
         });
 
         log.info("End asynch initialization for not mandatory tenants in '{}' ms", System.currentTimeMillis() - startTenants);
+    }
+
+    private boolean isTypeIWant(TenantConfig tc, InitializationTenantFilter filter) {
+        return tc.isInitializationAtStartRequired() == InitializationTenantFilter.REQUIRED_INIT_AT_START.equals(filter);
+    }
+
+    private boolean wantsAll(InitializationTenantFilter filter){
+        return filter == null || InitializationTenantFilter.ALL.equals(filter);
     }
 
     private void initDb(String tenantCode) throws Exception {

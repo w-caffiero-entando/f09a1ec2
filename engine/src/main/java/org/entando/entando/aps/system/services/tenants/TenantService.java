@@ -17,9 +17,12 @@ import static org.entando.entando.aps.system.services.tenants.ITenantManager.PRI
 
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -70,7 +73,21 @@ public class TenantService implements ITenantService {
     @Override
     public TenantStatsAndStatusesDto getTenantStatsAndStatuses() {
         Map<String, TenantStatus> statuses = tenantManager.getStatuses();
-        return TenantStatsAndStatusesDto.builder().statuses(statuses).stats(calculate(statuses)).build();
+        Map<String, TenantStatus> mandatory = fetchByFilteringConfig(statuses, true);
+        Map<String, TenantStatus> additionals = fetchByFilteringConfig(statuses, false);
+
+        return TenantStatsAndStatusesDto.builder()
+                .mandatoryStatuses(mandatory)
+                .additionalStatuses(additionals)
+                .stats(calculate(statuses)).build();
+    }
+
+    private Map<String, TenantStatus> fetchByFilteringConfig(Map<String, TenantStatus> statuses, boolean isMandatory) {
+        return statuses.keySet().stream()
+                .flatMap(code -> tenantManager.getConfig(code).stream())
+                .filter(tc -> isMandatory == tc.isInitializationAtStartRequired())
+                .map(TenantConfig::getTenantCode)
+                .collect(Collectors.toMap(k -> k, k -> statuses.get(k)));
     }
 
     private TenantStatsDto calculate(Map<String, TenantStatus> statuses) {

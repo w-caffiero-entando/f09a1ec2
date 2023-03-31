@@ -99,7 +99,6 @@ public class DatabaseManager extends AbstractInitializerManager
     private int lockFallbackMinutes;
 
     private ServletContext servletContext;
-    private ITenantManager tenantManager;
 
     public void init() {
         logger.debug("DatabaseManager ready");
@@ -323,14 +322,6 @@ public class DatabaseManager extends AbstractInitializerManager
         }
         return changeSetToExecute;
     }
-
-    /*
-    private DataSource fetchFromTenantOrGetDefaultByName(String dataSourceName) {
-        return ApsTenantApplicationUtils.getTenant()
-					.map(tenantCode -> this.getTenantManager().getDatasource(tenantCode))
-					.orElse((DataSource) this.getBeanFactory().getBean(dataSourceName));
-    }
-    */
 
     private DataSource fetchDataSource(String dataSourceName, Optional<Map<String,DataSource>> datasources) {
         return datasources.map(m -> m.get(dataSourceName))
@@ -669,13 +660,5 @@ public class DatabaseManager extends AbstractInitializerManager
     public void setLockFallbackMinutes(int lockFallbackMinutes) {
         this.lockFallbackMinutes = lockFallbackMinutes;
     }
-/*
-    protected ITenantManager getTenantManager() {
-        return tenantManager;
-    }
-    @Autowired
-    public void setTenantManager(ITenantManager tenantManager) {
-        this.tenantManager = tenantManager;
-    }
-*/
+
 }

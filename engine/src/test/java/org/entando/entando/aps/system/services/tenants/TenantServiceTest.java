@@ -184,7 +184,14 @@ class TenantServiceTest {
         // Cds enabled with 1 tenant
         when(tenantManager.getStatuses()).thenReturn(Map.of("t1",
                 TenantStatus.UNKNOWN, "t2", TenantStatus.PENDING, "t3",  TenantStatus.READY, "t4", TenantStatus.FAILED));
-
+        when(tenantManager.getConfig("t1"))
+                .thenReturn(Optional.of(new TenantConfig(Map.of("tenantCode", "t1"))));
+        when(tenantManager.getConfig("t2"))
+                .thenReturn(Optional.of(new TenantConfig(Map.of("tenantCode", "t2"))));
+        when(tenantManager.getConfig("t3"))
+                .thenReturn(Optional.of(new TenantConfig(Map.of("tenantCode", "t3"))));
+        when(tenantManager.getConfig("t4"))
+                .thenReturn(Optional.of(new TenantConfig(Map.of("tenantCode", "t4", "initializationAtStartRequired", "true"))));
 
         TenantStatsAndStatusesDto tenants = tenantService.getTenantStatsAndStatuses();
         Assertions.assertNotNull(tenants);
@@ -193,8 +200,11 @@ class TenantServiceTest {
         Assertions.assertEquals(1, tenants.getStats().getUnknown());
         Assertions.assertEquals(1, tenants.getStats().getReady());
         Assertions.assertEquals(1, tenants.getStats().getFailed());
-        Assertions.assertEquals(TenantStatus.UNKNOWN, tenants.getStatuses().get("t1"));
-        Assertions.assertEquals(TenantStatus.PENDING, tenants.getStatuses().get("t2"));
+        Assertions.assertEquals(TenantStatus.UNKNOWN, tenants.getAdditionalStatuses().get("t1"));
+        Assertions.assertNull(tenants.getMandatoryStatuses().get("t2"));
+        Assertions.assertEquals(TenantStatus.PENDING, tenants.getAdditionalStatuses().get("t2"));
+        Assertions.assertNull(tenants.getAdditionalStatuses().get("t4"));
+        Assertions.assertEquals(TenantStatus.FAILED, tenants.getMandatoryStatuses().get("t4"));
 
     }
 

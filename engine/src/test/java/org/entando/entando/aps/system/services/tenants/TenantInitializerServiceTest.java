@@ -22,25 +22,22 @@ import com.agiletec.aps.system.common.RefreshableBean;
 import com.agiletec.aps.system.services.baseconfig.BaseConfigManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.ServletContext;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.entando.entando.aps.system.init.InitializerManager;
+import org.entando.entando.aps.system.services.tenants.ITenantInitializerService.InitializationTenantFilter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
-class TenantAsynchInitServiceTest {
+class TenantInitializerServiceTest {
 
     @Mock
     private InitializerManager initializerManager;
@@ -59,8 +56,8 @@ class TenantAsynchInitServiceTest {
         when(wac.getBean(SystemConstants.BASE_CONFIG_MANAGER)).thenReturn(conf);
         when(wac.getBeanNamesForType(RefreshableBean.class)).thenReturn(new String[]{});
         doNothing().when(initializerManager).initTenant(any(), any());
-        ITenantAsynchInitService srv = new TenantAsynchInitService(tenantDataAccessor, initializerManager, null);
-        srv.startAsynchInitializeTenants(svCtx).join();
+        ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
+        srv.startTenantsInitialization(svCtx).join();
 
         Assertions.assertEquals(2, tenantDataAccessor.getTenantStatuses().values().stream().filter(TenantStatus.READY::equals).count());
     }
@@ -70,11 +67,27 @@ class TenantAsynchInitServiceTest {
     void shouldStartAsynchInitializeTenantsManageErrors() throws Throwable {
         TenantDataAccessor tenantDataAccessor = initTenantDataAccessor(TenantManagerTest.TENANT_CONFIGS);
         doNothing().when(initializerManager).initTenant(any(), any());
-        ITenantAsynchInitService srv = new TenantAsynchInitService(tenantDataAccessor, initializerManager, null);
-        srv.startAsynchInitializeTenants(svCtx).join();
+        ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
+        srv.startTenantsInitialization(svCtx).join();
 
         Assertions.assertEquals(2, tenantDataAccessor.getTenantStatuses().values().stream().filter(TenantStatus.FAILED::equals).count());
     }
+
+    @Test
+    void shouldStartTenantsInitialization_FilterCorrectly() throws Throwable {
+        TenantDataAccessor tenantDataAccessor = initTenantDataAccessor(TenantManagerTest.TENANT_CONFIGS);
+        when(svCtx.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)).thenReturn(wac);
+        when(wac.getBean(SystemConstants.BASE_CONFIG_MANAGER)).thenReturn(conf);
+        when(wac.getBeanNamesForType(RefreshableBean.class)).thenReturn(new String[]{});
+        doNothing().when(initializerManager).initTenant(any(), any());
+        ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
+        srv.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join();
+        Assertions.assertEquals(0, tenantDataAccessor.getTenantStatuses().values().stream().filter(TenantStatus.READY::equals).count());
+        srv.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.NOT_REQUIRED_INIT_AT_START).join();
+        Assertions.assertEquals(2, tenantDataAccessor.getTenantStatuses().values().stream().filter(TenantStatus.READY::equals).count());
+    }
+
+
 
     private TenantDataAccessor initTenantDataAccessor(String tenantsConfig) throws JsonProcessingException {
         TenantDataAccessor accessor = new TenantDataAccessor();

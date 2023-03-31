@@ -23,8 +23,8 @@ import com.agiletec.aps.system.services.baseconfig.BaseConfigManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.ServletContext;
 import org.entando.entando.aps.system.init.InitializerManager;
-import org.entando.entando.aps.system.services.tenants.ITenantAsynchInitService;
-import org.entando.entando.aps.system.services.tenants.TenantAsynchInitService;
+import org.entando.entando.aps.system.services.tenants.ITenantInitializerService;
+import org.entando.entando.aps.system.services.tenants.TenantInitializerService;
 import org.entando.entando.aps.system.services.tenants.TenantDataAccessor;
 import org.entando.entando.aps.system.services.tenants.TenantManager;
 import org.junit.jupiter.api.AfterAll;
@@ -152,8 +152,8 @@ class TestTenantController extends BaseTestCase {
         when(wac.getBean(SystemConstants.BASE_CONFIG_MANAGER)).thenReturn(conf);
         when(wac.getBeanNamesForType(RefreshableBean.class)).thenReturn(new String[]{});
         doNothing().when(im).initTenant(any(), any());
-        ITenantAsynchInitService srv = new TenantAsynchInitService(tenantData, im, null);
-        srv.startAsynchInitializeTenants(svCtx).join();
+        ITenantInitializerService srv = new TenantInitializerService(tenantData, im, null);
+        srv.startTenantsInitialization(svCtx).join();
 
         registry.destroySingleton("tenantManager");
         registry.registerSingleton("tenantManager", tm);

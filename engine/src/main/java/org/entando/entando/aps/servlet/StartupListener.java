@@ -17,7 +17,8 @@ import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import org.entando.entando.aps.system.exception.CSRFProtectionException;
-import org.entando.entando.aps.system.services.tenants.ITenantAsynchInitService;
+import org.entando.entando.aps.system.services.tenants.ITenantInitializerService;
+import org.entando.entando.aps.system.services.tenants.ITenantInitializerService.InitializationTenantFilter;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -71,8 +72,11 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
             LOGGER.warn("Content Security Policy (CSP) header is not enabled");
         }
 
-        ITenantAsynchInitService tenantAsynchInitService = ApsWebApplicationUtils.getBean(ITenantAsynchInitService.class, svCtx);
-        tenantAsynchInitService.startAsynchInitializeTenants(svCtx);
+        ITenantInitializerService tenantAsynchInitService = ApsWebApplicationUtils.getBean(ITenantInitializerService.class, svCtx);
+
+        tenantAsynchInitService.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join();
+
+        tenantAsynchInitService.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.NOT_REQUIRED_INIT_AT_START);
 
         long endMs = System.currentTimeMillis();
         String executionTimeMsg = String.format("%s: contextInitialized takes ms:'%s' of execution",

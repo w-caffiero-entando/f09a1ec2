@@ -1,5 +1,6 @@
 package org.entando.entando.web.health;
 
+import java.util.HashMap;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import org.entando.entando.web.tenant.model.TenantStatsDto;
 public class HealthDto {
 
     private TenantStatsDto stats;
-    private Map<String, TenantStatus> additionals;
+    private Map<String, TenantStatus> mandatory = new HashMap<>();
+    private Map<String, TenantStatus> additionals = new HashMap<>();
 
 }

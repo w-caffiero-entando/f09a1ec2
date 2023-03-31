@@ -54,7 +54,8 @@ public class HealthController {
                 .map(b -> {
                     TenantStatsAndStatusesDto d = tenantService.getTenantStatsAndStatuses();
                     return ResponseEntity.status(getStatus())
-                        .body(HealthDto.builder().additionals(d.getStatuses()).stats(d.getStats()).build());})
+                        .body(HealthDto.builder().mandatory(d.getMandatoryStatuses())
+                                .additionals(d.getAdditionalStatuses()).stats(d.getStats()).build());})
                 .orElse(new ResponseEntity<>(getStatus()));
     }
 

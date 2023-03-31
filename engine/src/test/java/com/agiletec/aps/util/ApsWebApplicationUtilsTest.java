@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.entando.entando.aps.system.services.tenants.TenantAsynchInitService;
 import org.entando.entando.aps.system.services.tenants.TenantDataAccessor;
 import org.entando.entando.aps.system.services.tenants.TenantManager;
 import org.junit.jupiter.api.Assertions;
