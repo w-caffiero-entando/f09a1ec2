@@ -5,179 +5,179 @@
 
 <struts>
 
-	<package name="jacms_do/rs/Content" namespace="/do/jacms/rs/Content" extends="entando-default">
+    <package name="jacms_do/rs/Content" namespace="/do/jacms/rs/Content" extends="entando-default">
 
-		<interceptors>
-			<interceptor name="json" class="org.apache.struts2.json.JSONInterceptor" />
-			<interceptor-stack name="jsonStack">
-				<interceptor-ref name="json">
-					<param name="enableSMD">true</param>
-				</interceptor-ref>
-			</interceptor-stack>
-		</interceptors>
+        <interceptors>
+            <interceptor name="json" class="org.apache.struts2.json.JSONInterceptor" />
+            <interceptor-stack name="jsonStack">
+                <interceptor-ref name="json">
+                    <param name="enableSMD">true</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
 
-		<action name="status" class="jacmsContentFinderAction">
-			<result type="json">
-				<param name="root">contentsStatusResponse</param>
-			</result>
-			<result name="failure" type="json">
-				<param name="root">contentsStatusResponse</param>
-			</result>
-			<interceptor-ref name="jsonStack" />
-			<interceptor-ref name="entandoDefaultStack">
-				<param name="requestAuth.requiredPermission">enterBackend</param>
-			</interceptor-ref>
-		</action>
+        <action name="status" class="jacmsContentFinderAction">
+            <result type="json">
+                <param name="root">contentsStatusResponse</param>
+            </result>
+            <result name="failure" type="json">
+                <param name="root">contentsStatusResponse</param>
+            </result>
+            <interceptor-ref name="jsonStack" />
+            <interceptor-ref name="entandoDefaultStack">
+                <param name="requestAuth.requiredPermission">enterBackend</param>
+            </interceptor-ref>
+        </action>
 
-		<action name="lastUpdated" class="jacmsContentFinderAction" method="getLastUpdated">
-			<result type="json">
-				<param name="root">lastUpdateContentResponse</param>
-			</result>
-			<result name="input" type="json">
-				<param name="root">lastUpdateContentResponse</param>
-			</result>
-			<result name="failure" type="json">
-				<param name="root">lastUpdateContentResponse</param>
-			</result>
-			<interceptor-ref name="jsonStack" />
-			<interceptor-ref name="entandoDefaultStack">
-				<param name="requestAuth.requiredPermission">enterBackend</param>
-			</interceptor-ref>
-		</action>
+        <action name="lastUpdated" class="jacmsContentFinderAction" method="getLastUpdated">
+            <result type="json">
+                <param name="root">lastUpdateContentResponse</param>
+            </result>
+            <result name="input" type="json">
+                <param name="root">lastUpdateContentResponse</param>
+            </result>
+            <result name="failure" type="json">
+                <param name="root">lastUpdateContentResponse</param>
+            </result>
+            <interceptor-ref name="jsonStack" />
+            <interceptor-ref name="entandoDefaultStack">
+                <param name="requestAuth.requiredPermission">enterBackend</param>
+            </interceptor-ref>
+        </action>
 
-	</package>
+    </package>
 
     <package name="jacms_do/jacms/Content" namespace="/do/jacms/Content" extends="entando-default">
     	
-		<action name="intro" class="jacmsContentAction">
+        <action name="intro" class="jacmsContentAction">
             <result type="tiles">admin.jacms.content.intro</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>	
 		
-    	<!-- ######### INIZIO OPERAZIONI IN INTERFACCIA LISTA CONTENUTI ######### -->
+        <!-- ######### INIZIO OPERAZIONI IN INTERFACCIA LISTA CONTENUTI ######### -->
     	
-    	<action name="list" class="jacmsContentFinderAction" method="list">
+        <action name="list" class="jacmsContentFinderAction" method="list">
             <result type="tiles">admin.jacms.content.list</result>
-        	<interceptor-ref name="entandoDefaultStack">
-        		<param name="requestAuth.requiredPermission">editContents</param>
-        		<param name="chain.includeParameters">fieldErrors,actionErrors,actionMessages</param>
-        	</interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack">
+                <param name="requestAuth.requiredPermission">editContents</param>
+                <param name="chain.includeParameters">fieldErrors,actionErrors,actionMessages</param>
+            </interceptor-ref>
         </action>
 
         <action name="results" class="jacmsContentFinderAction"  method="results">
             <result type="tiles">admin.jacms.content.list</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="search*" class="jacmsContentFinderAction">
             <result type="tiles">admin.jacms.content.list</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="showCategoryTreeOnContentFinding" class="jacmsContentCategoryAction" method="buildTree">
             <result type="dispatcher">/WEB-INF/plugins/jacms/apsadmin/jsp/content/contentFinding_categoryBlock.jsp</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="backToContentList*" class="jacmsContentFinderAction">
             <result type="tiles">admin.jacms.content.list</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="changeContentType*" class="jacmsContentFinderAction" >
             <result type="tiles">admin.jacms.content.list</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="changeOrder" class="jacmsContentFinderAction" method="changeOrder">
             <result type="tiles">admin.jacms.content.list</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="approveContentGroup" class="jacmsContentFinderAction" method="insertOnLine">
-        	<result name="input" type="chain">list</result>
-        	<result type="chain">list</result>
-        	<interceptor-ref name="entandoActionLogger" />
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">validateContents</param></interceptor-ref>
+            <result name="input" type="chain">list</result>
+            <result type="chain">list</result>
+            <interceptor-ref name="entandoActionLogger" />
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">validateContents</param></interceptor-ref>
         </action>
         
         <action name="suspendContentGroup" class="jacmsContentFinderAction" method="removeOnLine">
-        	<result name="input" type="chain">list</result>
-        	<result type="chain">list</result>
-        	<interceptor-ref name="entandoActionLogger" />
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">validateContents</param></interceptor-ref>
+            <result name="input" type="chain">list</result>
+            <result type="chain">list</result>
+            <interceptor-ref name="entandoActionLogger" />
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">validateContents</param></interceptor-ref>
         </action>
         
         <action name="trashContentGroup" class="jacmsContentFinderAction" method="trash">
-        	<result name="input" type="chain">list</result>
-        	<result name="cannotProceed" type="chain">list</result>
-        	<result type="tiles">admin.jacms.content.trash</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <result name="input" type="chain">list</result>
+            <result name="cannotProceed" type="chain">list</result>
+            <result type="tiles">admin.jacms.content.trash</result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="deleteContentGroup" class="jacmsContentFinderAction" method="delete">
-        	<result name="input" type="chain">list</result>
-        	<result type="chain">list</result>
-        	<interceptor-ref name="entandoActionLogger" />
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <result name="input" type="chain">list</result>
+            <result type="chain">list</result>
+            <interceptor-ref name="entandoActionLogger" />
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
-		<action name="inspect" class="jacmsContentInspectionAction" >
-			<result type="tiles">admin.jacms.content.inspect</result>
-			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
-		</action>
+        <action name="inspect" class="jacmsContentInspectionAction" >
+            <result type="tiles">admin.jacms.content.inspect</result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+        </action>
         
-		<action name="bulkOnCategories*" class="jacmsContentFinderAction" method="entryBulkActions" >
-        	<result name="input" type="chain">list</result>
-			<result type="chain">
-            	<param name="namespace">/do/jacms/Content/Category</param>
-    			<param name="actionName">entry</param>
-    			<param name="strutsAction">${strutsAction}</param>
-    			<param name="selectedIds">${selectedIds}</param>
-			</result>
-			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
-		</action>
+        <action name="bulkOnCategories*" class="jacmsContentFinderAction" method="entryBulkActions" >
+            <result name="input" type="chain">list</result>
+            <result type="chain">
+                <param name="namespace">/do/jacms/Content/Category</param>
+                <param name="actionName">entry</param>
+                <param name="strutsAction">${strutsAction}</param>
+                <param name="selectedIds">${selectedIds}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+        </action>
         
-		<action name="bulkPutOnline*" class="jacmsContentFinderAction" method="entryBulkActions" >
-        	<result name="input" type="chain">list</result>
-			<result type="chain">
-            	<param name="namespace">/do/jacms/Content/Bulk</param>
-    			<param name="actionName">entryPutOnline</param>
-    			<param name="selectedIds">${selectedIds}</param>
-			</result>
-			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
-		</action>
+        <action name="bulkPutOnline*" class="jacmsContentFinderAction" method="entryBulkActions" >
+            <result name="input" type="chain">list</result>
+            <result type="chain">
+                <param name="namespace">/do/jacms/Content/Bulk</param>
+                <param name="actionName">entryPutOnline</param>
+                <param name="selectedIds">${selectedIds}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+        </action>
         
-		<action name="bulkPutOffline*" class="jacmsContentFinderAction" method="entryBulkActions" >
-        	<result name="input" type="chain">list</result>
-			<result type="chain">
-            	<param name="namespace">/do/jacms/Content/Bulk</param>
-    			<param name="actionName">entryPutOffline</param>
-    			<param name="selectedIds">${selectedIds}</param>
-			</result>
-			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
-		</action>
+        <action name="bulkPutOffline*" class="jacmsContentFinderAction" method="entryBulkActions" >
+            <result name="input" type="chain">list</result>
+            <result type="chain">
+                <param name="namespace">/do/jacms/Content/Bulk</param>
+                <param name="actionName">entryPutOffline</param>
+                <param name="selectedIds">${selectedIds}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+        </action>
         
-		<action name="bulkRemove*" class="jacmsContentFinderAction" method="entryBulkActions" >
-        	<result name="input" type="chain">list</result>
-			<result type="chain">
-            	<param name="namespace">/do/jacms/Content/Bulk</param>
-    			<param name="actionName">entryRemove</param>
-    			<param name="selectedIds">${selectedIds}</param>
-			</result>
-			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
-		</action>
+        <action name="bulkRemove*" class="jacmsContentFinderAction" method="entryBulkActions" >
+            <result name="input" type="chain">list</result>
+            <result type="chain">
+                <param name="namespace">/do/jacms/Content/Bulk</param>
+                <param name="actionName">entryRemove</param>
+                <param name="selectedIds">${selectedIds}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+        </action>
         
         <!-- ######### FINE OPERAZIONI IN INTERFACCIA LISTA CONTENUTI ######### -->
     	
-    	<action name="edit" class="jacmsContentAction" method="edit">
-    		<result type="tiles">admin.jacms.content.entry</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+        <action name="edit" class="jacmsContentAction" method="edit">
+            <result type="tiles">admin.jacms.content.entry</result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="copyPaste" class="jacmsContentAction" method="copyPaste">
-    		<result type="tiles">admin.jacms.content.entry</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <result type="tiles">admin.jacms.content.entry</result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="new" class="jacmsIntroNewContentAction" method="openNew">
@@ -187,136 +187,136 @@
     	
         <action name="createNewVoid" class="jacmsIntroNewContentAction" method="createNewVoid">
             <result name="input" type="tiles">admin.jacms.content.new</result>
-        	<result type="redirectAction">
-				<param name="actionName">entryContent</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-			</result>
-        	<interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <result type="redirectAction">
+                <param name="actionName">entryContent</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            </result>
+            <interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="createNew" class="jacmsIntroNewContentAction" method="createNew">
             <result name="input" type="tiles">admin.jacms.content.new</result>
-        	<result type="redirectAction">
-				<param name="actionName">entryContent</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-			</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <result type="redirectAction">
+                <param name="actionName">entryContent</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
-		<action name="entryContent*" class="jacmsContentAction" method="forwardToEntryContent">
+        <action name="entryContent*" class="jacmsContentAction" method="forwardToEntryContent">
             <result type="tiles">admin.jacms.content.entry</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
 		
         <action name="configureMainGroup" class="jacmsContentAction" method="configureMainGroup">
             <result type="tiles">admin.jacms.content.entry</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="showCategoryBlockOnEntryContent" class="jacmsContentCategoryAction" method="buildTree">
             <result type="dispatcher">/WEB-INF/plugins/jacms/apsadmin/jsp/content/entryContent_categoryBlock.jsp</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="joinCategory*" class="jacmsContentCategoryAction" method="joinCategory">
             <result type="redirectAction">
-            	<param name="actionName">entryContent</param>
-            	<param name="categoryCode">${categoryCode}</param>
-		<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+                <param name="actionName">entryContent</param>
+                <param name="categoryCode">${categoryCode}</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
                 <param name="treeNodesToOpen">${treeNodesToOpen}</param>
             </result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="removeCategory*" class="jacmsContentCategoryAction" method="removeCategory">
-           	<result type="redirectAction">
-				<param name="actionName">entryContent</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-                                <!-- Following parameter is necessary otherwise removing a category will collapse the tree -->
-                                <param name="treeNodesToOpen">${treeNodesToOpen}</param>
-			</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <result type="redirectAction">
+                <param name="actionName">entryContent</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+                <!-- Following parameter is necessary otherwise removing a category will collapse the tree -->
+                <param name="treeNodesToOpen">${treeNodesToOpen}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="joinGroup" class="jacmsContentAction" method="joinGroup">
             <result type="tiles">admin.jacms.content.entry</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="removeGroup*" class="jacmsContentAction" method="removeGroup">
             <result type="tiles">admin.jacms.content.entry</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="save" class="jacmsContentAction" method="saveContent">
-        	<result name="input" type="tiles">admin.jacms.content.entry</result>
+            <result name="input" type="tiles">admin.jacms.content.entry</result>
             <result type="redirectAction">results</result>
-			<interceptor-ref name="entandoActionLogger" />
-        	<interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoActionLogger" />
+            <interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="saveAndContinue" class="jacmsContentAction" method="saveAndContinue">
-        	<result type="tiles">admin.jacms.content.entry</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <result type="tiles">admin.jacms.content.entry</result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="saveAndApprove" class="jacmsContentAction" method="saveAndApprove">
-        	<result name="input" type="tiles">admin.jacms.content.entry</result>
+            <result name="input" type="tiles">admin.jacms.content.entry</result>
             <result type="redirectAction">results</result>
-        	<interceptor-ref name="entandoActionLogger" />
-        	<interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">validateContents</param></interceptor-ref>
+            <interceptor-ref name="entandoActionLogger" />
+            <interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">validateContents</param></interceptor-ref>
         </action>
         
         <action name="suspend" class="jacmsContentAction" method="suspend">
-        	<result name="input" type="tiles">admin.jacms.content.entry</result>
+            <result name="input" type="tiles">admin.jacms.content.entry</result>
             <result name="references" type="tiles">admin.jacms.content.references</result>
             <result type="redirectAction">results</result>
-        	<interceptor-ref name="entandoActionLogger" />
-        	<interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">validateContents</param></interceptor-ref>
+            <interceptor-ref name="entandoActionLogger" />
+            <interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">validateContents</param></interceptor-ref>
         </action>
 		
         <!-- ######## INIZIO GESTIONE ATTRIBUTI IN LISTA ######## -->
         
         <action name="addListElement*" class="jacmsListAttributeAction" method="addListElement">
-        	<result name="chooseResource" type="redirectAction">
-        		<param name="actionName">chooseResource</param>
-        		<param name="attributeName">${attributeName}</param>
-        		<param name="elementIndex">${elementIndex}</param>
-        		<param name="resourceTypeCode">${resourceTypeCode}</param>
-        		<param name="resourceLangCode">${listLangCode}</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-        	</result>
-        	<result name="chooseLink" type="redirectAction">
-    			<param name="actionName">chooseLink</param>
-        		<param name="attributeName">${attributeName}</param>
-        		<param name="elementIndex">${elementIndex}</param>
-        		<param name="langCode">${listLangCode}</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-        	</result>
-        	<result type="redirectActionWithAnchor">
-        		<param name="actionName">entryContent</param>
-        		<param name="anchorDest">${entryContentAnchorDest}</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-        	</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <result name="chooseResource" type="redirectAction">
+                <param name="actionName">chooseResource</param>
+                <param name="attributeName">${attributeName}</param>
+                <param name="elementIndex">${elementIndex}</param>
+                <param name="resourceTypeCode">${resourceTypeCode}</param>
+                <param name="resourceLangCode">${listLangCode}</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            </result>
+            <result name="chooseLink" type="redirectAction">
+                <param name="actionName">chooseLink</param>
+                <param name="attributeName">${attributeName}</param>
+                <param name="elementIndex">${elementIndex}</param>
+                <param name="linkLangCode">${listLangCode}</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            </result>
+            <result type="redirectActionWithAnchor">
+                <param name="actionName">entryContent</param>
+                <param name="anchorDest">${entryContentAnchorDest}</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="removeListElement*" class="jacmsListAttributeAction" method="removeListElement">
             <result type="redirectActionWithAnchor">
-        		<param name="actionName">entryContent</param>
-        		<param name="anchorDest">${entryContentAnchorDest}</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-        	</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+                <param name="actionName">entryContent</param>
+                <param name="anchorDest">${entryContentAnchorDest}</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="moveListElement*" class="jacmsListAttributeAction" method="moveListElement">
             <result type="redirectActionWithAnchor">
-        		<param name="actionName">entryContent</param>
-        		<param name="anchorDest">${entryContentAnchorDest}</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-        	</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+                <param name="actionName">entryContent</param>
+                <param name="anchorDest">${entryContentAnchorDest}</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <!-- ######## FINE GESTIONE ATTRIBUTI IN LISTA ######## -->
@@ -326,28 +326,28 @@
         <!-- ######## INIZIO GESTIONE ATTRIBUTI RISORSA ######## -->
         
         <action name="chooseResource*" class="jacmsResourceAttributeAction" method="chooseResource">
-			<result type="redirectAction">
-				<param name="namespace">/do/jacms/Content/Resource</param>
-				<param name="actionName">findResource</param>
-				<param name="attributeName">${attributeName}</param>
-				<param name="parentAttributeName">${parentAttributeName}</param>
-				<param name="elementIndex">${elementIndex}</param>
-				<param name="resourceTypeCode">${resourceTypeCode}</param>
-				<param name="resourceLangCode">${listLangCode}</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            <result type="redirectAction">
+                <param name="namespace">/do/jacms/Content/Resource</param>
+                <param name="actionName">findResource</param>
+                <param name="attributeName">${attributeName}</param>
+                <param name="parentAttributeName">${parentAttributeName}</param>
+                <param name="elementIndex">${elementIndex}</param>
+                <param name="resourceTypeCode">${resourceTypeCode}</param>
+                <param name="resourceLangCode">${listLangCode}</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
             </result>
-			<interceptor-ref name="entandoDefaultStack">
-				<param name="requestAuth.requiredPermission">editContents</param>
-			</interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack">
+                <param name="requestAuth.requiredPermission">editContents</param>
+            </interceptor-ref>
         </action>
         
         <action name="removeResource*" class="jacmsResourceAttributeAction" method="removeResource">
             <result type="redirectActionWithAnchor">
-        		<param name="actionName">entryContent</param>
-        		<param name="anchorDest">${entryContentAnchorDestFromRemove}</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-        	</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+                <param name="actionName">entryContent</param>
+                <param name="anchorDest">${entryContentAnchorDestFromRemove}</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <!-- ######## FINE GESTIONE ATTRIBUTI RISORSA ######## -->
@@ -357,19 +357,19 @@
         
         <action name="chooseLink*" class="jacmsLinkAttributeAction" method="chooseLink">
             <result type="chain">
-            	<param name="namespace">/do/jacms/Content/Link</param>
-    			<param name="actionName">chooseLink</param>
+                <param name="namespace">/do/jacms/Content/Link</param>
+                <param name="actionName">chooseLink</param>
             </result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <action name="removeLink*" class="jacmsLinkAttributeAction" method="removeLink">
             <result type="redirectActionWithAnchor">
-        		<param name="actionName">entryContent</param>
-        		<param name="anchorDest">${entryContentAnchorDestFromRemove}</param>
-				<param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
-        	</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+                <param name="actionName">entryContent</param>
+                <param name="anchorDest">${entryContentAnchorDestFromRemove}</param>
+                <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
+            </result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
         <!-- ######## FINE GESTIONE ATTRIBUTI LINK ######## -->
@@ -384,39 +384,39 @@
             <interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
         </action>
 
-    	<action name="openIndexProspect" class="jacmsContentAdminAction" method="configSystemParams" >
+        <action name="openIndexProspect" class="jacmsContentAdminAction" method="configSystemParams" >
             <result type="tiles">admin.jacms.content.settings</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
         </action>
         
-    	<action name="reloadContentsIndex" class="jacmsContentAdminAction" method="reloadContentsIndex" >
+        <action name="reloadContentsIndex" class="jacmsContentAdminAction" method="reloadContentsIndex" >
             <result type="tiles">admin.jacms.content.settings</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
         </action>
         
-    	<action name="reloadContentsReference" class="jacmsContentAdminAction" method="reloadContentsReference" >
+        <action name="reloadContentsReference" class="jacmsContentAdminAction" method="reloadContentsReference" >
             <result type="tiles">admin.jacms.content.settings</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
         </action>
         
-    	<action name="removeMetadata*" class="jacmsContentAdminAction" method="removeMetadata" >
-			<result type="tiles">admin.jacms.content.settings</result>
-			<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
-		</action>
+        <action name="removeMetadata*" class="jacmsContentAdminAction" method="removeMetadata" >
+            <result type="tiles">admin.jacms.content.settings</result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
+        </action>
 
-    	<action name="addMetadata" class="jacmsContentAdminAction" method="addMetadata" >
+        <action name="addMetadata" class="jacmsContentAdminAction" method="addMetadata" >
             <result name="input" type="tiles">admin.jacms.content.settings</result>
-			<result type="tiles">admin.jacms.content.settings</result>
-			<interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
-		</action>
+            <result type="tiles">admin.jacms.content.settings</result>
+            <interceptor-ref name="entandoValidationStack"><param name="requestAuth.requiredPermission">superuser</param></interceptor-ref>
+        </action>
 
     </package>
 
     <package name="jacms_do/jacms/Content/Ajax" namespace="/do/jacms/Content/Ajax" extends="entando-default">
     
         <action name="autosave" class="jacmsContentAction" method="saveAndContinue">
-        	<result type="dispatcher">/WEB-INF/plugins/jacms/apsadmin/jsp/content/ajax/content-autosave.jsp</result>
-        	<interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
+            <result type="dispatcher">/WEB-INF/plugins/jacms/apsadmin/jsp/content/ajax/content-autosave.jsp</result>
+            <interceptor-ref name="entandoDefaultStack"><param name="requestAuth.requiredPermission">editContents</param></interceptor-ref>
         </action>
         
     </package>
