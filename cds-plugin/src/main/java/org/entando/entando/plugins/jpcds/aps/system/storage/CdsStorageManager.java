@@ -179,7 +179,16 @@ public class CdsStorageManager implements IStorageManager {
     public boolean exists(String subPath, boolean isProtectedResource) {
         EntSubPath subPathParsed = CdsUrlUtils.extractPathAndFilename(subPath);
         String[] filenames = this.list(subPathParsed.getPath(), isProtectedResource);
-        return (null != filenames && Arrays.asList(filenames).contains(subPathParsed.getFileName()));
+        return (null != filenames && isSubPathPresent(filenames,subPathParsed.getFileName()));
+    }
+
+    // when frontend  wants to retrieve public or protected folder contents it gets request with an empty subpath
+    private boolean isSubPathPresent(String[] filenames, String subPath){
+        if(StringUtils.isEmpty(subPath)) {
+            return filenames.length > 0;
+        } else {
+            return Arrays.asList(filenames).contains(subPath);
+        }
     }
 
     @Override
