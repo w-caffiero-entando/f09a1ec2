@@ -21,13 +21,17 @@
  */
 package com.agiletec.plugins.jpversioning.aps.system.services.versioning;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.io.StringReader;
 import java.util.List;
 
+import java.util.Optional;
 import javax.xml.parsers.SAXParser;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -51,16 +55,30 @@ import org.xml.sax.SAXException;
  * @author E.Santoboni, E.Mezzano
  */
 @Aspect
-public class VersioningManager extends AbstractService implements IVersioningManager {
+public class VersioningManager extends AbstractService implements IVersioningManager, RefreshableBeanTenantAware {
 
     private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(VersioningManager.class);
 
     @Override
     public void init() throws Exception {
+        initTenantAware();
+    }
+
+    private void initTenantAware() throws Exception {
         String deleteMidVersions = this.getConfigManager().getParam(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS);
         this.setDeleteMidVersions("true".equalsIgnoreCase(deleteMidVersions));
-        _logger.debug("{} ready", this.getClass().getName());
+        if(_logger.isDebugEnabled()) {
+            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+            _logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+        }
+
     }
+
+    @Override
+    public void refreshTenantAware() throws Exception {
+        initTenantAware();
+    }
+
 
     @Before("execution(* com.agiletec.plugins.jacms.aps.system.services.content.IContentManager.saveContent(..)) && args(content)")
     public void onSaveContent(Content content) {

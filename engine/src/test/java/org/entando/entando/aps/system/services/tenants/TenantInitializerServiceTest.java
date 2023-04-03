@@ -23,6 +23,7 @@ import com.agiletec.aps.system.services.baseconfig.BaseConfigManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,8 +54,8 @@ class TenantInitializerServiceTest {
     void shouldStartAsynchInitializeTenantsPutReadyAllTenants() throws Throwable {
         TenantDataAccessor tenantDataAccessor = initTenantDataAccessor(TenantManagerTest.TENANT_CONFIGS);
         when(svCtx.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)).thenReturn(wac);
-        when(wac.getBean(SystemConstants.BASE_CONFIG_MANAGER)).thenReturn(conf);
-        when(wac.getBeanNamesForType(RefreshableBean.class)).thenReturn(new String[]{});
+        when(wac.getBean(BaseConfigManager.class)).thenReturn(conf);
+        when(wac.getBeansOfType(RefreshableBeanTenantAware.class)).thenReturn(new HashMap<>());
         doNothing().when(initializerManager).initTenant(any(), any());
         ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
         srv.startTenantsInitialization(svCtx).join();
@@ -77,8 +78,8 @@ class TenantInitializerServiceTest {
     void shouldStartTenantsInitialization_FilterCorrectly() throws Throwable {
         TenantDataAccessor tenantDataAccessor = initTenantDataAccessor(TenantManagerTest.TENANT_CONFIGS);
         when(svCtx.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)).thenReturn(wac);
-        when(wac.getBean(SystemConstants.BASE_CONFIG_MANAGER)).thenReturn(conf);
-        when(wac.getBeanNamesForType(RefreshableBean.class)).thenReturn(new String[]{});
+        when(wac.getBean(BaseConfigManager.class)).thenReturn(conf);
+        when(wac.getBeansOfType(RefreshableBeanTenantAware.class)).thenReturn(new HashMap<>());
         doNothing().when(initializerManager).initTenant(any(), any());
         ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
         srv.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join();

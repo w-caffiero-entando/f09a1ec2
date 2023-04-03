@@ -13,16 +13,20 @@
  */
 package org.entando.entando.aps.system.services.api;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Optional;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiMethodRelatedWidget;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.ApiService;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -34,7 +38,7 @@ import org.entando.entando.aps.system.services.api.cache.IApiServiceCacheWrapper
 /**
  * @author E.Santoboni
  */
-public class ApiCatalogManager extends AbstractService implements IApiCatalogManager {
+public class ApiCatalogManager extends AbstractService implements IApiCatalogManager, RefreshableBeanTenantAware {
 
 	private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -78,19 +82,38 @@ public class ApiCatalogManager extends AbstractService implements IApiCatalogMan
 
 	@Override
 	public void init() throws Exception {
-		ApiResourceLoader loader = new ApiResourceLoader(this.getLocationPatterns());
-		Map<String, ApiResource> resources = loader.getResources();
-		this.getResourceCacheWrapper().initCache(resources, this.getApiCatalogDAO());
-		this.getServiceCacheWrapper().initCache(resources, this.getApiCatalogDAO());
+		initTenantAware();
 		logger.debug("{} ready.", this.getClass().getName());
 	}
     
     @Override
     protected void release() {
-        this.getServiceCacheWrapper().release();
-        this.getResourceCacheWrapper().release();
+		releaseTenantAware();
         super.release();
     }
+
+	private void initTenantAware() throws Exception {
+		ApiResourceLoader loader = new ApiResourceLoader(this.getLocationPatterns());
+		Map<String, ApiResource> resources = loader.getResources();
+		this.getResourceCacheWrapper().initCache(resources, this.getApiCatalogDAO());
+		this.getServiceCacheWrapper().initCache(resources, this.getApiCatalogDAO());
+		if(logger.isDebugEnabled()) {
+			Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+			logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+		}
+	}
+
+	private void releaseTenantAware() {
+		this.getServiceCacheWrapper().release();
+		this.getResourceCacheWrapper().release();
+	}
+
+	@Override
+	public void refreshTenantAware() throws Exception {
+		releaseTenantAware();
+		initTenantAware();
+	}
+
 
 	@Override
 	public ApiMethod getRelatedMethod(String showletCode) throws EntException {

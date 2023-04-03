@@ -21,6 +21,7 @@
  */
 package com.agiletec.plugins.jpversioning.aps.system.services.resource;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -30,11 +31,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Optional;
 import javax.xml.parsers.SAXParser;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -67,6 +71,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 		_logger.debug("{} ready", this.getClass().getName());
 		_logger.debug("Folder trashed resources: {}", this.getResourceTrashRootDiskSubFolder());
 	}
+
 
 	@Before("execution(* com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager.deleteResource(..)) && args(resource)")
 	public void onDeleteResource(ResourceInterface resource) throws EntException {

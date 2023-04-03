@@ -13,6 +13,7 @@
  */
 package com.agiletec.aps.system.services.group;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,9 @@ import java.util.Map;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
+import java.util.Optional;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.group.cache.IGroupManagerCacheWrapper;
 import java.util.Collections;
@@ -32,7 +36,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
  *
  * @author E.Santoboni Modificato da emarcias
  */
-public class GroupManager extends AbstractService implements IGroupManager {
+public class GroupManager extends AbstractService implements IGroupManager, RefreshableBeanTenantAware {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -57,14 +61,32 @@ public class GroupManager extends AbstractService implements IGroupManager {
 
     @Override
     public void init() throws Exception {
-        this.getCacheWrapper().initCache(this.getGroupDAO());
+        initTenantAware();
         logger.debug("{} ready. Initialized", this.getClass().getName());
     }
     
     @Override
     protected void release() {
-        this.getCacheWrapper().release();
+        releaseTenantAware();
         super.release();
+    }
+
+    private void initTenantAware() throws Exception {
+        this.getCacheWrapper().initCache(this.getGroupDAO());
+        if(logger.isDebugEnabled()) {
+            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+        }
+    }
+
+    private void releaseTenantAware() {
+        this.getCacheWrapper().release();
+    }
+
+    @Override
+    public void refreshTenantAware() throws Exception {
+        releaseTenantAware();
+        initTenantAware();
     }
 
     /**

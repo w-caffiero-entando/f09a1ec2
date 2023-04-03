@@ -13,15 +13,19 @@
  */
 package com.agiletec.aps.system.services.i18n;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -35,7 +39,7 @@ import com.agiletec.aps.util.ApsProperties;
  * Servizio che fornisce stringhe "localizzate". Le stringhe sono specificate da
  * una chiave di identificazione e dalla lingua di riferimento.
  */
-public class I18nManager extends AbstractService implements II18nManager {
+public class I18nManager extends AbstractService implements II18nManager, RefreshableBeanTenantAware {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(I18nManager.class);
 
@@ -75,14 +79,32 @@ public class I18nManager extends AbstractService implements II18nManager {
 
     @Override
     public void init() throws Exception {
-        this.getCacheWrapper().initCache(this.getI18nDAO());
+        initTenantAware();
         logger.debug("{} : initialized {} labels", this.getClass().getName(), this.getLabelGroups().size());
     }
     
     @Override
     protected void release() {
-        this.getCacheWrapper().release();
+        releaseTenantAware();
         super.release();
+    }
+
+    private void initTenantAware() throws Exception {
+        this.getCacheWrapper().initCache(this.getI18nDAO());
+        if(logger.isDebugEnabled()) {
+            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+        }
+    }
+
+    private void releaseTenantAware() {
+        this.getCacheWrapper().release();
+    }
+
+    @Override
+    public void refreshTenantAware() throws Exception {
+        releaseTenantAware();
+        initTenantAware();
     }
 
     /**

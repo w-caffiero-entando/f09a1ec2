@@ -14,6 +14,10 @@
 package com.agiletec.aps.system.services.keygenerator;
 
 import com.agiletec.aps.system.common.AbstractService;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
+import java.util.Optional;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.keygenerator.cache.IKeyGeneratorManagerCacheWrapper;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -24,7 +28,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
  *
  * @author S.Didaci - E.Santoboni
  */
-public class KeyGeneratorManager extends AbstractService implements IKeyGeneratorManager {
+public class KeyGeneratorManager extends AbstractService implements IKeyGeneratorManager, RefreshableBeanTenantAware {
 
 	private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -34,15 +38,33 @@ public class KeyGeneratorManager extends AbstractService implements IKeyGenerato
 
 	@Override
 	public void init() throws Exception {
-		this.getCacheWrapper().initCache(this.getKeyGeneratorDAO());
+		initTenantAware();
 		logger.debug("{} ready. : last loaded key {}", this.getClass().getName(), this.getCacheWrapper().getUniqueKeyCurrentValue());
 	}
     
     @Override
     protected void release() {
-        this.getCacheWrapper().release();
-        super.release();
+        releaseTenantAware();
+		super.release();
     }
+
+	private void initTenantAware() throws Exception {
+		this.getCacheWrapper().initCache(this.getKeyGeneratorDAO());
+		if(logger.isDebugEnabled()) {
+			Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+			logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+		}
+	}
+
+	private void releaseTenantAware() {
+		this.getCacheWrapper().release();
+	}
+
+	@Override
+	public void refreshTenantAware() throws Exception {
+		releaseTenantAware();
+		initTenantAware();
+	}
 
 	/**
 	 * Restituisce la chiave univoca corrente.

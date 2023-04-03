@@ -14,6 +14,7 @@
 package org.entando.entando.aps.system.services.cache;
 
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.common.AbstractCacheWrapper;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.events.PageChangedEvent;
@@ -30,6 +31,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,8 @@ import org.springframework.cache.CacheManager;
  *
  * @author E.Santoboni
  */
-public class CacheInfoManager extends AbstractService implements ICacheInfoManager, PageChangedObserver {
+public class CacheInfoManager extends AbstractService implements ICacheInfoManager, PageChangedObserver,
+        RefreshableBeanTenantAware {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CacheInfoManager.class);
 
@@ -51,6 +54,17 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
     public void init() throws Exception {
         logger.debug("{} (cache info service initialized) ready", this.getClass().getName());
     }
+
+    private void releaseTenantAware() {
+        // FIXME maybe should optimize this destroy
+        this.destroy();
+    }
+
+    @Override
+    public void refreshTenantAware() throws Exception {
+        releaseTenantAware();
+    }
+
 
     @Override
     public void setExpirationTime(String targetCache, String key, int expiresInMinute) {
@@ -87,7 +101,7 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
     @Override
     protected void release() {
         super.release();
-        this.destroy();
+        releaseTenantAware();
     }
 
     @Override

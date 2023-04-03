@@ -13,12 +13,16 @@
  */
 package com.agiletec.aps.system.services.baseconfig;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.Map;
 
+import java.util.Optional;
 import javax.servlet.ServletContext;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.cache.IConfigManagerCacheWrapper;
 import java.util.HashMap;
@@ -39,7 +43,8 @@ import org.springframework.web.context.ServletContextAware;
  *
  * @author M.Diana - E.Santoboni
  */
-public class BaseConfigManager extends AbstractService implements ConfigInterface, ServletContextAware {
+public class BaseConfigManager extends AbstractService implements ConfigInterface, ServletContextAware,
+        RefreshableBeanTenantAware {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(BaseConfigManager.class);
 
@@ -53,15 +58,33 @@ public class BaseConfigManager extends AbstractService implements ConfigInterfac
 
     @Override
     public void init() throws Exception {
-        String version = this.getSystemParams().get(SystemConstants.INIT_PROP_CONFIG_VERSION);
-        this.getCacheWrapper().initCache(this.getConfigDAO(), version);
+        initTenantAware();
         logger.debug("{} ready. Initialized", this.getClass().getName());
     }
     
     @Override
     protected void release() {
-        this.getCacheWrapper().release();
+        releaseTenantAware();
         super.release();
+    }
+
+    private void initTenantAware() throws Exception {
+        String version = this.getSystemParams().get(SystemConstants.INIT_PROP_CONFIG_VERSION);
+        this.getCacheWrapper().initCache(this.getConfigDAO(), version);
+        if(logger.isDebugEnabled()) {
+            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+        }
+    }
+
+    private void releaseTenantAware() {
+        this.getCacheWrapper().release();
+    }
+
+    @Override
+    public void refreshTenantAware() throws Exception {
+        releaseTenantAware();
+        initTenantAware();
     }
 
     /**

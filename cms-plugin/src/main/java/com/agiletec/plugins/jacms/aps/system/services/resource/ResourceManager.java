@@ -17,11 +17,14 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.io.IOException;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.category.CategoryUtilizer;
@@ -58,7 +61,8 @@ import org.xml.sax.SAXException;
  *
  * @author W.Ambu - E.Santoboni
  */
-public class ResourceManager extends AbstractService implements IResourceManager, GroupUtilizer, CategoryUtilizer {
+public class ResourceManager extends AbstractService implements IResourceManager, GroupUtilizer, CategoryUtilizer,
+        RefreshableBeanTenantAware {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -134,6 +138,19 @@ public class ResourceManager extends AbstractService implements IResourceManager
     public void init() throws Exception {
         this.getCacheWrapper().initCache();
         logger.debug("{} ready. Initialized {} resource types", this.getClass().getName(), this.resourceTypes.size());
+    }
+
+    private void initTenantAware() throws Exception {
+        this.getCacheWrapper().initCache();
+        if(logger.isDebugEnabled()) {
+            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+        }
+    }
+
+    @Override
+    public void refreshTenantAware() throws Exception {
+        initTenantAware();
     }
 
     /**

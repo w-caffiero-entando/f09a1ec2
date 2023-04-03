@@ -15,6 +15,9 @@ package com.agiletec.aps.system.services.pagemodel;
 
 import com.agiletec.aps.system.common.*;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.pagemodel.cache.IPageModelManagerCacheWrapper;
 import com.agiletec.aps.system.services.pagemodel.events.PageModelChangedEvent;
@@ -29,7 +32,8 @@ import java.util.regex.*;
 /**
  * The manager of the page template.
  */
-public class PageModelManager extends AbstractService implements IPageModelManager, GuiFragmentUtilizer {
+public class PageModelManager extends AbstractService implements IPageModelManager, GuiFragmentUtilizer,
+        RefreshableBeanTenantAware {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(PageModelManager.class);
     private IPageModelDAO pageModelDao;
@@ -37,14 +41,32 @@ public class PageModelManager extends AbstractService implements IPageModelManag
 
     @Override
     public void init() throws Exception {
-        this.getCacheWrapper().initCache(this.getPageModelDAO());
+        initTenantAware();
         logger.debug("{} ready. initialized", this.getClass().getName());
     }
     
     @Override
     protected void release() {
-        this.getCacheWrapper().release();
+        releaseTenantAware();
         super.release();
+    }
+
+    private void initTenantAware() throws Exception {
+        this.getCacheWrapper().initCache(this.getPageModelDAO());
+        if(logger.isDebugEnabled()) {
+            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+        }
+    }
+
+    private void releaseTenantAware() {
+        this.getCacheWrapper().release();
+    }
+
+    @Override
+    public void refreshTenantAware() throws Exception {
+        releaseTenantAware();
+        initTenantAware();
     }
 
     /**

@@ -25,6 +25,7 @@ import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.plugins.jpmail.aps.services.JpmailSystemConstants;
 import com.agiletec.plugins.jpmail.aps.services.mail.parse.MailConfigDOM;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.slf4j.Logger;
@@ -45,12 +46,16 @@ import java.util.Properties;
  * Implementation for the manager providing email sending functions.
  * @author E.Santoboni, E.Mezzano
  */
-public class MailManager extends AbstractService implements IMailManager {
+public class MailManager extends AbstractService implements IMailManager, RefreshableBeanTenantAware {
 	
 	private static final Logger _logger = LoggerFactory.getLogger(MailManager.class);
 	
 	@Override
 	public void init() {
+		initTenantAware();
+	}
+
+	void initTenantAware() {
 		try {
 			this.loadConfigs();
 			_logger.debug("{} ready: active {}", this.getClass().getName(), this.isActive());
@@ -59,7 +64,13 @@ public class MailManager extends AbstractService implements IMailManager {
 			this.setActive(false);
 		}
 	}
-	
+
+	@Override
+	public void refreshTenantAware() throws Exception {
+		initTenantAware();
+	}
+
+
 	private void loadConfigs() throws EntException {
 		try {
 			ConfigInterface configManager = this.getConfigManager();

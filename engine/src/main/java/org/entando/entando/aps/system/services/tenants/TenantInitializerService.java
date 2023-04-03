@@ -1,7 +1,9 @@
 package org.entando.entando.aps.system.services.tenants;
 
+import com.agiletec.aps.system.services.baseconfig.BaseConfigManager;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.fasterxml.jackson.databind.ser.Serializers.Base;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +19,8 @@ import org.entando.entando.aps.system.init.InitializerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @Slf4j
 @Service
@@ -58,7 +62,7 @@ public class TenantInitializerService implements ITenantInitializerService {
         statuses.entrySet().stream()
                 .map(e -> tenantDataAccessor.getTenantConfigs().get(e.getKey()))
                 .filter(Objects::nonNull)
-                .filter(tc -> wantsAll(filter) || isTypeIWant(tc, filter))
+                .filter(tc -> wantsAll(filter) || isTypeToFilter(tc, filter))
                 .map(tc -> tc.getTenantCode())
                 .forEach(tenantCode -> {
             long startTenant = System.currentTimeMillis();
@@ -68,6 +72,7 @@ public class TenantInitializerService implements ITenantInitializerService {
                 ApsTenantApplicationUtils.setTenant(tenantCode);
                 initDb(tenantCode);
 
+                // without status read refresh cannot work fine
                 statuses.put(tenantCode,TenantStatus.READY);
 
                 refreshBeanForTenantCode(svCtx);
@@ -78,11 +83,10 @@ public class TenantInitializerService implements ITenantInitializerService {
                 log.info("Initialization of tenant '{}' completed in '{}' ms ", tenantCode, System.currentTimeMillis() - startTenant);
             }
         });
-
-        log.info("End asynch initialization for not mandatory tenants in '{}' ms", System.currentTimeMillis() - startTenants);
+        log.info("End initialization for tenants with filter:'{}' in '{}' ms", filter, System.currentTimeMillis() - startTenants);
     }
 
-    private boolean isTypeIWant(TenantConfig tc, InitializationTenantFilter filter) {
+    private boolean isTypeToFilter(TenantConfig tc, InitializationTenantFilter filter) {
         return tc.isInitializationAtStartRequired() == InitializationTenantFilter.REQUIRED_INIT_AT_START.equals(filter);
     }
 
@@ -107,7 +111,22 @@ public class TenantInitializerService implements ITenantInitializerService {
     }
 
     private void refreshBeanForTenantCode(ServletContext svCtx) throws Throwable {
-        ApsWebApplicationUtils.executeSystemRefresh(svCtx);
+        //ApsWebApplicationUtils.executeSystemRefresh(svCtx);
+
+        WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(svCtx);
+        BaseConfigManager config = wac.getBean(BaseConfigManager.class);
+        config.refreshTenantAware();
+
+        Map<String, RefreshableBeanTenantAware> toRefresh =  wac.getBeansOfType(RefreshableBeanTenantAware.class);
+        toRefresh.entrySet().stream().filter(e -> ! (e.getValue() instanceof BaseConfigManager)).forEach(entry -> {
+            log.debug("try to refresh bean:'{}'", entry.getKey());
+            try {
+                entry.getValue().refreshTenantAware();
+            } catch(Throwable th) {
+                log.error("error refresh bean", th);
+                throw new RuntimeException(String.format("error refresh bean %s", entry.getKey()), th);
+            }
+        });
     }
 
 }
