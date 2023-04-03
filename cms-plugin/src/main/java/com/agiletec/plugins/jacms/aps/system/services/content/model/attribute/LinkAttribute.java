@@ -70,10 +70,9 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
     @Override
     public Element getJDOMElement() {
         Element attributeElement = this.createRootElement("attribute");
-        Iterator<String> langIter = this.getSymbolicLinks().keySet().iterator();
-        while (langIter.hasNext()) {
-            String currentLangCode = langIter.next();
-            SymbolicLink link = this.getSymbolicLinks().get(currentLangCode);
+        this.getSymbolicLinks().entrySet().stream().forEach(e -> {
+            String currentLangCode = e.getKey();
+            SymbolicLink link = e.getValue();
             Element linkElement = new Element("link");
             linkElement.setAttribute("lang", currentLangCode);
             attributeElement.addContent(linkElement);
@@ -116,7 +115,7 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
                 default:
                     linkElement.setAttribute("type", "");
             }
-        }
+        });
         super.addTextElements(attributeElement);
         if (null != this.getLinksProperties()) {
             this.getLinksProperties().entrySet().stream().forEach(e -> {

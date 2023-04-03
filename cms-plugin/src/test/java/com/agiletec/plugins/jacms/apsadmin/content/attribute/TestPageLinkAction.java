@@ -213,7 +213,7 @@ class TestPageLinkAction extends AbstractBaseTestContentAction {
         
         this.initContentAction("/do/jacms/Content", "removeLink", contentOnSessionMarker);
 		this.addParameter("attributeName", "VediAnche");
-		this.addParameter("linkLangCode", "en");
+		this.addParameter("langCodeOfLink", "en");
 		result = this.executeAction();
 		assertEquals(Action.SUCCESS, result);
         
@@ -247,7 +247,7 @@ class TestPageLinkAction extends AbstractBaseTestContentAction {
         Content content = this.getContentOnEdit(contentOnSessionMarker);
         MonoListAttribute monolist = (MonoListAttribute) content.getAttribute("MonoLLink");
         assertEquals(3, monolist.getAttributes().size());
-        Map<String, String> properties = Map.of("attributeName", "MonoLLink", "linkLangCode", "it", "elementIndex", "2");
+        Map<String, String> properties = Map.of("attributeName", "MonoLLink", "langCodeOfLink", "it", "elementIndex", "2");
         this.executeChooseLink(properties, contentOnSessionMarker);
 		this.initContentAction("/do/jacms/Content/Link", "joinPageLink", contentOnSessionMarker);
 		this.addParameter("linkType", String.valueOf(SymbolicLink.PAGE_TYPE));
@@ -274,7 +274,7 @@ class TestPageLinkAction extends AbstractBaseTestContentAction {
         Map<String, String> enProperties = attribute.getLinksProperties().get("en");
         assertNull(enProperties);
         
-        properties = Map.of("attributeName", "MonoLLink", "linkLangCode", "en", "elementIndex", "1");
+        properties = Map.of("attributeName", "MonoLLink", "langCodeOfLink", "en", "elementIndex", "1");
         this.executeChooseLink(properties, contentOnSessionMarker);
         
 		this.initContentAction("/do/jacms/Content/Link", "joinPageLink", contentOnSessionMarker);
@@ -302,7 +302,7 @@ class TestPageLinkAction extends AbstractBaseTestContentAction {
         String contentOnSessionMarker = this.extractSessionMarker("ALL4", ApsAdminSystemConstants.EDIT);
         
         Map<String, String> properties = Map.of("parentAttributeName", "Composite", 
-                "attributeName", "Link", "linkLangCode", "en");
+                "attributeName", "Link", "langCodeOfLink", "en");
         this.executeChooseLink(properties, contentOnSessionMarker);
 		this.initContentAction("/do/jacms/Content/Link", "joinPageLink", contentOnSessionMarker);
 		this.addParameter("linkType", String.valueOf(SymbolicLink.PAGE_TYPE));
@@ -346,7 +346,7 @@ class TestPageLinkAction extends AbstractBaseTestContentAction {
     }
     
     private String initJoinLinkTest(String username, String contentId, String simpleLinkAttributeName, String langCode, boolean initEditContent) throws Throwable {
-        Map<String, String> properties = Map.of("attributeName", simpleLinkAttributeName, "linkLangCode", langCode);
+        Map<String, String> properties = Map.of("attributeName", simpleLinkAttributeName, "langCodeOfLink", langCode);
         String contentOnSessionMarker = this.extractSessionMarker(contentId, ApsAdminSystemConstants.EDIT);
         if (initEditContent) {
             this.executeEdit(contentId, username);
@@ -354,7 +354,7 @@ class TestPageLinkAction extends AbstractBaseTestContentAction {
         this.executeChooseLink(properties, contentOnSessionMarker);
         HttpSession session = this.getRequest().getSession();
 		assertEquals(properties.get("attributeName"), session.getAttribute(ILinkAttributeActionHelper.ATTRIBUTE_NAME_SESSION_PARAM));
-		assertEquals(properties.get("linkLangCode"), session.getAttribute(ILinkAttributeActionHelper.LINK_LANG_CODE_SESSION_PARAM));
+		assertEquals(properties.get("langCodeOfLink"), session.getAttribute(ILinkAttributeActionHelper.LINK_LANG_CODE_SESSION_PARAM));
         return contentOnSessionMarker;
     }
     

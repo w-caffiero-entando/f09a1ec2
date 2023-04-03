@@ -63,7 +63,7 @@ public interface ILinkAttributeActionHelper {
     public void initLinkProperties(ILinkAttributeTypeAction action, HttpServletRequest request);
 	
 	public static final String ATTRIBUTE_NAME_SESSION_PARAM = "contentAttributeName";
-	public static final String LINK_LANG_CODE_SESSION_PARAM = "linkLangCode";
+	public static final String LINK_LANG_CODE_SESSION_PARAM = "langCodeOfLink";
 	public static final String LIST_ELEMENT_INDEX_SESSION_PARAM = "listElementIndex";
 	public static final String INCLUDED_ELEMENT_NAME_SESSION_PARAM = "includedElementName";
 	

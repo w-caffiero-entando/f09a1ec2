@@ -6,7 +6,7 @@
 <%-- choose resource button --%>
 <s:set var="resourceTypeCode"><e:forHtml value="${param.resourceTypeCode}" /></s:set>
 <s:set var="buttonCssClass"><e:forHtml value="${param.buttonCssClass}" /></s:set>
-<s:if test="#buttonCssClass==null || #buttonCssClass=='null' || #buttonCssClass==''">
+<s:if test="#buttonCssClass==null || #buttonCssClass=='null'">
     <s:set var="buttonCssClass">btn btn-primary</s:set>
 </s:if>
 <wpsa:actionParam action="chooseResource" var="chooseResourceActionName" >

@@ -13,7 +13,7 @@
     <wpsa:actionSubParam name="parentAttributeName" value="%{#parentAttribute.name}" />
     <wpsa:actionSubParam name="attributeName" value="%{#attribute.name}" />
     <wpsa:actionSubParam name="elementIndex" value="%{#elementIndex}" />
-    <wpsa:actionSubParam name="linkLangCode" value="%{#lang.code}" />
+    <wpsa:actionSubParam name="langCodeOfLink" value="%{#lang.code}" />
 </wpsa:actionParam>
 
 <s:if test="#linkToEdit != null">
@@ -90,7 +90,7 @@
                     <wpsa:actionSubParam name="parentAttributeName" value="%{#parentAttribute.name}" />
                     <wpsa:actionSubParam name="attributeName" value="%{#attribute.name}" />
                     <wpsa:actionSubParam name="elementIndex" value="%{#elementIndex}" />
-                    <wpsa:actionSubParam name="linkLangCode" value="%{#lang.code}" />
+                    <wpsa:actionSubParam name="langCodeOfLink" value="%{#lang.code}" />
                 </wpsa:actionParam>
                 <wpsf:submit cssClass="btn btn-danger" type="button"  action="%{#removeLinkActionName}" title="%{getText('label.remove')}">
                     <span class="sr-only"><s:text name="label.remove" /></span>

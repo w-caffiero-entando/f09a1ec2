@@ -290,7 +290,7 @@
                 <param name="actionName">chooseLink</param>
                 <param name="attributeName">${attributeName}</param>
                 <param name="elementIndex">${elementIndex}</param>
-                <param name="linkLangCode">${listLangCode}</param>
+                <param name="langCodeOfLink">${listLangCode}</param>
                 <param name="contentOnSessionMarker">${contentOnSessionMarker}</param>
             </result>
             <result type="redirectActionWithAnchor">

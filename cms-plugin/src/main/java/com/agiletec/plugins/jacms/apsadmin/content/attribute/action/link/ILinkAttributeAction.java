@@ -64,6 +64,6 @@ public interface ILinkAttributeAction {
 	 * Restituisce il codice della lingua corrente.
 	 * @return Il codice della lingua corrente.
 	 */
-	public String getLinkLangCode();
+	public String getLangCodeOfLink();
 	
 }

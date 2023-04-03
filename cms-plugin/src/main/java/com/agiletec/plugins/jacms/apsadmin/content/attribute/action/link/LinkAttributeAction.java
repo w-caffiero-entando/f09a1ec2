@@ -130,7 +130,7 @@ public class LinkAttributeAction extends BaseAction implements ILinkAttributeAct
 	
 	public String getEntryContentAnchorDestFromRemove() {
 		StringBuilder buffer = new StringBuilder("contentedit_");
-		buffer.append(this.getLinkLangCode());
+		buffer.append(this.getLangCodeOfLink());
 		buffer.append("_");
 		if (null != this.getParentAttributeName()) {
 			buffer.append(this.getParentAttributeName());
@@ -224,10 +224,10 @@ public class LinkAttributeAction extends BaseAction implements ILinkAttributeAct
 	}
 	
 	@Override
-	public String getLinkLangCode() {
+	public String getLangCodeOfLink() {
 		return _langCode;
 	}
-	public void setLinkLangCode(String langCode) {
+	public void setLangCodeOfLink(String langCode) {
 		this._langCode = langCode;
 	}
 	
