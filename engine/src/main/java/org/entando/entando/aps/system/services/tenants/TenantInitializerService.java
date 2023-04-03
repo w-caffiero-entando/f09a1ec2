@@ -79,6 +79,9 @@ public class TenantInitializerService implements ITenantInitializerService {
 
             } catch (Throwable th) {
                 statuses.put(tenantCode,TenantStatus.FAILED);
+                if(tenantDataAccessor.getTenantConfigs().get(tenantCode).isInitializationAtStartRequired()) {
+                    throw new RuntimeException("Error to initialize a required tenant", th);
+                }
             } finally {
                 log.info("Initialization of tenant '{}' completed in '{}' ms ", tenantCode, System.currentTimeMillis() - startTenant);
             }
@@ -111,22 +114,25 @@ public class TenantInitializerService implements ITenantInitializerService {
     }
 
     private void refreshBeanForTenantCode(ServletContext svCtx) throws Throwable {
-        //ApsWebApplicationUtils.executeSystemRefresh(svCtx);
-
         WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(svCtx);
-        BaseConfigManager config = wac.getBean(BaseConfigManager.class);
-        config.refreshTenantAware();
 
-        Map<String, RefreshableBeanTenantAware> toRefresh =  wac.getBeansOfType(RefreshableBeanTenantAware.class);
-        toRefresh.entrySet().stream().filter(e -> ! (e.getValue() instanceof BaseConfigManager)).forEach(entry -> {
-            log.debug("try to refresh bean:'{}'", entry.getKey());
-            try {
-                entry.getValue().refreshTenantAware();
-            } catch(Throwable th) {
-                log.error("error refresh bean", th);
-                throw new RuntimeException(String.format("error refresh bean %s", entry.getKey()), th);
-            }
-        });
+        if(wac != null) {
+            BaseConfigManager config = wac.getBean(BaseConfigManager.class);
+            config.refreshTenantAware();
+
+            Map<String, RefreshableBeanTenantAware> toRefresh = wac.getBeansOfType(RefreshableBeanTenantAware.class);
+            toRefresh.entrySet().stream().filter(e -> !(e.getValue() instanceof BaseConfigManager)).forEach(entry -> {
+                log.debug("try to refresh bean:'{}'", entry.getKey());
+                try {
+                    entry.getValue().refreshTenantAware();
+                } catch (Throwable th) {
+                    log.error("error refresh bean", th);
+                    throw new RuntimeException(String.format("error refresh bean %s", entry.getKey()), th);
+                }
+            });
+        } else {
+            throw new RuntimeException("cannot retrieve WebApplicationContext");
+        }
     }
 
 }
