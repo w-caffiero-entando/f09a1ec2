@@ -13,7 +13,6 @@
  */
 package org.entando.entando.aps.system.services.widgettype;
 
-import com.agiletec.aps.system.common.AbstractCacheWrapper;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.services.group.Group;
@@ -21,13 +20,10 @@ import com.agiletec.aps.system.services.group.GroupUtilizer;
 import com.agiletec.aps.system.services.lang.events.LangsChangedEvent;
 import com.agiletec.aps.system.services.lang.events.LangsChangedObserver;
 import com.agiletec.aps.util.ApsProperties;
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
-import java.util.Optional;
 import org.apache.commons.beanutils.BeanComparator;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.GuiFragmentUtilizer;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.aps.system.services.widgettype.cache.IWidgetTypeManagerCacheWrapper;
 import org.entando.entando.aps.system.services.widgettype.events.WidgetTypeChangedEvent;
@@ -69,22 +65,14 @@ public class WidgetTypeManager extends AbstractService
         super.release();
     }
 
-    private void initTenantAware() throws Exception {
+    @Override
+    public void initTenantAware() throws Exception {
         this.getCacheWrapper().initCache(this.getWidgetTypeDAO());
-        if(logger.isDebugEnabled()) {
-            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-        }
-    }
-
-    private void releaseTenantAware() {
-        this.getCacheWrapper().release();
     }
 
     @Override
-    public void refreshTenantAware() throws Exception {
-        releaseTenantAware();
-        initTenantAware();
+    public void releaseTenantAware() {
+        this.getCacheWrapper().release();
     }
 
     @Override

@@ -13,15 +13,12 @@
  */
 package com.agiletec.aps.system.services.role;
 
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import com.agiletec.aps.system.common.AbstractService;
-import java.util.Optional;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.role.cache.IPermissionCacheWrapper;
@@ -55,24 +52,16 @@ public class RoleManager extends AbstractService implements IRoleManager, Refres
         super.release();
     }
 
-	private void initTenantAware() throws Exception {
+	@Override
+	public void initTenantAware() throws Exception {
 		this.getPermissionCacheWrapper().initCache(this.getPermissionDAO());
 		this.getRoleCacheWrapper().initCache(this.getRoleDAO());
-		if(logger.isDebugEnabled()) {
-			Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-			logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-		}
-	}
-
-	private void releaseTenantAware() {
-		this.getRoleCacheWrapper().release();
-		this.getPermissionCacheWrapper().release();
 	}
 
 	@Override
-	public void refreshTenantAware() throws Exception {
-		releaseTenantAware();
-		initTenantAware();
+	public void releaseTenantAware() {
+		this.getRoleCacheWrapper().release();
+		this.getPermissionCacheWrapper().release();
 	}
 
 	/**

@@ -13,18 +13,15 @@
  */
 package com.agiletec.aps.system.services.i18n;
 
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -89,22 +86,14 @@ public class I18nManager extends AbstractService implements II18nManager, Refres
         super.release();
     }
 
-    private void initTenantAware() throws Exception {
+    @Override
+    public void initTenantAware() throws Exception {
         this.getCacheWrapper().initCache(this.getI18nDAO());
-        if(logger.isDebugEnabled()) {
-            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-        }
-    }
-
-    private void releaseTenantAware() {
-        this.getCacheWrapper().release();
     }
 
     @Override
-    public void refreshTenantAware() throws Exception {
-        releaseTenantAware();
-        initTenantAware();
+    public void releaseTenantAware() {
+        this.getCacheWrapper().release();
     }
 
     /**

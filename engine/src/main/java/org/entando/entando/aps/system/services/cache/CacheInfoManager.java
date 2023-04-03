@@ -14,7 +14,6 @@
 package org.entando.entando.aps.system.services.cache;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.common.AbstractCacheWrapper;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.events.PageChangedEvent;
@@ -55,16 +54,11 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
         logger.debug("{} (cache info service initialized) ready", this.getClass().getName());
     }
 
-    private void releaseTenantAware() {
+    @Override
+    public void releaseTenantAware() {
         // FIXME maybe should optimize this destroy
         this.destroy();
     }
-
-    @Override
-    public void refreshTenantAware() throws Exception {
-        releaseTenantAware();
-    }
-
 
     @Override
     public void setExpirationTime(String targetCache, String key, int expiresInMinute) {

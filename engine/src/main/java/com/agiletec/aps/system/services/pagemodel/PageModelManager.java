@@ -15,8 +15,6 @@ package com.agiletec.aps.system.services.pagemodel;
 
 import com.agiletec.aps.system.common.*;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.pagemodel.cache.IPageModelManagerCacheWrapper;
@@ -51,22 +49,14 @@ public class PageModelManager extends AbstractService implements IPageModelManag
         super.release();
     }
 
-    private void initTenantAware() throws Exception {
+    @Override
+    public void initTenantAware() throws Exception {
         this.getCacheWrapper().initCache(this.getPageModelDAO());
-        if(logger.isDebugEnabled()) {
-            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-        }
-    }
-
-    private void releaseTenantAware() {
-        this.getCacheWrapper().release();
     }
 
     @Override
-    public void refreshTenantAware() throws Exception {
-        releaseTenantAware();
-        initTenantAware();
+    public void releaseTenantAware() {
+        this.getCacheWrapper().release();
     }
 
     /**

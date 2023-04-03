@@ -13,16 +13,13 @@
  */
 package com.agiletec.aps.system.services.category;
 
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -63,22 +60,14 @@ public class CategoryManager extends AbstractService implements ICategoryManager
         super.release();
     }
 
-	private void initTenantAware() throws Exception {
+	@Override
+	public void initTenantAware() throws Exception {
 		this.initCache();
-		if(_logger.isDebugEnabled()) {
-			Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-			_logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-		}
-	}
-
-	private void releaseTenantAware() {
-		this.getCacheWrapper().release();
 	}
 
 	@Override
-	public void refreshTenantAware() throws Exception {
-		releaseTenantAware();
-		initTenantAware();
+	public void releaseTenantAware() {
+		this.getCacheWrapper().release();
 	}
 
 	private void initCache() throws EntException {

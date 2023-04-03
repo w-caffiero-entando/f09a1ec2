@@ -13,12 +13,41 @@
  */
 package org.entando.entando.aps.system.services.tenants;
 
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public interface RefreshableBeanTenantAware {
+
+	Logger logger = LoggerFactory.getLogger(RefreshableBeanTenantAware.class);
 	
 	/**
 	 * Method to invoke when bean refresh tenant aware is needed.
 	 * @throws Throwable In the case of error when service is initialized.
 	 */
-	void refreshTenantAware() throws Throwable;
-	
+	default void refreshTenantAware() throws Throwable {
+		basicReleaseTenantAware();
+		basicInitTenantAware();
+	}
+
+	default void initTenantAware() throws Exception {}
+	default void releaseTenantAware() {}
+
+	default void basicInitTenantAware() throws Exception {
+		initTenantAware();
+		if(logger.isDebugEnabled()) {
+			Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+			logger.debug("'{}' Initialized for tenant: {}", this.getClass().getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+		}
+	}
+
+	default void basicReleaseTenantAware() {
+		releaseTenantAware();
+		if(logger.isDebugEnabled()) {
+			Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
+			logger.debug("'{}' Released resources for tenant: {}", this.getClass().getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
+		}
+	}
+
 }

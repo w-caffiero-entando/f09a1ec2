@@ -32,7 +32,6 @@ import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.events.PageChangedEvent;
 import com.agiletec.aps.system.services.page.events.PageChangedObserver;
 import com.agiletec.aps.util.ApsProperties;
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.event.PublicContentChangedEvent;
 import com.agiletec.plugins.jacms.aps.system.services.content.event.PublicContentChangedObserver;
@@ -42,9 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -75,15 +72,13 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
         logger.debug("{} ready. initialized", this.getClass().getName());
     }
 
-    private void initTenantAware() throws Exception {
+    @Override
+    public void initTenantAware() throws Exception {
         this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), true);
-        if(logger.isDebugEnabled()) {
-            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-        }
     }
 
-    private void releaseTenantAware() {
+    @Override
+    public void releaseTenantAware() {
         this.getCacheWrapper().release();
     }
 
@@ -91,12 +86,6 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
     protected void release() {
         releaseTenantAware();
         super.release();
-    }
-
-    @Override
-    public void refreshTenantAware() throws Exception {
-        releaseTenantAware();
-        initTenantAware();
     }
 
     @Override

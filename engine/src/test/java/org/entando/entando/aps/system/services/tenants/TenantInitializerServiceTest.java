@@ -15,6 +15,7 @@ package org.entando.entando.aps.system.services.tenants;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import com.agiletec.aps.system.SystemConstants;
@@ -48,6 +49,26 @@ class TenantInitializerServiceTest {
     private BaseConfigManager conf;
     @Mock
     private WebApplicationContext wac;
+
+    private String tenantConfigsWithRequiredFieldTrue ="[{\n"
+            + "    \"tenantCode\": \"TE_nant1\",\n"
+            + "    \"initializationAtStartRequired\": true,\n"
+            + "    \"kcEnabled\": true,\n"
+            + "    \"kcAuthUrl\": \"http://tenant1.test.nip.io/auth\",\n"
+            + "    \"kcRealm\": \"tenant1\",\n"
+            + "    \"kcClientId\": \"quickstart\",\n"
+            + "    \"kcClientSecret\": \"secret1\",\n"
+            + "    \"kcPublicClientId\": \"entando-web\",\n"
+            + "    \"kcSecureUris\": \"\",\n"
+            + "    \"kcDefaultAuthorizations\": \"\",\n"
+            + "    \"dbDriverClassName\": \"org.postgresql.Driver\",\n"
+            + "    \"dbUrl\": \"jdbc:postgresql://testDbServer:5432/tenantDb1\",\n"
+            + "    \"dbUsername\": \"db_user_2\",\n"
+            + "    \"dbPassword\": \"db_password_2\",\n"
+            + "    \"fqdns\": \"tenant1.com\"\n,"
+            + "    \"customField1\": \"custom_value_1\"\n,"
+            + "    \"customField2\": \"custom_value_2\""
+            + "}]";
 
 
     @Test
@@ -88,6 +109,14 @@ class TenantInitializerServiceTest {
         Assertions.assertEquals(2, tenantDataAccessor.getTenantStatuses().values().stream().filter(TenantStatus.READY::equals).count());
     }
 
+    @Test
+    void shouldStartTenantsInitialization_throwErrorForRequiredTenantsNotInitialized() throws Throwable {
+        TenantDataAccessor tenantDataAccessor = initTenantDataAccessor(tenantConfigsWithRequiredFieldTrue);
+        doThrow(new Exception("genericError")).when(initializerManager).initTenant(any(), any());
+        ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
+        Assertions.assertThrows(RuntimeException.class,
+                () -> srv.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join());
+    }
 
 
     private TenantDataAccessor initTenantDataAccessor(String tenantsConfig) throws JsonProcessingException {

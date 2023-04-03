@@ -13,15 +13,11 @@
  */
 package com.agiletec.aps.system.services.baseconfig;
 
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.util.Map;
-
-import java.util.Optional;
 import javax.servlet.ServletContext;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.cache.IConfigManagerCacheWrapper;
@@ -68,23 +64,15 @@ public class BaseConfigManager extends AbstractService implements ConfigInterfac
         super.release();
     }
 
-    private void initTenantAware() throws Exception {
+    @Override
+    public void initTenantAware() throws Exception {
         String version = this.getSystemParams().get(SystemConstants.INIT_PROP_CONFIG_VERSION);
         this.getCacheWrapper().initCache(this.getConfigDAO(), version);
-        if(logger.isDebugEnabled()) {
-            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-        }
-    }
-
-    private void releaseTenantAware() {
-        this.getCacheWrapper().release();
     }
 
     @Override
-    public void refreshTenantAware() throws Exception {
-        releaseTenantAware();
-        initTenantAware();
+    public void releaseTenantAware() {
+        this.getCacheWrapper().release();
     }
 
     /**

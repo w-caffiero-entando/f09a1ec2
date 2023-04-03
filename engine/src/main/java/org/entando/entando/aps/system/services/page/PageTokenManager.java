@@ -18,14 +18,12 @@ import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
 
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -35,7 +33,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
@@ -82,23 +79,14 @@ public class PageTokenManager extends AbstractService implements IPageTokenManag
 		initTenantAware();
 	}
 
-	private void initTenantAware() throws Exception {
+	@Override
+	public void initTenantAware() throws Exception {
 		String param = this.getConfigManager().getParam(PREVIEW_HASH);
 		if (StringUtils.isBlank(param) || param.trim().length() < HASH_LENGTH) {
 			param = this.generateRandomHash();
 		}
 		this.generateInternalSaltAndPassword(param);
-		if(logger.isDebugEnabled()) {
-			Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-			logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-		}
 	}
-
-	@Override
-	public void refreshTenantAware() throws Exception {
-		initTenantAware();
-	}
-
 
 	@Override
 	public String encrypt(String pageCode) {

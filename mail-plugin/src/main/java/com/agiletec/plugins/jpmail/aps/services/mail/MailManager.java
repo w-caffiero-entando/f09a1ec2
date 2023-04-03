@@ -51,11 +51,12 @@ public class MailManager extends AbstractService implements IMailManager, Refres
 	private static final Logger _logger = LoggerFactory.getLogger(MailManager.class);
 	
 	@Override
-	public void init() {
+	public void init() throws Exception {
 		initTenantAware();
 	}
 
-	void initTenantAware() {
+	@Override
+	public void initTenantAware() throws Exception {
 		try {
 			this.loadConfigs();
 			_logger.debug("{} ready: active {}", this.getClass().getName(), this.isActive());
@@ -64,12 +65,6 @@ public class MailManager extends AbstractService implements IMailManager, Refres
 			this.setActive(false);
 		}
 	}
-
-	@Override
-	public void refreshTenantAware() throws Exception {
-		initTenantAware();
-	}
-
 
 	private void loadConfigs() throws EntException {
 		try {

@@ -14,10 +14,7 @@
 package com.agiletec.aps.system.common.entity;
 
 import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
-import org.entando.entando.aps.system.services.tenants.TenantManager;
 import org.entando.entando.ent.util.EntSafeXmlUtils;
 import java.io.IOException;
 import java.io.StringReader;
@@ -116,14 +113,10 @@ public abstract class ApsEntityManager extends AbstractService
         logger.debug("{} : initialized", this.getName());
     }
 
-    private void initTenantAware()  throws Exception {
+    @Override
+    public void initTenantAware()  throws Exception {
         this.getCacheWrapper().initCache(super.getName());
         this.initAttributeRoles();
-        if(logger.isDebugEnabled()) {
-            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-            logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-        }
-
     }
     
     protected void initAttributeRoles() {
@@ -136,11 +129,6 @@ public abstract class ApsEntityManager extends AbstractService
     public void refresh() throws Throwable {
         super.refresh();
         this.attributeDisablingCodes = null;
-    }
-
-    @Override
-    public void refreshTenantAware() throws Throwable {
-        this.initTenantAware();
     }
 
     @Override

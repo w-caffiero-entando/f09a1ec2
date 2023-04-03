@@ -64,21 +64,11 @@ public class VersioningManager extends AbstractService implements IVersioningMan
         initTenantAware();
     }
 
-    private void initTenantAware() throws Exception {
+    @Override
+    public void initTenantAware() throws Exception {
         String deleteMidVersions = this.getConfigManager().getParam(JpversioningSystemConstants.CONFIG_PARAM_DELETE_MID_VERSIONS);
         this.setDeleteMidVersions("true".equalsIgnoreCase(deleteMidVersions));
-        if(_logger.isDebugEnabled()) {
-            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-            _logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-        }
-
     }
-
-    @Override
-    public void refreshTenantAware() throws Exception {
-        initTenantAware();
-    }
-
 
     @Before("execution(* com.agiletec.plugins.jacms.aps.system.services.content.IContentManager.saveContent(..)) && args(content)")
     public void onSaveContent(Content content) {

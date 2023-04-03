@@ -34,7 +34,6 @@ import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
 import com.agiletec.aps.system.services.keygenerator.IKeyGeneratorManager;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.cache.CmsCacheWrapperManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
@@ -47,10 +46,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
 import org.entando.entando.ent.exception.EntException;
@@ -94,17 +91,9 @@ public class ContentSchedulerManager extends AbstractService implements IContent
         _logger.info("'{}': initialized", this.getClass().getName());
     }
 
-    private void initTenantAware() throws Exception {
-        this.loadConfigs();
-        if(_logger.isDebugEnabled()) {
-            Optional<String> tenantCode = ApsTenantApplicationUtils.getTenant();
-            _logger.debug("Initialized '{}' for tenant: ", this.getName(), tenantCode.isPresent() ? tenantCode.get() : ITenantManager.PRIMARY_CODE);
-        }
-    }
-
     @Override
-    public void refreshTenantAware() throws Exception {
-        initTenantAware();
+    public void initTenantAware() throws Exception {
+        this.loadConfigs();
     }
 
     /**

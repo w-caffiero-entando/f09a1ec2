@@ -142,24 +142,6 @@ public class TenantManager implements ITenantManager, InitializingBean {
         throw new RuntimeException(String.format("Error status for tenant with code '%s' is not ready please visit health status endpoint to check", tenantCode));
     }
 
-    private BasicDataSource createDataSource(String tenantCode){
-        return Optional.ofNullable(tenantDataAccessor.getTenantConfigs().get(tenantCode)).map(config -> {
-                BasicDataSource basicDataSource = new BasicDataSource();
-                basicDataSource.setDriverClassName(config.getDbDriverClassName());
-                basicDataSource.setUsername(config.getDbUsername());
-                basicDataSource.setPassword(config.getDbPassword());
-                basicDataSource.setUrl(config.getDbUrl());
-                basicDataSource.setMaxTotal(config.getMaxTotal());
-                basicDataSource.setMaxIdle(config.getMaxIdle());
-                basicDataSource.setMaxWaitMillis(config.getMaxWaitMillis());
-                basicDataSource.setInitialSize(config.getInitialSize());
-                return basicDataSource;
-        }).orElseGet(() -> {
-            logger.warn("No tenant for code '{}'", tenantCode);
-            return null;
-        });
-    }
-
     @Override
     public void afterPropertiesSet() throws Exception {
         initTenantsCodes();

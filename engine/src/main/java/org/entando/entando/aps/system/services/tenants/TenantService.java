@@ -87,7 +87,7 @@ public class TenantService implements ITenantService {
                 .flatMap(code -> tenantManager.getConfig(code).stream())
                 .filter(tc -> isMandatory == tc.isInitializationAtStartRequired())
                 .map(TenantConfig::getTenantCode)
-                .collect(Collectors.toMap(k -> k, k -> statuses.get(k)));
+                .collect(Collectors.toMap(k -> k, statuses::get));
     }
 
     private TenantStatsDto calculate(Map<String, TenantStatus> statuses) {
