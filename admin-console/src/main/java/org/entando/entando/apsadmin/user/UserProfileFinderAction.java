@@ -13,21 +13,20 @@
  */
 package org.entando.entando.apsadmin.user;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
-import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.system.entity.AbstractApsEntityFinderAction;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
+import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
+import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 /**
  * @author E.Santoboni
@@ -62,21 +61,20 @@ public class UserProfileFinderAction extends AbstractApsEntityFinderAction {
     
 	@Override
     public List<String> getSearchResult() {
-        List<String> searchResult = null;
+        List<String> searchResult;
         try {
             Integer withProfile = this.getWithProfile();
             List<String> profileSearchResult = super.getSearchResult();
-            if (super.isAddedAttributeFilter() || 
-					(null != withProfile && withProfile.intValue() == WITH_PROFILE_CODE) || 
-                    (null != super.getEntityTypeCode() && super.getEntityTypeCode().trim().length() > 0)) {
-				this.setWithProfile(WITH_PROFILE_CODE);
+            if (super.isAddedAttributeFilter() ||
+                    (null != withProfile && withProfile.intValue() == WITH_PROFILE_CODE) ||
+                    (StringUtils.isNotBlank(super.getEntityTypeCode()))) {
+                this.setWithProfile(WITH_PROFILE_CODE);
                 return profileSearchResult;
             }
             List<String> usernames = this.getUserManager().searchUsernames(this.getUsername());
-            searchResult = new ArrayList<String>();
-            for (int i = 0; i < usernames.size(); i++) {
-                String username = usernames.get(i);
-                if (null == withProfile || 
+            searchResult = new ArrayList<>();
+            for (String username : usernames) {
+                if (null == withProfile ||
                         (withProfile.intValue() == WITHOUT_PROFILE_CODE && !profileSearchResult.contains(username))) {
                     searchResult.add(username);
                 }

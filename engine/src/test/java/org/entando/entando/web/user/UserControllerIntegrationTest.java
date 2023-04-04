@@ -115,7 +115,7 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                         .param("withProfile", "0")
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isOk());
-        result.andExpect(jsonPath("$.payload", Matchers.hasSize(0)));
+        result.andExpect(jsonPath("$.payload", Matchers.hasSize(3)));
         result.andExpect(jsonPath("$.metaData.additionalParams.withProfile", is("0")));
     }
 
@@ -152,6 +152,21 @@ class UserControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .andExpect(jsonPath("$.payload.username", is(username)))
                 .andExpect(jsonPath("$.payload.profileType.typeCode", is("PFL")))
                 .andExpect(jsonPath("$.payload.profileType.typeDescription", is("Default user profile type")));
+    }
+
+    @Test
+    void shouldFilterOnUsername() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        ResultActions result = mockMvc
+                .perform(get("/users")
+                        .param("filter[0].attribute", "username")
+                        .param("filter[0].value", "supervisorCoach")
+                        .header("Authorization", "Bearer " + accessToken));
+        result.andDo(resultPrint())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payload", Matchers.hasSize(Matchers.equalTo(1))))
+                .andExpect(jsonPath("$.payload[0].username", is("supervisorCoach")));
     }
 
     @Test

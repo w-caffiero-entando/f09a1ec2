@@ -46,6 +46,8 @@ import org.entando.entando.aps.system.services.user.UserService;
 import org.entando.entando.aps.system.services.user.model.UserAuthorityDto;
 import org.entando.entando.aps.system.services.user.model.UserDto;
 import org.entando.entando.aps.system.services.user.model.UserDtoBuilder;
+import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
+import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
 import org.entando.entando.aps.util.crypto.CryptoException;
 import org.entando.entando.ent.exception.EntException;
@@ -64,7 +66,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -93,6 +94,12 @@ class UserControllerUnitTest extends AbstractControllerTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private IUserProfileManager userProfileManager;
+
+    @InjectMocks
+    private UserValidator userValidator;
+
     @InjectMocks
     private UserController controller;
 
@@ -100,16 +107,11 @@ class UserControllerUnitTest extends AbstractControllerTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
                 .setMessageConverters(getMessageConverters())
                 .setHandlerExceptionResolvers(createHandlerExceptionResolver())
                 .build();
-        UserValidator userValidator = new UserValidator();
-        userValidator.setUserManager(userManager);
-        userValidator.setGroupManager(groupManager);
-        userValidator.setRoleManager(roleManager);
         userValidator.setPasswordEncoder(passwordEncoder);
         this.controller.setUserValidator(userValidator);
     }
@@ -603,5 +605,74 @@ class UserControllerUnitTest extends AbstractControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payload", is(true)));
+    }
+
+    @Test
+    void shouldFailToUpdateUserDeletedFromKeycloak() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+
+        String mockJson = "{\"username\": \"old_user\",\n"
+                + "    \"password\": \"new_password\",\n"
+                + "    \"passwordConfirm\": \"new_password\",\n"
+                + "    \"status\": \"active\"\n"
+                + "}";
+
+        Mockito.when(this.userProfileManager.getProfile("old_user")).thenReturn(Mockito.mock(IUserProfile.class));
+
+        ResultActions result = mockMvc.perform(
+                put("/users/old_user")
+                        .content(mockJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken));
+
+        result.andExpect(status().isBadRequest());
+        result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_PROFILE_ONLY_USER)));
+    }
+
+    @Test
+    void shouldFailToUpdateUserPasswordOfUserDeletedFromKeycloak() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+
+        String mockJson = "{\"username\": \"old_user\",\n"
+                + "    \"oldPassword\": \"old_password\",\n"
+                + "    \"newPassword\": \"new_password\"\n"
+                + "}";
+
+        Mockito.when(this.userProfileManager.getProfile("old_user")).thenReturn(Mockito.mock(IUserProfile.class));
+
+        ResultActions result = mockMvc.perform(
+                post("/users/old_user/password")
+                        .content(mockJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken));
+
+        result.andExpect(status().isBadRequest());
+        result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_PROFILE_ONLY_USER)));
+    }
+
+    @Test
+    void shouldFailToCreateUserWhenProfileOnlyUserAlreadyExists() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+
+        String mockJson = "{\"username\": \"profile_only_user\",\n"
+                + "    \"password\": \"new_password\",\n"
+                + "    \"passwordConfirm\": \"new_password\",\n"
+                + "    \"profileType\": \"PFL\",\n"
+                + "    \"status\": \"active\"\n"
+                + "}";
+
+        Mockito.when(this.userProfileManager.getProfile("profile_only_user")).thenReturn(Mockito.mock(IUserProfile.class));
+
+        ResultActions result = mockMvc.perform(
+                post("/users")
+                        .content(mockJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken));
+
+        result.andExpect(status().isConflict());
+        result.andExpect(jsonPath("$.errors[0].code", is(UserValidator.ERRCODE_USER_ALREADY_EXISTS)));
     }
 }

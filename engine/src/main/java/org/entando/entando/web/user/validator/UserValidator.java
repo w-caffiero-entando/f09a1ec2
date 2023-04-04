@@ -81,6 +81,10 @@ public class UserValidator extends AbstractPaginationValidator {
 
     public static final String ERRCODE_INVALID_GUEST_USERNAME = "11";
 
+    public static final String ERRCODE_PROFILE_ONLY_USER = "12";
+    
+    private static final String USERNAME_FIELD = "username";
+
     @Autowired
     @Qualifier("compatiblePasswordEncoder")
     private PasswordEncoder passwordEncoder;
@@ -145,7 +149,8 @@ public class UserValidator extends AbstractPaginationValidator {
     public void validateUserPost(UserRequest request, BindingResult bindingResult) {
         String username = request.getUsername();
         UserDetails user = this.extractUser(username);
-        if (null != user) {
+        IUserProfile profile = this.extractUserProfile(username);
+        if (user != null || profile != null) {
             bindingResult.reject(UserValidator.ERRCODE_USER_ALREADY_EXISTS, new String[]{username}, "user.exists");
             throw new ValidationConflictException(bindingResult);
         }
@@ -181,8 +186,8 @@ public class UserValidator extends AbstractPaginationValidator {
 
     public static BindingResult createDeleteAdminError() {
         Map<String, String> map = new HashMap<>();
-        map.put("username", "admin");
-        BindingResult bindingResult = new MapBindingResult(map, "username");
+        map.put(USERNAME_FIELD, "admin");
+        BindingResult bindingResult = new MapBindingResult(map, USERNAME_FIELD);
         bindingResult.reject(UserValidator.ERRCODE_DELETE_ADMIN, new String[]{}, "user.admin.cant.delete");
         return bindingResult;
     }
@@ -222,7 +227,7 @@ public class UserValidator extends AbstractPaginationValidator {
 
     public void validatePutBody(String username, UserRequest userRequest, BindingResult bindingResult) {
         if (!StringUtils.equals(username, userRequest.getUsername())) {
-            bindingResult.rejectValue("username", ERRCODE_USERNAME_MISMATCH, new String[]{username, userRequest.getUsername()}, "user.username.mismatch");
+            bindingResult.rejectValue(USERNAME_FIELD, ERRCODE_USERNAME_MISMATCH, new String[]{username, userRequest.getUsername()}, "user.username.mismatch");
             throw new ValidationConflictException(bindingResult);
         } else {
             if (username.equalsIgnoreCase(SystemConstants.GUEST_USER_NAME)) {
@@ -230,7 +235,13 @@ public class UserValidator extends AbstractPaginationValidator {
             }
             UserDetails user = this.extractUser(username);
             if (null == user) {
-                throw new ResourceNotFoundException(ERRCODE_USER_NOT_FOUND, "username", username);
+                IUserProfile profile = this.extractUserProfile(username);
+                if (profile != null) {
+                    bindingResult.rejectValue(USERNAME_FIELD, ERRCODE_PROFILE_ONLY_USER, new String[]{},
+                            "user.profile-only.unsupported");
+                } else {
+                    throw new ResourceNotFoundException(ERRCODE_USER_NOT_FOUND, USERNAME_FIELD, username);
+                }
             }
 
             if (null != userRequest.getPassword()) {
@@ -241,11 +252,14 @@ public class UserValidator extends AbstractPaginationValidator {
 
     public void validateChangePasswords(String username, UserUpdatePasswordRequest userUpdatePasswordRequest, BindingResult bindingResult) {
         UserDetails user = this.extractUser(username);
+        IUserProfile profile = this.extractUserProfile(username);
         if (!StringUtils.equals(username, userUpdatePasswordRequest.getUsername())) {
-            bindingResult.rejectValue("username", ERRCODE_USERNAME_MISMATCH, new String[]{username, userUpdatePasswordRequest.getUsername()}, "user.username.mismatch");
+            bindingResult.rejectValue(USERNAME_FIELD, ERRCODE_USERNAME_MISMATCH, new String[]{username, userUpdatePasswordRequest.getUsername()}, "user.username.mismatch");
             throw new ValidationConflictException(bindingResult);
-        } else if (null == user) {
-            throw new ResourceNotFoundException(ERRCODE_USER_NOT_FOUND, "username", username);
+        } else if (user == null && profile != null) {
+            bindingResult.rejectValue(USERNAME_FIELD, ERRCODE_PROFILE_ONLY_USER, new String[]{}, "user.profile-only.unsupported");
+        } else if (user == null) {
+            throw new ResourceNotFoundException(ERRCODE_USER_NOT_FOUND, USERNAME_FIELD, username);
         } else if (StringUtils.equals(userUpdatePasswordRequest.getNewPassword(), userUpdatePasswordRequest.getOldPassword())) {
             bindingResult.rejectValue("newPassword", ERRCODE_NEW_PASSWORD_EQUALS, new String[]{}, "user.passwords.same");
         } else if (!this.verifyPassword(userUpdatePasswordRequest.getUsername(), userUpdatePasswordRequest.getOldPassword())) {
@@ -290,9 +304,17 @@ public class UserValidator extends AbstractPaginationValidator {
         return user;
     }
 
+    private IUserProfile extractUserProfile(String username) {
+        try {
+            return this.userProfileManager.getProfile(username);
+        } catch (EntException e) {
+            throw new RestServerError("Error loading user profile", e);
+        }
+    }
+
     @Override
     protected String getDefaultSortProperty() {
-        return "username";
+        return USERNAME_FIELD;
     }
 
 }

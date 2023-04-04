@@ -77,9 +77,8 @@ public class KeycloakUserManager extends AbstractParameterizableService implemen
 
     @Override
     public void removeUser(final String username) {
-        final UserRepresentation userRep = getUserRepresentation(username)
-                .orElseThrow(() -> new ResourceNotFoundException(ERRCODE_USER_NOT_FOUND, "user", username));
-        keycloakService.removeUser(userRep.getId());
+        getUserRepresentation(username)
+                .ifPresent(userRep -> keycloakService.removeUser(userRep.getId()));
     }
 
     @Override
