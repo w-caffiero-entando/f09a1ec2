@@ -194,12 +194,14 @@ public class UserService implements IUserService {
                     allUsers = new ArrayList<>();
 
             //username filter
-            Optional<String> usernameFilter = filters.stream().filter(filter
-                    -> filter.getValue() != null && filter.getKey().equals("username"))
-                    .map(filter -> (String) filter.getValue()).findFirst();
+            Optional<String> usernameFilter = filters.stream()
+                    .filter(filter -> filter.getValue() != null && filter.getKey().equals("username"))
+                    .map(filter -> (String) filter.getValue())
+                    .findFirst();
 
             if (usernameFilter.isPresent()) {
                 String text = usernameFilter.get();
+                logger.debug("Filtering on username using '{}'", text);
                 userNames = this.getUserManager().searchUsernames(text);
                 EntitySearchFilter<String> profileUsernameFilter = new EntitySearchFilter<>(
                         "username", false, text, true, LikeOptionType.COMPLETE);
@@ -211,6 +213,7 @@ public class UserService implements IUserService {
             List<String> profiles = this.getUserProfileManager().searchId(entityFilters.toArray(EntitySearchFilter[]::new));
 
             if (withProfile == null && !filterOnProfileAttributes) {
+                logger.debug("Loading both users with profile and without profile");
                 for (String username : profiles) {
                     if (!userNames.contains(username)) {
                         userNames.add(username);
@@ -218,14 +221,17 @@ public class UserService implements IUserService {
                 }
                 Collections.sort(userNames);
             } else if ((withProfile != null && withProfile.equals(WITH_PROFILE_CODE)) || filterOnProfileAttributes) {
+                logger.debug("Loading users having a profile");
                 userNames = profiles;
             } else {
+                logger.debug("Loading users without profile");
                 userNames.removeAll(profiles);
             }
 
             userNames.forEach(username -> allUsers.add(this.loadUser(username, true)));
 
             if (withProfile == null || withProfile.equals(WITH_PROFILE_CODE)) {
+                logger.debug("Filtering on profile attributes");
                 // Profile and attributes filters
                 users.addAll(allUsers.stream().filter(user
                         -> checkAttributesFilter(filters, entityFilters, user)).collect(Collectors.toList()));

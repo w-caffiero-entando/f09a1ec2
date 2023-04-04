@@ -22,6 +22,7 @@ import com.agiletec.apsadmin.system.entity.AbstractApsEntityFinderAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -66,7 +67,7 @@ public class UserProfileFinderAction extends AbstractApsEntityFinderAction {
             List<String> profileSearchResult = super.getSearchResult();
             if (super.isAddedAttributeFilter() ||
                     (null != withProfile && withProfile.intValue() == WITH_PROFILE_CODE) ||
-                    (null != super.getEntityTypeCode() && super.getEntityTypeCode().trim().length() > 0)) {
+                    (StringUtils.isNotBlank(super.getEntityTypeCode()))) {
                 this.setWithProfile(WITH_PROFILE_CODE);
                 return profileSearchResult;
             }
