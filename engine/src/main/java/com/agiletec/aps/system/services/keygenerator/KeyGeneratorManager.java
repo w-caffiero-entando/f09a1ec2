@@ -38,12 +38,12 @@ public class KeyGeneratorManager extends AbstractService implements IKeyGenerato
 		initTenantAware();
 		logger.debug("{} ready. : last loaded key {}", this.getClass().getName(), this.getCacheWrapper().getUniqueKeyCurrentValue());
 	}
-    
-    @Override
-    protected void release() {
-        releaseTenantAware();
+
+	@Override
+	protected void release() {
+		releaseTenantAware();
 		super.release();
-    }
+	}
 
 	@Override
 	public void initTenantAware() throws Exception {

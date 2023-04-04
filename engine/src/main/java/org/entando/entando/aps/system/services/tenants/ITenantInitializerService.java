@@ -5,12 +5,9 @@ import javax.servlet.ServletContext;
 
 public interface ITenantInitializerService {
 
-    CompletableFuture<Void> startTenantsInitialization(ServletContext svCtx);
-
-    CompletableFuture<Void> startTenantsInitializationWithFilter(ServletContext svCtx, InitializationTenantFilter filter);
+    CompletableFuture<Void> startTenantsInitialization(ServletContext svCtx, InitializationTenantFilter filter);
 
     enum InitializationTenantFilter {
-        ALL,
         REQUIRED_INIT_AT_START,
         NOT_REQUIRED_INIT_AT_START;
     }

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import javax.servlet.ServletContext;
 import org.entando.entando.aps.system.init.InitializerManager;
 import org.entando.entando.aps.system.services.tenants.ITenantInitializerService;
+import org.entando.entando.aps.system.services.tenants.ITenantInitializerService.InitializationTenantFilter;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.aps.system.services.tenants.TenantInitializerService;
 import org.entando.entando.aps.system.services.tenants.TenantDataAccessor;
@@ -141,7 +142,7 @@ class TestTenantController extends BaseTestCase {
     private static void recreateTenantManager(String tenants) throws Exception {
         ApplicationContext applicationContext = BaseTestCase.getApplicationContext();
         DefaultSingletonBeanRegistry registry = (DefaultSingletonBeanRegistry) applicationContext.getAutowireCapableBeanFactory();
-        //registry.destroySingleton("tenantManager");
+
         ObjectMapper om = applicationContext.getBean(ObjectMapper.class);
         TenantDataAccessor tenantData = applicationContext.getBean(TenantDataAccessor.class);
         TenantManager tm = new TenantManager(tenants, om, tenantData);
@@ -155,7 +156,7 @@ class TestTenantController extends BaseTestCase {
         when(wac.getBeansOfType(RefreshableBeanTenantAware.class)).thenReturn(new HashMap<>());
         doNothing().when(im).initTenant(any(), any());
         ITenantInitializerService srv = new TenantInitializerService(tenantData, im, null);
-        srv.startTenantsInitialization(svCtx).join();
+        srv.startTenantsInitialization(svCtx, InitializationTenantFilter.NOT_REQUIRED_INIT_AT_START).join();
 
         registry.destroySingleton("tenantManager");
         registry.registerSingleton("tenantManager", tm);

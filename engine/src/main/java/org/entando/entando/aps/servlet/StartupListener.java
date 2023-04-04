@@ -74,9 +74,9 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
 
         ITenantInitializerService tenantAsynchInitService = ApsWebApplicationUtils.getBean(ITenantInitializerService.class, svCtx);
 
-        tenantAsynchInitService.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join();
+        tenantAsynchInitService.startTenantsInitialization(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join();
 
-        tenantAsynchInitService.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.NOT_REQUIRED_INIT_AT_START);
+        tenantAsynchInitService.startTenantsInitialization(svCtx, InitializationTenantFilter.NOT_REQUIRED_INIT_AT_START);
 
         long endMs = System.currentTimeMillis();
         String executionTimeMsg = String.format("%s: contextInitialized takes ms:'%s' of execution",

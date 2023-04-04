@@ -41,18 +41,18 @@ public class ContentPageMapperManager extends AbstractService implements IConten
 	private transient IPageManager pageManager;
 	private transient IPageModelManager pageModelManager;
 	private transient IContentMapperCacheWrapper cacheWrapper;
-	
+
 	@Override
 	public void init() throws Exception {
 		initTenantAware();
 		logger.debug("{} ready.", this.getClass().getName());
 	}
-    
-    @Override
-    protected void release() {
+
+	@Override
+	protected void release() {
 		releaseTenantAware();
-        super.release();
-    }
+		super.release();
+	}
 
 	@Override
 	public void initTenantAware() throws Exception {
@@ -97,6 +97,7 @@ public class ContentPageMapperManager extends AbstractService implements IConten
 	protected IPageManager getPageManager() {
 		return pageManager;
 	}
+
 	public void setPageManager(IPageManager pageManager) {
 		this.pageManager = pageManager;
 	}
@@ -111,6 +112,7 @@ public class ContentPageMapperManager extends AbstractService implements IConten
 	protected IContentMapperCacheWrapper getCacheWrapper() {
 		return cacheWrapper;
 	}
+
 	public void setCacheWrapper(IContentMapperCacheWrapper cacheWrapper) {
 		this.cacheWrapper = cacheWrapper;
 	}

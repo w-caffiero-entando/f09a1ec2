@@ -40,12 +40,7 @@ public class TenantInitializerService implements ITenantInitializerService {
     }
 
     @Override
-    public CompletableFuture<Void> startTenantsInitialization(ServletContext svCtx){
-        return startTenantsInitializationCore(svCtx, InitializationTenantFilter.ALL);
-    }
-
-    @Override
-    public CompletableFuture<Void> startTenantsInitializationWithFilter(ServletContext svCtx, InitializationTenantFilter filter){
+    public CompletableFuture<Void> startTenantsInitialization(ServletContext svCtx, InitializationTenantFilter filter){
         return startTenantsInitializationCore(svCtx, filter);
     }
 
@@ -94,7 +89,7 @@ public class TenantInitializerService implements ITenantInitializerService {
     }
 
     private boolean wantsAll(InitializationTenantFilter filter){
-        return filter == null || InitializationTenantFilter.ALL.equals(filter);
+        return filter == null;
     }
 
     private void initDb(String tenantCode) throws Exception {

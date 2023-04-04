@@ -18,15 +18,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class TenantDataAccessor {
-
-    private static final Logger logger = LoggerFactory.getLogger(TenantDataAccessor.class);
 
     private Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
     private Map<String, TenantConfig> tenantsConfigs = new HashMap<>();
@@ -60,7 +60,7 @@ public class TenantDataAccessor {
             basicDataSource.setInitialSize(config.getInitialSize());
             return basicDataSource;
         }).orElseGet(() -> {
-            logger.warn("No tenant for code '{}'", tenantCode);
+            log.warn("No tenant for code '{}'", tenantCode);
             return null;
         });
     }

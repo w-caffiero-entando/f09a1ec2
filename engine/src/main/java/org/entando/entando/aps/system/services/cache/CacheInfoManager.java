@@ -56,7 +56,6 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
 
     @Override
     public void releaseTenantAware() {
-        // FIXME maybe should optimize this destroy
         this.destroy();
     }
 

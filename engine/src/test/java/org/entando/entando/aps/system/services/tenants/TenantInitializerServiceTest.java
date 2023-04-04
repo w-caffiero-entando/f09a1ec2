@@ -18,8 +18,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.common.RefreshableBean;
 import com.agiletec.aps.system.services.baseconfig.BaseConfigManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -79,18 +77,18 @@ class TenantInitializerServiceTest {
         when(wac.getBeansOfType(RefreshableBeanTenantAware.class)).thenReturn(new HashMap<>());
         doNothing().when(initializerManager).initTenant(any(), any());
         ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
-        srv.startTenantsInitialization(svCtx).join();
+        srv.startTenantsInitialization(svCtx, null).join();
 
         Assertions.assertEquals(2, tenantDataAccessor.getTenantStatuses().values().stream().filter(TenantStatus.READY::equals).count());
     }
 
 
     @Test
-    void shouldStartAsynchInitializeTenantsManageErrors() throws Throwable {
+    void shouldStartInitializeTenantsManageErrorsWithFailedStatusForNotRequiredTenants() throws Throwable {
         TenantDataAccessor tenantDataAccessor = initTenantDataAccessor(TenantManagerTest.TENANT_CONFIGS);
         doNothing().when(initializerManager).initTenant(any(), any());
         ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
-        srv.startTenantsInitialization(svCtx).join();
+        srv.startTenantsInitialization(svCtx, InitializationTenantFilter.NOT_REQUIRED_INIT_AT_START).join();
 
         Assertions.assertEquals(2, tenantDataAccessor.getTenantStatuses().values().stream().filter(TenantStatus.FAILED::equals).count());
     }
@@ -103,9 +101,9 @@ class TenantInitializerServiceTest {
         when(wac.getBeansOfType(RefreshableBeanTenantAware.class)).thenReturn(new HashMap<>());
         doNothing().when(initializerManager).initTenant(any(), any());
         ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
-        srv.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join();
+        srv.startTenantsInitialization(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join();
         Assertions.assertEquals(0, tenantDataAccessor.getTenantStatuses().values().stream().filter(TenantStatus.READY::equals).count());
-        srv.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.NOT_REQUIRED_INIT_AT_START).join();
+        srv.startTenantsInitialization(svCtx, InitializationTenantFilter.NOT_REQUIRED_INIT_AT_START).join();
         Assertions.assertEquals(2, tenantDataAccessor.getTenantStatuses().values().stream().filter(TenantStatus.READY::equals).count());
     }
 
@@ -115,7 +113,7 @@ class TenantInitializerServiceTest {
         doThrow(new Exception("genericError")).when(initializerManager).initTenant(any(), any());
         ITenantInitializerService srv = new TenantInitializerService(tenantDataAccessor, initializerManager, null);
         Assertions.assertThrows(RuntimeException.class,
-                () -> srv.startTenantsInitializationWithFilter(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join());
+                () -> srv.startTenantsInitialization(svCtx, InitializationTenantFilter.REQUIRED_INIT_AT_START).join());
     }
 
 

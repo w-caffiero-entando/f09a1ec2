@@ -91,7 +91,7 @@ public class TenantService implements ITenantService {
     }
 
     private TenantStatsDto calculate(Map<String, TenantStatus> statuses) {
-        TenantStatsDto d = new TenantStatsDto(0,0,0,0,0);
+        TenantStatsDto d = new TenantStatsDto();
         statuses.values().stream().forEach(s -> {
             d.setCount(d.getCount()+1);
             switch (s) {
