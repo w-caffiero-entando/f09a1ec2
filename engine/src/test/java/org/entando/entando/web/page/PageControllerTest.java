@@ -30,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.agiletec.aps.system.services.authorization.AuthorizationManager;
 import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.lang.ILangManager;
+import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.Page;
 import com.agiletec.aps.system.services.role.Permission;
@@ -43,9 +45,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import org.entando.entando.aps.system.services.page.PageAuthorizationService;
 import org.entando.entando.aps.system.services.page.PageService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
@@ -62,7 +61,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -74,6 +72,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  */
 @ExtendWith(MockitoExtension.class)
 class PageControllerTest extends AbstractControllerTest {
+
+    private static final Map<String, String> DEFAULT_TITLES = Map.of("en", "en_title", "it", "it_title");
 
     @Mock
     IPageManager pageManager;
@@ -87,16 +87,17 @@ class PageControllerTest extends AbstractControllerTest {
     @Mock
     private AuthorizationManager authorizationManager;
 
+    @Mock
+    private ILangManager langManager;
+
+    @InjectMocks
+    private PageValidator pageValidator;
+
     @InjectMocks
     private PageController controller;
 
-    private static Validator validator;
-
     @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
         entandoOauth2Interceptor.setAuthorizationManager(authorizationManager);
         when(authorizationManager.isAuthOnPermission(any(UserDetails.class), any(String.class))).thenReturn(true);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
@@ -104,9 +105,14 @@ class PageControllerTest extends AbstractControllerTest {
                 .setMessageConverters(getMessageConverters())
                 .setHandlerExceptionResolvers(createHandlerExceptionResolver())
                 .build();
-        PageValidator pageValidator = new PageValidator();
-        pageValidator.setPageManager(pageManager);
         this.controller.setPageValidator(pageValidator);
+        mockDefaultLanguage();
+    }
+
+    private void mockDefaultLanguage() {
+        Lang en = new Lang();
+        en.setCode("en");
+        Mockito.lenient().when(langManager.getDefaultLang()).thenReturn(en);
     }
 
     @Test
@@ -313,6 +319,7 @@ class PageControllerTest extends AbstractControllerTest {
         page.setPageModel("existing_model");
         page.setParentCode("existing_parent");
         page.setOwnerGroup("existing_group");
+        page.setTitles(DEFAULT_TITLES);
         Mockito.lenient().when(authorizationService.isAuth(any(UserDetails.class), any(String.class))).thenReturn(true);
         when(this.controller.getPageValidator().getPageManager().getDraftPage(any(String.class))).thenReturn(new Page());
         ResultActions result = mockMvc.perform(
@@ -578,6 +585,7 @@ class PageControllerTest extends AbstractControllerTest {
         page.setPageModel("test_model");
         page.setParentCode("free_page");
         page.setOwnerGroup("test_group");
+        page.setTitles(DEFAULT_TITLES);
 
         when(pageManager.getDraftPage("reserved_page")).thenReturn(null);
         when(pageManager.getDraftPage("free_page")).thenReturn(parentPage);
@@ -610,6 +618,7 @@ class PageControllerTest extends AbstractControllerTest {
         page.setPageModel("test_model");
         page.setParentCode("parent_reserved_page");
         page.setOwnerGroup("test_group");
+        page.setTitles(DEFAULT_TITLES);
 
         when(pageManager.getDraftPage("reserved_page")).thenReturn(null);
         when(pageManager.getDraftPage("parent_reserved_page")).thenReturn(parentPage);
@@ -643,6 +652,7 @@ class PageControllerTest extends AbstractControllerTest {
         page.setPageModel("test_model");
         page.setParentCode("parent_reserved_page");
         page.setOwnerGroup("test_group");
+        page.setTitles(DEFAULT_TITLES);
 
         when(pageManager.getDraftPage("reserved_page")).thenReturn(null);
         when(pageManager.getDraftPage("parent_reserved_page")).thenReturn(parentPage);
@@ -775,6 +785,54 @@ class PageControllerTest extends AbstractControllerTest {
                         .content(convertObjectToJsonBytes(pageCloneRequest))
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void shouldDenyCreatingPageWithMissingDefaultLanguageTitle() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+
+        String pageWithNullTitle = "page-With-Null-Title";
+
+        PageRequest pageRequest = new PageRequest();
+        pageRequest.setCode(pageWithNullTitle);
+        pageRequest.setPageModel("home");
+        pageRequest.setOwnerGroup(Group.FREE_GROUP_NAME);
+        pageRequest.setTitles(Map.of("it", "Italian title"));
+        pageRequest.setParentCode("home");
+
+        mockMvc.perform(post("/pages")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(pageRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.payload.size()", is(0)))
+                .andExpect(jsonPath("$.errors.size()", is(1)))
+                .andExpect(jsonPath("$.errors[0].code", is("12")));
+    }
+
+    @Test
+    void shouldDenyUpdatingPageWithMissingDefaultLanguageTitle() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        when(authorizationService.isAuthOnGroup(any(UserDetails.class), any(String.class))).thenReturn(true);
+
+        String pageWithNullTitle = "page-With-Null-Title";
+
+        PageRequest pageRequest = new PageRequest();
+        pageRequest.setCode(pageWithNullTitle);
+        pageRequest.setPageModel("home");
+        pageRequest.setOwnerGroup(Group.FREE_GROUP_NAME);
+        pageRequest.setParentCode("home");
+
+        mockMvc.perform(put("/pages/{code}", pageWithNullTitle)
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(pageRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.payload.size()", is(0)))
+                .andExpect(jsonPath("$.errors.size()", is(1)))
+                .andExpect(jsonPath("$.errors[0].code", is("12")));
     }
 
     private List<PageDto> createMetadataList(String json) throws IOException, JsonParseException, JsonMappingException {

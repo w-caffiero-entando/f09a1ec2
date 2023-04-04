@@ -14,6 +14,7 @@
 package org.entando.entando.web.page.validator;
 
 import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,7 +53,7 @@ public class PageValidator extends AbstractPaginationValidator {
     public static final String ERRCODE_INVALID_PATCH = "1";
     public static final String ERRCODE_PAGE_WITH_PUBLIC_CHILD = "8";
     public static final String ERRCODE_PAGE_WITH_NO_PUBLIC_PARENT = "9";
-    private static final String ERRCODE_FRAMEID_INVALID = null;
+    public static final String ERRCODE_PAGE_INVALID_TITLE = "12";
 
     private final org.slf4j.Logger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -61,6 +62,9 @@ public class PageValidator extends AbstractPaginationValidator {
 
     @Autowired
     private JsonPatchValidator jsonPatchValidator;
+
+    @Autowired
+    private ILangManager langManager;
 
     public IPageManager getPageManager() {
         return pageManager;
@@ -84,6 +88,14 @@ public class PageValidator extends AbstractPaginationValidator {
             errors.reject(ERRCODE_PAGE_ALREADY_EXISTS, new String[]{pageCode}, "page.exists");
         }
     }
+
+    public void validateTitles(PageRequest request, Errors errors) {
+        String defaultLangCode = langManager.getDefaultLang().getCode();
+        if (StringUtils.isBlank(request.getTitles().get(defaultLangCode))) {
+            errors.reject(ERRCODE_PAGE_INVALID_TITLE, new String[]{defaultLangCode}, "page.title.notBlank");
+        }
+    }
+
     public void validateClone(PageCloneRequest request, Errors errors) {
         String pageCode = request.getNewPageCode();
         if (null != this.getPage(pageCode)) {
