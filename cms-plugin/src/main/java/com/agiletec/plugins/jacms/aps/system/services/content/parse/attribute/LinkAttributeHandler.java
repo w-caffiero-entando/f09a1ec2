@@ -19,6 +19,8 @@ import org.xml.sax.SAXException;
 import com.agiletec.aps.system.common.entity.parse.attribute.TextAttributeHandler;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.SymbolicLink;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.LinkAttribute;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Classe handler per l'interpretazione della porzione di xml 
@@ -26,141 +28,149 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.Li
  * @author E.Santoboni
  */
 public class LinkAttributeHandler extends TextAttributeHandler {
-	
-	@Override
-	public void startAttribute(Attributes attributes, String qName) throws SAXException {
-		if (qName.equals("link")) {
-			startLink(attributes, qName);
-		} else if (qName.equals("urldest")) {
-			startUrlDest(attributes, qName);
-		} else if (qName.equals("pagedest")) {
-			startPageDest(attributes, qName);
-		} else if (qName.equals("contentdest")) {
+
+    @Override
+    public void startAttribute(Attributes attributes, String qName) throws SAXException {
+        if (qName.equals("link")) {
+            startLink(attributes, qName);
+        } else if (qName.equals("urldest")) {
+            startUrlDest(attributes, qName);
+        } else if (qName.equals("pagedest")) {
+            startPageDest(attributes, qName);
+        } else if (qName.equals("contentdest")) {
             startContentDest(attributes, qName);
-		} else if (qName.equals("resourcedest")) {
-			startResourceDest(attributes, qName);
-		} else if (qName.equals("properties")) {
+        } else if (qName.equals("resourcedest")) {
+            startResourceDest(attributes, qName);
+        } else if (qName.equals("properties")) {
             startProperties(attributes, qName);
         } else if (qName.equals("property")) {
             startProperty(attributes, qName);
         } else {
-			super.startAttribute(attributes, qName);
-		}
-	}
+            super.startAttribute(attributes, qName);
+        }
+    }
+
+    private void startProperties(Attributes attributes, String qName) throws SAXException {
+        this.langCode = extractAttribute(attributes, "lang", qName, false);
+    }
 
     private void startProperty(Attributes attributes, String qName) throws SAXException {
         this.propertyKey = extractAttribute(attributes, "key", qName, true);
     }
 
-    private void startProperties(Attributes attributes, String qName) {
-	    // nothing to do
+    private void startLink(Attributes attributes, String qName) throws SAXException {
+        this.linkType = extractAttribute(attributes, "type", qName, true);
+        this.langCode = extractAttribute(attributes, "lang", qName, false);
     }
 
-    private void startLink(Attributes attributes, String qName) throws SAXException {
-		this.linkType = extractAttribute(attributes, "type", qName, true);
-		((LinkAttribute) this.getCurrentAttr()).setSymbolicLink(new SymbolicLink());
-	}
-	
-	private void startUrlDest(Attributes attributes, String qName) throws SAXException {
-		return; // niente da fare
-	}
-	
-	private void startPageDest(Attributes attributes, String qName) throws SAXException {
-		return; // niente da fare
-	}
-	
-	private void startContentDest(Attributes attributes, String qName) throws SAXException {
-		return; // niente da fare
-	}
+    private void startUrlDest(Attributes attributes, String qName) throws SAXException {
+        return; // niente da fare
+    }
 
-	private void startResourceDest(Attributes attributes, String qName) throws SAXException {
-		return; // niente da fare
-	}
-	
-	@Override
-	public void endAttribute(String qName, StringBuffer textBuffer) {
-		if (qName.equals("link")) {
-			endLink();
-		} else if (qName.equals("urldest")) {
-			endUrlDest(textBuffer);
-		} else if (qName.equals("pagedest")){
-			endPageDest(textBuffer);
-		} else if (qName.equals("contentdest")) {
+    private void startPageDest(Attributes attributes, String qName) throws SAXException {
+        return; // niente da fare
+    }
+
+    private void startContentDest(Attributes attributes, String qName) throws SAXException {
+        return; // niente da fare
+    }
+
+    private void startResourceDest(Attributes attributes, String qName) throws SAXException {
+        return; // niente da fare
+    }
+
+    @Override
+    public void endAttribute(String qName, StringBuffer textBuffer) {
+        if (qName.equals("link")) {
+            endLink();
+        } else if (qName.equals("urldest")) {
+            endUrlDest(textBuffer);
+        } else if (qName.equals("pagedest")) {
+            endPageDest(textBuffer);
+        } else if (qName.equals("contentdest")) {
             endContentDest(textBuffer);
-		} else if (qName.equals("resourcedest")) {
-			endResourceDest(textBuffer);
-		} else if (qName.equals("property")) {
+        } else if (qName.equals("resourcedest")) {
+            endResourceDest(textBuffer);
+        } else if (qName.equals("property")) {
             endProperty(textBuffer);
         } else if (qName.equals("properties")) {
             endProperties(textBuffer);
         } else {
-			super.endAttribute(qName, textBuffer);
-		}
-	}
+            super.endAttribute(qName, textBuffer);
+        }
+    }
 
     private void endProperties(StringBuffer textBuffer) {
-	    // nothing to do
+        this.langCode = null;
     }
 
     private void endProperty(StringBuffer textBuffer) {
         if (null != textBuffer) {
-            String propertyValue = textBuffer.toString();
-            ((LinkAttribute) this.getCurrentAttr()).getLinkProperties().put(this.propertyKey, propertyValue);
+            LinkAttribute linkAttribute = (LinkAttribute) this.getCurrentAttr();
+            String currentLangCode = (null == this.langCode) ? linkAttribute.getDefaultLangCode() : this.langCode;
+            Map<String, String> map = linkAttribute.getLinksProperties().get(currentLangCode);
+            if (null == map) {
+                map = new HashMap<>();
+                linkAttribute.getLinksProperties().put(currentLangCode, map);
+            }
+            map.put(this.propertyKey, textBuffer.toString());
         }
         this.propertyKey = null;
     }
 
     private void endLink() {
-		SymbolicLink symLink = 
-			((LinkAttribute) this.getCurrentAttr()).getSymbolicLink();
-		if (null != symLink && null != linkType) {
-			if (linkType.equals("content")) {
-				symLink.setDestinationToContent(contentDest);
-			} else if (linkType.equals("external")) {
-				symLink.setDestinationToUrl(urlDest);
-			} else if (linkType.equals("page")) {
-				symLink.setDestinationToPage(pageDest);
-			} else if (linkType.equals("contentonpage")) {
-				symLink.setDestinationToContentOnPage(contentDest, pageDest);
-			} else if (linkType.equals("resource")) {
-				symLink.setDestinationToResource(resourceDest);
-			}
-		}
-		contentDest = null;
-		urlDest = null;
-		pageDest = null;
-		resourceDest = null;
-	}
-	
-	private void endUrlDest(StringBuffer textBuffer){
-		if (null != textBuffer) {
-			urlDest = textBuffer.toString();
-		}
-	}
-	
-	private void endPageDest(StringBuffer textBuffer){
-		if (null != textBuffer) {
-			pageDest = textBuffer.toString();
-		}
-	}
-	
-	private void endContentDest(StringBuffer textBuffer){
-		if (null != textBuffer) {
-			contentDest = textBuffer.toString();
-		}
-	}
+        SymbolicLink symLink = new SymbolicLink();
+        if (null != linkType) {
+            if (linkType.equals("content")) {
+                symLink.setDestinationToContent(contentDest);
+            } else if (linkType.equals("external")) {
+                symLink.setDestinationToUrl(urlDest);
+            } else if (linkType.equals("page")) {
+                symLink.setDestinationToPage(pageDest);
+            } else if (linkType.equals("contentonpage")) {
+                symLink.setDestinationToContentOnPage(contentDest, pageDest);
+            } else if (linkType.equals("resource")) {
+                symLink.setDestinationToResource(resourceDest);
+            }
+            ((LinkAttribute) this.getCurrentAttr()).setSymbolicLink(this.langCode, symLink);
+        }
+        this.langCode = null;
+        this.contentDest = null;
+        this.urlDest = null;
+        this.pageDest = null;
+        this.resourceDest = null;
+    }
 
-	private void endResourceDest(StringBuffer textBuffer){
-		if (null != textBuffer) {
-			resourceDest = textBuffer.toString();
-		}
-	}
-	
-	private String linkType;
-	private String urlDest;
-	private String pageDest;
-	private String contentDest;
-	private String resourceDest;
-	private String propertyKey;
-	
+    private void endUrlDest(StringBuffer textBuffer) {
+        if (null != textBuffer) {
+            urlDest = textBuffer.toString();
+        }
+    }
+
+    private void endPageDest(StringBuffer textBuffer) {
+        if (null != textBuffer) {
+            pageDest = textBuffer.toString();
+        }
+    }
+
+    private void endContentDest(StringBuffer textBuffer) {
+        if (null != textBuffer) {
+            contentDest = textBuffer.toString();
+        }
+    }
+
+    private void endResourceDest(StringBuffer textBuffer) {
+        if (null != textBuffer) {
+            resourceDest = textBuffer.toString();
+        }
+    }
+
+    private String langCode;
+    private String linkType;
+    private String urlDest;
+    private String pageDest;
+    private String contentDest;
+    private String resourceDest;
+    private String propertyKey;
+
 }

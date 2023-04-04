@@ -62,6 +62,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.Im
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.LinkAttribute;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.ResourceAttributeInterface;
 import com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 import org.entando.entando.aps.system.common.entity.model.attribute.EnumeratorMapAttribute;
 import org.junit.jupiter.api.BeforeEach;
@@ -1659,8 +1660,10 @@ class TestContentManager extends BaseTestCase {
             assertEquals(2, monoListAttribute10.getAttributes().size());
 
             LinkAttribute attributeToModify = (LinkAttribute) monoListAttribute10.getAttributes().get(0);
-            attributeToModify.getLinkProperties().put("key1", "value1");
-            attributeToModify.getLinkProperties().put("key2", "value2");
+            Map<String, String> map = new HashMap<>();
+            map.put("key1", "value1");
+            map.put("key2", "value2");
+            attributeToModify.getLinksProperties().put(attributeToModify.getDefaultLangCode(), map);
 
             content.setId(null);
             String id = this._contentManager.saveContent(content);
@@ -1671,9 +1674,11 @@ class TestContentManager extends BaseTestCase {
             assertNotNull(monoListAttribute10);
             assertEquals(2, monoListAttribute10.getAttributes().size());
             LinkAttribute attributeModified = (LinkAttribute) monoListAttribute10.getAttributes().get(0);
-            assertEquals(2, attributeModified.getLinkProperties().size());
-            assertEquals("value1", attributeModified.getLinkProperties().get("key1"));
-            assertEquals("value2", attributeModified.getLinkProperties().get("key2"));
+            assertEquals(1, attributeModified.getLinksProperties().size());
+            Map<String, String> mapForDefaultLang = attributeModified.getLinksProperties().get(attributeToModify.getDefaultLangCode());
+            assertEquals(2, mapForDefaultLang.size());
+            assertEquals("value1", mapForDefaultLang.get("key1"));
+            assertEquals("value2", mapForDefaultLang.get("key2"));
         } catch (Exception e) {
             throw e;
         } finally {

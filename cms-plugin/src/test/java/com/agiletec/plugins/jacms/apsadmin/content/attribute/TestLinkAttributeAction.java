@@ -46,7 +46,7 @@ class TestLinkAttributeAction extends AbstractBaseTestContentAction {
 		this.executeEdit(contentId, "admin");
 		this.initContentAction("/do/jacms/Content", "chooseLink", contentOnSessionMarker);
 		this.addParameter("attributeName", "VediAnche");
-		this.addParameter("langCode", "it");
+		this.addParameter("langCodeOfLink", "it");
 		String result = this.executeAction();
 		assertEquals(Action.SUCCESS, result);
 
@@ -68,7 +68,7 @@ class TestLinkAttributeAction extends AbstractBaseTestContentAction {
 		this.initContentAction("/do/jacms/Content", "chooseLink", contentOnSessionMarker);
 		this.addParameter("attributeName", "LinkCorrelati");
 		this.addParameter("elementIndex", "0");
-		this.addParameter("langCode", "it");
+		this.addParameter("langCodeOfLink", "it");
 		String result = this.executeAction();
 		assertEquals(BaseAction.FAILURE, result);//FALLIMENTO PER LISTA VUOTA
 
@@ -91,7 +91,7 @@ class TestLinkAttributeAction extends AbstractBaseTestContentAction {
 		this.initContentAction("/do/jacms/Content", "chooseLink", contentOnSessionMarker);
 		this.addParameter("attributeName", "LinkCorrelati");
 		this.addParameter("elementIndex", "0");
-		this.addParameter("langCode", "it");
+		this.addParameter("langCodeOfLink", "it");
 		result = this.executeAction();
 		assertEquals(Action.SUCCESS, result);
 
@@ -122,7 +122,7 @@ class TestLinkAttributeAction extends AbstractBaseTestContentAction {
 
 		this.initContentAction("/do/jacms/Content", "removeLink", contentOnSessionMarker);
 		this.addParameter("attributeName", "VediAnche");
-		this.addParameter("langCode", "it");
+		this.addParameter("langCodeOfLink", "it");
 		String result = this.executeAction();
 		assertEquals(Action.SUCCESS, result);
 

@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
+import java.util.Optional;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -52,7 +52,11 @@ import org.springframework.web.context.WebApplicationContext;
 public class LinkAttribute extends TextAttribute implements IReferenceableAttribute {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(LinkAttribute.class);
-
+    
+    public static final String REL_ATTRIBUTE = "rel";
+    public static final String TARGET_ATTRIBUTE = "target";
+    public static final String HREFLANG_ATTRIBUTE = "hrefLang";
+    
     @Override
     public Object getAttributePrototype() {
         LinkAttribute prototype = (LinkAttribute) super.getAttributePrototype();
@@ -66,34 +70,37 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
     @Override
     public Element getJDOMElement() {
         Element attributeElement = this.createRootElement("attribute");
-        if (null != this.getSymbolicLink()) {
+        this.getSymbolicLinks().entrySet().stream().forEach(e -> {
+            String currentLangCode = e.getKey();
+            SymbolicLink link = e.getValue();
             Element linkElement = new Element("link");
+            linkElement.setAttribute("lang", currentLangCode);
             attributeElement.addContent(linkElement);
             Element dest;
-            int type = this.getSymbolicLink().getDestType();
+            int type = link.getDestType();
             switch (type) {
                 case SymbolicLink.URL_TYPE:
                     linkElement.setAttribute("type", "external");
                     dest = new Element("urldest");
-                    dest.addContent(this.getSymbolicLink().getUrlDest());
+                    dest.addContent(link.getUrlDest());
                     linkElement.addContent(dest);
                     break;
                 case SymbolicLink.PAGE_TYPE:
                     linkElement.setAttribute("type", "page");
                     dest = new Element("pagedest");
-                    dest.addContent(this.getSymbolicLink().getPageDestination());
+                    dest.addContent(link.getPageDestination());
                     linkElement.addContent(dest);
                     break;
                 case SymbolicLink.CONTENT_TYPE:
                     linkElement.setAttribute("type", "content");
                     dest = new Element("contentdest");
-                    dest.addContent(this.getSymbolicLink().getContentDestination());
+                    dest.addContent(link.getContentDestination());
                     linkElement.addContent(dest);
                     break;
                 case SymbolicLink.CONTENT_ON_PAGE_TYPE:
                     linkElement.setAttribute("type", "contentonpage");
                     dest = new Element("pagedest");
-                    dest.addContent(this.getSymbolicLink().getPageDestination());
+                    dest.addContent(link.getPageDestination());
                     linkElement.addContent(dest);
                     dest = new Element("contentdest");
                     dest.addContent(this.getSymbolicLink().getContentDestination());
@@ -102,28 +109,26 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
                 case SymbolicLink.RESOURCE_TYPE:
                     linkElement.setAttribute("type", "resource");
                     dest = new Element("resourcedest");
-                    dest.addContent(this.getSymbolicLink().getResourceDestination());
+                    dest.addContent(link.getResourceDestination());
                     linkElement.addContent(dest);
                     break;
                 default:
                     linkElement.setAttribute("type", "");
             }
-        }
+        });
         super.addTextElements(attributeElement);
-        if (null != this.getLinkProperties()) {
-            Element propertiesElement = new Element("properties");
-            Iterator<String> keyIter = this.getLinkProperties().keySet().iterator();
-            while (keyIter.hasNext()) {
-                String key = keyIter.next();
-                String value = this.getLinkProperties().get(key);
-                if (!StringUtils.isBlank(value)) {
+        if (null != this.getLinksProperties()) {
+            this.getLinksProperties().entrySet().stream().forEach(e -> {
+                Element propertiesLangElement = new Element("properties");
+                propertiesLangElement.setAttribute("lang", e.getKey());
+                e.getValue().entrySet().stream().forEach(pr -> {
                     Element propertyElement = new Element("property");
-                    propertyElement.setAttribute("key", key);
-                    propertyElement.setText(value.trim());
-                    propertiesElement.addContent(propertyElement);
-                }
-            }
-            attributeElement.addContent(propertiesElement);
+                    propertyElement.setAttribute("key", pr.getKey());
+                    propertyElement.setText(pr.getValue());
+                    propertiesLangElement.addContent(propertyElement);
+                });
+                attributeElement.addContent(propertiesLangElement);
+            });
         }
         return attributeElement;
     }
@@ -183,7 +188,7 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
         JAXBLinkValue value = new JAXBLinkValue();
         String text = this.getTextForLang(langCode);
         value.setText(text);
-        value.setSymbolicLink(this.getSymbolicLink());
+        value.setSymbolicLink(this.getSymbolicLink(langCode));
         jaxbAttribute.setLinkValue(value);
         return jaxbAttribute;
     }
@@ -195,7 +200,7 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
         if (null == value) {
             return;
         }
-        this.setSymbolicLink(value.getSymbolicLink());
+        this.setSymbolicLink(langCode, value.getSymbolicLink());
         String textValue = value.getText();
         if (null == textValue) {
             return;
@@ -205,12 +210,9 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
 
     @Override
     public Status getStatus() {
+        Status textStatus = super.getStatus();
         Status linkStatus =
                 (null != this.getSymbolicLink() && this.getSymbolicLink().getDestType() != 0) ? Status.VALUED : Status.EMPTY;
-        if (linkStatus.equals(Status.EMPTY)) {
-            return Status.EMPTY;
-        }
-        Status textStatus = super.getStatus();
         if (!textStatus.equals(linkStatus)) {
             return Status.INCOMPLETE;
         }
@@ -230,22 +232,25 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
     public List<AttributeFieldError> validate(AttributeTracer tracer, ILangManager langManager, BeanFactory beanFactory) {
         List<AttributeFieldError> errors = super.validate(tracer, langManager, beanFactory);
         try {
-            SymbolicLink symbolicLink = this.getSymbolicLink();
-            if (null == symbolicLink) {
+            if (null == this.getSymbolicLinks()) {
                 return errors;
             }
-            SymbolicLinkValidator sler = this.getSymbolicLinkValidator(beanFactory);
-            AttributeFieldError attributeError = sler.scan(symbolicLink, (Content) this.getParentEntity());
-            if (null != attributeError) {
-                AttributeFieldError error = new AttributeFieldError(this, attributeError.getErrorCode(), tracer);
-                if (attributeError.getMessage() == null) {
-                    attributeError.setMessage(String.format("Invalid link - page %s - content %s - Error code %s",
-                            symbolicLink.getPageDestination(), symbolicLink.getContentDestination(),
-                            attributeError.getErrorCode()));
+            this.getSymbolicLinks().keySet().stream().forEach(langCode -> {
+                SymbolicLink symbolicLink = this.getSymbolicLink(langCode);
+                SymbolicLinkValidator sler = this.getSymbolicLinkValidator(beanFactory);
+                AttributeFieldError attributeError = sler.scan(symbolicLink, (Content) this.getParentEntity());
+                if (null != attributeError) {
+                    AttributeFieldError error = new AttributeFieldError(this, attributeError.getErrorCode(), tracer);
+                    if (attributeError.getMessage() == null) {
+                        attributeError.setMessage(String.format("Invalid link - lang %s - page %s - content %s - Error code %s",
+                                langCode, 
+                                symbolicLink.getPageDestination(), symbolicLink.getContentDestination(),
+                                attributeError.getErrorCode()));
+                    }
+                    error.setMessage(attributeError.getMessage());
+                    errors.add(error);
                 }
-                error.setMessage(attributeError.getMessage());
-                errors.add(error);
-            }
+            });
         } catch (Exception t) {
             logger.error("Error validating link attribute", t);
             throw new EntRuntimeException("Error validating link attribute", t);
@@ -265,33 +270,65 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
                 beanFactory == null ? this.resourceManager : beanFactory.getBean(IResourceManager.class)
         );
     }
-
-    /**
-     * Setta il link simbolico caratterizzante l'attributo.
-     *
-     * @param symbolicLink Il link simbolico.
-     */
-    public void setSymbolicLink(SymbolicLink symbolicLink) {
-        this.symbolicLink = symbolicLink;
+    
+    public void setSymbolicLink(String langCode, SymbolicLink symbolicLink) {
+        if (null == langCode) {
+            langCode = this.getDefaultLangCode();
+        }
+        this.getSymbolicLinks().put(langCode, symbolicLink);
     }
-
-    /**
-     * Restituisce il link simbolico caratterizzante l'attributo.
-     *
-     * @return Il link simbolico.
-     */
+    
+    public SymbolicLink getSymbolicLink(String langCode) {
+        SymbolicLink slink = this.getSymbolicLinks().get(langCode);
+        if (null == slink) {
+            slink = this.getSymbolicLinks().get(super.getDefaultLangCode());
+        }
+        return slink;
+    }
+    
     public SymbolicLink getSymbolicLink() {
-        return symbolicLink;
+        return this.getSymbolicLink(this.getRenderingLang());
     }
 
-    public Map<String, String> getLinkProperties() {
-        return linkProperties;
+    public Map<String, SymbolicLink> getSymbolicLinks() {
+        return symbolicLinks;
+    }
+    public void setSymbolicLinks(Map<String, SymbolicLink> symbolicLinks) {
+        this.symbolicLinks = symbolicLinks;
     }
 
-    public void setLinkProperties(Map<String, String> linkProperties) {
-        this.linkProperties = linkProperties;
+    public Map<String, String> getLinkProperties(String langCode) {
+        Map<String, String> properties = this.getLinksProperties().get(langCode);
+        if (null == properties) {
+            properties = this.getLinksProperties().get(super.getDefaultLangCode());
+        }
+        return properties;
     }
 
+    public Map<String, Map<String, String>> getLinksProperties() {
+        return linksProperties;
+    }
+    public void setLinksProperties(Map<String, Map<String, String>> linkProperties) {
+        this.linksProperties = linkProperties;
+    }
+    
+    public String getRel() {
+        return this.getProperty(REL_ATTRIBUTE, this.getRenderingLang());
+    }
+    
+    public String getTarget() {
+        return this.getProperty(TARGET_ATTRIBUTE, this.getRenderingLang());
+    }
+    
+    public String getHrefLang() {
+        return this.getProperty(HREFLANG_ATTRIBUTE, this.getRenderingLang());
+    }
+    
+    private String getProperty(String key, String langCode) {
+        Map<String, String> map = Optional.ofNullable(this.getLinksProperties().get(langCode)).orElse(this.getLinksProperties().get(this.getDefaultLangCode()));
+        return Optional.ofNullable(map).map(m -> m.get(key)).orElse(null);
+    }
+    
     @Deprecated
     protected IContentManager getContentManager() {
         return contentManager;
@@ -331,9 +368,11 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
     public void setResourceManager(IResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
-
-    private SymbolicLink symbolicLink;
-    private Map<String, String> linkProperties = new HashMap<>();
+    
+    private Map<String, SymbolicLink> symbolicLinks = new HashMap<>();
+    
+    private Map<String, Map<String, String>> linksProperties = new HashMap<>();
+    
     private transient IContentManager contentManager;
     private transient IPageManager pageManager;
     private transient ILinkResolverManager linkResolverManager;
@@ -353,4 +392,5 @@ public class LinkAttribute extends TextAttribute implements IReferenceableAttrib
         this.resourceManager = ctx.getBean(IResourceManager.class);
         this.setLangManager(ctx.getBean(ILangManager.class));
     }
+    
 }
