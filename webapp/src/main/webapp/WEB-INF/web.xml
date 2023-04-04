@@ -29,7 +29,7 @@
     </context-param>
     <context-param>
         <param-name>contextClass</param-name>
-        <param-value>org.entando.entando.aps.system.XmlWebApplicationContext</param-value>
+        <param-value>org.springframework.web.context.support.XmlWebApplicationContext</param-value>
     </context-param>
     <filter>
         <filter-name>keycloakFilter</filter-name>
