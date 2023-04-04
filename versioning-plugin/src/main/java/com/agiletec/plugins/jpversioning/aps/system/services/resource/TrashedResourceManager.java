@@ -64,7 +64,6 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 
 	@Override
 	public void init() throws Exception {
-		this.checkTrashedResourceDiskFolder(this.getResourceTrashRootDiskSubFolder());
 		_logger.debug("{} ready", this.getClass().getName());
 		_logger.debug("Folder trashed resources: {}", this.getResourceTrashRootDiskSubFolder());
 	}
@@ -117,7 +116,6 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 					while (iter.hasNext()) {
 						ResourceInstance resourceInstance = iter.next();
 						String path = folder + resourceInstance.getFileName();
-						//System.out.println("source " + path);
 						InputStream is = this.getStorageManager().getStream(path, true);
 						if (is != null) {
 							String pathDest = folderDest + resourceInstance.getFileName();
@@ -165,9 +163,6 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 
 	protected void removeFromTrash(ResourceInterface resource) throws EntException {
 		try {
-			//ResourceRecordVO resourceVo = this.getTrashedResourceDAO().getTrashedResource(resourceId);
-			//if (null != resourceVo) {
-				//ResourceInterface resource = this.createResource(resourceVo);
 			String folder = this.getSubfolder(resource);
 			if (resource.isMultiInstance()) {
 				AbstractMultiInstanceResource multiResource = (AbstractMultiInstanceResource) resource;
@@ -184,7 +179,6 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 				String path = folder + resourceInstance.getFileName();
 				this.getStorageManager().deleteFile(path, true);
 			}
-			//}
 			this.getTrashedResourceDAO().delTrashedResource(resource.getId());
 		} catch (Throwable t) {
     		_logger.error("Error removing Trashed Resource", t);
@@ -245,34 +239,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
     		throw new RuntimeException("Error on check Trashed disk folder", t);
 		}
 	}
-	/*
-	protected Map<String,String> resourceInstancesTrashFilePaths(ResourceInterface resource) throws EntException {
-		Map<String,String> filesPath = new HashMap<String, String>();
-		StringBuilder subfolder = new StringBuilder(this.getResourceTrashRootDiskSubFolder());
-		subfolder.append(File.separator).append(resource.getType())
-				.append(File.separator).append(resource.getMainGroup()).append(File.separator);
-		if (resource.isMultiInstance()) {
-			AbstractMultiInstanceResource multiInstanceResource = (AbstractMultiInstanceResource) resource;
-			Map<String, ResourceInstance> instances = multiInstanceResource.getInstances();
-			Set<String> keys = instances.keySet();
-			Iterator<String> iterator = keys.iterator();
-			while (iterator.hasNext()) {
-				String key = iterator.next();
-				ResourceInstance instance = instances.get(key);
-				InputStream is = resource.getResourceStream(instance);
-				String filename = instance.getFileName();
-				this.getStorageManager().saveFile(subfolder.toString() + filename, true, is);
-			}
-		} else {
-			AbstractMonoInstanceResource monoInstanceResource = (AbstractMonoInstanceResource) resource;
-			ResourceInstance instance = monoInstanceResource.getInstance();
-			InputStream is = resource.getResourceStream(instance);
-			String filename = instance.getFileName();
-			this.getStorageManager().saveFile(subfolder.toString() + filename, true, is);
-		}
-		return filesPath;
-	}
-	*/
+
 	@Override
 	public InputStream getTrashFileStream(ResourceInterface resource, ResourceInstance instance) throws EntException {
 		try {
@@ -286,6 +253,7 @@ public class TrashedResourceManager extends AbstractService implements ITrashedR
 
 	@Override
 	public String getSubfolder(ResourceInterface resource) {
+		this.checkTrashedResourceDiskFolder(this.getResourceTrashRootDiskSubFolder());
 		StringBuilder subfolder = new StringBuilder(this.getResourceTrashRootDiskSubFolder());
 		subfolder.append(File.separator).append(resource.getType())
 				.append(File.separator).append(resource.getId()).append(File.separator);
