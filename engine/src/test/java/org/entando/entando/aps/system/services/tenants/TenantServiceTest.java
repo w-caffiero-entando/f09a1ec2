@@ -39,14 +39,16 @@ class TenantServiceTest {
     @Mock
     private ITenantManager tenantManager;
     @Mock
+    private TenantDataAccessor tenantDataAccessor;
+    @Mock
     private IStorageManager storageManager;
 
     private ITenantService tenantService;
 
     @BeforeEach
     public void setUp() {
-        Mockito.reset(tenantManager, storageManager);
-        tenantService = new TenantService(tenantManager, storageManager);
+        Mockito.reset(tenantManager, tenantDataAccessor, storageManager);
+        tenantService = new TenantService(tenantManager, tenantDataAccessor, storageManager);
     }
 
     @Test
@@ -184,15 +186,13 @@ class TenantServiceTest {
         // Cds enabled with 1 tenant
         when(tenantManager.getStatuses()).thenReturn(Map.of("t1",
                 TenantStatus.UNKNOWN, "t2", TenantStatus.PENDING, "t3",  TenantStatus.READY, "t4", TenantStatus.FAILED));
-        when(tenantManager.getConfig("t1"))
-                .thenReturn(Optional.of(new TenantConfig(Map.of("tenantCode", "t1"))));
-        when(tenantManager.getConfig("t2"))
-                .thenReturn(Optional.of(new TenantConfig(Map.of("tenantCode", "t2"))));
-        when(tenantManager.getConfig("t3"))
-                .thenReturn(Optional.of(new TenantConfig(Map.of("tenantCode", "t3"))));
-        when(tenantManager.getConfig("t4"))
-                .thenReturn(Optional.of(new TenantConfig(Map.of("tenantCode", "t4", "initializationAtStartRequired", "true"))));
-
+        when(tenantDataAccessor.getTenantConfigs())
+                .thenReturn(Map.of("t1",new TenantConfig(Map.of("tenantCode", "t1")),
+                        "t2",new TenantConfig(Map.of("tenantCode", "t2")),
+                        "t3",new TenantConfig(Map.of("tenantCode", "t3")),
+                        "t4",new TenantConfig(Map.of("tenantCode", "t4",  "initializationAtStartRequired", "true"))
+                ));
+        
         TenantStatsAndStatusesDto tenants = tenantService.getTenantStatsAndStatuses();
         Assertions.assertNotNull(tenants);
         Assertions.assertEquals(4, tenants.getStats().getCount());

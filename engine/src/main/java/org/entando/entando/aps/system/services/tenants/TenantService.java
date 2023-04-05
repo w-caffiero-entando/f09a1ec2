@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -39,11 +40,13 @@ import org.springframework.stereotype.Service;
 public class TenantService implements ITenantService {
 
     private final ITenantManager tenantManager;
+    private final TenantDataAccessor tenantAccessor;
     private final IStorageManager storageManager;
 
     @Autowired
-    public TenantService(ITenantManager tenantManager, IStorageManager storageManager){
+    public TenantService(ITenantManager tenantManager, TenantDataAccessor accessor, IStorageManager storageManager){
         this.tenantManager = tenantManager;
+        this.tenantAccessor = accessor;
         this.storageManager = storageManager;
     }
 
@@ -84,7 +87,8 @@ public class TenantService implements ITenantService {
 
     private Map<String, TenantStatus> fetchByFilteringConfig(Map<String, TenantStatus> statuses, boolean isMandatory) {
         return statuses.keySet().stream()
-                .flatMap(code -> tenantManager.getConfig(code).stream())
+                .map(code -> tenantAccessor.getTenantConfigs().get(code))
+                .filter(Objects::nonNull)
                 .filter(tc -> isMandatory == tc.isInitializationAtStartRequired())
                 .map(TenantConfig::getTenantCode)
                 .collect(Collectors.toMap(k -> k, statuses::get));
