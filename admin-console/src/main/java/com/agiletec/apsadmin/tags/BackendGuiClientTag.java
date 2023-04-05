@@ -24,6 +24,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
  * @deprecated Unnecessary for UX Backoffice of entando 4.0.0
  * @author E.Santoboni
  */
+// FIXME verify if defined tld and used in jsp-s maybe not used
 public class BackendGuiClientTag extends TagSupport {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(BackendGuiClientTag.class);

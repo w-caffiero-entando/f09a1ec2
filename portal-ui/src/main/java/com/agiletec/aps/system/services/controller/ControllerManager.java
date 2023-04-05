@@ -148,6 +148,7 @@ public class ControllerManager extends AbstractService {
 	 * esecuzione dall'inizio (deprecato). 
 	 * @deprecated
 	 */
+	// FIXME remove
 	public static final int RESTART = 5;
 	
 	/**

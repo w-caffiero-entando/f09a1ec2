@@ -201,7 +201,7 @@ class TestJacmsEntityTypeConfigAction extends ApsAdminBaseTestCase {
 		try {
 			IApsEntity prototype = this._contentManager.getEntityPrototype("ART");
 			prototype.setTypeCode(typeCode);
-			prototype.setTypeDescr("Entity type Description");
+			prototype.setTypeDescription("Entity type Description");
 			this.getRequest().getSession().setAttribute(IEntityTypeConfigAction.ENTITY_TYPE_MANAGER_SESSION_PARAM, JacmsSystemConstants.CONTENT_MANAGER);
 			this.getRequest().getSession().setAttribute(IEntityTypeConfigAction.ENTITY_TYPE_OPERATION_ID_SESSION_PARAM, new Integer(ApsAdminSystemConstants.ADD));
 			this.getRequest().getSession().setAttribute(IEntityTypeConfigAction.ENTITY_TYPE_ON_EDIT_SESSION_PARAM, prototype);

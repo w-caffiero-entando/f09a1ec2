@@ -24,6 +24,7 @@ import com.agiletec.apsadmin.tags.util.IAutoIndexingTag;
  * @author E.Santoboni
  * @deprecated Use default struts2 s:checkbox tag
  */
+// FIXME verify if defined tld and used in jsp-s
 public class CheckboxTag extends org.apache.struts2.views.jsp.ui.CheckboxTag implements IAutoIndexingTag {
 	
 	@Override

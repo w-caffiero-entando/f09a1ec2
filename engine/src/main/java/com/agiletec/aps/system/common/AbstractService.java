@@ -75,6 +75,7 @@ public abstract class AbstractService
 	 * @return The required service.
 	 * @deprecated It's better to avoid the use of this method: you should use the Spring Injection instead.
 	 */
+	// FIXME verify what bean
 	protected IManager getService(String name) {
 		return (IManager) this._beanFactory.getBean(name);
 	}

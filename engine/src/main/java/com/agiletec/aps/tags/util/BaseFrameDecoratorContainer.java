@@ -30,12 +30,7 @@ public class BaseFrameDecoratorContainer implements IFrameDecoratorContainer {
 	public boolean isWidgetDecorator() {
 		return false;
 	}
-	
-	@Deprecated
-	public void setHeaderPath(String headerPath) {
-		this.setHeaderJspPath(headerPath);
-	}
-	
+
 	@Override
 	public String getHeaderJspPath() {
 		return _headerJspPath;
@@ -51,12 +46,12 @@ public class BaseFrameDecoratorContainer implements IFrameDecoratorContainer {
 	public void setHeaderFragmentCode(String headerFragmentCode) {
 		this._headerFragmentCode = headerFragmentCode;
 	}
-	
+
 	@Deprecated
 	public void setFooterPath(String footerPath) {
 		this.setFooterJspPath(footerPath);
 	}
-	
+
 	@Override
 	public String getFooterJspPath() {
 		return _footerJspPath;

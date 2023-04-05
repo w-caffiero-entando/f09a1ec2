@@ -31,9 +31,9 @@ public abstract class AbstractTextAttribute extends AbstractAttribute implements
 	public boolean isTextAttribute() {
 		return true;
 	}
-	
+	/*
 	@Override
-	@Deprecated (/** to guaranted compatibility with previsous version of jAPS 2.0.12 */)
+	@Deprecated (/** to guaranted compatibility with previsous version of jAPS 2.0.12 )
 	public void setAttributeConfig(Element attributeElement) throws EntException {
 		super.setAttributeConfig(attributeElement);
 		String maxLength = this.extractXmlAttribute(attributeElement, "maxlength", false);
@@ -52,7 +52,7 @@ public abstract class AbstractTextAttribute extends AbstractAttribute implements
 			}
 		}
 	}
-	
+*/
 	@Override
 	protected IAttributeValidationRules getValidationRuleNewIntance() {
 		return new TextAttributeValidationRules();
@@ -66,13 +66,13 @@ public abstract class AbstractTextAttribute extends AbstractAttribute implements
 		}
 		return -1;
 	}
-	
+	/*
 	@Override
-	@Deprecated (/** to guaranted compatibility with previsous version of jAPS 2.0.12 */)
+	@Deprecated (/** to guaranted compatibility with previsous version of jAPS 2.0.12 )
 	public void setMaxLength(int maxLength) {
 		((TextAttributeValidationRules) this.getValidationRules()).setMaxLength(maxLength);
 	}
-	
+*/
 	@Override
 	public int getMinLength() {
 		TextAttributeValidationRules validationRule = (TextAttributeValidationRules) this.getValidationRules();
@@ -81,25 +81,25 @@ public abstract class AbstractTextAttribute extends AbstractAttribute implements
 		}
 		return -1;
 	}
-	
+	/*
 	@Override
-	@Deprecated (/** to guaranted compatibility with previsous version of jAPS 2.0.12 */)
+	@Deprecated (/** to guaranted compatibility with previsous version of jAPS 2.0.12 )
 	public void setMinLength(int minLength) {
 		((TextAttributeValidationRules) this.getValidationRules()).setMinLength(minLength);
 		//this._minLength = minLength;
 	}
-	
+*/
 	@Override
 	public String getRegexp() {
 		return ((TextAttributeValidationRules) this.getValidationRules()).getRegexp();
 	}
-	
+	/*
 	@Override
-	@Deprecated (/** to guaranted compatibility with previsous version of jAPS 2.0.12 */)
+	@Deprecated (/** to guaranted compatibility with previsous version of jAPS 2.0.12 )
 	public void setRegexp(String regexp) {
 		((TextAttributeValidationRules) this.getValidationRules()).setRegexp(regexp);
 	}
-	
+	*/
 	@Override
 	protected AbstractJAXBAttribute getJAXBAttributeInstance() {
 		return new JAXBTextAttribute();

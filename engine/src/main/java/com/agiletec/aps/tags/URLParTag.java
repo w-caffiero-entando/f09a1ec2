@@ -17,6 +17,7 @@ package com.agiletec.aps.tags;
  * Used to add additional parameters in the tag "URLTag".
  * @deprecated use {@link ParameterTag}
  */
+// FIXME remove also from tld
 public class URLParTag extends ParameterTag {
 	
 }

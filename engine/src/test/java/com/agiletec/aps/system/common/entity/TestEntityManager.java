@@ -58,7 +58,7 @@ class TestEntityManager extends BaseTestCase {
 			int initAttributeNumber = entityPrototype.getAttributeList().size();
 			
 			entityPrototype.setTypeCode(testTypeCode);
-			entityPrototype.setTypeDescr("testDescription");
+			entityPrototype.setTypeDescription("testDescription");
 			assertNull(entityPrototype.getAttribute(testAttributeName));
 			AttributeInterface newAttribute = attributes.get("Text");
 			newAttribute.setName(testAttributeName);

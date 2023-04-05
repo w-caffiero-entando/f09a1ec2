@@ -162,9 +162,11 @@ public class CompositeAttribute extends AbstractComplexAttribute {
         }
     }
 
+
+    // FIXME remove
     @Deprecated(/**
-             * INSERTED to guaranted compatibility with previsous version of jAPS 2.0.12
-             */
+             * INSERTED to guaranted compatibility with previsous version of jAPS 2.0.12 */
+
             )
     private void setOldComplexAttributeConfig(Element attributeElement, Map<String, AttributeInterface> attrTypes) throws EntException {
         List<Element> attributeElements = attributeElement.getChildren();

@@ -109,17 +109,11 @@ public class ApsEntity implements IApsEntity {
     public void setDescription(String description) {
         this._description = description;
     }
-
+    // FIXME very
     @Override
     @Deprecated
     public String getDescr() {
         return this.getDescription();
-    }
-
-    @Override
-    @Deprecated
-    public void setDescr(String description) {
-        this.setDescription(description);
     }
 
     /**
@@ -254,17 +248,11 @@ public class ApsEntity implements IApsEntity {
     public void setTypeDescription(String typeDescription) {
         this._typeDescription = typeDescription;
     }
-
+    // FIXME very
     @Override
     @Deprecated
     public String getTypeDescr() {
         return this.getTypeDescription();
-    }
-
-    @Override
-    @Deprecated
-    public void setTypeDescr(String typeDescription) {
-        this.setTypeDescription(typeDescription);
     }
 
     /**

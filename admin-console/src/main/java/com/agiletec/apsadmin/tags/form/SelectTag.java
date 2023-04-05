@@ -24,6 +24,7 @@ import com.agiletec.apsadmin.tags.util.IAutoIndexingTag;
  * @author E.Santoboni
  * @deprecated Use default struts2 s:select tag
  */
+// FIXME verify if defined tld and used in jsp-s
 public class SelectTag extends org.apache.struts2.views.jsp.ui.SelectTag implements IAutoIndexingTag {
 	
 	@Override

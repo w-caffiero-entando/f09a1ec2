@@ -56,19 +56,16 @@ public interface IApsEntity extends Serializable {
      * @return The description of entity.
      */
     public String getDescription();
-
+//FIXME see where used
     @Deprecated
     public String getDescr();
 
     /**
      * Set up the description of the entity.
      *
-     * @param description he description of entity.
+     * @param description the description of entity.
      */
     public void setDescription(String description);
-
-    @Deprecated
-    public void setDescr(String descr);
 
     /**
      * Add an attribute to the list of the attributes of the entity.
@@ -128,6 +125,7 @@ public interface IApsEntity extends Serializable {
      */
     public String getTypeDescription();
 
+    // FIXME see where used
     @Deprecated
     public String getTypeDescr();
 
@@ -137,9 +135,6 @@ public interface IApsEntity extends Serializable {
      * @param typeDescription The description of the Entity Type.
      */
     public void setTypeDescription(String typeDescription);
-
-    @Deprecated
-    public void setTypeDescr(String typeDescr);
 
     /**
      * Return the string that identifies the main group the entity belongs to.

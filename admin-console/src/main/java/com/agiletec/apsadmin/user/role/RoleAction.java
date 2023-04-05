@@ -104,6 +104,7 @@ public class RoleAction extends AbstractAuthorityAction {
 	/**
 	 * Replaced by {@link #showDetail()}
 	 */
+	// FIXME verify action mapping
 	@Deprecated
 	public String view() {
 		return this.showDetail();

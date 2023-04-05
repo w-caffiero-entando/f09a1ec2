@@ -59,32 +59,7 @@ public class ApsWebApplicationUtils {
 	public static Resource[] getResources(String locationPattern, PageContext pageContext) throws IOException {
 		return getResources(locationPattern, pageContext.getServletContext());
 	}
-	
-	/**
-	 * Restituisce un servizio di sistema.
-	 * @param serviceName Il nome del servizio richiesto.
-	 * @param request La request.
-	 * @return Il servizio richiesto.
-	 * @deprecated use getBean
-	 */
-	public static AbstractService getService(String serviceName, HttpServletRequest request) {
-		WebApplicationContext wac = getWebApplicationContext(request);
-		return getService(serviceName, wac);
-	}
-	
-	/**
-	 * Restituisce un servizio di sistema.
-	 * Il seguente metodo è in uso ai tag jsp del sistema.
-	 * @param serviceName Il nome del servizio richiesto.
-	 * @param pageContext Il Contesto di pagina,
-	 * @return Il servizio richiesto.
-	 * @deprecated use getBean
-	 */
-	public static AbstractService getService(String serviceName, PageContext pageContext) {
-		WebApplicationContext wac = getWebApplicationContext(pageContext.getServletContext());
-		return getService(serviceName, wac);
-	}
-	
+
 	/**
 	 * Restituisce un bean di sistema.
 	 * Il seguente metodo è in uso ai tag jsp del sistema.

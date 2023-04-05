@@ -125,13 +125,6 @@ public final class SystemConstants {
     public static final String GUI_FRAGMENT_MANAGER = "GuiFragmentManager";
 
     /**
-     * Nome del servizio che gestisce i tipi di showlet.
-     *
-     * @deprecated Use {@link #WIDGET_TYPE_MANAGER} instead
-     */
-    public static final String SHOWLET_TYPE_MANAGER = WIDGET_TYPE_MANAGER;
-
-    /**
      * Nome del servizio che gestisce i modelli di pagina.
      */
     public static final String PAGE_MODEL_MANAGER = "PageModelManager";
@@ -255,42 +248,6 @@ public final class SystemConstants {
 
     public static final String CONFIG_ITEM_PARAMS = "params";
 
-    /**
-     * Parametro di sistema: abilitazione del modulo Privacy. Possibili
-     * immissioni "true" o "false" (default).
-     * @deprecated moved into IUserManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_PM_ENABLED = IUserManager.CONFIG_PARAM_PM_ENABLED;
-
-    /**
-     * Parametro di sistema a uso del modulo Privacy. Numero massimo di mesi
-     * consentiti dal ultimo accesso. Nel caso che il modulo privacy sia attivo
-     * e che una utenza abbia oltrepassato la soglia massima di inattività
-     * dell'utenza definita da questo parametro, l'utenza sarà dichiarata
-     * scaduta e in occasione del login tutte le autorizzazioni verranno
-     * disabilitate.
-     * @deprecated moved into IUserManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_PM_MM_LAST_ACCESS = IUserManager.CONFIG_PARAM_PM_MM_LAST_ACCESS;
-
-    /**
-     * Parametro di sistema a uso del modulo Privacy. Numero massimo di mesi
-     * consentiti dal ultimo cambio password. Nel caso che il modulo privacy sia
-     * attivo e che una utenza presenti la password invariata per un tempo oltre
-     * la soglia massima definita da questo parametro, in occasione del login
-     * tutte le autorizzazioni verranno disabilitate.
-     * @deprecated moved into IUserManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_PM_MM_LAST_PASSWORD_CHANGE = IUserManager.CONFIG_PARAM_PM_MM_LAST_PASSWORD_CHANGE;
-    /**
-     * @deprecated moved into IUserManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_GRAVATAR_INTEGRATION_ENABLED = IUserManager.CONFIG_PARAM_GRAVATAR_INTEGRATION_ENABLED;
-
     public static final String CONFIG_PARAM_TREE_STYLE_CATEGORY = "treeStyle_category";
 
     public static final String TREE_STYLE_CLASSIC = "classic";
@@ -298,108 +255,6 @@ public final class SystemConstants {
     public static final String TREE_STYLE_LEVEL = "level";
 
     public static final String CONFIG_PARAM_HYPERTEXT_EDITOR_CODE = "hypertextEditor";
-
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_URL_STYLE = IPageManager.CONFIG_PARAM_URL_STYLE;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_TREE_STYLE_PAGE = IPageManager.CONFIG_PARAM_TREE_STYLE_PAGE;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_USE_JSESSIONID = IPageManager.CONFIG_PARAM_USE_JSESSIONID;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_BASE_URL = IPageManager.CONFIG_PARAM_BASE_URL;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_BASE_URL_RELATIVE = IPageManager.CONFIG_PARAM_BASE_URL_RELATIVE;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_BASE_URL_FROM_REQUEST = IPageManager.CONFIG_PARAM_BASE_URL_FROM_REQUEST;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_BASE_URL_STATIC = IPageManager.CONFIG_PARAM_BASE_URL_STATIC;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String SPECIAL_PARAM_BASE_URL_REQUEST_IF_RELATIVE = IPageManager.SPECIAL_PARAM_BASE_URL_REQUEST_IF_RELATIVE;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_BASE_URL_CONTEXT = IPageManager.CONFIG_PARAM_BASE_URL_CONTEXT;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_URL_STYLE_CLASSIC = IPageManager.CONFIG_PARAM_URL_STYLE_CLASSIC;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_URL_STYLE_BREADCRUMBS = IPageManager.CONFIG_PARAM_URL_STYLE_BREADCRUMBS;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_START_LANG_FROM_BROWSER = IPageManager.CONFIG_PARAM_START_LANG_FROM_BROWSER;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_HOMEPAGE_PAGE_CODE = IPageManager.CONFIG_PARAM_HOMEPAGE_PAGE_CODE;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_NOT_FOUND_PAGE_CODE = IPageManager.CONFIG_PARAM_NOT_FOUND_PAGE_CODE;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_ERROR_PAGE_CODE = IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE;
-    
-    /**
-     * @deprecated moved into IPageManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_LOGIN_PAGE_CODE = IPageManager.CONFIG_PARAM_LOGIN_PAGE_CODE;
-
-    /**
-     * @deprecated moved into IGuiFragmentManager interface
-     */
-    @Deprecated
-    public static final String CONFIG_PARAM_EDIT_EMPTY_FRAGMENT_ENABLED = IGuiFragmentManager.CONFIG_PARAM_EDIT_EMPTY_FRAGMENT_ENABLED;
 
     /**
      * Lo username dell'utente amministratore, utente di default con diritti
@@ -451,9 +306,6 @@ public final class SystemConstants {
 
     public static final String ENTANDO_THREAD_NAME_PREFIX = "EntandoThread_";
 
-    @Deprecated
-    public static final String DATA_TYPE_METADATA_DATE_FORMAT = "yyyyMMddHHmmss";
-
     public static final String API_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static final Integer OAUTH2_ACCESS_TOKEN_DEFAULT_VALIDITY_SECOND = 3600;
@@ -474,7 +326,6 @@ public final class SystemConstants {
     public static final String ORIGIN = "Origin";
     public static final String REFERER = "Referer";
     public static final String CSRF_BASIC_PROTECTION = "basic";
-
     // keycloak
     public static final String SYSTEM_PROP_KEYCLOAK_AUTH_URL = "keycloak.auth.url";
     public static final String SYSTEM_PROP_KEYCLOAK_ENABLED = "keycloak.enabled";
