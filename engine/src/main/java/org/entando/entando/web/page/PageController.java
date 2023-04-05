@@ -228,6 +228,7 @@ public class PageController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
+        validatePageTitles(pageRequest, bindingResult);
 
         PagePositionRequest pagePositionRequest = new PagePositionRequest();
         pagePositionRequest.setParentCode(pageRequest.getParentCode());
@@ -277,6 +278,8 @@ public class PageController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
+        validatePageTitles(pageRequest, bindingResult);
+
         //business validations
         getPageValidator().validate(pageRequest, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -426,5 +429,11 @@ public class PageController {
         return new ResponseEntity<>(new SimpleRestResponse<>(dto), HttpStatus.OK);
     }
 
+    private void validatePageTitles(PageRequest pageRequest, BindingResult bindingResult) {
+        pageValidator.validateTitles(pageRequest, bindingResult);
+        if (bindingResult.hasErrors()) {
+            throw new ValidationGenericException(bindingResult);
+        }
+    }
 
 }
