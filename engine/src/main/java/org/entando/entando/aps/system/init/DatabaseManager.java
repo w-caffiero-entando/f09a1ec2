@@ -64,6 +64,7 @@ import org.entando.entando.aps.system.init.model.SystemInstallationReport.Status
 import org.entando.entando.aps.system.init.util.TableDataUtils;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.aps.system.services.storage.StorageManagerUtil;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -146,6 +147,7 @@ public class DatabaseManager extends AbstractInitializerManager
     }
     
     private String checkRestore(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) {
+        long start = System.currentTimeMillis();
         String lastLocalBackupFolder = null;
         if (!DatabaseMigrationStrategy.DISABLED.equals(migrationStrategy) && !Environment.test.equals(this.getEnvironment())) {
             // There's no local database installed, lookup in the local databases
@@ -161,12 +163,15 @@ public class DatabaseManager extends AbstractInitializerManager
                 }
             }
         }
+        logger.info("Tenant:{} :: DB :: checkRestore:: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
+                ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
         return lastLocalBackupFolder;
     }
 
     private void initComponents(SystemInstallationReport report,
             DatabaseMigrationStrategy migrationStrategy,
             Optional<Map<String,DataSource>> datasources) throws DatabaseMigrationException, EntException {
+        long start = System.currentTimeMillis();
         List<Component> components = this.getComponentManager().getCurrentComponents();
         Map<String, List<ChangeSetStatus>> pendingChangeSetMap = new HashMap<>();
         for (Component entandoComponentConfiguration : components) {
@@ -179,9 +184,12 @@ public class DatabaseManager extends AbstractInitializerManager
         if (!pendingChangeSetMap.isEmpty()) {
             throw new DatabaseMigrationException(pendingChangeSetMap);
         }
+        logger.info("Tenant:{} :: DB :: initComponents :: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
+                ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
     }
 
     private void legacyDatabaseCheck(Optional<Map<String,DataSource>> datasources) throws DatabaseMigrationException, SQLException {
+        long start = System.currentTimeMillis();
         List<DataSource> dss = datasources.map(m -> m.values().stream().collect(Collectors.toList()))
                                 .orElse(this.defaultDataSources);
         for (DataSource dataSource : dss) {
@@ -222,6 +230,8 @@ public class DatabaseManager extends AbstractInitializerManager
                 } catch (Exception e) { /* Ignored */ }
             }
         }
+        logger.info("Tenant:{} :: DB :: legacyDatabaseCheck:: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
+                ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
     }
 
     //---------------- DATA ------------------- START
@@ -229,6 +239,7 @@ public class DatabaseManager extends AbstractInitializerManager
     public List<ChangeSetStatus> initLiquiBaseResources(Component componentConfiguration,
             SystemInstallationReport report,
             DatabaseMigrationStrategy migrationStrategy, Optional<Map<String,DataSource>> datasources) throws EntException {
+        long start = System.currentTimeMillis();
         List<ChangeSetStatus> pendingChangeSet = new ArrayList<>();
         logger.info(INIT_MSG_L, componentConfiguration.getCode(), LOG_PREFIX);
         ComponentInstallationReport componentReport = report.getComponentReport(componentConfiguration.getCode(), true);
@@ -263,6 +274,9 @@ public class DatabaseManager extends AbstractInitializerManager
             logger.error("Error executing liquibase initialization for component {}", componentConfiguration.getCode(), t);
             throw new EntException("Error executing liquibase initialization for component " + componentConfiguration.getCode(), t);
         }
+
+        logger.info("Tenant:{} :: DB :: initLiquiBaseResources :: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
+                ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
         return pendingChangeSet;
     }
 
