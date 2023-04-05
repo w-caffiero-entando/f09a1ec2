@@ -13,23 +13,17 @@
  */
 package org.entando.entando.aps.tags;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-
 import com.agiletec.aps.system.RequestContext;
-import com.agiletec.aps.system.SystemConstants;
-
 import freemarker.core.Environment;
 import freemarker.ext.beans.StringModel;
 import freemarker.ext.servlet.AllHttpScopesHashModel;
 import freemarker.template.TemplateModel;
-import org.apache.commons.lang3.BooleanUtils;
-
+import javax.servlet.ServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanContainer;
-
-import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 /**
  * Add a parameter into the Freemarker's TemplateModel Map
@@ -42,12 +36,8 @@ public class FreemarkerTemplateParameterTag extends TagSupport {
 	
 	@Override
     public int doStartTag() throws JspException {
-		boolean parallel = BooleanUtils.toBoolean(System.getenv(SystemConstants.PARALLEL_WIDGET_RENDER_ENV_PARAM));
-		if (parallel) {
-			_logger.warn("** TAG FreemarkerTemplateParameterTag DEPRECATED ** - "
-					+ "remove it from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive");
-		}
-
+		_logger.warn("** TAG FreemarkerTemplateParameterTag DEPRECATED ** - "
+				+ "remove it from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive");
 		ServletRequest request = this.pageContext.getRequest();
 		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
 		try {
