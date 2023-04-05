@@ -25,6 +25,7 @@ import org.entando.entando.web.tenant.model.TenantStatsAndStatusesDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +48,7 @@ public class HealthController {
         this.isExtendedCheck = StringUtils.equalsIgnoreCase(checkDb, "extended");
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> isHealthy(@RequestParam(required = false, name = "showTenantsStats") Optional<Boolean> showTenantsStats) {
         return showTenantsStats
                 .filter(Boolean::booleanValue)
