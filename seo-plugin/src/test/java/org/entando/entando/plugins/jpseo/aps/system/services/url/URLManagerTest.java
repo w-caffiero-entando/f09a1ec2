@@ -26,6 +26,7 @@ import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.util.ApsProperties;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.PageMetatag;
 import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadata;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -207,6 +208,46 @@ class URLManagerTest {
         request.addHeader("X-Forwarded-Proto", "https");
         url = this.urlManager.createURL(this.page, lang, null, false, this.request);
         assertEquals("https://"+expectedUrlWithContext, url);
+    }
+    
+    @Test
+    void testGetUrlByPageUrlAndRequiredLang() throws Throwable {
+        Mockito.lenient().when(pageManager.getConfig(IPageManager.CONFIG_PARAM_BASE_URL)).thenReturn(IPageManager.CONFIG_PARAM_BASE_URL_FROM_REQUEST);
+        Mockito.lenient().when(pageManager.getConfig(IPageManager.CONFIG_PARAM_BASE_URL_CONTEXT)).thenReturn("true");
+        Mockito.lenient().when(pageManager.getOnlineRoot()).thenReturn(this.page);
+        RequestContext reqCtx = this.createRequestContext();
+        PageURL pageUrl = new PageURL(urlManager, reqCtx);
+        Assertions.assertEquals("http://www.entando.org/entando/page/en/en_friendly", pageUrl.getURL());
+        Lang currentLang = new Lang();
+        currentLang.setCode("it");
+        currentLang.setDescr("Italian");
+        reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, currentLang);
+        pageUrl = new PageURL(urlManager, reqCtx);
+        Assertions.assertEquals("http://www.entando.org/entando/page/it/ita_friendly", pageUrl.getURL());
+    }
+    
+    @Test
+    void testGetUrlByPageUrlAndRequiredPage() throws Throwable {
+        Mockito.lenient().when(pageManager.getConfig(IPageManager.CONFIG_PARAM_BASE_URL)).thenReturn(IPageManager.CONFIG_PARAM_BASE_URL_FROM_REQUEST);
+        Mockito.lenient().when(pageManager.getConfig(IPageManager.CONFIG_PARAM_BASE_URL_CONTEXT)).thenReturn("true");
+        Mockito.lenient().when(pageManager.getOnlineRoot()).thenReturn(this.page);
+        IPage currentPage = Mockito.mock(IPage.class);
+        Mockito.lenient().when(currentPage.getCode()).thenReturn("current_page");
+        RequestContext reqCtx = this.createRequestContext();
+        reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE, currentPage);
+        Mockito.lenient().when(pageManager.getOnlineRoot()).thenReturn(this.page);
+        PageURL pageUrl = new PageURL(urlManager, reqCtx);
+        Assertions.assertEquals("http://www.entando.org/entando/en/current_page.page", pageUrl.getURL());
+        
+        pageUrl.setPageCode("wrong_code");
+        Mockito.when(pageManager.getOnlinePage("wrong_code")).thenReturn(null);
+        Assertions.assertEquals("http://www.entando.org/entando/en/current_page.page", pageUrl.getURL());
+        
+        IPage requiredPage = Mockito.mock(IPage.class);
+        Mockito.when(requiredPage.getCode()).thenReturn("right_code");
+        Mockito.when(pageManager.getOnlinePage("right_code")).thenReturn(requiredPage);
+        pageUrl.setPageCode("right_code");
+        Assertions.assertEquals("http://www.entando.org/entando/en/right_code.page", pageUrl.getURL());
     }
     
 }
