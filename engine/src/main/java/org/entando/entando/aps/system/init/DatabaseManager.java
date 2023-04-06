@@ -163,8 +163,11 @@ public class DatabaseManager extends AbstractInitializerManager
                 }
             }
         }
-        logger.debug("Tenant:{} :: DB :: checkRestore:: takes time:{}ms ", ApsTenantApplicationUtils.getTenant().orElse(
-                ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        if(logger.isDebugEnabled()) {
+            logger.debug("Tenant:{} :: DB :: checkRestore:: takes time:{}ms ",
+                    ApsTenantApplicationUtils.getTenant().orElse(
+                            ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        }
         return lastLocalBackupFolder;
     }
 
@@ -184,8 +187,11 @@ public class DatabaseManager extends AbstractInitializerManager
         if (!pendingChangeSetMap.isEmpty()) {
             throw new DatabaseMigrationException(pendingChangeSetMap);
         }
-        logger.debug("Tenant:{} :: DB :: initComponents :: takes time:{}ms ", ApsTenantApplicationUtils.getTenant().orElse(
-                ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        if(logger.isDebugEnabled()) {
+            logger.debug("Tenant:{} :: DB :: initComponents :: takes time:{}ms ",
+                    ApsTenantApplicationUtils.getTenant().orElse(
+                            ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        }
     }
 
     private void legacyDatabaseCheck(Optional<Map<String,DataSource>> datasources) throws DatabaseMigrationException, SQLException {
@@ -230,8 +236,11 @@ public class DatabaseManager extends AbstractInitializerManager
                 } catch (Exception e) { /* Ignored */ }
             }
         }
-        logger.debug("Tenant:{} :: DB :: legacyDatabaseCheck:: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
-                ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        if(logger.isDebugEnabled()) {
+            logger.debug("Tenant:{} :: DB :: legacyDatabaseCheck:: takes time:{}ms ",
+                    ApsTenantApplicationUtils.getTenant().orElse(
+                            ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        }
     }
 
     //---------------- DATA ------------------- START
@@ -275,8 +284,11 @@ public class DatabaseManager extends AbstractInitializerManager
             throw new EntException("Error executing liquibase initialization for component " + componentConfiguration.getCode(), t);
         }
 
-        logger.debug("Tenant:{} :: DB :: initLiquiBaseResources :: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
-                ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        if(logger.isDebugEnabled()) {
+            logger.debug("Tenant:{} :: DB :: initLiquiBaseResources :: takes time:{}ms ",
+                    ApsTenantApplicationUtils.getTenant().orElse(
+                            ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        }
         return pendingChangeSet;
     }
 
