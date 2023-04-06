@@ -15,27 +15,21 @@ package org.entando.entando.aps.tags;
 
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
-import org.apache.commons.lang3.BooleanUtils;
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
-
 import freemarker.template.Template;
-
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Writer;
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
-
 import org.apache.commons.lang3.StringUtils;
-
 import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanContainer;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
-
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 /**
  * Print a gui fragment output by the given code.
@@ -48,12 +42,8 @@ public class GuiFragmentTag extends ExtendedTagSupport {
 
 	@Override
     public int doStartTag() throws JspException {
-		boolean parallel = BooleanUtils.toBoolean(System.getenv(SystemConstants.PARALLEL_WIDGET_RENDER_ENV_PARAM));
-		if (parallel) {
-			_logger.warn("** TAG GuiFragmentTag DEPRECATED ** - "
-					+ "remove FreemarkerTemplateParameterTag from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive");
-		}
-
+		_logger.warn("** TAG GuiFragmentTag DEPRECATED ** - "
+				+ "remove FreemarkerTemplateParameterTag from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive");
 		ServletRequest request = this.pageContext.getRequest();
 		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
 		try {

@@ -33,7 +33,7 @@ public class RequestContext {
 	 * e memorizza il riferimento al contesto del sistema.
 	 */
 	public RequestContext(){
-		this._extraParams = new HashMap<String, Object>();
+		this._extraParams = new HashMap<>();
 	}
 	
 	/**
@@ -42,11 +42,7 @@ public class RequestContext {
 	 * @return Il parametro richiesto
 	 */
 	public Object getExtraParam(String name) {
-		if (isCurrentFrameOrCurrentWidget(name)) {
-			return EntThreadLocal.get(name);
-		} else {
-			return _extraParams.get(name);
-		}
+		return _extraParams.get(name);
 	}
 
 	/**
@@ -55,11 +51,7 @@ public class RequestContext {
 	 * @param param Il parametro da aggiungere
 	 */
 	public void addExtraParam(String name, Serializable param) {
-		if (isCurrentFrameOrCurrentWidget(name)) {
-			EntThreadLocal.set(name, param);
-		} else {
-			this._extraParams.put(name, param);
-		}
+		this._extraParams.put(name, param);
 	}
 
 	/**
@@ -81,17 +73,7 @@ public class RequestContext {
 	 * @param name Il nome del parametro
 	 */
 	public void removeExtraParam(String name) {
-		if (isCurrentFrameOrCurrentWidget(name)) {
-			EntThreadLocal.remove(name);
-		} else {
-			this._extraParams.remove(name);
-		}
-	}
-
-	private boolean isCurrentFrameOrCurrentWidget(String name) {
-		return name != null &&
-				(name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_FRAME) ||
-						name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_WIDGET));
+		this._extraParams.remove(name);
 	}
 
 

@@ -475,7 +475,6 @@ public final class SystemConstants {
     public static final String REFERER = "Referer";
     public static final String CSRF_BASIC_PROTECTION = "basic";
 
-    public static final String PARALLEL_WIDGET_RENDER_ENV_PARAM = "PARALLEL_WIDGET_RENDER";
     // keycloak
     public static final String SYSTEM_PROP_KEYCLOAK_AUTH_URL = "keycloak.auth.url";
     public static final String SYSTEM_PROP_KEYCLOAK_ENABLED = "keycloak.enabled";

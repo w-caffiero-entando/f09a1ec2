@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.group.Group;
-import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.tags.util.IFrameDecoratorContainer;
 import freemarker.template.Template;
@@ -26,7 +25,6 @@ import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
@@ -94,24 +92,6 @@ class WidgetExecutorServiceTest {
 
         try (MockedConstruction<Template> construction = Mockito.mockConstruction(Template.class)) {
             service.buildWidgetOutput(reqCtx, widget, decorators);
-            Template template = construction.constructed().get(0);
-            Mockito.verify(template).process(any(), any());
-        }
-    }
-
-    @Test
-    void testParallelBuildWidgetsOutput() throws Exception {
-        ReflectionTestUtils.setField(service, "parallelWidgetRender", true);
-
-        IPage page = Mockito.mock(IPage.class);
-        Mockito.when(page.getWidgets()).thenReturn(new Widget[]{widget});
-        Mockito.when(wac.getBean(ITenantManager.class)).thenReturn(tenantManager);
-        Mockito.when(tenantManager.getTenantCodeByDomain(any())).thenReturn(null);
-
-        Mockito.when(wac.getBeanNamesForType(IFrameDecoratorContainer.class)).thenReturn(new String[]{});
-
-        try (MockedConstruction<Template> construction = Mockito.mockConstruction(Template.class)) {
-            service.buildWidgetsOutput(reqCtx, page, new String[]{null});
             Template template = construction.constructed().get(0);
             Mockito.verify(template).process(any(), any());
         }

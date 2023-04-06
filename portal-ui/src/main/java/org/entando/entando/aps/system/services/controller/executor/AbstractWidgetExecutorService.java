@@ -13,34 +13,6 @@
  */
 package org.entando.entando.aps.system.services.controller.executor;
 
-import com.agiletec.aps.system.EntThreadLocal;
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import java.util.Objects;
-import java.util.Optional;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.beanutils.BeanComparator;
-import org.apache.commons.lang.StringUtils;
-import org.entando.entando.aps.system.services.guifragment.GuiFragment;
-import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
-import org.entando.entando.aps.system.services.widgettype.WidgetType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.context.WebApplicationContext;
-
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsSystemException;
@@ -52,11 +24,30 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.tags.util.IFrameDecoratorContainer;
 import com.agiletec.aps.util.ApsProperties;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
-
 import freemarker.template.Template;
-import java.util.Arrays;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.lang.StringUtils;
+import org.entando.entando.aps.system.services.guifragment.GuiFragment;
+import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
-import org.springframework.beans.factory.annotation.Value;
+import org.entando.entando.aps.system.services.widgettype.WidgetType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * @author E.Santoboni
@@ -65,38 +56,15 @@ public abstract class AbstractWidgetExecutorService {
 
 	private static final Logger _logger = LoggerFactory.getLogger(AbstractWidgetExecutorService.class);
 
-	@Value("${PARALLEL_WIDGET_RENDER:false}")
-	private boolean parallelWidgetRender;
-
 	protected void buildWidgetsOutput(RequestContext reqCtx, IPage page, String[] widgetOutput) throws ApsSystemException {
 		try {
 			List<IFrameDecoratorContainer> decorators = this.extractDecorators(reqCtx);
 			Widget[] widgets = page.getWidgets();
-			if (this.parallelWidgetRender) {
-				List<Widget> widgetList = Arrays.asList(widgets);
-				Optional<String> tenantCode = ApsTenantApplicationUtils.extractCurrentTenantCode(reqCtx.getRequest());
-				widgetList.parallelStream().forEach(w -> {
-					int frame = widgetList.indexOf(w);
-					try {
-						reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
-
-						tenantCode.ifPresent(ApsTenantApplicationUtils::setTenant);
-
-						Widget widget = widgets[frame];
-						widgetOutput[frame] = this.buildWidgetOutput(reqCtx, widget, decorators);
-					} catch (Exception e) {
-						_logger.error("Error extracting output for frame " + frame, e);
-					} finally {
-						reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
-					}
-				});
-			} else {
-				for (int frame = 0; frame < widgets.length; frame++) {
-					reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
-					Widget widget = widgets[frame];
-					widgetOutput[frame] = this.buildWidgetOutput(reqCtx, widget, decorators);
-					reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
-				}
+			for (int frame = 0; frame < widgets.length; frame++) {
+				reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME, frame);
+				Widget widget = widgets[frame];
+				widgetOutput[frame] = this.buildWidgetOutput(reqCtx, widget, decorators);
+				reqCtx.removeExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);
 			}
 		} catch (Throwable t) {
 			String msg = "Error detected during widget preprocessing";
