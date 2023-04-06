@@ -163,7 +163,7 @@ public class DatabaseManager extends AbstractInitializerManager
                 }
             }
         }
-        logger.info("Tenant:{} :: DB :: checkRestore:: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
+        logger.debug("Tenant:{} :: DB :: checkRestore:: takes time:{}ms ", ApsTenantApplicationUtils.getTenant().orElse(
                 ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
         return lastLocalBackupFolder;
     }
@@ -184,7 +184,7 @@ public class DatabaseManager extends AbstractInitializerManager
         if (!pendingChangeSetMap.isEmpty()) {
             throw new DatabaseMigrationException(pendingChangeSetMap);
         }
-        logger.info("Tenant:{} :: DB :: initComponents :: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
+        logger.debug("Tenant:{} :: DB :: initComponents :: takes time:{}ms ", ApsTenantApplicationUtils.getTenant().orElse(
                 ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
     }
 
@@ -230,7 +230,7 @@ public class DatabaseManager extends AbstractInitializerManager
                 } catch (Exception e) { /* Ignored */ }
             }
         }
-        logger.info("Tenant:{} :: DB :: legacyDatabaseCheck:: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
+        logger.debug("Tenant:{} :: DB :: legacyDatabaseCheck:: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
                 ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
     }
 
@@ -275,7 +275,7 @@ public class DatabaseManager extends AbstractInitializerManager
             throw new EntException("Error executing liquibase initialization for component " + componentConfiguration.getCode(), t);
         }
 
-        logger.info("Tenant:{} :: DB :: initLiquiBaseResources :: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
+        logger.debug("Tenant:{} :: DB :: initLiquiBaseResources :: takes time:{}ms ",ApsTenantApplicationUtils.getTenant().orElse(
                 ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
         return pendingChangeSet;
     }
