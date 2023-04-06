@@ -14,6 +14,7 @@
 package com.agiletec.aps.system.common.entity;
 
 import com.agiletec.aps.system.SystemConstants;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.util.EntSafeXmlUtils;
 import java.io.IOException;
 import java.io.StringReader;
@@ -71,7 +72,8 @@ import org.xml.sax.SAXException;
  * @author E.Santoboni
  */
 public abstract class ApsEntityManager extends AbstractService 
-        implements IEntityManager, IEntityTypesConfigurer, ReloadingEntitiesReferencesObserver {
+        implements IEntityManager, IEntityTypesConfigurer, ReloadingEntitiesReferencesObserver,
+        RefreshableBeanTenantAware {
 
     /**
      * Prefix of the thread used for references reloading.
@@ -107,9 +109,14 @@ public abstract class ApsEntityManager extends AbstractService
     @Override
     public void init() throws Exception {
         this.entityDom.setRootElementName(this.getXmlAttributeRootElementName());
+        initTenantAware();
+        logger.debug("{} : initialized", this.getName());
+    }
+
+    @Override
+    public void initTenantAware()  throws Exception {
         this.getCacheWrapper().initCache(super.getName());
         this.initAttributeRoles();
-        logger.debug("{} : inizializated", this.getName());
     }
     
     protected void initAttributeRoles() {

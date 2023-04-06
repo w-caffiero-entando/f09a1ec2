@@ -22,6 +22,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.category.CategoryUtilizer;
@@ -58,7 +59,8 @@ import org.xml.sax.SAXException;
  *
  * @author W.Ambu - E.Santoboni
  */
-public class ResourceManager extends AbstractService implements IResourceManager, GroupUtilizer, CategoryUtilizer {
+public class ResourceManager extends AbstractService implements IResourceManager, GroupUtilizer, CategoryUtilizer,
+        RefreshableBeanTenantAware {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -134,6 +136,11 @@ public class ResourceManager extends AbstractService implements IResourceManager
     public void init() throws Exception {
         this.getCacheWrapper().initCache();
         logger.debug("{} ready. Initialized {} resource types", this.getClass().getName(), this.resourceTypes.size());
+    }
+
+    @Override
+    public void initTenantAware() throws Exception {
+        this.getCacheWrapper().initCache();
     }
 
     /**

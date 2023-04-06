@@ -20,6 +20,7 @@ import java.util.Map;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.group.cache.IGroupManagerCacheWrapper;
 import java.util.Collections;
@@ -32,7 +33,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
  *
  * @author E.Santoboni Modificato da emarcias
  */
-public class GroupManager extends AbstractService implements IGroupManager {
+public class GroupManager extends AbstractService implements IGroupManager, RefreshableBeanTenantAware {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -57,14 +58,24 @@ public class GroupManager extends AbstractService implements IGroupManager {
 
     @Override
     public void init() throws Exception {
-        this.getCacheWrapper().initCache(this.getGroupDAO());
+        initTenantAware();
         logger.debug("{} ready. Initialized", this.getClass().getName());
     }
     
     @Override
     protected void release() {
-        this.getCacheWrapper().release();
+        releaseTenantAware();
         super.release();
+    }
+
+    @Override
+    public void initTenantAware() throws Exception {
+        this.getCacheWrapper().initCache(this.getGroupDAO());
+    }
+
+    @Override
+    public void releaseTenantAware() {
+        this.getCacheWrapper().release();
     }
 
     /**

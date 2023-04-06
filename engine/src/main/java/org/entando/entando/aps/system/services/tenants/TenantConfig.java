@@ -27,6 +27,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 public class TenantConfig {
 
     private static final String TENANT_CODE_PROPERTY = "tenantCode";
+    private static final String INIT_AT_START_REQUIRED_PROPERTY = "initializationAtStartRequired";
     private static final String FQDNS_PROPERTY = "fqdns";
     private static final String KC_ENABLED_PROPERTY = "kcEnabled";
     private static final String KC_AUTH_URL_PROPERTY = "kcAuthUrl";
@@ -72,6 +73,11 @@ public class TenantConfig {
 
     public String getTenantCode() {
         return configs.get(TENANT_CODE_PROPERTY);
+    }
+
+    public boolean isInitializationAtStartRequired() {
+        String enabled = configs.get(INIT_AT_START_REQUIRED_PROPERTY);
+        return BooleanUtils.toBoolean(enabled);
     }
 
     public boolean isKcEnabled() {

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.web.tenant.model.TenantDto;
+import org.entando.entando.web.tenant.model.TenantStatsAndStatusesDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,14 +39,16 @@ class TenantServiceTest {
     @Mock
     private ITenantManager tenantManager;
     @Mock
+    private TenantDataAccessor tenantDataAccessor;
+    @Mock
     private IStorageManager storageManager;
 
     private ITenantService tenantService;
 
     @BeforeEach
     public void setUp() {
-        Mockito.reset(tenantManager, storageManager);
-        tenantService = new TenantService(tenantManager, storageManager);
+        Mockito.reset(tenantManager, tenantDataAccessor, storageManager);
+        tenantService = new TenantService(tenantManager, tenantDataAccessor, storageManager);
     }
 
     @Test
@@ -173,6 +176,35 @@ class TenantServiceTest {
         Assertions.assertEquals(2, tenants.size());
         Assertions.assertEquals("tenant1", tenants.get(0).getCode());
         Assertions.assertEquals("primary", tenants.get(1).getCode());
+
+    }
+
+    @Test
+    void shouldGetTenantStatsAndStatusesWorkFine() {
+        // CDS disabled
+
+        // Cds enabled with 1 tenant
+        when(tenantManager.getStatuses()).thenReturn(Map.of("t1",
+                TenantStatus.UNKNOWN, "t2", TenantStatus.PENDING, "t3",  TenantStatus.READY, "t4", TenantStatus.FAILED));
+        when(tenantDataAccessor.getTenantConfigs())
+                .thenReturn(Map.of("t1",new TenantConfig(Map.of("tenantCode", "t1")),
+                        "t2",new TenantConfig(Map.of("tenantCode", "t2")),
+                        "t3",new TenantConfig(Map.of("tenantCode", "t3")),
+                        "t4",new TenantConfig(Map.of("tenantCode", "t4",  "initializationAtStartRequired", "true"))
+                ));
+        
+        TenantStatsAndStatusesDto tenants = tenantService.getTenantStatsAndStatuses();
+        Assertions.assertNotNull(tenants);
+        Assertions.assertEquals(4, tenants.getStats().getCount());
+        Assertions.assertEquals(1, tenants.getStats().getPending());
+        Assertions.assertEquals(1, tenants.getStats().getUnknown());
+        Assertions.assertEquals(1, tenants.getStats().getReady());
+        Assertions.assertEquals(1, tenants.getStats().getFailed());
+        Assertions.assertEquals(TenantStatus.UNKNOWN, tenants.getAdditionalStatuses().get("t1"));
+        Assertions.assertNull(tenants.getMandatoryStatuses().get("t2"));
+        Assertions.assertEquals(TenantStatus.PENDING, tenants.getAdditionalStatuses().get("t2"));
+        Assertions.assertNull(tenants.getAdditionalStatuses().get("t4"));
+        Assertions.assertEquals(TenantStatus.FAILED, tenants.getMandatoryStatuses().get("t4"));
 
     }
 

@@ -128,10 +128,10 @@ class DatabaseManagerTest {
         List<ChangeSetStatus> changeSetToExecute = new ArrayList<>();
         changeSetToExecute.add(Mockito.mock(ChangeSetStatus.class));
         Mockito.lenient().doReturn(changeSetToExecute).when(databaseManager)
-                .initLiquiBaseResources(Mockito.any(), Mockito.any(), Mockito.any());
+                .initLiquiBaseResources(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         DatabaseMigrationStrategy migrationStrategyEnum = DatabaseMigrationStrategy.DISABLED;
         Assertions.assertThrows(DatabaseMigrationException.class, () -> {
-            databaseManager.installDatabase(new SystemInstallationReport(null), migrationStrategyEnum);
+            databaseManager.installDatabase(new SystemInstallationReport(null), migrationStrategyEnum, Optional.empty());
         });
     }
 
@@ -153,7 +153,7 @@ class DatabaseManagerTest {
                 MockedStatic<DatabaseFactory> dbFactory = Mockito.mockStatic(DatabaseFactory.class)) {
             dbFactory.when(DatabaseFactory::getInstance).thenReturn(Mockito.mock(DatabaseFactory.class));
 
-            databaseManager.installDatabase(null, DatabaseMigrationStrategy.AUTO);
+            databaseManager.installDatabase(null, DatabaseMigrationStrategy.AUTO, Optional.empty());
             Mockito.verify(databaseRestorer).restoreBackup("/path/to/dump");
         }
     }
@@ -180,7 +180,7 @@ class DatabaseManagerTest {
             tableDataUtils.when(() -> TableDataUtils.valueDatabase(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
                     .thenAnswer(invocationOnMock -> null);
 
-            databaseManager.installDatabase(null, DatabaseMigrationStrategy.AUTO);
+            databaseManager.installDatabase(null, DatabaseMigrationStrategy.AUTO, Optional.empty());
             Mockito.verify(databaseRestorer).initOracleSchema(ArgumentMatchers.any());
         }
     }
@@ -211,7 +211,7 @@ class DatabaseManagerTest {
             dbFactory.when(DatabaseFactory::getInstance).thenReturn(Mockito.mock(DatabaseFactory.class));
 
             Assertions.assertThrows(DatabaseMigrationException.class, () -> {
-                databaseManager.installDatabase(getMockedReport(), DatabaseMigrationStrategy.GENERATE_SQL);
+                databaseManager.installDatabase(getMockedReport(), DatabaseMigrationStrategy.GENERATE_SQL, Optional.empty());
             });
             Mockito.verify(storageManager).saveFile(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any());
         }
@@ -244,7 +244,7 @@ class DatabaseManagerTest {
                     Mockito.when(liquibase.listLocks()).thenReturn(new DatabaseChangeLogLock[]{lock});
                 }); MockedStatic<DatabaseFactory> dbFactory = Mockito.mockStatic(DatabaseFactory.class)) {
             dbFactory.when(DatabaseFactory::getInstance).thenReturn(Mockito.mock(DatabaseFactory.class));
-            databaseManager.installDatabase(getMockedReport(), DatabaseMigrationStrategy.AUTO);
+            databaseManager.installDatabase(getMockedReport(), DatabaseMigrationStrategy.AUTO, Optional.empty());
             Mockito.verify(construction.constructed().get(0), mode).forceReleaseLocks();
         }
     }
@@ -277,7 +277,7 @@ class DatabaseManagerTest {
                 (liquibase, context) -> Mockito.doThrow(ex).when(liquibase).close());
                 MockedStatic<DatabaseFactory> dbFactory = Mockito.mockStatic(DatabaseFactory.class)) {
             dbFactory.when(DatabaseFactory::getInstance).thenReturn(Mockito.mock(DatabaseFactory.class));
-            databaseManager.installDatabase(getMockedReport(), DatabaseMigrationStrategy.AUTO);
+            databaseManager.installDatabase(getMockedReport(), DatabaseMigrationStrategy.AUTO, Optional.empty());
             Assertions.assertEquals(Status.OK, databaseStatus.get("portDataSource"));
         }
     }
@@ -329,7 +329,7 @@ class DatabaseManagerTest {
             });  MockedStatic<DatabaseFactory> dbFactory = Mockito.mockStatic(DatabaseFactory.class)) {
                 dbFactory.when(DatabaseFactory::getInstance).thenReturn(Mockito.mock(DatabaseFactory.class));
                 Assertions.assertThrows(DatabaseMigrationException.class, () -> {
-                    databaseManager.installDatabase(getMockedReport(), DatabaseMigrationStrategy.GENERATE_SQL);
+                    databaseManager.installDatabase(getMockedReport(), DatabaseMigrationStrategy.DISABLED, Optional.empty());
                 });
                 Mockito.verifyNoInteractions(storageManager);
             }
@@ -352,7 +352,7 @@ class DatabaseManagerTest {
             Mockito.lenient().when(tenantConfig.getDbMigrationStrategy()).thenReturn(Optional.ofNullable(tenantStrategy));
             Mockito.lenient().when(tenantManager.getConfig("tenant1")).thenReturn(Optional.of(tenantConfig));
             SystemInstallationReport report = Mockito.mock(SystemInstallationReport.class);
-            databaseManager.installDatabase(Mockito.mock(SystemInstallationReport.class), DatabaseMigrationStrategy.GENERATE_SQL);
+            databaseManager.installDatabase(Mockito.mock(SystemInstallationReport.class), DatabaseMigrationStrategy.SKIP, Optional.empty());
             Mockito.verifyNoInteractions(storageManager);
             Mockito.verifyNoInteractions(componentManager);
             Mockito.verifyNoInteractions(report);

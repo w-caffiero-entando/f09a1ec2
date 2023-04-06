@@ -46,6 +46,7 @@ class TenantConfigTest {
 
         Map<String, String> map = Map.of(
                         "dbMaxIdle", "",
+                        "initializationAtStartRequired", "",
                         "dbMaxWaitMillis", "100000",
                         "dbInitialSize", "12").entrySet().stream()
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
@@ -62,6 +63,7 @@ class TenantConfigTest {
         Assertions.assertThat(dbMaxIdle).isEqualTo(2);
         Assertions.assertThat(dbMaxWaitMillis).isEqualTo(100000);
         Assertions.assertThat(dbInitialSize).isEqualTo(12);
+        Assertions.assertThat(tc.isInitializationAtStartRequired()).isFalse();
     }
 
     @Test
@@ -88,16 +90,19 @@ class TenantConfigTest {
         Assertions.assertThat(tc.getKcSecureUris()).isEqualTo("8");
         Assertions.assertThat(tc.getKcDefaultAuthorizations()).isEqualTo("9");
         Assertions.assertThat(tc.getDbDriverClassName()).isEqualTo("10");
+        Assertions.assertThat(tc.isInitializationAtStartRequired()).isFalse();
 
         Map<String, String> map2 = Map.of("dbUrl", "1",
                 "dbUsername", "2",
-                "dbPassword", "3", "fqdns", "test.com,pippo.com,www.com");
+                "dbPassword", "3", "fqdns", "test.com,pippo.com,www.com",
+                "initializationAtStartRequired", "true");
 
         tc.putAll(map2);
         Assertions.assertThat(tc.getDbUrl()).isEqualTo("1");
         Assertions.assertThat(tc.getDbUsername()).isEqualTo("2");
         Assertions.assertThat(tc.getDbPassword()).isEqualTo("3");
         Assertions.assertThat(tc.getFqdns()).contains("pippo.com");
+        Assertions.assertThat(tc.isInitializationAtStartRequired()).isTrue();
 
     }
     

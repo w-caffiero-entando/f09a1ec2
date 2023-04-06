@@ -15,6 +15,7 @@ package com.agiletec.aps.system.services.lang;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.lang.cache.ILangManagerCacheWrapper;
@@ -37,7 +38,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
  *
  * @author M.Diana - E.Santoboni
  */
-public class LangManager extends AbstractService implements ILangManager {
+public class LangManager extends AbstractService implements ILangManager, RefreshableBeanTenantAware {
 
 	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(LangManager.class);
 
@@ -49,9 +50,14 @@ public class LangManager extends AbstractService implements ILangManager {
 
 	@Override
 	public void init() throws Exception {
+		initTenantAware();
+		logger.debug("{} ready: initialized", this.getClass().getName());
+	}
+
+	@Override
+	public void initTenantAware() throws Exception {
 		String xmlConfig = this.getConfigManager().getConfigItem(SystemConstants.CONFIG_ITEM_LANGS);
 		this.getCacheWrapper().initCache(xmlConfig);
-		logger.debug("{} ready: initialized", this.getClass().getName());
 	}
 
 	/**

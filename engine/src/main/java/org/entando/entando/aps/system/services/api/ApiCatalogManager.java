@@ -23,6 +23,7 @@ import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.ApiMethodRelatedWidget;
 import org.entando.entando.aps.system.services.api.model.ApiResource;
 import org.entando.entando.aps.system.services.api.model.ApiService;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
@@ -34,7 +35,7 @@ import org.entando.entando.aps.system.services.api.cache.IApiServiceCacheWrapper
 /**
  * @author E.Santoboni
  */
-public class ApiCatalogManager extends AbstractService implements IApiCatalogManager {
+public class ApiCatalogManager extends AbstractService implements IApiCatalogManager, RefreshableBeanTenantAware {
 
 	private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -78,19 +79,29 @@ public class ApiCatalogManager extends AbstractService implements IApiCatalogMan
 
 	@Override
 	public void init() throws Exception {
-		ApiResourceLoader loader = new ApiResourceLoader(this.getLocationPatterns());
-		Map<String, ApiResource> resources = loader.getResources();
-		this.getResourceCacheWrapper().initCache(resources, this.getApiCatalogDAO());
-		this.getServiceCacheWrapper().initCache(resources, this.getApiCatalogDAO());
+		initTenantAware();
 		logger.debug("{} ready.", this.getClass().getName());
 	}
     
     @Override
     protected void release() {
-        this.getServiceCacheWrapper().release();
-        this.getResourceCacheWrapper().release();
+		releaseTenantAware();
         super.release();
     }
+
+	@Override
+	public void initTenantAware() throws Exception {
+		ApiResourceLoader loader = new ApiResourceLoader(this.getLocationPatterns());
+		Map<String, ApiResource> resources = loader.getResources();
+		this.getResourceCacheWrapper().initCache(resources, this.getApiCatalogDAO());
+		this.getServiceCacheWrapper().initCache(resources, this.getApiCatalogDAO());
+	}
+
+	@Override
+	public void releaseTenantAware() {
+		this.getServiceCacheWrapper().release();
+		this.getResourceCacheWrapper().release();
+	}
 
 	@Override
 	public ApiMethod getRelatedMethod(String showletCode) throws EntException {
