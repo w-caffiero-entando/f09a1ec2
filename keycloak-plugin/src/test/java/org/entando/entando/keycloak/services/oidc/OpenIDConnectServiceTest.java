@@ -13,6 +13,7 @@
  */
 package org.entando.entando.keycloak.services.oidc;
 
+import java.io.UnsupportedEncodingException;
 import org.entando.entando.keycloak.services.KeycloakConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -83,4 +84,18 @@ class OpenIDConnectServiceTest {
         Assertions.assertEquals(expectedUrl, actualUrl);
     }
 
+    @Test
+    void shouldGenerateCorrectLogoutUrl() throws UnsupportedEncodingException {
+        OpenIDConnectService testService = new OpenIDConnectService(keycloakConfiguration);
+
+        final String expectedUrl = "http://keycloack.com/auth/realms/ent/protocol/openid-connect/logout"
+                + "?post_logout_redirect_uri=http%3A%2F%2Ftest.com&id_token_hint=s5d43";
+
+        Mockito.when(keycloakConfiguration.getAuthUrl()).thenReturn("http://keycloack.com/auth");
+        Mockito.when(keycloakConfiguration.getRealm()).thenReturn("ent");
+
+        String actualLogoutUrl = testService.getLogoutUrl("http://test.com","s5d43");
+        Assertions.assertEquals(expectedUrl, actualLogoutUrl);
+
+    }
 }
