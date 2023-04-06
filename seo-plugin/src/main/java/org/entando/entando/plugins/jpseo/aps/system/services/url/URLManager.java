@@ -39,154 +39,154 @@ import org.entando.entando.plugins.jpseo.aps.system.services.page.SeoPageMetadat
  * @author E.Santoboni
  */
 public class URLManager extends com.agiletec.aps.system.services.url.URLManager {
+    
+    private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(URLManager.class);
 
-	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(URLManager.class);
+    private ISeoMappingManager seoMappingManager;
+    private IContentManager contentManager;
 
-	private ISeoMappingManager seoMappingManager;
-	private IContentManager contentManager;
+    @Override
+    public PageURL createURL(RequestContext reqCtx) {
+        return new PageURL(this, reqCtx);
+    }
 
-	@Override
-	public PageURL createURL(RequestContext reqCtx) {
-		return new PageURL(this, reqCtx);
-	}
+    @Override
+    public String getURLString(com.agiletec.aps.system.services.url.PageURL pageUrl, RequestContext reqCtx) {
+        try {
+            if (!(pageUrl instanceof PageURL)) {
+                return super.getURLString(pageUrl, reqCtx);
+            }
+            Lang lang = this.extractLang(pageUrl, reqCtx);
+            IPage destPage = this.extractDestPage(pageUrl, reqCtx);
+            String friendlyCode = ((PageURL) pageUrl).getFriendlyCode();
+            if (StringUtils.isBlank(friendlyCode)) {
+                friendlyCode = this.extractFriendlyCode(destPage, lang, pageUrl);
+            }
+            HttpServletRequest request = (null != reqCtx) ? reqCtx.getRequest() : null;
+            String url = null;
+            if (StringUtils.isBlank(friendlyCode)) {
+                url = super.createURL(destPage, lang, pageUrl.getParams(), pageUrl.isEscapeAmp(), pageUrl.getBaseUrlMode(), request);
+            } else {
+                url = this.createFriendlyUrl(friendlyCode, lang, pageUrl.getParams(), pageUrl.isEscapeAmp(), pageUrl.getBaseUrlMode(), request);
+            }
+            if (null != reqCtx && null != reqCtx.getResponse() && this.useJsessionId()) {
+                HttpServletResponse resp = reqCtx.getResponse();
+                return resp.encodeURL(url.toString());
+            } else {
+                return url;
+            }
+        } catch (Exception e) {
+            _logger.error("Error creating url", e);
+            throw new RuntimeException("Error creating url", e);
+        }
+    }
 
-	@Override
-	public String getURLString(com.agiletec.aps.system.services.url.PageURL pageUrl, RequestContext reqCtx) {
-		try {
-			if (!(pageUrl instanceof PageURL)) {
-				return super.getURLString(pageUrl, reqCtx);
-			}
-			Lang lang = this.extractLang(pageUrl, reqCtx);
-			IPage destPage = this.extractDestPage(pageUrl, reqCtx);
-			String friendlyCode = ((PageURL) pageUrl).getFriendlyCode();
-			if (StringUtils.isBlank(friendlyCode)) {
-				friendlyCode = this.extractFriendlyCode(destPage, lang, pageUrl);
-			}
-			HttpServletRequest request = (null != reqCtx) ? reqCtx.getRequest() : null;
-			String url = null;
-			if (StringUtils.isBlank(friendlyCode)) {
-				url = super.createURL(destPage, lang, pageUrl.getParams(), pageUrl.isEscapeAmp(), pageUrl.getBaseUrlMode(), request);
-			} else {
-				url = this.createFriendlyUrl(friendlyCode, lang, pageUrl.getParams(), pageUrl.isEscapeAmp(), pageUrl.getBaseUrlMode(), request);
-			}
-			if (null != reqCtx && null != reqCtx.getResponse() && this.useJsessionId()) {
-				HttpServletResponse resp = reqCtx.getResponse();
-				return resp.encodeURL(url.toString());
-			} else {
-				return url;
-			}
-		} catch (Exception e) {
-			_logger.error("Error creating url", e);
-			throw new RuntimeException("Error creating url", e);
-		}
-	}
+    private Lang extractLang(com.agiletec.aps.system.services.url.PageURL pageUrl, RequestContext reqCtx) {
+        Lang lang = null;
+        String langCode = pageUrl.getLangCode();
+        if (null != langCode) {
+            lang = this.getLangManager().getLang(langCode);
+        }
+        if (lang == null && null != reqCtx) {
+            lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+        }
+        if (lang == null) {
+            lang = this.getLangManager().getDefaultLang();
+        }
+        return lang;
+    }
 
-	private Lang extractLang(com.agiletec.aps.system.services.url.PageURL pageUrl, RequestContext reqCtx) {
-		Lang lang = null;
-		String langCode = pageUrl.getLangCode();
-		if (langCode != null) {
-			lang = this.getLangManager().getLang(langCode);
-			if (lang == null && null != reqCtx) {
-				lang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
-			}
-		}
-		if (lang == null) {
-			lang = this.getLangManager().getDefaultLang();
-		}
-		return lang;
-	}
+    private IPage extractDestPage(com.agiletec.aps.system.services.url.PageURL pageUrl, RequestContext reqCtx) {
+        IPage page = null;
+        String pageCode = pageUrl.getPageCode();
+        if (pageCode != null) {
+            page = this.getPageManager().getOnlinePage(pageCode);
+        }
+        if (page == null && null != reqCtx) {
+            page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
+        }
+        if (page == null) {
+            page = this.getPageManager().getOnlineRoot();
+        }
+        return page;
+    }
 
-	private IPage extractDestPage(com.agiletec.aps.system.services.url.PageURL pageUrl, RequestContext reqCtx) {
-		IPage page = null;
-		String pageCode = pageUrl.getPageCode();
-		if (pageCode != null) {
-			page = this.getPageManager().getOnlinePage(pageCode);
-			if (page == null && null != reqCtx) {
-				page = (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE);
-			}
-		}
-		if (page == null) {
-			page = this.getPageManager().getOnlineRoot();
-		}
-		return page;
-	}
+    private String extractFriendlyCode(IPage destPage, Lang lang, com.agiletec.aps.system.services.url.PageURL pageUrl) {
+        Map params = pageUrl.getParams();
+        return this.extractFriendlyCode(destPage, lang, params);
+    }
 
-	private String extractFriendlyCode(IPage destPage, Lang lang, com.agiletec.aps.system.services.url.PageURL pageUrl) {
-		Map params = pageUrl.getParams();
-		return this.extractFriendlyCode(destPage, lang, params);
-	}
+    private String extractFriendlyCode(IPage destPage, Lang lang, Map params) {
+        String friendlyCode = null;
+        if (params != null) {
+            String contentId = (String) params.get("contentId");
+            if (contentId!=null) {
+                String viewPageCode = this.getContentManager().getViewPage(contentId);
+                if (destPage.getCode().equals(viewPageCode)) {
+                    friendlyCode = this.getSeoMappingManager().getContentReference(contentId, lang.getCode());
+                }
+            }
+        }
+        if (friendlyCode==null && destPage.getMetadata() instanceof SeoPageMetadata) {
+            friendlyCode = ((SeoPageMetadata) destPage.getMetadata()).getFriendlyCode(lang.getCode());
+        }
+        return friendlyCode;
+    }
 
-	private String extractFriendlyCode(IPage destPage, Lang lang, Map params) {
-		String friendlyCode = null;
-		if (params != null) {
-			String contentId = (String) params.get("contentId");
-			if (contentId!=null) {
-				String viewPageCode = this.getContentManager().getViewPage(contentId);
-				if (destPage.getCode().equals(viewPageCode)) {
-					friendlyCode = this.getSeoMappingManager().getContentReference(contentId, lang.getCode());
-				}
-			}
-		}
-		if (friendlyCode==null && destPage.getMetadata() instanceof SeoPageMetadata) {
-			friendlyCode = ((SeoPageMetadata) destPage.getMetadata()).getFriendlyCode(lang.getCode());
-		}
-		return friendlyCode;
-	}
+    @Override
+    public String createURL(IPage requiredPage, Lang requiredLang, Map<String, String> params, boolean escapeAmp) {
+        return this.createURL(requiredPage, requiredLang, params, escapeAmp, null);
+    }
 
-	@Override
-	public String createURL(IPage requiredPage, Lang requiredLang, Map<String, String> params, boolean escapeAmp) {
-		return this.createURL(requiredPage, requiredLang, params, escapeAmp, null);
-	}
+    @Override
+    public String createURL(IPage requiredPage, Lang requiredLang, Map<String, String> params, boolean escapeAmp, HttpServletRequest request) {
+        try {
+            String friendlyCode = this.extractFriendlyCode(requiredPage, requiredLang, params);
+            if (StringUtils.isBlank(friendlyCode)) {
+                return super.createURL(requiredPage, requiredLang, params, escapeAmp, request);
+            }
+            return this.createFriendlyUrl(friendlyCode, requiredLang, params, escapeAmp, null, request);
+        } catch (Throwable t) {
+            _logger.error("Error creating url", t);
+            throw new RuntimeException("Error creating url", t);
+        }
+    }
 
-	@Override
-	public String createURL(IPage requiredPage, Lang requiredLang, Map<String, String> params, boolean escapeAmp, HttpServletRequest request) {
-		try {
-			String friendlyCode = this.extractFriendlyCode(requiredPage, requiredLang, params);
-			if (StringUtils.isBlank(friendlyCode)) {
-				return super.createURL(requiredPage, requiredLang, params, escapeAmp, request);
-			}
-			return this.createFriendlyUrl(friendlyCode, requiredLang, params, escapeAmp, null, request);
-		} catch (Throwable t) {
-			_logger.error("Error creating url", t);
-			throw new RuntimeException("Error creating url", t);
-		}
-	}
+    protected String createFriendlyUrl(String friendlyCode, Lang requiredLang, Map<String, String> params, boolean escapeAmp, HttpServletRequest request) {
+        return this.createFriendlyUrl(friendlyCode, requiredLang, params, escapeAmp, null, request);
+    }
 
-	protected String createFriendlyUrl(String friendlyCode, Lang requiredLang, Map<String, String> params, boolean escapeAmp, HttpServletRequest request) {
-		return this.createFriendlyUrl(friendlyCode, requiredLang, params, escapeAmp, null, request);
-	}
+    protected String createFriendlyUrl(String friendlyCode, Lang requiredLang, Map<String, String> params, boolean escapeAmp, String forcedBaseUrlMode, HttpServletRequest request) {
+        StringBuilder url = new StringBuilder();
+        try {
+            this.addBaseURL(url, forcedBaseUrlMode, request);
+            if (!url.toString().endsWith("/")) {
+                url.append("/");
+            }
+            url.append("page/");
+            url.append(requiredLang.getCode()).append('/');
+            url.append(friendlyCode);
+            String queryString = this.createQueryString(params, escapeAmp);
+            url.append(queryString);
+        } catch (Exception t) {
+            _logger.error("Error creating friendly url", t);
+            throw new RuntimeException("Error creating friendly url", t);
+        }
+        return url.toString();
+    }
 
-	protected String createFriendlyUrl(String friendlyCode, Lang requiredLang, Map<String, String> params, boolean escapeAmp, String forcedBaseUrlMode, HttpServletRequest request) {
-		StringBuilder url = new StringBuilder();
-		try {
-			this.addBaseURL(url, forcedBaseUrlMode, request);
-			if (!url.toString().endsWith("/")) {
-				url.append("/");
-			}
-			url.append("page/");
-			url.append(requiredLang.getCode()).append('/');
-			url.append(friendlyCode);
-			String queryString = this.createQueryString(params, escapeAmp);
-			url.append(queryString);
-		} catch (Exception t) {
-			_logger.error("Error creating friendly url", t);
-			throw new RuntimeException("Error creating friendly url", t);
-		}
-		return url.toString();
-	}
+    protected ISeoMappingManager getSeoMappingManager() {
+        return seoMappingManager;
+    }
+    public void setSeoMappingManager(ISeoMappingManager seoMappingManager) {
+        this.seoMappingManager = seoMappingManager;
+    }
 
-	protected ISeoMappingManager getSeoMappingManager() {
-		return seoMappingManager;
-	}
-	public void setSeoMappingManager(ISeoMappingManager seoMappingManager) {
-		this.seoMappingManager = seoMappingManager;
-	}
-
-	protected IContentManager getContentManager() {
-		return contentManager;
-	}
-	public void setContentManager(IContentManager contentManager) {
-		this.contentManager = contentManager;
-	}
+    protected IContentManager getContentManager() {
+        return contentManager;
+    }
+    public void setContentManager(IContentManager contentManager) {
+        this.contentManager = contentManager;
+    }
 
 }
