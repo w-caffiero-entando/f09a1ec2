@@ -18,6 +18,7 @@ import static org.entando.entando.plugins.jpredis.utils.RedisSentinelTestExtensi
 import static org.entando.entando.plugins.jpredis.utils.RedisSentinelTestExtension.REDIS_SLAVE_SERVICE;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.resource.DefaultClientResources;
 import java.util.Collections;
 import org.entando.entando.TestEntandoJndiUtils;
@@ -67,7 +68,8 @@ class RedisCacheConfigTest {
         ReflectionTestUtils.setField(config, "redisMasterName", "redis");
         LettuceConnectionFactory factory = config.connectionFactory();
         Assertions.assertNotNull(factory);
-        RedisClient client = config.getRedisClient(DefaultClientResources.builder().build());
+        RedisURI redisURI = config.redisURI();
+        RedisClient client = config.getRedisClient(DefaultClientResources.builder().build(), redisURI);
         Assertions.assertNotNull(client);
     }
 

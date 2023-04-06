@@ -57,4 +57,9 @@ class RedisEnvironmentVariablesTest {
     void testFrontEndCacheCheckDelay() {
         Assertions.assertEquals(30, RedisEnvironmentVariables.frontEndCacheCheckDelay());
     }
+
+    @Test
+    void testUseSentinelEvents() {
+        Assertions.assertTrue(RedisEnvironmentVariables.useSentinelEvents());
+    }
 }

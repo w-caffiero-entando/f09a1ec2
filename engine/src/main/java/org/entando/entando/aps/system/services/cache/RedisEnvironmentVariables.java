@@ -24,6 +24,7 @@ public final class RedisEnvironmentVariables {
     private static final String REDIS_MASTER_NAME = "REDIS_MASTER_NAME";
     private static final String REDIS_PASSWORD = "REDIS_PASSWORD";
     private static final String REDIS_FEC_CHECK_DELAY_SEC = "REDIS_FEC_CHECK_DELAY_SEC";
+    private static final String REDIS_USE_SENTINEL_EVENTS = "REDIS_USE_SENTINEL_EVENTS";
 
     private RedisEnvironmentVariables() {
     }
@@ -54,6 +55,10 @@ public final class RedisEnvironmentVariables {
 
     public static String redisMasterName() {
         return get(REDIS_MASTER_NAME, "mymaster");
+    }
+
+    public static boolean useSentinelEvents() {
+        return Boolean.toString(true).equals(get(REDIS_USE_SENTINEL_EVENTS, "true"));
     }
 
     public static int frontEndCacheCheckDelay() {
