@@ -71,6 +71,8 @@ public class ContentManager extends ApsEntityManager
     private IContentUpdaterService contentUpdaterService;
     
     private ICacheInfoManager cacheInfoManager;
+    private IKeyGeneratorManager keyGeneratorManager;
+
 
     @Override
     protected String getConfigItemName() {
@@ -304,9 +306,7 @@ public class ContentManager extends ApsEntityManager
             }
             id = content.getId();
             if (null == id) {
-                IKeyGeneratorManager keyGenerator = (IKeyGeneratorManager) this
-                        .getService(SystemConstants.KEY_GENERATOR_MANAGER);
-                int key = keyGenerator.getUniqueKeyCurrentValue();
+                int key = keyGeneratorManager.getUniqueKeyCurrentValue();
                 id = content.getTypeCode() + key;
                 content.setId(id);
             }
@@ -776,6 +776,14 @@ public class ContentManager extends ApsEntityManager
     @Autowired
     public void setCacheInfoManager(ICacheInfoManager cacheInfoManager) {
         this.cacheInfoManager = cacheInfoManager;
+    }
+
+    protected IKeyGeneratorManager getKeyGeneratorManager() {
+        return this.keyGeneratorManager;
+    }
+    @Autowired
+    public void setKeyGeneratorManager(IKeyGeneratorManager keyGeneratorManager) {
+        this.keyGeneratorManager = keyGeneratorManager;
     }
 
 }
