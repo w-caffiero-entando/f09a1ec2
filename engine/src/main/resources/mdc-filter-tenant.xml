@@ -1,0 +1,7 @@
+<included>
+    <turboFilter class="ch.qos.logback.classic.turbo.MDCFilter">
+        <MDCKey>tenant</MDCKey>
+        <Value>${LOG_TENANT_FILTER}</Value>
+        <OnMismatch>DENY</OnMismatch>
+    </turboFilter>
+</included>
