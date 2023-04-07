@@ -71,7 +71,7 @@ public class ContentManager extends ApsEntityManager
     private IContentUpdaterService contentUpdaterService;
     
     private ICacheInfoManager cacheInfoManager;
-    private IKeyGeneratorManager keyGeneratorManager;
+    private transient IKeyGeneratorManager keyGeneratorManager;
 
 
     @Override

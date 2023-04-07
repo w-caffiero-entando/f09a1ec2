@@ -82,7 +82,7 @@ public class ContentSchedulerManager extends AbstractService implements IContent
     private IContentSchedulerDAO _contentSchedulerDAO;
 
     private IMailManager _mailManager;
-    private IKeyGeneratorManager keyGeneratorManager;
+    private transient IKeyGeneratorManager keyGeneratorManager;
     
     private transient ICacheInfoManager cacheInfoManager;
 
