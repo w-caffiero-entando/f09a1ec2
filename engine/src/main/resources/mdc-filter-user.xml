@@ -1,0 +1,7 @@
+<included>
+    <turboFilter class="ch.qos.logback.classic.turbo.MDCFilter">
+        <MDCKey>user</MDCKey>
+        <Value>${LOG_USER_FILTER}</Value>
+        <OnMismatch>DENY</OnMismatch>
+    </turboFilter>
+</included>
