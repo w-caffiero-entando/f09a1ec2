@@ -25,7 +25,6 @@ import com.opensymphony.xwork2.util.ValueStack;
  * @author M.Minnai
  * @deprecated Use default struts2 s:hidden tag
  */
-// FIXME verify if defined tld and used in jsp-s
 public class HiddenTag extends org.apache.struts2.views.jsp.ui.HiddenTag {
 	
 	@Override

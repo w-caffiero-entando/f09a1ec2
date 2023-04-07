@@ -24,7 +24,6 @@ import com.agiletec.apsadmin.tags.util.IAutoIndexingTag;
  * @author E.Santoboni
  * @deprecated Use default struts2 s:textarea tag
  */
-// FIXME verify if defined tld and used in jsp-s
 public class TextareaTag extends org.apache.struts2.views.jsp.ui.TextareaTag implements IAutoIndexingTag {
 
 	@Override

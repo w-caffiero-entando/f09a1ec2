@@ -24,7 +24,6 @@ import com.agiletec.apsadmin.tags.util.IAutoIndexingTag;
  * @author E.Santoboni
  * @deprecated Use default struts2 s:password tag
  */
-// FIXME verify if defined tld and used in jsp-s
 public class PasswordTag extends org.apache.struts2.views.jsp.ui.PasswordTag implements IAutoIndexingTag {
 
 	@Override
