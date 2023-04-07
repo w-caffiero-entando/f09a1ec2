@@ -21,6 +21,7 @@ import com.agiletec.aps.system.services.page.events.PageChangedObserver;
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.plugins.jacms.aps.system.services.contentpagemapper.cache.IContentMapperCacheWrapper;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,25 +33,36 @@ import org.slf4j.LoggerFactory;
  *
  * @author W.Ambu
  */
-public class ContentPageMapperManager extends AbstractService implements IContentPageMapperManager, PageChangedObserver {
+public class ContentPageMapperManager extends AbstractService implements IContentPageMapperManager, PageChangedObserver,
+		RefreshableBeanTenantAware {
 
 	private static final Logger logger = LoggerFactory.getLogger(ContentPageMapperManager.class);
 
 	private transient IPageManager pageManager;
 	private transient IPageModelManager pageModelManager;
 	private transient IContentMapperCacheWrapper cacheWrapper;
-	
+
 	@Override
 	public void init() throws Exception {
-		this.getCacheWrapper().initCache(this.getPageManager(), this.getPageModelManager());
+		initTenantAware();
 		logger.debug("{} ready.", this.getClass().getName());
 	}
-    
-    @Override
-    protected void release() {
-        ((AbstractCacheWrapper) this.getCacheWrapper()).release();
-        super.release();
-    }
+
+	@Override
+	protected void release() {
+		releaseTenantAware();
+		super.release();
+	}
+
+	@Override
+	public void initTenantAware() throws Exception {
+		this.getCacheWrapper().initCache(this.getPageManager(), this.getPageModelManager());
+	}
+
+	@Override
+	public void releaseTenantAware() {
+		((AbstractCacheWrapper) this.getCacheWrapper()).release();
+	}
 
 	/**
 	 * Effettua il caricamento della mappa contenuti pubblicati / pagine
@@ -85,6 +97,7 @@ public class ContentPageMapperManager extends AbstractService implements IConten
 	protected IPageManager getPageManager() {
 		return pageManager;
 	}
+
 	public void setPageManager(IPageManager pageManager) {
 		this.pageManager = pageManager;
 	}
@@ -99,6 +112,7 @@ public class ContentPageMapperManager extends AbstractService implements IConten
 	protected IContentMapperCacheWrapper getCacheWrapper() {
 		return cacheWrapper;
 	}
+
 	public void setCacheWrapper(IContentMapperCacheWrapper cacheWrapper) {
 		this.cacheWrapper = cacheWrapper;
 	}

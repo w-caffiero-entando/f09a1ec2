@@ -13,10 +13,26 @@
  */
 package org.entando.entando.aps.system.services.controller.control;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.common.RefreshableBean;
+import com.agiletec.aps.system.services.baseconfig.BaseConfigManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import javax.servlet.ServletContext;
+import org.entando.entando.aps.system.init.InitializerManager;
+import org.entando.entando.aps.system.services.tenants.ITenantInitializerService;
+import org.entando.entando.aps.system.services.tenants.ITenantInitializerService.InitializationTenantFilter;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
+import org.entando.entando.aps.system.services.tenants.TenantInitializerService;
+import org.entando.entando.aps.system.services.tenants.TenantDataAccessor;
 import org.entando.entando.aps.system.services.tenants.TenantManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -31,6 +47,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * @author E.Santoboni
@@ -125,10 +142,23 @@ class TestTenantController extends BaseTestCase {
     private static void recreateTenantManager(String tenants) throws Exception {
         ApplicationContext applicationContext = BaseTestCase.getApplicationContext();
         DefaultSingletonBeanRegistry registry = (DefaultSingletonBeanRegistry) applicationContext.getAutowireCapableBeanFactory();
-        registry.destroySingleton("tenantManager");
+
         ObjectMapper om = applicationContext.getBean(ObjectMapper.class);
-        TenantManager tm = new TenantManager(tenants, om);
+        TenantDataAccessor tenantData = applicationContext.getBean(TenantDataAccessor.class);
+        TenantManager tm = new TenantManager(tenants, om, tenantData);
         tm.afterPropertiesSet();
+        InitializerManager im = Mockito.mock(InitializerManager.class);
+        WebApplicationContext wac = Mockito.mock(WebApplicationContext.class);
+        BaseConfigManager conf = Mockito.mock(BaseConfigManager.class);
+        ServletContext svCtx = Mockito.mock(ServletContext.class);
+        when(svCtx.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)).thenReturn(wac);
+        when(wac.getBean(BaseConfigManager.class)).thenReturn(conf);
+        when(wac.getBeansOfType(RefreshableBeanTenantAware.class)).thenReturn(new HashMap<>());
+        doNothing().when(im).initTenant(any(), any());
+        ITenantInitializerService srv = new TenantInitializerService(tenantData, im, null);
+        srv.startTenantsInitialization(svCtx, InitializationTenantFilter.NOT_REQUIRED_INIT_AT_START).join();
+
+        registry.destroySingleton("tenantManager");
         registry.registerSingleton("tenantManager", tm);
     }
 }

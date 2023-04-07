@@ -16,6 +16,8 @@ package org.entando.entando.aps.system.init;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.aps.system.init.cache.IInitializerManagerCacheWrapper;
 import org.entando.entando.aps.system.init.model.Component;
@@ -93,11 +95,21 @@ public class InitializerManager extends AbstractInitializerManager implements II
     }
     
     public void init() throws Exception {
+        initPrimary();
+    }
+
+    public void initPrimary() throws Exception {
+        DatabaseMigrationStrategy migrationStrategyEnum = this.getMigrationStrategyEnum();
+        DatabaseMigrationStrategy defaultComputedStrategy = Optional.ofNullable(migrationStrategyEnum).orElse(DatabaseMigrationStrategy.DISABLED);
+
+        initTenant(defaultComputedStrategy, Optional.empty());
+    }
+
+    public void initTenant(DatabaseMigrationStrategy migrationStrategy, Optional<Map<String, DataSource>> datasources) throws Exception {
         SystemInstallationReport report = null;
         try {
-            DatabaseMigrationStrategy migrationStrategyEnum = this.getMigrationStrategyEnum();
             report = this.extractReport();
-            report = ((IDatabaseInstallerManager) this.getDatabaseManager()).installDatabase(report, migrationStrategyEnum);
+            report = ((IDatabaseInstallerManager) this.getDatabaseManager()).installDatabase(report, migrationStrategy, datasources);
             this.getCacheWrapper().initCache(report);
         } catch (Throwable t) {
             logger.error("Error while initializating Db Installer", t);
@@ -110,7 +122,7 @@ public class InitializerManager extends AbstractInitializerManager implements II
         logger.debug("{}: initialized - migration strategy {}", this.getClass().getName(), this.getMigrationStrategy());
     }
 
-    public void executePostInitProcesses() throws BeansException {
+        public void executePostInitProcesses() throws BeansException {
         SystemInstallationReport report = null;
         try {
             report = this.extractReport();

@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.plugins.jpcontentscheduler.aps.system.services.ContentThreadConstants;
@@ -66,7 +67,8 @@ import org.springframework.cache.annotation.CacheEvict;
  * Classe che implementa i servizi da necessari al thread di
  * pubblicazione/sospenzione automatica
  */
-public class ContentSchedulerManager extends AbstractService implements IContentSchedulerManager {
+public class ContentSchedulerManager extends AbstractService implements IContentSchedulerManager,
+        RefreshableBeanTenantAware {
 
     private static final Logger _logger = LoggerFactory.getLogger(ContentSchedulerManager.class);
     private static final long serialVersionUID = 6880576602469119814L;
@@ -86,7 +88,12 @@ public class ContentSchedulerManager extends AbstractService implements IContent
     @Override
     public void init() throws Exception {
         this.loadConfigs();
-        _logger.info(this.getClass().getName() + ": inizializzato");
+        _logger.info("'{}': initialized", this.getClass().getName());
+    }
+
+    @Override
+    public void initTenantAware() throws Exception {
+        this.loadConfigs();
     }
 
     /**

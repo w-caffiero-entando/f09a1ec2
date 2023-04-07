@@ -1,6 +1,8 @@
 package org.entando.entando.keycloak.services.oidc.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 public class AuthResponse {
 
@@ -13,6 +15,10 @@ public class AuthResponse {
     @JsonProperty("refresh_expires_in")
     private String refreshExpiresIn;
 
+    @Getter @Setter
+    @JsonProperty("id_token")
+    private String idToken;
+
     @JsonProperty("refresh_token")
     private String refreshToken;
 
@@ -21,6 +27,7 @@ public class AuthResponse {
 
     @JsonProperty("session_state")
     private String sessionState;
+
 
     private String scope;
 

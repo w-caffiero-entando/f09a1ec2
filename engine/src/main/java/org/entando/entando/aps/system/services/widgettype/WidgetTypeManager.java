@@ -24,6 +24,7 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.GuiFragmentUtilizer;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.aps.system.services.widgettype.cache.IWidgetTypeManagerCacheWrapper;
 import org.entando.entando.aps.system.services.widgettype.events.WidgetTypeChangedEvent;
 import org.entando.entando.ent.exception.EntException;
@@ -42,7 +43,8 @@ import java.util.List;
  * @author M.Diana - E.Santoboni
  */
 public class WidgetTypeManager extends AbstractService
-        implements IWidgetTypeManager, LangsChangedObserver, GroupUtilizer<WidgetType>, GuiFragmentUtilizer {
+        implements IWidgetTypeManager, LangsChangedObserver, GroupUtilizer<WidgetType>, GuiFragmentUtilizer,
+        RefreshableBeanTenantAware {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(WidgetTypeManager.class);
 
@@ -53,14 +55,24 @@ public class WidgetTypeManager extends AbstractService
 
     @Override
     public void init() throws Exception {
-        this.getCacheWrapper().initCache(this.getWidgetTypeDAO());
+        initTenantAware();
         logger.debug("{} ready. Initialized", this.getClass().getName());
     }
     
     @Override
     protected void release() {
-        this.getCacheWrapper().release();
+        releaseTenantAware();
         super.release();
+    }
+
+    @Override
+    public void initTenantAware() throws Exception {
+        this.getCacheWrapper().initCache(this.getWidgetTypeDAO());
+    }
+
+    @Override
+    public void releaseTenantAware() {
+        this.getCacheWrapper().release();
     }
 
     @Override

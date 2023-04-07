@@ -14,11 +14,11 @@
 package com.agiletec.aps.system.services.baseconfig;
 
 import java.util.Map;
-
 import javax.servlet.ServletContext;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.baseconfig.cache.IConfigManagerCacheWrapper;
 import java.util.HashMap;
@@ -39,7 +39,8 @@ import org.springframework.web.context.ServletContextAware;
  *
  * @author M.Diana - E.Santoboni
  */
-public class BaseConfigManager extends AbstractService implements ConfigInterface, ServletContextAware {
+public class BaseConfigManager extends AbstractService implements ConfigInterface, ServletContextAware,
+        RefreshableBeanTenantAware {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(BaseConfigManager.class);
 
@@ -53,15 +54,25 @@ public class BaseConfigManager extends AbstractService implements ConfigInterfac
 
     @Override
     public void init() throws Exception {
-        String version = this.getSystemParams().get(SystemConstants.INIT_PROP_CONFIG_VERSION);
-        this.getCacheWrapper().initCache(this.getConfigDAO(), version);
+        initTenantAware();
         logger.debug("{} ready. Initialized", this.getClass().getName());
     }
     
     @Override
     protected void release() {
-        this.getCacheWrapper().release();
+        releaseTenantAware();
         super.release();
+    }
+
+    @Override
+    public void initTenantAware() throws Exception {
+        String version = this.getSystemParams().get(SystemConstants.INIT_PROP_CONFIG_VERSION);
+        this.getCacheWrapper().initCache(this.getConfigDAO(), version);
+    }
+
+    @Override
+    public void releaseTenantAware() {
+        this.getCacheWrapper().release();
     }
 
     /**

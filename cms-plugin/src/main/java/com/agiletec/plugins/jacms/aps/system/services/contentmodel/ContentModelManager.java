@@ -15,6 +15,7 @@ package com.agiletec.plugins.jacms.aps.system.services.contentmodel;
 
 import com.agiletec.aps.system.common.AbstractCacheWrapper;
 import com.agiletec.aps.system.common.AbstractService;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
@@ -41,7 +42,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
  *
  * @author S.Didaci - C.Siddi - C.Sirigu
  */
-public class ContentModelManager extends AbstractService implements IContentModelManager {
+public class ContentModelManager extends AbstractService implements IContentModelManager, RefreshableBeanTenantAware {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -84,14 +85,24 @@ public class ContentModelManager extends AbstractService implements IContentMode
 
     @Override
     public void init() throws Exception {
-        this.cacheWrapper.initCache(this.getContentModelDAO());
+        initTenantAware();
         logger.debug("{} ready. Initialized {} content models", this.getClass().getName(), this.getCacheWrapper().getContentModels().size());
     }
     
     @Override
     protected void release() {
-        ((AbstractCacheWrapper) this.getCacheWrapper()).release();
+        releaseTenantAware();
         super.release();
+    }
+
+    @Override
+    public void initTenantAware() throws Exception {
+        this.cacheWrapper.initCache(this.getContentModelDAO());
+    }
+
+    @Override
+    public void releaseTenantAware() {
+        ((AbstractCacheWrapper) this.getCacheWrapper()).release();
     }
 
     /**

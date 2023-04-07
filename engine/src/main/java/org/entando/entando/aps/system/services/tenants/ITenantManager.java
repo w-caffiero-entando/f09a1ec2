@@ -14,6 +14,7 @@
 package org.entando.entando.aps.system.services.tenants;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 
@@ -27,6 +28,8 @@ public interface ITenantManager {
 
     List<String> getCodes();
 
+    Map<String,TenantStatus> getStatuses();
+
     DataSource getDatasource(String tenantCode);
 
     Optional<TenantConfig> getConfig(String tenantCode);
@@ -34,4 +37,5 @@ public interface ITenantManager {
     Optional<TenantConfig> getTenantConfigByDomain(String domain);
 
     String getTenantCodeByDomain(String domain);
+
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -37,7 +38,7 @@ import com.agiletec.aps.util.DateConverter;
  *
  * @author E.Santoboni
  */
-public class CategoryManager extends AbstractService implements ICategoryManager {
+public class CategoryManager extends AbstractService implements ICategoryManager, RefreshableBeanTenantAware {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(CategoryManager.class);
 
@@ -49,15 +50,25 @@ public class CategoryManager extends AbstractService implements ICategoryManager
 
 	@Override
 	public void init() throws Exception {
-		this.initCache();
+		initTenantAware();
 		_logger.debug("{} initialized", this.getClass().getName());
 	}
     
     @Override
     protected void release() {
-        this.getCacheWrapper().release();
+        releaseTenantAware();
         super.release();
     }
+
+	@Override
+	public void initTenantAware() throws Exception {
+		this.initCache();
+	}
+
+	@Override
+	public void releaseTenantAware() {
+		this.getCacheWrapper().release();
+	}
 
 	private void initCache() throws EntException {
 		this.getCacheWrapper().initCache(this.getCategoryDAO(), this.getLangManager());

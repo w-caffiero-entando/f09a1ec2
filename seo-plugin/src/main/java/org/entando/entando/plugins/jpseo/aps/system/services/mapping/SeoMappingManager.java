@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -55,7 +56,8 @@ import org.entando.entando.plugins.jpseo.aps.util.FriendlyCodeGenerator;
 /**
  * @author E.Santoboni, E.Mezzano
  */
-public class SeoMappingManager extends AbstractService implements ISeoMappingManager, PageChangedObserver, PublicContentChangedObserver {
+public class SeoMappingManager extends AbstractService implements ISeoMappingManager, PageChangedObserver, PublicContentChangedObserver,
+        RefreshableBeanTenantAware {
 
     private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoMappingManager.class);
 
@@ -66,13 +68,23 @@ public class SeoMappingManager extends AbstractService implements ISeoMappingMan
 
     @Override
     public void init() throws Exception {
-        this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), true);
+        initTenantAware();
         logger.debug("{} ready. initialized", this.getClass().getName());
     }
 
     @Override
-    protected void release() {
+    public void initTenantAware() throws Exception {
+        this.getCacheWrapper().initCache(this.getPageManager(), this.getSeoMappingDAO(), true);
+    }
+
+    @Override
+    public void releaseTenantAware() {
         this.getCacheWrapper().release();
+    }
+
+    @Override
+    protected void release() {
+        releaseTenantAware();
         super.release();
     }
 

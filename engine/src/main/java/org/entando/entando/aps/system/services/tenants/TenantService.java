@@ -17,13 +17,20 @@ import static org.entando.entando.aps.system.services.tenants.ITenantManager.PRI
 
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.web.tenant.model.TenantDto;
+import org.entando.entando.web.tenant.model.TenantStatsAndStatusesDto;
+import org.entando.entando.web.tenant.model.TenantStatsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,11 +40,13 @@ import org.springframework.stereotype.Service;
 public class TenantService implements ITenantService {
 
     private final ITenantManager tenantManager;
+    private final TenantDataAccessor tenantAccessor;
     private final IStorageManager storageManager;
 
     @Autowired
-    public TenantService(ITenantManager tenantManager, IStorageManager storageManager){
+    public TenantService(ITenantManager tenantManager, TenantDataAccessor accessor, IStorageManager storageManager){
         this.tenantManager = tenantManager;
+        this.tenantAccessor = accessor;
         this.storageManager = storageManager;
     }
 
@@ -62,6 +71,49 @@ public class TenantService implements ITenantService {
 
         return tenants;
 
+    }
+
+    @Override
+    public TenantStatsAndStatusesDto getTenantStatsAndStatuses() {
+        Map<String, TenantStatus> statuses = tenantManager.getStatuses();
+        Map<String, TenantStatus> mandatory = fetchByFilteringConfig(statuses, true);
+        Map<String, TenantStatus> additionals = fetchByFilteringConfig(statuses, false);
+
+        return TenantStatsAndStatusesDto.builder()
+                .mandatoryStatuses(mandatory)
+                .additionalStatuses(additionals)
+                .stats(calculate(statuses)).build();
+    }
+
+    private Map<String, TenantStatus> fetchByFilteringConfig(Map<String, TenantStatus> statuses, boolean isMandatory) {
+        return statuses.keySet().stream()
+                .map(code -> tenantAccessor.getTenantConfigs().get(code))
+                .filter(Objects::nonNull)
+                .filter(tc -> isMandatory == tc.isInitializationAtStartRequired())
+                .map(TenantConfig::getTenantCode)
+                .collect(Collectors.toMap(k -> k, statuses::get));
+    }
+
+    private TenantStatsDto calculate(Map<String, TenantStatus> statuses) {
+        TenantStatsDto d = new TenantStatsDto();
+        statuses.values().stream().forEach(s -> {
+            d.setCount(d.getCount()+1);
+            switch (s) {
+                case UNKNOWN:
+                    d.setUnknown(d.getUnknown() + 1);
+                    break;
+                case FAILED:
+                    d.setFailed(d.getFailed() + 1);
+                    break;
+                case PENDING:
+                    d.setPending(d.getPending() + 1);
+                    break;
+                case READY:
+                    d.setReady(d.getReady() + 1);
+                    break;
+            }
+        });
+        return d;
     }
 
     private TenantDto mapTenantToTenantDto(TenantConfig config){

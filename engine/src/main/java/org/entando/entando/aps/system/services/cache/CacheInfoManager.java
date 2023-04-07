@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,8 @@ import org.springframework.cache.CacheManager;
  *
  * @author E.Santoboni
  */
-public class CacheInfoManager extends AbstractService implements ICacheInfoManager, PageChangedObserver {
+public class CacheInfoManager extends AbstractService implements ICacheInfoManager, PageChangedObserver,
+        RefreshableBeanTenantAware {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(CacheInfoManager.class);
 
@@ -50,6 +52,11 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
     @Override
     public void init() throws Exception {
         logger.debug("{} (cache info service initialized) ready", this.getClass().getName());
+    }
+
+    @Override
+    public void releaseTenantAware() {
+        this.destroy();
     }
 
     @Override
@@ -87,7 +94,7 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
     @Override
     protected void release() {
         super.release();
-        this.destroy();
+        releaseTenantAware();
     }
 
     @Override

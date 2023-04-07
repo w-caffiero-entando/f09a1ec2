@@ -33,12 +33,13 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
-public class PageTokenManager extends AbstractService implements IPageTokenManager {
+public class PageTokenManager extends AbstractService implements IPageTokenManager, RefreshableBeanTenantAware {
 
 	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(PageTokenManager.class);
 
@@ -75,6 +76,11 @@ public class PageTokenManager extends AbstractService implements IPageTokenManag
 
 	@Override
 	public void init() throws Exception {
+		initTenantAware();
+	}
+
+	@Override
+	public void initTenantAware() throws Exception {
 		String param = this.getConfigManager().getParam(PREVIEW_HASH);
 		if (StringUtils.isBlank(param) || param.trim().length() < HASH_LENGTH) {
 			param = this.generateRandomHash();

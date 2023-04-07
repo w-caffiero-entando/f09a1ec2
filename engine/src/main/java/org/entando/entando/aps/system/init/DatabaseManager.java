@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,13 +65,11 @@ import org.entando.entando.aps.system.init.util.TableDataUtils;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.aps.system.services.storage.StorageManagerUtil;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
-import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.ServletContextAware;
 
@@ -99,19 +96,18 @@ public class DatabaseManager extends AbstractInitializerManager
     private int lockFallbackMinutes;
 
     private ServletContext servletContext;
-    private ITenantManager tenantManager;
 
     public void init() {
         logger.debug("DatabaseManager ready");
     }
 
     @Override
-    public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy defaultMigrationStrategy) throws Exception {
+    public SystemInstallationReport installDatabase(SystemInstallationReport report,
+            DatabaseMigrationStrategy strategy,
+            Optional<Map<String, DataSource>> datasources) throws Exception {
         String lastLocalBackupFolder = null;
 
-        DatabaseMigrationStrategy defaultComputedStrategy = Optional.ofNullable(defaultMigrationStrategy).orElse(DatabaseMigrationStrategy.DISABLED);
-        // compute strategy
-        DatabaseMigrationStrategy strategy = getTenantMigrationStrategy().orElse(defaultComputedStrategy);
+
 
         if (DatabaseMigrationStrategy.SKIP.equals(strategy)) {
             Optional<String> tenantCodeOp = ApsTenantApplicationUtils.getTenant();
@@ -124,16 +120,16 @@ public class DatabaseManager extends AbstractInitializerManager
         }
 
         // Check if we are dealing with an old database version (not Liquibase compliant - Entando <= 6.3.2)
-        legacyDatabaseCheck();
+        legacyDatabaseCheck(datasources);
 
         try {
-            initComponents(report, strategy);
+            initComponents(report, strategy, datasources);
             if (DatabaseMigrationStrategy.AUTO.equals(strategy) && Status.RESTORE.equals(report.getStatus())) {
                 //ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH:MI:SS.FF'
                 if (null != lastLocalBackupFolder) {
                     this.restoreBackup(lastLocalBackupFolder);
                 } else {
-                    this.restoreDefaultDump();
+                    this.restoreDefaultDump(datasources);
                 }
             }
         } catch (DatabaseMigrationException de) {
@@ -150,24 +146,8 @@ public class DatabaseManager extends AbstractInitializerManager
         return report;
     }
     
-    private Optional<DatabaseMigrationStrategy> getTenantMigrationStrategy() {
-        return ApsTenantApplicationUtils.getTenant().map(this::composeTenantStrategy);
-    }
-
-    private DatabaseMigrationStrategy composeTenantStrategy(String tenantCode) {
-        try {
-            return getTenantManager().getConfig(tenantCode)
-                .flatMap(TenantConfig::getDbMigrationStrategy)
-                .map(s -> Enum.valueOf(DatabaseMigrationStrategy.class, s.toUpperCase()))
-                .orElse(DatabaseMigrationStrategy.SKIP);
-
-        } catch (IllegalArgumentException ex) {
-            logger.warn("Migration Strategy, Tenant '{}', Invalid value - Allowed values skip|disabled|auto|generate_sql", tenantCode);
-            return DatabaseMigrationStrategy.SKIP;
-        }
-    }
-
     private String checkRestore(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) {
+        long start = System.currentTimeMillis();
         String lastLocalBackupFolder = null;
         if (!DatabaseMigrationStrategy.DISABLED.equals(migrationStrategy) && !Environment.test.equals(this.getEnvironment())) {
             // There's no local database installed, lookup in the local databases
@@ -183,15 +163,23 @@ public class DatabaseManager extends AbstractInitializerManager
                 }
             }
         }
+        if(logger.isDebugEnabled()) {
+            logger.debug("Tenant:{} :: DB :: checkRestore:: takes time:{}ms ",
+                    ApsTenantApplicationUtils.getTenant().orElse(
+                            ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        }
         return lastLocalBackupFolder;
     }
 
-    private void initComponents(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) throws DatabaseMigrationException, EntException {
+    private void initComponents(SystemInstallationReport report,
+            DatabaseMigrationStrategy migrationStrategy,
+            Optional<Map<String,DataSource>> datasources) throws DatabaseMigrationException, EntException {
+        long start = System.currentTimeMillis();
         List<Component> components = this.getComponentManager().getCurrentComponents();
         Map<String, List<ChangeSetStatus>> pendingChangeSetMap = new HashMap<>();
         for (Component entandoComponentConfiguration : components) {
             List<ChangeSetStatus> pendingChangeSet = this.initLiquiBaseResources(entandoComponentConfiguration,
-                    report, migrationStrategy);
+                    report, migrationStrategy, datasources);
             if (!pendingChangeSet.isEmpty()) {
                 pendingChangeSetMap.put(entandoComponentConfiguration.getCode(), pendingChangeSet);
             }
@@ -199,12 +187,16 @@ public class DatabaseManager extends AbstractInitializerManager
         if (!pendingChangeSetMap.isEmpty()) {
             throw new DatabaseMigrationException(pendingChangeSetMap);
         }
+        if(logger.isDebugEnabled()) {
+            logger.debug("Tenant:{} :: DB :: initComponents :: takes time:{}ms ",
+                    ApsTenantApplicationUtils.getTenant().orElse(
+                            ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        }
     }
 
-    private void legacyDatabaseCheck() throws DatabaseMigrationException, SQLException {
-        List<DataSource> dss = ApsTenantApplicationUtils.getTenant()
-                                .map(getTenantManager()::getDatasource)
-                                .map(ds -> Arrays.asList(ds))
+    private void legacyDatabaseCheck(Optional<Map<String,DataSource>> datasources) throws DatabaseMigrationException, SQLException {
+        long start = System.currentTimeMillis();
+        List<DataSource> dss = datasources.map(m -> m.values().stream().collect(Collectors.toList()))
                                 .orElse(this.defaultDataSources);
         for (DataSource dataSource : dss) {
             Connection connection = null;
@@ -244,11 +236,19 @@ public class DatabaseManager extends AbstractInitializerManager
                 } catch (Exception e) { /* Ignored */ }
             }
         }
+        if(logger.isDebugEnabled()) {
+            logger.debug("Tenant:{} :: DB :: legacyDatabaseCheck:: takes time:{}ms ",
+                    ApsTenantApplicationUtils.getTenant().orElse(
+                            ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        }
     }
 
     //---------------- DATA ------------------- START
 
-    public List<ChangeSetStatus> initLiquiBaseResources(Component componentConfiguration, SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) throws EntException {
+    public List<ChangeSetStatus> initLiquiBaseResources(Component componentConfiguration,
+            SystemInstallationReport report,
+            DatabaseMigrationStrategy migrationStrategy, Optional<Map<String,DataSource>> datasources) throws EntException {
+        long start = System.currentTimeMillis();
         List<ChangeSetStatus> pendingChangeSet = new ArrayList<>();
         logger.info(INIT_MSG_L, componentConfiguration.getCode(), LOG_PREFIX);
         ComponentInstallationReport componentReport = report.getComponentReport(componentConfiguration.getCode(), true);
@@ -261,7 +261,10 @@ public class DatabaseManager extends AbstractInitializerManager
                 if (null != changeLogFile) {
                     liquibaseReport.getDatabaseStatus().put(dataSourceName, Status.INCOMPLETE);
                     List<ChangeSetStatus> changeSetToExecute = this.executeLiquibaseUpdate(report.getCreation(),
-                            componentConfiguration.getCode(), changeLogFile, dataSourceName, report.getStatus(), migrationStrategy);
+                            componentConfiguration.getCode(), changeLogFile, dataSourceName, report.getStatus(),
+                            migrationStrategy,
+                            datasources);
+
                     pendingChangeSet.addAll(changeSetToExecute);
                     ApsSystemUtils.directStdoutTrace("|   ( ok )  " + dataSourceName);
                     if (!DatabaseMigrationStrategy.DISABLED.equals(migrationStrategy)) {
@@ -280,18 +283,26 @@ public class DatabaseManager extends AbstractInitializerManager
             logger.error("Error executing liquibase initialization for component {}", componentConfiguration.getCode(), t);
             throw new EntException("Error executing liquibase initialization for component " + componentConfiguration.getCode(), t);
         }
+
+        if(logger.isDebugEnabled()) {
+            logger.debug("Tenant:{} :: DB :: initLiquiBaseResources :: takes time:{}ms ",
+                    ApsTenantApplicationUtils.getTenant().orElse(
+                            ITenantManager.PRIMARY_CODE), System.currentTimeMillis() - start);
+        }
         return pendingChangeSet;
     }
 
     private List<ChangeSetStatus> executeLiquibaseUpdate(Date timestamp, String componentCode,
-            String changeLogFile, String dataSourceName, Status status, DatabaseMigrationStrategy migrationStrategy)
+            String changeLogFile, String dataSourceName, Status status,
+            DatabaseMigrationStrategy migrationStrategy,
+            Optional<Map<String,DataSource>> datasources)
             throws LiquibaseException, IOException, SQLException {
         List<ChangeSetStatus> changeSetToExecute = new ArrayList<>();
         Connection connection = null;
         Liquibase liquibase = null;
         Writer writer = null;
         try {
-            DataSource dataSource = this.fetchFromTenantOrGetDefaultByName(dataSourceName);
+            DataSource dataSource = this.fetchDataSource(dataSourceName, datasources);
             connection = dataSource.getConnection();
             JdbcConnection liquibaseConnection = new JdbcConnection(connection);
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(liquibaseConnection);
@@ -334,10 +345,9 @@ public class DatabaseManager extends AbstractInitializerManager
         return changeSetToExecute;
     }
 
-    private DataSource fetchFromTenantOrGetDefaultByName(String dataSourceName) {
-        return ApsTenantApplicationUtils.getTenant()
-					.map(tenantCode -> this.getTenantManager().getDatasource(tenantCode))
-					.orElse((DataSource) this.getBeanFactory().getBean(dataSourceName));
+    private DataSource fetchDataSource(String dataSourceName, Optional<Map<String,DataSource>> datasources) {
+        return datasources.map(m -> m.get(dataSourceName))
+                .orElse((DataSource) this.getBeanFactory().getBean(dataSourceName));
     }
 
     /**
@@ -381,7 +391,7 @@ public class DatabaseManager extends AbstractInitializerManager
         }
     }
 
-    private void restoreDefaultDump() throws EntException {
+    private void restoreDefaultDump(Optional<Map<String,DataSource>> datasources) throws EntException {
         try {
             String[] dataSourceNames = this.extractBeanNames(DataSource.class);
             Map<String, Resource> defaultDump = this.getDefaultSqlDump();
@@ -389,7 +399,7 @@ public class DatabaseManager extends AbstractInitializerManager
                 return;
             }
             for (String dataSourceName : dataSourceNames) {
-                DataSource dataSource = this.fetchFromTenantOrGetDefaultByName(dataSourceName);
+                DataSource dataSource = this.fetchDataSource(dataSourceName, datasources);
                 Resource resource = defaultDump.get(dataSourceName);
                 String script = this.readFile(resource);
                 if (null != script && script.trim().length() > 0) {
@@ -671,14 +681,6 @@ public class DatabaseManager extends AbstractInitializerManager
     @Override
     public void setLockFallbackMinutes(int lockFallbackMinutes) {
         this.lockFallbackMinutes = lockFallbackMinutes;
-    }
-
-    protected ITenantManager getTenantManager() {
-        return tenantManager;
-    }
-    @Autowired
-    public void setTenantManager(ITenantManager tenantManager) {
-        this.tenantManager = tenantManager;
     }
 
 }

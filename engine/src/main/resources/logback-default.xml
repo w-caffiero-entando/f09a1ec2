@@ -1,3 +1,5 @@
 <configuration>
     <include resource="base.xml"/>
+    <include optional="true" resource="${MDC_USER_FILTER_CONFIG_FILE:-none}"/>
+    <include optional="true" resource="${MDC_TENANT_FILTER_CONFIG_FILE:-none}"/>
 </configuration>

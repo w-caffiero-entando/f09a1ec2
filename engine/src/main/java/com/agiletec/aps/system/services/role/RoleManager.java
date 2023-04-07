@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.agiletec.aps.system.common.AbstractService;
+import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.role.cache.IPermissionCacheWrapper;
 import com.agiletec.aps.system.services.role.cache.IRoleCacheWrapper;
@@ -30,7 +31,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
  *
  * @author M.Diana - E.Santoboni
  */
-public class RoleManager extends AbstractService implements IRoleManager {
+public class RoleManager extends AbstractService implements IRoleManager, RefreshableBeanTenantAware {
 
 	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(RoleManager.class);
 
@@ -41,17 +42,27 @@ public class RoleManager extends AbstractService implements IRoleManager {
 
 	@Override
 	public void init() throws Exception {
-		this.getPermissionCacheWrapper().initCache(this.getPermissionDAO());
-		this.getRoleCacheWrapper().initCache(this.getRoleDAO());
+		initTenantAware();
 		logger.debug("{} : initialized", this.getClass().getName());
 	}
     
     @Override
     protected void release() {
-        this.getRoleCacheWrapper().release();
-        this.getPermissionCacheWrapper().release();
+		releaseTenantAware();
         super.release();
     }
+
+	@Override
+	public void initTenantAware() throws Exception {
+		this.getPermissionCacheWrapper().initCache(this.getPermissionDAO());
+		this.getRoleCacheWrapper().initCache(this.getRoleDAO());
+	}
+
+	@Override
+	public void releaseTenantAware() {
+		this.getRoleCacheWrapper().release();
+		this.getPermissionCacheWrapper().release();
+	}
 
 	/**
 	 * Restituisce la lista dei ruoli esistenti.
