@@ -5,10 +5,6 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.resource.DefaultClientResources;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.cache.RedisEnvironmentVariables;
 import org.entando.entando.plugins.jpredis.aps.system.redis.conditions.RedisActive;
@@ -33,23 +29,11 @@ public class SentinelConfig extends BaseRedisCacheConfig {
     private final String redisAddresses;
     private final String redisPassword;
     private final String redisMasterName;
-    private final int frontEndCacheCheckDelay;
 
     public SentinelConfig() {
         this.redisAddresses = RedisEnvironmentVariables.redisAddresses();
         this.redisPassword = RedisEnvironmentVariables.redisPassword();
         this.redisMasterName = RedisEnvironmentVariables.redisMasterName();
-        this.frontEndCacheCheckDelay = RedisEnvironmentVariables.frontEndCacheCheckDelay();
-    }
-
-    @Bean
-    public Executor sentinelSchedulerExecutor(RedisClient redisClient, LettuceCacheManager cacheManager,
-            CacheFrontendManager cacheFrontendManager) {
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        SentinelScheduler sentinelScheduler = new SentinelScheduler(redisClient, cacheManager, cacheFrontendManager);
-        executor.scheduleWithFixedDelay(sentinelScheduler, frontEndCacheCheckDelay, frontEndCacheCheckDelay,
-                TimeUnit.SECONDS);
-        return executor;
     }
 
     @Bean(destroyMethod = "destroy")
@@ -73,10 +57,8 @@ public class SentinelConfig extends BaseRedisCacheConfig {
         return new LettuceConnectionFactory(sentinelConfig);
     }
 
-    @Bean(destroyMethod = "shutdown")
-    public RedisClient getRedisClient(DefaultClientResources resources) {
-        logger.warn(
-                "** Client-side caching doesn't work on Redis Cluster and sharding data environments but only for Master/Slave environments (with sentinel) **");
+    @Bean
+    public RedisURI redisURI() {
         List<String> purgedAddresses = new ArrayList<>();
         String[] addresses = this.redisAddresses.split(",");
         for (int i = 0; i < addresses.length; i++) {
@@ -98,7 +80,14 @@ public class SentinelConfig extends BaseRedisCacheConfig {
         if (!StringUtils.isBlank(this.redisPassword)) {
             uriBuilder.withPassword(this.redisPassword.toCharArray());
         }
-        return RedisClient.create(resources, uriBuilder.build());
+        return uriBuilder.build();
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public RedisClient getRedisClient(DefaultClientResources resources, RedisURI redisURI) {
+        logger.warn(
+                "** Client-side caching doesn't work on Redis Cluster and sharding data environments but only for Master/Slave environments (with sentinel) **");
+        return RedisClient.create(resources, redisURI);
     }
 
 }
