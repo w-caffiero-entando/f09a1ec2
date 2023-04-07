@@ -329,12 +329,12 @@ public class EntitySearchFilter<T> extends FieldSearchFilter implements Serializ
 		}
 		return value.toString();
 	}
-	// FIXME very
+
 	@Deprecated
 	public static EntitySearchFilter getInstance(IApsEntity prototype, String toStringFilter) {
 		return getInstance(prototype, getProperties(toStringFilter));
 	}
-	// FIXME very
+
 	@Deprecated
 	public static Properties getProperties(String toStringFilter) {
 		Properties props = new Properties();

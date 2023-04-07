@@ -65,7 +65,6 @@ public abstract class AbstractListAttribute extends AbstractComplexAttribute
     }
 
 
-    //FIXME remove
     @Deprecated(/**
              * INSERTED to guaranted compatibility with previsous version of
              * jAPS 2.0.12

@@ -109,7 +109,7 @@ public class ApsEntity implements IApsEntity {
     public void setDescription(String description) {
         this._description = description;
     }
-    // FIXME very
+
     @Override
     @Deprecated
     public String getDescr() {
@@ -248,7 +248,7 @@ public class ApsEntity implements IApsEntity {
     public void setTypeDescription(String typeDescription) {
         this._typeDescription = typeDescription;
     }
-    // FIXME very
+
     @Override
     @Deprecated
     public String getTypeDescr() {

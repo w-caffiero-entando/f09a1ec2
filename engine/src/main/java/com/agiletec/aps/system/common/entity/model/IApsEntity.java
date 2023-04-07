@@ -56,7 +56,7 @@ public interface IApsEntity extends Serializable {
      * @return The description of entity.
      */
     public String getDescription();
-//FIXME see where used
+
     @Deprecated
     public String getDescr();
 
@@ -125,7 +125,6 @@ public interface IApsEntity extends Serializable {
      */
     public String getTypeDescription();
 
-    // FIXME see where used
     @Deprecated
     public String getTypeDescr();
 
