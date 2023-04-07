@@ -5,6 +5,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -57,6 +58,17 @@ class MDCUserFilterTest {
     void shouldSetGuestUserToMDC() throws Exception {
         try (MockedStatic<MDC> mdc = Mockito.mockStatic(MDC.class)) {
             filter.doFilter(request, response, chain);
+            mdc.verify(() -> MDC.put("user", "guest"));
+            mdc.verify(() -> MDC.remove("user"));
+            Mockito.verify(chain, Mockito.times(1)).doFilter(Mockito.any(), Mockito.any());
+        }
+    }
+
+    @Test
+    void shouldRemoveMDCKeyInCaseOfException() throws Exception {
+        try (MockedStatic<MDC> mdc = Mockito.mockStatic(MDC.class)) {
+            Mockito.doThrow(NullPointerException.class).when(chain).doFilter(Mockito.any(), Mockito.any());
+            Assertions.assertThrows(NullPointerException.class, () -> filter.doFilter(request, response, chain));
             mdc.verify(() -> MDC.put("user", "guest"));
             mdc.verify(() -> MDC.remove("user"));
             Mockito.verify(chain, Mockito.times(1)).doFilter(Mockito.any(), Mockito.any());

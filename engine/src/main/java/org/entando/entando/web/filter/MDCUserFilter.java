@@ -18,9 +18,12 @@ public class MDCUserFilter extends HttpFilter {
     @Override
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        MDC.put(MDC_KEY_USER, getCurrentUser(request));
-        chain.doFilter(request, response);
-        MDC.remove(MDC_KEY_USER);
+        try {
+            MDC.put(MDC_KEY_USER, getCurrentUser(request));
+            chain.doFilter(request, response);
+        } finally {
+            MDC.remove(MDC_KEY_USER);
+        }
     }
 
     private String getCurrentUser(HttpServletRequest servletRequest) {

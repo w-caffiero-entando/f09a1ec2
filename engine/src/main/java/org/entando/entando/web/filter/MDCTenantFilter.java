@@ -17,8 +17,11 @@ public class MDCTenantFilter extends HttpFilter {
     @Override
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        MDC.put(MDC_KEY_TENANT, ApsTenantApplicationUtils.getTenant().orElse(ITenantManager.PRIMARY_CODE));
-        chain.doFilter(request, response);
-        MDC.remove(MDC_KEY_TENANT);
+        try {
+            MDC.put(MDC_KEY_TENANT, ApsTenantApplicationUtils.getTenant().orElse(ITenantManager.PRIMARY_CODE));
+            chain.doFilter(request, response);
+        } finally {
+            MDC.remove(MDC_KEY_TENANT);
+        }
     }
 }
