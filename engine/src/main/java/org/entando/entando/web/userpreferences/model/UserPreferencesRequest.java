@@ -26,6 +26,7 @@ public class UserPreferencesRequest {
     private List<String> defaultContentJoinGroups;
     private String defaultWidgetOwnerGroup;
     private List<String> defaultWidgetJoinGroups;
+    private Boolean disableContentMenu;
 
     public Boolean getWizard() {
         return wizard;
@@ -99,6 +100,14 @@ public class UserPreferencesRequest {
         this.defaultWidgetJoinGroups = defaultWidgetJoinGroups;
     }
 
+    public Boolean getDisableContentMenu() {
+        return disableContentMenu;
+    }
+
+    public void setDisableContentMenu(Boolean disableContentMenu) {
+        this.disableContentMenu = disableContentMenu;
+    }
+
     @Override
     public String toString() {
         return "UserPreferencesRequest{" +
@@ -111,6 +120,7 @@ public class UserPreferencesRequest {
                 ", defaultContentJoinGroups=" + defaultContentJoinGroups +
                 ", defaultWidgetOwnerGroup='" + defaultWidgetOwnerGroup + '\'' +
                 ", defaultWidgetJoinGroups=" + defaultWidgetJoinGroups +
+                ", disableContentMenu=" + disableContentMenu +
                 '}';
     }
 }

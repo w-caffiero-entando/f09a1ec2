@@ -31,11 +31,13 @@ public class UserPreferencesDto {
     private List<String> defaultContentJoinGroups;
     private String defaultWidgetOwnerGroup;
     private List<String> defaultWidgetJoinGroups;
+    private Boolean disableContentMenu;
 
     public UserPreferencesDto(UserPreferences userPreferences) {
         wizard = userPreferences.isWizard();
         loadOnPageSelect = userPreferences.isLoadOnPageSelect();
         translationWarning = userPreferences.isTranslationWarning();
+        disableContentMenu = userPreferences.getDisableContentMenu();
 
         defaultPageOwnerGroup = userPreferences.getDefaultPageOwnerGroup();
         String defaultJoinPageGroupsString = userPreferences.getDefaultPageJoinGroups();
@@ -149,6 +151,14 @@ public class UserPreferencesDto {
         this.defaultWidgetJoinGroups = defaultWidgetJoinGroups;
     }
 
+    public Boolean getDisableContentMenu() {
+        return disableContentMenu;
+    }
+
+    public void setDisableContentMenu(Boolean disableContentMenu) {
+        this.disableContentMenu = disableContentMenu;
+    }
+
     @Override
     public String toString() {
         return "UserPreferencesDto{" +
@@ -161,6 +171,7 @@ public class UserPreferencesDto {
                 ", defaultContentJoinGroups=" + defaultContentJoinGroups +
                 ", defaultWidgetOwnerGroup='" + defaultWidgetOwnerGroup + '\'' +
                 ", defaultWidgetJoinGroups=" + defaultWidgetJoinGroups +
+                ", disableContentMenu=" + disableContentMenu +
                 '}';
     }
 }
