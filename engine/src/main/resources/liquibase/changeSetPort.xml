@@ -14,7 +14,7 @@
     <include file="port/00000000000002_schemaPort.xml" relativeToChangelogFile="true" />
 
     <changeSet id="00000000000001_dataPort_restore" author="entando" context="restore" />
-    
+
     <include file="port/20221004100000_messages_system.xml" relativeToChangelogFile="true" />
 
     <include file="port/20230119000000_freemarker_for_parallel.xml" relativeToChangelogFile="true" />
@@ -22,5 +22,8 @@
     <include file="port/20230224000000_default_profile_roles.xml" relativeToChangelogFile="true" />
 
     <include file="port/20230308000000_legacy_api_refactoring.xml" relativeToChangelogFile="true" />
+
+    <include file="port/20230407000000_disable_content_menu.xml" relativeToChangelogFile="true" />
+
 
 </databaseChangeLog>
