@@ -155,18 +155,6 @@ public abstract class AbstractAttribute implements AttributeInterface, Serializa
         return _renderingLangCode;
     }
 
-    @Override
-    @Deprecated
-    public boolean isSearcheable() {
-        return this.isSearchable();
-    }
-
-    @Override
-    @Deprecated
-    public void setSearcheable(boolean searchable) {
-        this.setSearchable(searchable);
-    }
-
     /**
      * Test whether the attribute is searchable (using a query on the DB) or not. The information held by a searchable
      * attribute is replicated in an appropriate table used for SQL queries.

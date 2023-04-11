@@ -137,7 +137,7 @@ class TestJacmsEntityManagersAction extends ApsAdminBaseTestCase {
 		assertNull(this._contentManager.getEntityPrototype(typeCode));
 		IApsEntity prototype = this._contentManager.getEntityPrototype("ART");
 		prototype.setTypeCode(typeCode);
-		prototype.setTypeDescr(typeDescr);
+		prototype.setTypeDescription(typeDescr);
 		((IEntityTypesConfigurer) this._contentManager).addEntityPrototype(prototype);
 	}
 	

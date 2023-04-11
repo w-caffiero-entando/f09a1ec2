@@ -68,17 +68,7 @@ public abstract class AbstractService
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this._beanFactory = beanFactory;
 	}
-	
-	/**
-	 * Returns a service by name.
-	 * @param name The name of the service to return.
-	 * @return The required service.
-	 * @deprecated It's better to avoid the use of this method: you should use the Spring Injection instead.
-	 */
-	protected IManager getService(String name) {
-		return (IManager) this._beanFactory.getBean(name);
-	}
-	
+
 	@Override
 	public void setBeanName(String name) {
 		this._name = name;

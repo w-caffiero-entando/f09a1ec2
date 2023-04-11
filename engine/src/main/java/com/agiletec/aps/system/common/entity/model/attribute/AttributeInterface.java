@@ -144,26 +144,8 @@ public interface AttributeInterface extends Serializable {
      * attribute is replicated in an appropriate table used for SQL queries.
      *
      * @return True if the attribute is a searchable one.
-     * @deprecated Since Entando 4.0.1, use isSearchable()
-     */
-    public boolean isSearcheable();
-
-    /**
-     * Test whether the attribute is searchable (using a query on the DB) or not. The information held by a searchable
-     * attribute is replicated in an appropriate table used for SQL queries.
-     *
-     * @return True if the attribute is a searchable one.
      */
     public boolean isSearchable();
-
-    /**
-     * Set up the searchable status of an attribute. When set to 'true' then the information held by the current
-     * attribute is replicated in an appropriate table used for SQL queries.
-     *
-     * @param searchable True if the attribute is of searchable type, false otherwise.
-     * @deprecated Since Entando 4.0.1, use setSearchable(boolean serchable)
-     */
-    public void setSearcheable(boolean searchable);
 
     /**
      * Set up the searchable status of an attribute. When set to 'true' then the information held by the current

@@ -16,6 +16,7 @@
         <property name="authorizationManager" ref="AuthorizationManager"/>
         <property name="userManager" ref="UserManager" />
         <property name="mailManager" ref="jpmailMailManager"/>
+        <property name="keyGeneratorManager" ref="KeyGeneratorManager" />
     </bean>
 	
     <!-- Scheduler Bean -->

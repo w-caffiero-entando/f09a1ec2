@@ -116,12 +116,6 @@ public class ApsEntity implements IApsEntity {
         return this.getDescription();
     }
 
-    @Override
-    @Deprecated
-    public void setDescr(String description) {
-        this.setDescription(description);
-    }
-
     /**
      * Return the string that identifies the main group this entity belongs to.
      *
@@ -259,12 +253,6 @@ public class ApsEntity implements IApsEntity {
     @Deprecated
     public String getTypeDescr() {
         return this.getTypeDescription();
-    }
-
-    @Override
-    @Deprecated
-    public void setTypeDescr(String typeDescription) {
-        this.setTypeDescription(typeDescription);
     }
 
     /**

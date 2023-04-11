@@ -52,38 +52,17 @@ public interface ITextAttribute {
 	 * @return The maximum length of the text.
 	 */
 	public int getMaxLength();
-	
-	/**
-	 * Set up the maximum length of the text.
-	 * @param maxLength The maximum length of the text.
-	 * @deprecated to guaranted compatibility with previsous version of jAPS 2.0.12 
-	 */
-	public void setMaxLength(int maxLength);
-	
+
 	/**
 	 * Get the minimum length of the text.
 	 * @return The minimum length of the text.
 	 */
 	public int getMinLength();
-	
-	/**
-	 * Set up the minimum length of the text.
-	 * @param minLength The minimum length of the text.
-	 * @deprecated to guaranted compatibility with previsous version of jAPS 2.0.12 
-	 */
-	public void setMinLength(int minLength);
-	
+
 	/**
 	 * Get the regular expression.
 	 * @return The regular expression.
 	 */
 	public String getRegexp();
-	
-	/**
-	 * Return the regular expression.
-	 * @param regexp The regular expression.
-	 * @deprecated to guaranted compatibility with previsous version of jAPS 2.0.12
-	 */
-	public void setRegexp(String regexp);
-	
+
 }

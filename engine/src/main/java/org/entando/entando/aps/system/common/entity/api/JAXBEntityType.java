@@ -66,7 +66,7 @@ public class JAXBEntityType {
         try {
             entityType = (IApsEntity) entityClass.newInstance();
             entityType.setTypeCode(this.getTypeCode());
-            entityType.setTypeDescr(this.getTypeDescription());
+            entityType.setTypeDescription(this.getTypeDescription());
             List<DefaultJAXBAttributeType> jabxAttributes = this.getAttributes();
             for (int i = 0; i < jabxAttributes.size(); i++) {
                 try {

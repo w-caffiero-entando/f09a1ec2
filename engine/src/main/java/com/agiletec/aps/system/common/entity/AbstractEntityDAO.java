@@ -309,7 +309,7 @@ public abstract class AbstractEntityDAO extends AbstractDAO implements IEntityDA
 		}
 		return entitiesId;
 	}
-	
+
 	/**
 	 * Return the specific query to add a new record of informations in the
 	 * support database.

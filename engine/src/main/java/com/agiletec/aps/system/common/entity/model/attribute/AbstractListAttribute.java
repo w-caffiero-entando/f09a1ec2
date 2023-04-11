@@ -64,6 +64,7 @@ public abstract class AbstractListAttribute extends AbstractComplexAttribute
         this.setNestedAttributeType(nestedType);
     }
 
+
     @Deprecated(/**
              * INSERTED to guaranted compatibility with previsous version of
              * jAPS 2.0.12

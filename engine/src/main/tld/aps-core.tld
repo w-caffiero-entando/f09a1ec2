@@ -705,21 +705,6 @@
 		</attribute>
 	</tag>
 	<tag>
-		<description><![CDATA[This is the sub-tag of the "url" tag.<br/>
-			Adds a parameter in the URL query string generated.
-			<br/><b>DEPRECATED</b>; use ParameterTag instead
-		.]]></description>
-		<name>urlPar</name>
-		<tag-class>com.agiletec.aps.tags.URLParTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<description><![CDATA[Name of the parameter.]]></description>
-			<name>name</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-	</tag>
-	<tag>
     	<description>
 			Search and return the page (or the list of pages) with the given widget type. When "filterParamName" and "filterParamValue" attributes are present, the returned list will be filtered by a specific widget configuration.
     	</description>

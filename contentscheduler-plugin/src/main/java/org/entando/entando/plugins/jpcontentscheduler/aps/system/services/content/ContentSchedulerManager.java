@@ -82,6 +82,7 @@ public class ContentSchedulerManager extends AbstractService implements IContent
     private IContentSchedulerDAO _contentSchedulerDAO;
 
     private IMailManager _mailManager;
+    private transient IKeyGeneratorManager keyGeneratorManager;
     
     private transient ICacheInfoManager cacheInfoManager;
 
@@ -396,6 +397,14 @@ public class ContentSchedulerManager extends AbstractService implements IContent
         this._mailManager = mailManager;
     }
 
+    public IKeyGeneratorManager getKeyGeneratorManager() {
+        return this.keyGeneratorManager;
+    }
+
+    public void setKeyGeneratorManager(IKeyGeneratorManager keyGeneratorManager) {
+        this.keyGeneratorManager = keyGeneratorManager;
+    }
+
     @Override
     public ContentThreadConfig getConfig() {
         return config;
@@ -438,8 +447,7 @@ public class ContentSchedulerManager extends AbstractService implements IContent
                 content.incrementVersion(false);
             }
             if (null == content.getId()) {
-                IKeyGeneratorManager keyGenerator = (IKeyGeneratorManager) this.getService(SystemConstants.KEY_GENERATOR_MANAGER);
-                int key = keyGenerator.getUniqueKeyCurrentValue();
+                int key = keyGeneratorManager.getUniqueKeyCurrentValue();
                 String id = content.getTypeCode() + key;
                 content.setId(id);
                 this.getContentSchedulerDAO().addEntity(content);
