@@ -61,18 +61,6 @@ public abstract class AbstractExtraAttributeSupportObject implements ServletCont
 		}
 		return xml;
 	}
-	
-	/**
-	 * (**DEPRECATED since Entando 3.0.1** Use setEntityManagerNameDest) Set the entity manager destination.
-	 * @param entityManagerDest The entity manager destination.
-	 * @deprecated Since Entando 3.0.1. To avoid circolar references. Use setEntityManagerNameDest
-	 */
-	/*
-	public void setEntityManagerDest(IEntityManager entityManagerDest) {
-		String name = ((IManager) entityManagerDest).getName();
-		this.setEntityManagerNameDest(name);
-	}
-	*/
 
 	protected String getEntityManagerNameDest() {
 		return _entityManagerNameDest;

@@ -306,7 +306,7 @@ public class ContentManager extends ApsEntityManager
             }
             id = content.getId();
             if (null == id) {
-                int key = keyGeneratorManager.getUniqueKeyCurrentValue();
+                int key = getKeyGeneratorManager().getUniqueKeyCurrentValue();
                 id = content.getTypeCode() + key;
                 content.setId(id);
             }

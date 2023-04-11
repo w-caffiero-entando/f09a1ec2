@@ -93,15 +93,7 @@ public class ApsEntityDOM implements IApsEntityDOM, Serializable {
 	public void setTypeDescription(String typeDescription) {
 		this._root.setAttribute("typedescr", typeDescription);
 	}
-	/*
-	@Override
-	@Deprecated
-	public void setTypeDescr(String typeDescr) {
-		this.setTypeDescription(typeDescr);
-	}
-	*/
 
-	
 	/**
 	 * Assign the given description to the entity.
 	 * @param description The entity description.
@@ -110,13 +102,6 @@ public class ApsEntityDOM implements IApsEntityDOM, Serializable {
 	public void setDescription(String description) {
 		this._root.getChild(TAG_DESCR).setText(description);
 	}
-	/*
-	@Override
-	@Deprecated
-	public void setDescr(String description) {
-		this.setDescription(description);
-	}
-	*/
 
 	/**
 	 * Assign the main group this entity belongs to.
