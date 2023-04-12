@@ -1,4 +1,4 @@
-package org.entando.entando.aps.system.services.api.server;
+package org.entando.entando.web.legacyapi;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
@@ -17,12 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.entando.entando.aps.system.services.api.DefaultJsonTypesProvider;
 import org.entando.entando.aps.system.services.api.IApiErrorCodes;
-import org.entando.entando.aps.system.services.api.ObjectMapperConfiguration;
 import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
-import org.entando.entando.aps.system.services.api.model.LegacyApiError;
+import org.entando.entando.aps.system.services.api.ObjectMapperConfiguration;
 import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
+import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
+import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
 import org.entando.entando.aps.system.services.oauth2.IApiOAuth2TokenManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
