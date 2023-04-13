@@ -323,7 +323,10 @@ public class ApiRestServer {
         String pathInfo = request.getPathInfo();
         int index = pathInfo.indexOf('.');
         if (index < 0) {
-            return MediaType.APPLICATION_XML;
+            if (request.getHeader("Accept") != null) {
+                return MediaType.parseMediaType(request.getHeader("Accept"));
+            }
+            return MediaType.APPLICATION_JSON;
         }
         String extension = pathInfo.substring(index + 1);
         if (extension.equalsIgnoreCase("json")) {

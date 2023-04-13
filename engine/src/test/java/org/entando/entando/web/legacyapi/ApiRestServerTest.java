@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -65,9 +66,9 @@ class ApiRestServerTest {
 
     @BeforeEach
     void setUp() {
-        Mockito.when(request.getSession()).thenReturn(session);
-        Mockito.when(session.getServletContext()).thenReturn(servletContext);
-        Mockito.when(servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE))
+        Mockito.lenient().when(request.getSession()).thenReturn(session);
+        Mockito.lenient().when(session.getServletContext()).thenReturn(servletContext);
+        Mockito.lenient().when(servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE))
                 .thenReturn(webApplicationContext);
 
         Mockito.lenient().when(webApplicationContext.getBean(SystemConstants.AUTHORIZATION_SERVICE))
@@ -224,6 +225,38 @@ class ApiRestServerTest {
         ResponseEntity<StringApiResponse> responseEntity = (ResponseEntity<StringApiResponse>) response;
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         Assertions.assertEquals("FAILURE", responseEntity.getBody().getResult());
+    }
+
+    @Test
+    void shouldDetectXmlMediaTypeFromAcceptHeader() {
+        Mockito.when(request.getPathInfo()).thenReturn("/legacy/en/core/guiFragments");
+        Mockito.when(request.getHeader("Accept")).thenReturn("application/xml");
+        Assertions.assertEquals(MediaType.APPLICATION_XML, apiRestServer.extractProducesMediaType(request));
+    }
+
+    @Test
+    void shouldDetectJsonMediaTypeFromAcceptHeader() {
+        Mockito.when(request.getPathInfo()).thenReturn("/legacy/en/core/guiFragments");
+        Mockito.when(request.getHeader("Accept")).thenReturn("application/json");
+        Assertions.assertEquals(MediaType.APPLICATION_JSON, apiRestServer.extractProducesMediaType(request));
+    }
+
+    @Test
+    void shouldUseJsonMediaTypeIfAcceptHeaderIsNotDefined() {
+        Mockito.when(request.getPathInfo()).thenReturn("/legacy/en/core/guiFragments");
+        Assertions.assertEquals(MediaType.APPLICATION_JSON, apiRestServer.extractProducesMediaType(request));
+    }
+
+    @Test
+    void shouldDetectJsonMediaTypeFromPath() {
+        Mockito.when(request.getPathInfo()).thenReturn("/legacy/en/core/guiFragments.json");
+        Assertions.assertEquals(MediaType.APPLICATION_JSON, apiRestServer.extractProducesMediaType(request));
+    }
+
+    @Test
+    void shouldDetectXmlMediaTypeFromPath() {
+        Mockito.when(request.getPathInfo()).thenReturn("/legacy/en/core/guiFragments.xml");
+        Assertions.assertEquals(MediaType.APPLICATION_XML, apiRestServer.extractProducesMediaType(request));
     }
 
     private void mockLanguageManager() {
