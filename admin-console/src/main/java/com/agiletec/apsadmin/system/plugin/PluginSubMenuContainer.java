@@ -13,26 +13,19 @@
  */
 package com.agiletec.apsadmin.system.plugin;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author E.Santoboni
  */
 public final class PluginSubMenuContainer {
 	
-	public String getSubMenuFilePath() {
-		return _subMenuFilePath;
-	}
-	public void setSubMenuFilePath(String subMenuFilePath) {
-		this._subMenuFilePath = subMenuFilePath;
-	}
-	
-	public int getPriority() {
-		return _priority;
-	}
-	public void setPriority(int priority) {
-		this._priority = priority;
-	}
-	
-	private String _subMenuFilePath;
-	private int _priority;
+    @Getter@Setter
+    private String pluginCode;
+	@Getter@Setter
+    private String subMenuFilePath;
+	@Getter@Setter
+    private int priority;
 	
 }

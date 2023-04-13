@@ -22,6 +22,7 @@ import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.beanutils.BeanComparator;
@@ -34,6 +35,9 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.system.services.tenants.TenantConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class beneath all actions.
@@ -213,6 +217,10 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
         String beanName = treeNode.getManagerBeanCode();
         return (ITreeNodeManager) ApsWebApplicationUtils.getBean(beanName, this.getRequest());
     }
+    
+    public TenantConfig getCurrentTenantConfig() {
+        return ApsTenantApplicationUtils.getTenant().flatMap(getTenantManager()::getConfig).orElse(null);
+    }
 	
 	@Override
 	public void setServletRequest(HttpServletRequest request) {
@@ -245,12 +253,22 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	}
 	public void setComponentManager(IComponentManager componentManager) {
 		this._componentManager = componentManager;
-	}
-	
+    }
+
+    protected ITenantManager getTenantManager() {
+        return tenantManager;
+    }
+    @Autowired
+    public void setTenantManager(ITenantManager tenantManager) {
+        this.tenantManager = tenantManager;
+    }
+    
 	private ILangManager _langManager;
 	
 	private IAuthorizationManager _authorizationManager;
 	private IComponentManager _componentManager;
+    
+    private transient ITenantManager tenantManager;
 	
 	public static final String FAILURE = "failure";
 	

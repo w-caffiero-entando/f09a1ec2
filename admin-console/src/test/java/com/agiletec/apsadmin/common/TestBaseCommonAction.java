@@ -15,6 +15,7 @@ package com.agiletec.apsadmin.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 import java.util.Map;
@@ -26,12 +27,12 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * @version 1.0
  * @author E.Santoboni
  */
 class TestBaseCommonAction extends ApsAdminBaseTestCase {
@@ -48,6 +49,8 @@ class TestBaseCommonAction extends ApsAdminBaseTestCase {
         Lang currentLang = ((BaseCommonAction) action).getCurrentLang();
         assertNotNull(currentLang);
         assertEquals("en", currentLang.getCode());
+        TenantConfig tenantConfig = ((BaseCommonAction) action).getCurrentTenantConfig();
+        assertNull(tenantConfig);
     }
 
     @Test

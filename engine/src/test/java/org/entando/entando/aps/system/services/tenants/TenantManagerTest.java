@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ * Copyright 2023-Present Entando Inc. (http://www.entando.com) All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -12,8 +12,6 @@
  * details.
  */
 package org.entando.entando.aps.system.services.tenants;
-
-import static org.mockito.ArgumentMatchers.any;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
