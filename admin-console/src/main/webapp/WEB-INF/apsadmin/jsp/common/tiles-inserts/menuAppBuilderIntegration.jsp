@@ -57,6 +57,7 @@
 
 <wp:ifauthorized permission="superuser" var="isSuperUser" />
 <s:set var="appBuilderBaseURL" ><wp:info key="systemParam" paramName="appBuilderBaseURL" /></s:set>
+<s:set var="currentTenantConfigVar" value="%{currentTenantConfig}" />
 <ul class="list-group">
     <li class="list-group-item secondary-nav-item-pf">
         <a href='<c:out value="${appBuilderBaseURL}"/>dashboard' class="no-chevron">
@@ -220,6 +221,8 @@
         </li>
     </c:if>
 
+    <s:if test="%{null == #currentTenantConfigVar}">
+    <%-- into primary tenant --%> 
     <!-- ECR -->
     <wp:ifauthorized permission="enterECR" var="isEnterECR" />
     <c:if test="${isSuperUser || isEnterECR}">
@@ -238,6 +241,7 @@
             <span class="list-group-item-value"><s:text name="menu.EPCs" /></span>
         </a>
     </li>
+    </s:if>
 
 </ul>
 
