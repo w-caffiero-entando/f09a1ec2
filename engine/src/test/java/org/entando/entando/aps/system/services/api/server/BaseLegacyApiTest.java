@@ -10,6 +10,7 @@ import org.entando.entando.aps.system.services.api.ApiCatalogManager;
 import org.entando.entando.aps.system.services.api.LegacyApiUnmarshaller;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.web.AbstractControllerTest;
+import org.entando.entando.web.legacyapi.ApiRestServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
