@@ -7,7 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.slf4j.MDC;
 
 public class MDCTenantFilter extends HttpFilter {
@@ -18,7 +17,7 @@ public class MDCTenantFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
-            MDC.put(MDC_KEY_TENANT, ApsTenantApplicationUtils.getTenant().orElse(ITenantManager.PRIMARY_CODE));
+            MDC.put(MDC_KEY_TENANT, ApsTenantApplicationUtils.getTenant().orElse(""));
             chain.doFilter(request, response);
         } finally {
             MDC.remove(MDC_KEY_TENANT);
