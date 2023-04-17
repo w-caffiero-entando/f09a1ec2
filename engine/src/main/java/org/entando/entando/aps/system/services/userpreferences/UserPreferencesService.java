@@ -92,6 +92,9 @@ public class UserPreferencesService implements IUserPreferencesService {
                     }
                     userPreferences.setDefaultWidgetJoinGroups(sb.toString());
                 }
+                if (request.getDisableContentMenu() != null) {
+                    userPreferences.setDisableContentMenu(request.getDisableContentMenu());
+                }
                 userPreferencesManager.updateUserPreferences(userPreferences);
                 return new UserPreferencesDto(userPreferencesManager.getUserPreferences(username));
             } else {

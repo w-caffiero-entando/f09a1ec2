@@ -14,7 +14,10 @@
 package org.entando.entando.web.userpreferences.model;
 
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter@Setter
 public class UserPreferencesRequest {
 
     private Boolean wizard;
@@ -26,78 +29,7 @@ public class UserPreferencesRequest {
     private List<String> defaultContentJoinGroups;
     private String defaultWidgetOwnerGroup;
     private List<String> defaultWidgetJoinGroups;
-
-    public Boolean getWizard() {
-        return wizard;
-    }
-
-    public void setWizard(Boolean wizard) {
-        this.wizard = wizard;
-    }
-
-    public Boolean getLoadOnPageSelect() {
-        return loadOnPageSelect;
-    }
-
-    public void setLoadOnPageSelect(Boolean loadOnPageSelect) {
-        this.loadOnPageSelect = loadOnPageSelect;
-    }
-
-    public Boolean getTranslationWarning() {
-        return translationWarning;
-    }
-
-    public void setTranslationWarning(Boolean translationWarning) {
-        this.translationWarning = translationWarning;
-    }
-
-    public String getDefaultPageOwnerGroup() {
-        return defaultPageOwnerGroup;
-    }
-
-    public void setDefaultPageOwnerGroup(String defaultPageOwnerGroup) {
-        this.defaultPageOwnerGroup = defaultPageOwnerGroup;
-    }
-
-    public List<String> getDefaultPageJoinGroups() {
-        return defaultPageJoinGroups;
-    }
-
-    public void setDefaultPageJoinGroups(List<String> defaultPageJoinGroups) {
-        this.defaultPageJoinGroups = defaultPageJoinGroups;
-    }
-
-    public String getDefaultContentOwnerGroup() {
-        return defaultContentOwnerGroup;
-    }
-
-    public void setDefaultContentOwnerGroup(String defaultContentOwnerGroup) {
-        this.defaultContentOwnerGroup = defaultContentOwnerGroup;
-    }
-
-    public List<String> getDefaultContentJoinGroups() {
-        return defaultContentJoinGroups;
-    }
-
-    public void setDefaultContentJoinGroups(List<String> defaultContentJoinGroups) {
-        this.defaultContentJoinGroups = defaultContentJoinGroups;
-    }
-
-    public String getDefaultWidgetOwnerGroup() {
-        return defaultWidgetOwnerGroup;
-    }
-
-    public void setDefaultWidgetOwnerGroup(String defaultWidgetOwnerGroup) {
-        this.defaultWidgetOwnerGroup = defaultWidgetOwnerGroup;
-    }
-
-    public List<String> getDefaultWidgetJoinGroups() {
-        return defaultWidgetJoinGroups;
-    }
-
-    public void setDefaultWidgetJoinGroups(List<String> defaultWidgetJoinGroups) {
-        this.defaultWidgetJoinGroups = defaultWidgetJoinGroups;
-    }
+    private Boolean disableContentMenu;
 
     @Override
     public String toString() {
@@ -111,6 +43,7 @@ public class UserPreferencesRequest {
                 ", defaultContentJoinGroups=" + defaultContentJoinGroups +
                 ", defaultWidgetOwnerGroup='" + defaultWidgetOwnerGroup + '\'' +
                 ", defaultWidgetJoinGroups=" + defaultWidgetJoinGroups +
+                ", disableContentMenu=" + disableContentMenu +
                 '}';
     }
 }
