@@ -34,6 +34,11 @@ class RedisEnvironmentVariablesTest {
     }
 
     @Test
+    void testIoThreadPoolSize() {
+        Assertions.assertEquals(8, RedisEnvironmentVariables.ioThreadPoolSize());
+    }
+
+    @Test
     void testRedisAddress() {
         Assertions.assertEquals("redis://localhost:6380", RedisEnvironmentVariables.redisAddress());
     }
