@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.aps.system.services.api.server;
+package org.entando.entando.web.legacyapi;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
@@ -35,6 +35,7 @@ import org.entando.entando.aps.system.services.api.model.ApiException;
 import org.entando.entando.aps.system.services.api.model.ApiMethod;
 import org.entando.entando.aps.system.services.api.model.LegacyApiError;
 import org.entando.entando.aps.system.services.api.model.StringApiResponse;
+import org.entando.entando.aps.system.services.api.server.IResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -322,7 +323,10 @@ public class ApiRestServer {
         String pathInfo = request.getPathInfo();
         int index = pathInfo.indexOf('.');
         if (index < 0) {
-            return MediaType.APPLICATION_XML;
+            if (request.getHeader("Accept") != null) {
+                return MediaType.parseMediaType(request.getHeader("Accept"));
+            }
+            return MediaType.APPLICATION_JSON;
         }
         String extension = pathInfo.substring(index + 1);
         if (extension.equalsIgnoreCase("json")) {

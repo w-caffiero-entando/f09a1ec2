@@ -200,7 +200,8 @@ class UserPreferencesControllerIntegrationTest extends AbstractControllerIntegra
                     .andExpect(jsonPath("$.payload.defaultContentOwnerGroup", Matchers.isEmptyOrNullString()))
                     .andExpect(jsonPath("$.payload.defaultContentJoinGroups", Matchers.isEmptyOrNullString()))
                     .andExpect(jsonPath("$.payload.defaultWidgetOwnerGroup", Matchers.isEmptyOrNullString()))
-                    .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups", Matchers.isEmptyOrNullString()));
+                    .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups", Matchers.isEmptyOrNullString()))
+                    .andExpect(jsonPath("$.payload.disableContentMenu", Matchers.is(false)));
 
             InputStream file = this.getClass().getResourceAsStream("2_PUT_user_preferences.json");
             String bodyRequest = FileTextReader.getText(file);
@@ -230,7 +231,8 @@ class UserPreferencesControllerIntegrationTest extends AbstractControllerIntegra
                     .andExpect(jsonPath("$.payload.defaultWidgetOwnerGroup", Matchers.is("group2")))
                     .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups.size()", Matchers.is(2)))
                     .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups[0]", Matchers.is("group5")))
-                    .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups[1]", Matchers.is("group9")));
+                    .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups[1]", Matchers.is("group9")))
+                    .andExpect(jsonPath("$.payload.disableContentMenu", Matchers.is(true)));
 
             mockMvc.perform(
                     get("/userPreferences/{username}", username)
@@ -256,7 +258,8 @@ class UserPreferencesControllerIntegrationTest extends AbstractControllerIntegra
                     .andExpect(jsonPath("$.payload.defaultWidgetOwnerGroup", Matchers.is("group2")))
                     .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups.size()", Matchers.is(2)))
                     .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups[0]", Matchers.is("group5")))
-                    .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups[1]", Matchers.is("group9")));
+                    .andExpect(jsonPath("$.payload.defaultWidgetJoinGroups[1]", Matchers.is("group9")))
+                    .andExpect(jsonPath("$.payload.disableContentMenu", Matchers.is(true)));
 
             file = this.getClass().getResourceAsStream("9_PUT_user_preferences.json");
             bodyRequest = FileTextReader.getText(file);
@@ -461,6 +464,58 @@ class UserPreferencesControllerIntegrationTest extends AbstractControllerIntegra
                     .andExpect(jsonPath("$.payload.wizard", Matchers.is(true)))
                     .andExpect(jsonPath("$.payload.loadOnPageSelect", Matchers.is(true)))
                     .andExpect(jsonPath("$.payload.translationWarning", Matchers.is(true)));
+
+            file = this.getClass().getResourceAsStream("10_PUT_user_preferences.json");
+            bodyRequest = FileTextReader.getText(file);
+
+            mockMvc.perform(
+                            put("/userPreferences/{username}", username)
+                                            .content(bodyRequest)
+                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                            .header("Authorization", "Bearer " + accessToken))
+                            .andDo(resultPrint())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.payload.wizard", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.loadOnPageSelect", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.translationWarning", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.disableContentMenu", Matchers.is(true)));
+
+            mockMvc.perform(
+                            get("/userPreferences/{username}", username)
+                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                            .header("Authorization", "Bearer " + accessToken))
+                            .andDo(resultPrint())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.payload.wizard", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.loadOnPageSelect", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.translationWarning", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.disableContentMenu", Matchers.is(true)));
+
+            file = this.getClass().getResourceAsStream("11_PUT_user_preferences.json");
+            bodyRequest = FileTextReader.getText(file);
+
+            mockMvc.perform(
+                            put("/userPreferences/{username}", username)
+                                            .content(bodyRequest)
+                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                            .header("Authorization", "Bearer " + accessToken))
+                            .andDo(resultPrint())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.payload.wizard", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.loadOnPageSelect", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.translationWarning", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.disableContentMenu", Matchers.is(false)));
+
+            mockMvc.perform(
+                            get("/userPreferences/{username}", username)
+                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                            .header("Authorization", "Bearer " + accessToken))
+                            .andDo(resultPrint())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$.payload.wizard", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.loadOnPageSelect", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.translationWarning", Matchers.is(true)))
+                            .andExpect(jsonPath("$.payload.disableContentMenu", Matchers.is(false)));
         } finally {
             this.userManager.removeUser(username);
             this.userPreferencesManager.deleteUserPreferences(username);

@@ -403,7 +403,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
     private SearcherDaoPaginatedResult<String> getPaginatedContentIds(RestContentListRequest request, UserDetails user,
             boolean online) throws EntException {
         if (!online) {
-            logger.warn("Filter on join groups not available on content API for draft contents");
+            logger.debug("Filter on join groups not available on content API for draft contents");
         }
         EntitySearchFilter[] filters = getEntitySearchFilters(request);
         List<String> groups = this.getGroups(request, user, online);

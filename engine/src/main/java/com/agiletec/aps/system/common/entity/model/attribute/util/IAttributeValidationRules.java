@@ -33,6 +33,7 @@ import org.jdom.Element;
         @JsonSubTypes.Type(value = NumberAttributeValidationRules.class),
         @JsonSubTypes.Type(value = TextAttributeValidationRules.class)
 })
+@XmlTransient
 public interface IAttributeValidationRules extends Serializable {
     
     public IAttributeValidationRules clone();

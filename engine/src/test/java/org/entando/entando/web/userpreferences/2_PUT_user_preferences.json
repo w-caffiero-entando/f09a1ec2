@@ -20,5 +20,6 @@
     "defaultWidgetJoinGroups": [
         "group5",
         "group9"
-    ]
+    ],
+    "disableContentMenu": true
 }

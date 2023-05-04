@@ -57,5 +57,14 @@
                 <span class="list-group-item-value"><s:text name="menu.APPS.CMS.contentSettings" /></span>
             </a>
         </li>
+        <s:set var="appBuilderIntegrationEnabledVar" ><wp:info key="systemParam" paramName="appBuilderIntegrationEnabled" /></s:set>
+        <s:if test="#appBuilderIntegrationEnabled == 'true'">
+            <wpsa:pluginsSubMenu objectName="pluginsSubMenusVar" />
+            <s:iterator value="#pluginsSubMenusVar" var="pluginSubMenuVar">
+                <s:if test="#pluginSubMenuVar.pluginCode == 'jpsolr'">
+                <s:include value="%{#pluginSubMenuVar.subMenuFilePath}" />
+                </s:if>
+            </s:iterator>
+        </s:if>
     </c:if>
 </ul>

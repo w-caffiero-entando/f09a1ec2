@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "userPreferences")
 @XmlType(propOrder = {"username", "wizard", "loadOnPageSelect", "translationWarning", "defaultPageOwnerGroup",
 		"defaultPageJoinGroups", "defaultContentOwnerGroup", "defaultContentJoinGroups", "defaultWidgetOwnerGroup",
-		"defaultWidgetJoinGroups"})
+		"defaultWidgetJoinGroups", "disableContentMenu"})
 public class UserPreferences implements Serializable {
 
 	private String username;
@@ -34,6 +34,7 @@ public class UserPreferences implements Serializable {
 	private String defaultContentJoinGroups;
 	private String defaultWidgetOwnerGroup;
 	private String defaultWidgetJoinGroups;
+	private boolean disableContentMenu;
 
 	@XmlElement(name = "username", required = true)
 	public String getUsername() {
@@ -125,6 +126,15 @@ public class UserPreferences implements Serializable {
 		this.defaultWidgetJoinGroups = defaultWidgetJoinGroups;
 	}
 
+	@XmlElement(name = "disableContentMenu")
+	public boolean getDisableContentMenu() {
+		return disableContentMenu;
+	}
+
+	public void setDisableContentMenu(boolean disableContentMenu) {
+		this.disableContentMenu = disableContentMenu;
+	}
+
 	@Override
 	public String toString() {
 		return "UserPreferences{" +
@@ -138,6 +148,7 @@ public class UserPreferences implements Serializable {
 				", defaultContentJoinGroups='" + defaultContentJoinGroups + '\'' +
 				", defaultWidgetOwnerGroup='" + defaultWidgetOwnerGroup + '\'' +
 				", defaultWidgetJoinGroups='" + defaultWidgetJoinGroups + '\'' +
+				", disableContentMenu='" + disableContentMenu +
 				'}';
 	}
 }

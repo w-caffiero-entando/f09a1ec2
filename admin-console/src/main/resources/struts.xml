@@ -25,6 +25,7 @@
 		<interceptors>
 
 			<interceptor name="tenant" class="org.entando.entando.apsadmin.system.MultitenancyStrutsInterceptor" />
+			<interceptor name="mdcTenant" class="org.entando.entando.apsadmin.system.MDCStrutsTenantInterceptor" />
 			<interceptor name="requestAuth" class="com.agiletec.apsadmin.system.InterceptorMadMax" />
 			<interceptor name="backofficeRequestAuth" class="com.agiletec.apsadmin.system.InterceptorMadMax2nd" />
 			<interceptor name="apsParams" class="org.entando.entando.apsadmin.system.ApsParametersInterceptor" />
@@ -36,6 +37,7 @@
 			
 			<interceptor-stack name="entandoFreeStack">
 				<interceptor-ref name="tenant"/>
+				<interceptor-ref name="mdcTenant"/>
 				<interceptor-ref name="exception"/>
 				<interceptor-ref name="alias"/>
 				<interceptor-ref name="servletConfig"/>

@@ -23,25 +23,25 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 public class UserPreferencesDAO extends AbstractDAO implements IUserPreferencesDAO {
-	
+
 	private static final EntLogger _logger =  EntLogFactory.getSanitizedLogger(UserPreferencesDAO.class);
 
 	private static final String LOAD_USER_PREFERENCES =
 			"SELECT wizard, loadonpageselect, translationwarning, defaultpageownergroup, defaultpagejoingroups, "
 					+ "defaultcontentownergroup, defaultcontentjoingroups, defaultwidgetownergroup, "
-					+ "defaultwidgetjoingroups FROM userpreferences WHERE username = ? ";
+					+ "defaultwidgetjoingroups, disableContentMenu FROM userpreferences WHERE username = ? ";
 
 	private static final String ADD_USER_PREFERENCES =
 			"INSERT INTO userpreferences (username, wizard, loadonpageselect, translationwarning, "
 					+ "defaultpageownergroup, defaultpagejoingroups, defaultcontentownergroup, "
-					+ "defaultcontentjoingroups, defaultwidgetownergroup, defaultwidgetjoingroups) VALUES ( ? , ? ,"
-					+ " ? , ? , ? , ?, ?, ?, ?, ? )";
+					+ "defaultcontentjoingroups, defaultwidgetownergroup, defaultwidgetjoingroups, disableContentMenu) "
+					+ "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )";
 
 	private static final String UPDATE_USER_PREFERENCES =
 			"UPDATE userpreferences SET wizard = ? , loadonpageselect = ? , translationwarning = ? , "
 					+ "defaultpageownergroup = ? , defaultpagejoingroups = ? , defaultcontentownergroup = ? , "
-					+ "defaultcontentjoingroups = ? , defaultwidgetownergroup = ?, defaultwidgetjoingroups = ? WHERE "
-					+ "username = ? ";
+					+ "defaultcontentjoingroups = ? , defaultwidgetownergroup = ?, defaultwidgetjoingroups = ? , "
+					+ "disableContentMenu = ? WHERE username = ? ";
 
 	private static final String DELETE_USER_PREFERENCES =
 			"DELETE FROM userpreferences WHERE username = ? ";
@@ -69,6 +69,7 @@ public class UserPreferencesDAO extends AbstractDAO implements IUserPreferencesD
 				response.setDefaultContentJoinGroups(res.getString(7));
 				response.setDefaultWidgetOwnerGroup(res.getString(8));
 				response.setDefaultWidgetJoinGroups(res.getString(9));
+				response.setDisableContentMenu(1 == res.getInt(10));
 			}
 		} catch (SQLException e) {
 			_logger.error("Error loading user preferences for user {}", username,  e);
@@ -97,6 +98,7 @@ public class UserPreferencesDAO extends AbstractDAO implements IUserPreferencesD
 			stat.setString(8, userPreferences.getDefaultContentJoinGroups());
 			stat.setString(9, userPreferences.getDefaultWidgetOwnerGroup());
 			stat.setString(10, userPreferences.getDefaultWidgetJoinGroups());
+			stat.setInt(11, userPreferences.getDisableContentMenu() ? 1 : 0);
 			stat.executeUpdate();
 			conn.commit();
 		} catch (SQLException e) {
@@ -125,7 +127,8 @@ public class UserPreferencesDAO extends AbstractDAO implements IUserPreferencesD
 			stat.setString(7, userPreferences.getDefaultContentJoinGroups());
 			stat.setString(8, userPreferences.getDefaultWidgetOwnerGroup());
 			stat.setString(9, userPreferences.getDefaultWidgetJoinGroups());
-			stat.setString(10, userPreferences.getUsername());
+			stat.setInt(10, userPreferences.getDisableContentMenu() ? 1 : 0);
+			stat.setString(11, userPreferences.getUsername());
 			stat.executeUpdate();
 			conn.commit();
 		} catch (SQLException e) {
