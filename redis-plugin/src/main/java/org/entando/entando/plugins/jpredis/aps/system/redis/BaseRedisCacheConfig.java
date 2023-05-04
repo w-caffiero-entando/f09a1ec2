@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
+import org.entando.entando.aps.system.services.cache.RedisEnvironmentVariables;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -43,7 +44,7 @@ public class BaseRedisCacheConfig extends CachingConfigurerSupport {
 
     @Bean(destroyMethod = "shutdown")
     public DefaultClientResources defaultClientResources() {
-        return DefaultClientResources.builder().build();
+        return DefaultClientResources.builder().ioThreadPoolSize(RedisEnvironmentVariables.ioThreadPoolSize()).build();
     }
 
     @Primary

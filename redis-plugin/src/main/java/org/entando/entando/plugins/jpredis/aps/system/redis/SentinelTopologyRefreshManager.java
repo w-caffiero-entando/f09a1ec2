@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.plugins.jpredis.aps.system.redis.conditions.RedisActive;
@@ -29,7 +31,7 @@ public class SentinelTopologyRefreshManager {
 
     private static final String SWITCH_MASTER_EVENT = "+switch-master";
 
-    private String currentMaster;
+    private AtomicReference<String> currentMaster = new AtomicReference<>();
 
     private final RedisClient redisClient;
     private final LettuceCacheManager cacheManager;
@@ -45,8 +47,8 @@ public class SentinelTopologyRefreshManager {
         this.cacheFrontendManager = cacheFrontendManager;
 
         this.getMasterIp().ifPresent(ip -> {
-            this.currentMaster = ip;
-            log.info("CURRENT master node '{}'", this.currentMaster);
+            this.currentMaster.set(ip);
+            log.info("CURRENT master node '{}'", ip);
         });
 
         for (RedisURI sentinelUri : redisURI.getSentinels()) {
@@ -89,12 +91,11 @@ public class SentinelTopologyRefreshManager {
         };
     }
 
-    private synchronized void updateMaster(String newMaster) {
-        if (!newMaster.equals(currentMaster)) {
-            log.warn("Refresh of front-end-cache -> from master node '{}' to '{}'",
-                    SentinelTopologyRefreshManager.this.currentMaster, newMaster);
-            rebuildCacheFrontend();
-            this.currentMaster = newMaster;
+    private void updateMaster(String newMaster) {
+        String oldMaster = this.currentMaster.getAndSet(newMaster);
+        if (!newMaster.equals(oldMaster)) {
+            log.warn("Refresh of front-end-cache -> from master node '{}' to '{}'", oldMaster, newMaster);
+            CompletableFuture.runAsync(this::rebuildCacheFrontend);
         }
     }
 

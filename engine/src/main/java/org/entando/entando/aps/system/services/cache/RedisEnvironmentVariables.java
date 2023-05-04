@@ -25,6 +25,7 @@ public final class RedisEnvironmentVariables {
     private static final String REDIS_PASSWORD = "REDIS_PASSWORD";
     private static final String REDIS_FEC_CHECK_DELAY_SEC = "REDIS_FEC_CHECK_DELAY_SEC";
     private static final String REDIS_USE_SENTINEL_EVENTS = "REDIS_USE_SENTINEL_EVENTS";
+    private static final String REDIS_IO_THREAD_POOL_SIZE = "REDIS_IO_THREAD_POOL_SIZE";
 
     private RedisEnvironmentVariables() {
     }
@@ -59,6 +60,14 @@ public final class RedisEnvironmentVariables {
 
     public static boolean useSentinelEvents() {
         return Boolean.toString(true).equals(get(REDIS_USE_SENTINEL_EVENTS, "true"));
+    }
+
+    public static int ioThreadPoolSize() {
+        try {
+            return Integer.parseInt(System.getenv(REDIS_IO_THREAD_POOL_SIZE));
+        } catch (NumberFormatException ex) {
+            return 8;
+        }
     }
 
     public static int frontEndCacheCheckDelay() {
