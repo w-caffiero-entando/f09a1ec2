@@ -508,7 +508,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
         if (null != page) {
             return page.clone();
         } else {
-            _logger.debug("page for pageCode:'{}' not found", pageCode);
+            _logger.debug("page for key/pageCode:'{}' not found", pageCode);
         }
         return null;
     }
