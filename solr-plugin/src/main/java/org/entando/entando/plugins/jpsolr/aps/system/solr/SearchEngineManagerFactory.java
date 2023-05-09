@@ -1,8 +1,10 @@
 package org.entando.entando.plugins.jpsolr.aps.system.solr;
 
+import com.agiletec.aps.system.common.notify.INotifyManager;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
+import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.ICmsSearchEngineManager;
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.SearchEngineDAOFactory;
@@ -12,8 +14,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.searchengine.SolrEnvironmentVariables;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 
-public class SearchEngineManagerFactory {
+public class SearchEngineManagerFactory implements BeanFactoryAware {
 
     @Setter
     private String indexDiskRootFolder;
@@ -31,6 +36,10 @@ public class SearchEngineManagerFactory {
     private ICacheInfoManager cacheInfoManager;
     @Setter
     private HttpClientBuilder solrHttpClientBuilder;
+    @Setter
+    private INotifyManager notifyManager;
+
+    private BeanFactory beanFactory;
 
     public ICmsSearchEngineManager createSearchEngineManager() throws Exception {
         if (SolrEnvironmentVariables.active()) {
@@ -43,6 +52,9 @@ public class SearchEngineManagerFactory {
             solrSearchEngineManager.setContentManager(contentManager);
             solrSearchEngineManager.setLangManager(langManager);
             solrSearchEngineManager.setCacheInfoManager(cacheInfoManager);
+            solrSearchEngineManager.setNotifyManager(notifyManager);
+            solrSearchEngineManager.setBeanFactory(beanFactory);
+            solrSearchEngineManager.setBeanName(JacmsSystemConstants.SEARCH_ENGINE_MANAGER);
             return solrSearchEngineManager;
         } else {
             SearchEngineDAOFactory factory = new SearchEngineDAOFactory();
@@ -53,7 +65,15 @@ public class SearchEngineManagerFactory {
             SearchEngineManager baseSearchEngineManager = new SearchEngineManager();
             baseSearchEngineManager.setFactory(factory);
             baseSearchEngineManager.setContentManager(contentManager);
+            baseSearchEngineManager.setNotifyManager(notifyManager);
+            baseSearchEngineManager.setBeanFactory(beanFactory);
+            baseSearchEngineManager.setBeanName(JacmsSystemConstants.SEARCH_ENGINE_MANAGER);
             return baseSearchEngineManager;
         }
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 }
