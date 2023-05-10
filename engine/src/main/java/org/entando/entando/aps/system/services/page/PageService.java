@@ -214,6 +214,13 @@ public class PageService implements IComponentExistsService, IPageService,
     }
 
     @Override
+    public List<PageDto> getPagesTree(String parentCode, List<String> userGroups) {
+        PageTreeNodeHelper helper = new PageTreeNodeHelper(this.getPageManager());
+        return helper.getNodes(parentCode, userGroups).stream()
+                .map(this::getPageDto).collect(Collectors.toList());
+    }
+
+    @Override
     public List<PageDto> getPages(String parentCode,
                                   @Nullable String forLinkingToOwnerGroup, @Nullable Collection<String> forLinkingToExtraGroups) {
         List<PageDto> res = new ArrayList<>();
@@ -226,15 +233,26 @@ public class PageService implements IComponentExistsService, IPageService,
                                     childD.getGroup(), childD.getExtraGroups(),
                                     forLinkingToOwnerGroup, forLinkingToExtraGroups)
                     ) {
-                        PageDto pageDto = dtoBuilder.convert(childD);
-                        String pageCode = pageDto.getCode();
-                        String token = this.getPageTokenManager().encrypt(pageCode);
-                        String urlToken = getUrlToken(token);
-                        pageDto.setToken(urlToken);
+                        PageDto pageDto = getPageDto(childD);
                         res.add(pageDto);
                     }
                 })));
         return res;
+    }
+
+    private PageDto getPageDto(IPage page) {
+        PageDto pageDto = dtoBuilder.convert(page);
+        String pageCode = pageDto.getCode();
+        String token = this.getPageTokenManager().encrypt(pageCode);
+        String urlToken = getUrlToken(token);
+        pageDto.setToken(urlToken);
+        return pageDto;
+    }
+
+    @Override
+    public PageDto getPage(String pageCode, String status, List<String> userGroups) {
+        PageDto pageDto = this.getPage(pageCode, status);
+        return this.loadVirtualChildren(pageDto, userGroups);
     }
 
     @Override
@@ -958,5 +976,13 @@ public class PageService implements IComponentExistsService, IPageService,
             result = getPageManager().getOnlinePage(pageCode);
         }
         return (Page) result;
+    }
+
+    protected <T extends PageDto> T loadVirtualChildren(T pageDto, List<String> userGroups) {
+        PageTreeNodeHelper helper = new PageTreeNodeHelper(this.getPageManager());
+        List<String> virtualChildren = helper.getNodes(pageDto.getCode(), userGroups).stream()
+                .map(IPage::getCode).collect(Collectors.toList());
+        pageDto.setChildren(virtualChildren);
+        return pageDto;
     }
 }

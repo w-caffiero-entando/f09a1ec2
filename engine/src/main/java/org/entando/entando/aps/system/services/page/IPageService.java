@@ -58,6 +58,8 @@ public interface IPageService extends IComponentExistsService, IComponentUsageSe
         return getPages(parentCode, null, null);
     }
 
+    List<PageDto> getPagesTree(String parentCode, List<String> userGroups);
+
     List<PageDto> getPages(String parentCode,
             @Nullable String forLinkingToOwnerGroup, @Nullable Collection<String> forLinkingToExtraGroups);
 

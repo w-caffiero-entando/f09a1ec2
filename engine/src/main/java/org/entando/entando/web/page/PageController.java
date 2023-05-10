@@ -110,7 +110,7 @@ public class PageController {
 
     @RestAccessControl(permission = Permission.MANAGE_PAGES)
     @RequestMapping(value = "/pages", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestResponse<List<PageDto>, Map<String, String>>> getPages(
+    public ResponseEntity<RestResponse<List<PageDto>, Map<String, Object>>> getPages(
             @RequestAttribute("user") UserDetails user,
             @RequestParam(value = "parentCode", required = false, defaultValue = "homepage") String parentCode,
             @RequestParam(value = "forLinkingToOwnerGroup", required = false) String forLinkingToOwnerGroup,
@@ -118,16 +118,25 @@ public class PageController {
         logger.debug("getting page tree for parent {} ({}|{})", parentCode,
                 forLinkingToOwnerGroup, forLinkingToExtraGroups);
 
-        List<String> exg = (forLinkingToExtraGroups == null) ? null :
-                Arrays.asList(forLinkingToExtraGroups.split(","));
+        List<PageDto> result;
+        if (forLinkingToOwnerGroup == null && forLinkingToExtraGroups == null) {
+            // Returns the standard tree
+            result = this.getPageService().getPagesTree(parentCode, getUserGroups(user));
+        } else {
+            // Returns linkable pages in the context of CMS
+            List<String> exg = (forLinkingToExtraGroups == null) ? null :
+                    Arrays.asList(forLinkingToExtraGroups.split(","));
 
-        List<PageDto> result = this.getAuthorizationService().filterList(
-                user,
-                this.getPageService().getPages(parentCode, forLinkingToOwnerGroup, exg)
-        );
+            result = this.getAuthorizationService().filterList(
+                    user,
+                    this.getPageService().getPages(parentCode, forLinkingToOwnerGroup, exg)
+            );
+        }
 
-        Map<String, String> metadata = new HashMap<>();
+        Map<String, Object> metadata = new HashMap<>();
         metadata.put("parentCode", parentCode);
+        boolean editableParent = this.getAuthorizationService().isAuthOnGroup(user, parentCode);
+        metadata.put("virtualRoot", !editableParent);
         return new ResponseEntity<>(new RestResponse<>(result, metadata), HttpStatus.OK);
     }
 
@@ -427,6 +436,10 @@ public class PageController {
 
         PageDto dto = this.getPageService().clonePage(pageCode, pageCloneRequest, bindingResult);
         return new ResponseEntity<>(new SimpleRestResponse<>(dto), HttpStatus.OK);
+    }
+
+    private List<String> getUserGroups(UserDetails user) {
+        return this.getAuthorizationService().getAllowedGroupCodes(user);
     }
 
     private void validatePageTitles(PageRequest pageRequest, BindingResult bindingResult) {
