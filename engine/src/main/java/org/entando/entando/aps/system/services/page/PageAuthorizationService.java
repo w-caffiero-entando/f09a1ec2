@@ -15,17 +15,14 @@ package org.entando.entando.aps.system.services.page;
 
 import static org.entando.entando.aps.system.services.page.PageService.ERRCODE_PAGE_NOT_FOUND;
 
-import com.agiletec.aps.system.services.authorization.Authorization;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.role.Permission;
-import com.agiletec.aps.system.services.role.Role;
 import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.services.page.model.PageDto;
@@ -89,21 +86,8 @@ public class PageAuthorizationService implements IPageAuthorizationService {
 
     @Override
     public boolean canEdit(UserDetails user, String pageCode) {
-        List<String> userGroups = this.getGroupCodesForReading(user);
-        if (userGroups.contains(Group.ADMINS_GROUP_NAME)) {
-            return true;
-        }
         IPage page = this.getPage(pageCode);
-        for (Authorization authorization : user.getAuthorizations()) {
-            if (Group.ADMINS_GROUP_NAME.equals(authorization.getGroup())) {
-                return true;
-            }
-            if ((authorization.getGroup() == null || authorization.getGroup().getName().equals(page.getGroup()))
-                    && this.roleCanEditPages(authorization.getRole())) {
-                return true;
-            }
-        }
-        return false;
+        return this.getGroupCodesForEditing(user).contains(page.getGroup());
     }
 
     @Override
@@ -114,22 +98,8 @@ public class PageAuthorizationService implements IPageAuthorizationService {
 
     @Override
     public List<String> getGroupCodesForEditing(UserDetails user) {
-        List<String> userGroups = this.getGroupCodesForReading(user);
-        if (userGroups.contains(Group.ADMINS_GROUP_NAME)) {
-            return userGroups;
-        }
-        return user.getAuthorizations().stream()
-                .filter(a -> roleCanEditPages(a.getRole()))
-                .map(Authorization::getGroup)
+        return authorizationManager.getGroupsByPermission(user, Permission.MANAGE_PAGES).stream()
                 .map(Group::getName)
                 .collect(Collectors.toList());
-    }
-
-    private boolean roleCanEditPages(Role role) {
-        Set<String> permissions = role.getPermissions();
-        if (permissions.contains(Permission.MANAGE_PAGES) || permissions.contains(Permission.SUPERUSER)) {
-            return true;
-        }
-        return false;
     }
 }

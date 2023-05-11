@@ -7,7 +7,6 @@ import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.entando.entando.aps.system.services.page.IPageAuthorizationService;
@@ -202,9 +201,5 @@ public class SeoPageController implements ISeoPageController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-    }
-
-    private List<String> getUserGroups(UserDetails user) {
-        return this.getAuthorizationService().getGroupCodesForReading(user);
     }
 }

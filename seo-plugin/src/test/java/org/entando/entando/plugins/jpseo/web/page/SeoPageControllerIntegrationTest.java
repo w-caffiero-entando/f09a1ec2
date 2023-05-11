@@ -693,7 +693,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
         String pageCodeCloned2 = "seoTest2_clone";
 
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                 .build();
         String accessToken = mockOAuthInterceptor(user);
         try {
@@ -963,7 +963,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     void testRootCanBeEditedByFreeAccessManagers() throws Exception {
 
         UserDetails freeAccessManager = new OAuth2TestUtils.UserBuilder("freeAccessManager", "0x24")
-                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                 .build();
 
         testEditRoot(freeAccessManager, status().isOk());
@@ -1267,7 +1267,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
 
     private String createAccessToken() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                .withAuthorization(Group.FREE_GROUP_NAME, Permission.MANAGE_PAGES, Permission.MANAGE_PAGES)
+                .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                 .build();
         return mockOAuthInterceptor(user);
     }

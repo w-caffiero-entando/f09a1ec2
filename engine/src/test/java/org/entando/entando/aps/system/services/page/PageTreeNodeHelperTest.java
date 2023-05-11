@@ -1,12 +1,9 @@
 package org.entando.entando.aps.system.services.page;
 
-import com.agiletec.aps.system.services.authorization.Authorization;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
-import com.agiletec.aps.system.services.role.Permission;
-import com.agiletec.aps.system.services.role.Role;
 import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +43,6 @@ class PageTreeNodeHelperTest {
     @Test
     void userBelongingToFreeGroupShouldSeeFreePages() {
         mockUserGroups("free");
-        Mockito.when(user.getAuthorizations()).thenReturn(List.of(mockAuthorization("free", Permission.MANAGE_PAGES)));
 
         // invocation of "homepage" child nodes; The system returns with nodes p1, p2, p3
         List<IPage> pages = helper.getNodes("homepage");
@@ -76,7 +72,6 @@ class PageTreeNodeHelperTest {
     @Test
     void userBelongingToReservedGroupShouldSeeReservedPages() {
         mockUserGroups("reserved");
-        Mockito.when(user.getAuthorizations()).thenReturn(List.of(mockAuthorization("reserved", Permission.MANAGE_PAGES)));
 
         // invocation of child nodes "homepage" (unauthorized page but root); The system returns with nodes p112, p122, p21, p221, p223
         List<IPage> pages = helper.getNodes("homepage");
@@ -105,7 +100,7 @@ class PageTreeNodeHelperTest {
 
     @Test
     void userBelongingToAdministratorsGroupShouldSeeAllPages() {
-        mockUserGroups("administrators");
+        mockUserGroups("administrators", "free", "reserved");
 
         // invocation of "homepage" child nodes; The system returns with nodes p1, p2, p3
         List<IPage> pages = helper.getNodes("homepage");
@@ -134,10 +129,6 @@ class PageTreeNodeHelperTest {
 
     @Test
     void userThatCanManagePagesOnRandomGroupShouldNotSeeOtherPages() {
-        mockUserGroups("random");
-        Mockito.when(user.getAuthorizations()).thenReturn(List.of(
-                mockAuthorization("random", Permission.MANAGE_PAGES),
-                mockAuthorization("free", Permission.ENTER_BACKEND)));
         List<IPage> pages = helper.getNodes("p31");
         verifyNodesList(pages, new String[]{});
     }
@@ -186,7 +177,7 @@ class PageTreeNodeHelperTest {
         mockPage("p11", "free", "p111", "p112", "p113");
         mockPage("p111", "free");
         mockPage("p112", "reserved");
-        mockPage("p113", "administrator");
+        mockPage("p113", "administrators");
 
         mockPage("p12", "free", "p121", "p122", "p123");
         mockPage("p121", "free");
@@ -204,13 +195,13 @@ class PageTreeNodeHelperTest {
         mockPage("p223", "reserved");
 
         mockPage("p3", "free", "p31", "p32");
-        mockPage("p31", "administrator", "p311", "p312", "p313");
-        mockPage("p311", "administrator");
-        mockPage("p312", "administrator");
-        mockPage("p313", "administrator");
+        mockPage("p31", "administrators", "p311", "p312", "p313");
+        mockPage("p311", "administrators");
+        mockPage("p312", "administrators");
+        mockPage("p313", "administrators");
         mockPage("p32", "free", "p321", "p322", "p323");
         mockPage("p321", "free");
-        mockPage("p322", "administrator");
+        mockPage("p322", "administrators");
         mockPage("p323", "free");
     }
 
@@ -228,14 +219,6 @@ class PageTreeNodeHelperTest {
             g.setName(name);
             return g;
         }).collect(Collectors.toList());
-        Mockito.when(authorizationManager.getUserGroups(Mockito.any())).thenReturn(groups);
-    }
-
-    private Authorization mockAuthorization(String groupName, String permission) {
-        Group group = new Group();
-        group.setName(groupName);
-        Role role = new Role();
-        role.addPermission(permission);
-        return new Authorization(group, role);
+        Mockito.when(authorizationManager.getGroupsByPermission(Mockito.any(), Mockito.anyString())).thenReturn(groups);
     }
 }

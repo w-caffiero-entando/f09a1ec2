@@ -964,7 +964,7 @@ public class PageService implements IComponentExistsService, IPageService,
 
     @Override
     public PageDto clonePage(String pageCode, PageCloneRequest pageCloneRequest, BindingResult bindingResult, UserDetails user) {
-        PageDto pageDto = this.clonePage(pageCode, pageCloneRequest, bindingResult, user);
+        PageDto pageDto = this.clonePage(pageCode, pageCloneRequest, bindingResult);
         return this.loadVirtualChildren(pageDto, user);
     }
 
