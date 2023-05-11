@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
+import org.entando.entando.aps.system.services.page.IPageAuthorizationService;
 import org.entando.entando.aps.system.services.page.IPageService;
-import org.entando.entando.aps.system.services.page.PageAuthorizationService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -82,7 +82,7 @@ public class PageController {
     private PageValidator pageValidator;
 
     @Autowired
-    private PageAuthorizationService authorizationService;
+    private IPageAuthorizationService authorizationService;
 
     public IPageService getPageService() {
         return pageService;
@@ -100,11 +100,11 @@ public class PageController {
         this.pageValidator = pageValidator;
     }
 
-    public PageAuthorizationService getAuthorizationService() {
+    public IPageAuthorizationService getAuthorizationService() {
         return authorizationService;
     }
 
-    public void setAuthorizationService(PageAuthorizationService authorizationService) {
+    public void setAuthorizationService(IPageAuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
     }
 
@@ -121,7 +121,7 @@ public class PageController {
         List<PageDto> result;
         if (forLinkingToOwnerGroup == null && forLinkingToExtraGroups == null) {
             // Returns the standard tree
-            result = this.getPageService().getPagesTree(parentCode, getUserGroups(user));
+            result = this.getPageService().getPagesTree(parentCode, user);
         } else {
             // Returns linkable pages in the context of CMS
             List<String> exg = (forLinkingToExtraGroups == null) ? null :
@@ -135,7 +135,7 @@ public class PageController {
 
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("parentCode", parentCode);
-        boolean editableParent = this.getAuthorizationService().isAuthOnGroup(user, parentCode);
+        boolean editableParent = this.getAuthorizationService().canEdit(user, parentCode);
         metadata.put("virtualRoot", !editableParent);
         return new ResponseEntity<>(new RestResponse<>(result, metadata), HttpStatus.OK);
     }
@@ -145,7 +145,7 @@ public class PageController {
     public ResponseEntity<PagedRestResponse<PageDto>> getPages(@RequestAttribute("user") UserDetails user, PageSearchRequest searchRequest) {
         logger.debug("getting page list with request {}", searchRequest);
         this.getPageValidator().validateRestListRequest(searchRequest, PageDto.class);
-        List<String> groups = this.getAuthorizationService().getAllowedGroupCodes(user);
+        List<String> groups = this.getAuthorizationService().getGroupCodesForReading(user);
         PagedMetadata<PageDto> result = this.getPageService().searchPages(searchRequest, groups);
         return new ResponseEntity<>(new PagedRestResponse<>(result), HttpStatus.OK);
     }
@@ -174,10 +174,10 @@ public class PageController {
             @RequestParam(value = "status", required = false, defaultValue = IPageService.STATUS_DRAFT) String status) {
         logger.debug("getting page {}", pageCode);
         Map<String, String> metadata = new HashMap<>();
-        if (!this.getAuthorizationService().isAuth(user, pageCode, false)) {
+        if (!this.getAuthorizationService().canView(user, pageCode, false)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
-        PageDto page = this.getPageService().getPage(pageCode, status);
+        PageDto page = this.getPageService().getPage(pageCode, status, user);
         metadata.put("status", status);
         return new ResponseEntity<>(new RestResponse<>(page, metadata), HttpStatus.OK);
     }
@@ -187,7 +187,7 @@ public class PageController {
     public ResponseEntity<SimpleRestResponse<ComponentUsage>> getComponentUsage(@RequestAttribute("user") UserDetails user, @PathVariable String pageCode) {
         logger.trace("get {} usage by code {}", COMPONENT_ID, pageCode);
 
-        if (!this.getAuthorizationService().isAuth(user, pageCode, false)) {
+        if (!this.getAuthorizationService().canView(user, pageCode, false)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
 
@@ -210,7 +210,7 @@ public class PageController {
         // clear filters
         searchRequest.setFilters(new Filter[0]);
 
-        if (!this.getAuthorizationService().isAuth(user, pageCode, false)) {
+        if (!this.getAuthorizationService().canView(user, pageCode, false)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
 
@@ -226,7 +226,7 @@ public class PageController {
     public ResponseEntity<RestResponse<PageDto, Map<String, String>>> updatePage(@RequestAttribute("user") UserDetails user, @PathVariable String pageCode, @Valid @RequestBody PageRequest pageRequest, BindingResult bindingResult) {
         logger.debug("updating page {} with request {}", pageCode, pageRequest);
 
-        if (!this.getAuthorizationService().isAuthOnGroup(user, pageCode)) {
+        if (!this.getAuthorizationService().canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         //field validations
@@ -252,8 +252,6 @@ public class PageController {
         return new ResponseEntity<>(new RestResponse<>(page, metadata), HttpStatus.OK);
     }
 
-
-
     @ActivityStreamAuditable
     @RestAccessControl(permission = {Permission.MANAGE_PAGES, Permission.CONTENT_SUPERVISOR})
     @RequestMapping(value = "/pages/{pageCode}/status", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -262,7 +260,7 @@ public class PageController {
             @Valid @RequestBody PageStatusRequest pageStatusRequest, BindingResult bindingResult) {
         logger.debug("changing status for page {} with request {}", pageCode, pageStatusRequest);
         Map<String, String> metadata = new HashMap<>();
-        if (!this.getAuthorizationService().isAuthOnGroup(user, pageCode)) {
+        if (!this.getAuthorizationService().canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         //field validations
@@ -297,8 +295,13 @@ public class PageController {
 
         validatePagePlacement(pageRequest, bindingResult);
 
-        if (!this.getAuthorizationService().getAuthorizationManager().isAuthOnGroup(user, pageRequest.getOwnerGroup())) {
+        if (!this.getAuthorizationService().getGroupCodesForEditing(user).contains(pageRequest.getOwnerGroup())) {
             throw new ResourcePermissionsException(user.getUsername(), pageRequest.getCode());
+        }
+
+        // Check parent page permissions
+        if (!this.getAuthorizationService().canEdit(user, pageRequest.getParentCode())) {
+            throw new ResourcePermissionsException(user.getUsername(), pageRequest.getParentCode());
         }
 
         PageDto dto = this.getPageService().addPage(pageRequest);
@@ -333,7 +336,7 @@ public class PageController {
         logger.debug("deleting {}", pageCode);
         DataBinder binder = new DataBinder(pageCode);
         BindingResult bindingResult = binder.getBindingResult();
-        if (!this.getAuthorizationService().isAuthOnGroup(user, pageCode)) {
+        if (!this.getAuthorizationService().canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         //field validations
@@ -373,7 +376,7 @@ public class PageController {
         }
         this.getPageValidator().validateMovePage(pageCode, bindingResult, pageRequest);
 
-        if (!this.getAuthorizationService().isAuthOnGroup(user, pageCode)) {
+        if (!this.getAuthorizationService().canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
 
@@ -385,7 +388,7 @@ public class PageController {
     @RequestMapping(value = "/pages/{pageCode}/references/{manager}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PagedRestResponse<?>> getPageReferences(@RequestAttribute("user") UserDetails user, @PathVariable String pageCode, @PathVariable String manager, RestListRequest requestList) {
         logger.debug("loading references for page {} and manager {}", pageCode, manager);
-        if (!this.getAuthorizationService().isAuth(user, pageCode, false)) {
+        if (!this.getAuthorizationService().canView(user, pageCode, false)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         PagedMetadata<?> result = this.getPageService().getPageReferences(pageCode, manager, requestList);
@@ -400,6 +403,10 @@ public class PageController {
         this.getPageValidator().validateJsonPatchRequest(patchRequest, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
+        }
+
+        if (!this.getAuthorizationService().canEdit(user, pageCode)) {
+            throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
 
         PageDto updatedPageDto = this.getPageService().getPatchedPage(pageCode, patchRequest);
@@ -418,7 +425,7 @@ public class PageController {
             BindingResult bindingResult) {
         logger.debug("clone page {}", pageCode);
 
-        if (!this.getAuthorizationService().isAuthOnGroup(user, pageCode)) {
+        if (!this.getAuthorizationService().canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
 
@@ -436,10 +443,6 @@ public class PageController {
 
         PageDto dto = this.getPageService().clonePage(pageCode, pageCloneRequest, bindingResult);
         return new ResponseEntity<>(new SimpleRestResponse<>(dto), HttpStatus.OK);
-    }
-
-    private List<String> getUserGroups(UserDetails user) {
-        return this.getAuthorizationService().getAllowedGroupCodes(user);
     }
 
     private void validatePageTitles(PageRequest pageRequest, BindingResult bindingResult) {

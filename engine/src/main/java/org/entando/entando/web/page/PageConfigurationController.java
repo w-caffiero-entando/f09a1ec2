@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.page.IPageAuthorizationService;
 import org.entando.entando.aps.system.services.page.IPageService;
-import org.entando.entando.aps.system.services.page.PageAuthorizationService;
 import org.entando.entando.aps.system.services.page.model.PageConfigurationDto;
 import org.entando.entando.aps.system.services.page.model.WidgetConfigurationDto;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -63,7 +63,7 @@ public class PageConfigurationController {
     private IPageService pageService;
 
     @Autowired
-    private PageAuthorizationService authorizationService;
+    private IPageAuthorizationService authorizationService;
 
     protected IPageService getPageService() {
         return pageService;
@@ -80,7 +80,7 @@ public class PageConfigurationController {
             @PathVariable String pageCode,
             @RequestParam(value = "status", required = false, defaultValue = IPageService.STATUS_DRAFT) String status) {
         logger.debug("requested {} configuration", pageCode);
-        if (!this.authorizationService.isAuth(user, pageCode, false)) {
+        if (!this.authorizationService.canView(user, pageCode, false)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         PageConfigurationDto pageConfiguration = this.getPageService().getPageConfiguration(pageCode, status);
@@ -96,7 +96,7 @@ public class PageConfigurationController {
             @RequestParam(value = "status", required = false, defaultValue = IPageService.STATUS_DRAFT) String status,
             @RequestAttribute("user") UserDetails user) {
         logger.debug("requested {} widgets detail", pageCode);
-        if (!this.authorizationService.isAuth(user, pageCode, false)) {
+        if (!this.authorizationService.canView(user, pageCode, false)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         PageConfigurationDto pageConfiguration = this.getPageService().getPageConfiguration(pageCode, status);
@@ -126,7 +126,7 @@ public class PageConfigurationController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        if (!this.authorizationService.isAuth(user, pageCode, false)) {
+        if (!this.authorizationService.canView(user, pageCode, false)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
 
@@ -148,7 +148,7 @@ public class PageConfigurationController {
             BindingResult bindingResult) {
         logger.debug("updating widget configuration in page {} and frame {}", pageCode, frameId);
 
-        if (!this.authorizationService.isAuthOnGroup(user, pageCode)) {
+        if (!this.authorizationService.canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
 
@@ -171,7 +171,7 @@ public class PageConfigurationController {
     @RequestMapping(value = "/pages/{pageCode}/widgets/{frameId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestResponse<Map<String, String>, Map<String, String>>> deletePageWidget(@RequestAttribute("user") UserDetails user, @PathVariable String pageCode, @PathVariable String frameId) {
         logger.debug("removing widget configuration in page {} and frame {}", pageCode, frameId);
-        if (!this.authorizationService.isAuthOnGroup(user, pageCode)) {
+        if (!this.authorizationService.canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(frameId, "frameId");
@@ -192,7 +192,7 @@ public class PageConfigurationController {
     @RequestMapping(value = "/pages/{pageCode}/configuration/restore", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestResponse<PageConfigurationDto, Map<String, String>>> updatePageConfiguration(@RequestAttribute("user") UserDetails user, @PathVariable String pageCode) {
         logger.debug("restore configuration on page {}", pageCode);
-        if (!this.authorizationService.isAuthOnGroup(user, pageCode)) {
+        if (!this.authorizationService.canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         PageConfigurationDto pageConfiguration = this.getPageService().restorePageConfiguration(pageCode);
@@ -205,7 +205,7 @@ public class PageConfigurationController {
     @RequestMapping(value = "/pages/{pageCode}/configuration/defaultWidgets", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SimpleRestResponse<PageConfigurationDto>> applyDefaultWidgetsPageConfiguration(@RequestAttribute("user") UserDetails user, @PathVariable String pageCode) {
         logger.debug("applying default widgets on page {}", pageCode);
-        if (!this.authorizationService.isAuthOnGroup(user, pageCode)) {
+        if (!this.authorizationService.canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         PageConfigurationDto pageConfiguration = this.getPageService().applyDefaultWidgets(pageCode);

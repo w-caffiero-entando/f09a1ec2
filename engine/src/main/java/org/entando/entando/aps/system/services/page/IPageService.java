@@ -13,6 +13,7 @@
  */
 package org.entando.entando.aps.system.services.page;
 
+import com.agiletec.aps.system.services.user.UserDetails;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
 import java.util.List;
@@ -44,11 +45,15 @@ public interface IPageService extends IComponentExistsService, IComponentUsageSe
     String STATUS_DRAFT = "draft";
     String STATUS_UNPUBLISHED = "unpublished";
 
+    PageDto getPage(String pageCode, String status, UserDetails user);
+
     PageDto getPage(String pageCode, String status);
 
     PageDto addPage(PageRequest pageRequest);
 
     void removePage(String pageName);
+
+    PageDto updatePage(String pageCode, PageRequest pageRequest, UserDetails user);
 
     PageDto updatePage(String pageCode, PageRequest pageRequest);
 
@@ -58,7 +63,7 @@ public interface IPageService extends IComponentExistsService, IComponentUsageSe
         return getPages(parentCode, null, null);
     }
 
-    List<PageDto> getPagesTree(String parentCode, List<String> userGroups);
+    List<PageDto> getPagesTree(String parentCode, UserDetails user);
 
     List<PageDto> getPages(String parentCode,
             @Nullable String forLinkingToOwnerGroup, @Nullable Collection<String> forLinkingToExtraGroups);
@@ -73,6 +78,8 @@ public interface IPageService extends IComponentExistsService, IComponentUsageSe
      */
     PagedMetadata<PageDto> searchOnlineFreePages(RestListRequest request);
 
+    PageDto movePage(String pageCode, PagePositionRequest pageRequest, UserDetails user);
+
     PageDto movePage(String pageCode, PagePositionRequest pageRequest);
 
     PageConfigurationDto getPageConfiguration(String pageCode, String status);
@@ -85,6 +92,8 @@ public interface IPageService extends IComponentExistsService, IComponentUsageSe
 
     void deleteWidgetConfiguration(String pageCode, int frameId);
 
+    PageDto updatePageStatus(String pageCode, String status, UserDetails user);
+
     PageDto updatePageStatus(String pageCode, String status);
 
     PageConfigurationDto applyDefaultWidgets(String pageCode);
@@ -94,6 +103,8 @@ public interface IPageService extends IComponentExistsService, IComponentUsageSe
     PagesStatusDto getPagesStatus();
 
     List<PageDto> listViewPages();
+
+    PageDto clonePage(String pageCode, PageCloneRequest pageCloneRequest, BindingResult bindingResult, UserDetails user);
 
     PageDto clonePage(String pageCode, PageCloneRequest pageCloneRequest, BindingResult bindingResult);
 
