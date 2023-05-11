@@ -1233,7 +1233,7 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
             PageStatusRequest statusRequest = new PageStatusRequest();
 
             mockOAuthInterceptor(new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "validateContents", Permission.CONTENT_SUPERVISOR)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "validateContents", Permission.MANAGE_PAGES)
                     .build());
             //put
             ResultActions result = this.executeUpdatePageStatus(codeParent,
@@ -2049,7 +2049,7 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
     }
 
     @Test
-    void testCustomersManagerCanViewButNotEditPageWithCustomersJoinGroup() throws Exception {
+    void testCustomersManagerCanViewExceptInTreeAndCannotEditPageWithCustomersJoinGroup() throws Exception {
 
         UserDetails customersManager = new OAuth2TestUtils.UserBuilder("customersManager", "0x24")
                 .withAuthorization("customers", "managePages", Permission.MANAGE_PAGES)
@@ -2127,7 +2127,8 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
             mockMvc.perform(get("/pages")
                     .header("Authorization", "Bearer " + accessToken))
                     .andExpect(status().isOk())
-                    .andExpect(canRead ? pageInResult.exists() : pageInResult.doesNotExist());
+                    // pages in tree are visible only if they are editable
+                    .andExpect(canWrite ? pageInResult.exists() : pageInResult.doesNotExist());
 
             // edit
             PageDto pageDto = this.pageService.getPage(pageCode, IPageService.STATUS_DRAFT);

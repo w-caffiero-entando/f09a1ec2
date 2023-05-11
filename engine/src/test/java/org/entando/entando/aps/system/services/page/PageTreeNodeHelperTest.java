@@ -1,8 +1,16 @@
 package org.entando.entando.aps.system.services.page;
 
+import com.agiletec.aps.system.services.authorization.Authorization;
+import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
+import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.role.Permission;
+import com.agiletec.aps.system.services.role.Role;
+import com.agiletec.aps.system.services.user.UserDetails;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,94 +25,121 @@ class PageTreeNodeHelperTest {
 
     @Mock
     private IPageManager pageManager;
+    
+    @Mock
+    private UserDetails user;
+
+    @Mock
+    private IAuthorizationManager authorizationManager;
 
     @InjectMocks
+    private PageAuthorizationService authorizationService;
+
     private PageTreeNodeHelper helper;
 
     @BeforeEach
     void setUp() {
         mockTree();
+        helper = new PageTreeNodeHelper(pageManager, authorizationService, user);
     }
 
     @Test
     void userBelongingToFreeGroupShouldSeeFreePages() {
+        mockUserGroups("free");
+        Mockito.when(user.getAuthorizations()).thenReturn(List.of(mockAuthorization("free", Permission.MANAGE_PAGES)));
+
         // invocation of "homepage" child nodes; The system returns with nodes p1, p2, p3
-        List<IPage> pages = helper.getNodes("homepage", List.of("free"));
+        List<IPage> pages = helper.getNodes("homepage");
         verifyNodesList(pages, "p1", "p2", "p3");
 
         // invocation of child nodes "p2"; The system returns with nodes p22
-        pages = helper.getNodes("p2", List.of("free"));
+        pages = helper.getNodes("p2");
         verifyNodesList(pages, "p22");
 
         // invocation of child nodes "p21" (unauthorized page and unauthorized children); The system returns with an empty list of nodes
-        pages = helper.getNodes("p21", List.of("free"));
+        pages = helper.getNodes("p21");
         verifyNodesList(pages, new String[]{});
 
         // invocation of child nodes "p12"; The system returns with nodes p121, p123
-        pages = helper.getNodes("p12", List.of("free"));
+        pages = helper.getNodes("p12");
         verifyNodesList(pages, "p121", "p123");
 
         // invocation of child nodes "p22"; The system returns with nodes p222
-        pages = helper.getNodes("p22", List.of("free"));
+        pages = helper.getNodes("p22");
         verifyNodesList(pages, "p222");
 
         // invocation of child nodes "p31" (unauthorized page and unauthorized children); The system returns with an empty list of nodes
-        pages = helper.getNodes("p31", List.of("free"));
+        pages = helper.getNodes("p31");
         verifyNodesList(pages, new String[]{});
     }
 
     @Test
     void userBelongingToReservedGroupShouldSeeReservedPages() {
+        mockUserGroups("reserved");
+        Mockito.when(user.getAuthorizations()).thenReturn(List.of(mockAuthorization("reserved", Permission.MANAGE_PAGES)));
+
         // invocation of child nodes "homepage" (unauthorized page but root); The system returns with nodes p112, p122, p21, p221, p223
-        List<IPage> pages = helper.getNodes("homepage", List.of("reserved"));
+        List<IPage> pages = helper.getNodes("homepage");
         verifyNodesList(pages, "p112", "p122", "p21", "p221", "p223");
 
         // invocation of child nodes "p2" (unauthorized page with authorized children); The system returns with nodes p21
-        pages = helper.getNodes("p2", List.of("reserved"));
+        pages = helper.getNodes("p2");
         verifyNodesList(pages, "p21", "p221", "p223");
 
         // invocation of child nodes "p21"; The system returns with nodes p211, p212, p213
-        pages = helper.getNodes("p21", List.of("reserved"));
+        pages = helper.getNodes("p21");
         verifyNodesList(pages, "p211", "p212", "p213");
 
         // invocation of child nodes "p12" (unauthorized page with an authorized child); The system returns with nodes p122
-        pages = helper.getNodes("p12", List.of("reserved"));
+        pages = helper.getNodes("p12");
         verifyNodesList(pages, "p122");
 
         // invocation of child nodes "p22" (unauthorized page with authorized children); The system returns with nodes p221, p223
-        pages = helper.getNodes("p22", List.of("reserved"));
+        pages = helper.getNodes("p22");
         verifyNodesList(pages, "p221", "p223");
 
         // child node invocation "p31" (unauthorized page with unauthorized children); The system returns with <empty_list> nodes
-        pages = helper.getNodes("p31", List.of("reserved"));
+        pages = helper.getNodes("p31");
         verifyNodesList(pages);
     }
 
     @Test
     void userBelongingToAdministratorsGroupShouldSeeAllPages() {
+        mockUserGroups("administrators");
+
         // invocation of "homepage" child nodes; The system returns with nodes p1, p2, p3
-        List<IPage> pages = helper.getNodes("homepage", List.of("administrators"));
+        List<IPage> pages = helper.getNodes("homepage");
         verifyNodesList(pages, "p1", "p2", "p3");
 
         // invocation of child nodes "p2"; The system returns with nodes p21, p22
-        pages = helper.getNodes("p2", List.of("administrators"));
+        pages = helper.getNodes("p2");
         verifyNodesList(pages, "p21", "p22");
 
         // invocation of child nodes "p21"; The system returns with nodes p211, p212, p213
-        pages = helper.getNodes("p21", List.of("administrators"));
+        pages = helper.getNodes("p21");
         verifyNodesList(pages, "p211", "p212", "p213");
 
         // invocation of child nodes "p12"; The system returns with nodes p121, p122, p123
-        pages = helper.getNodes("p12", List.of("administrators"));
+        pages = helper.getNodes("p12");
         verifyNodesList(pages, "p121", "p122", "p123");
 
         // invocation of child nodes "p22"; The system returns with nodes p221, p222, p223
-        pages = helper.getNodes("p22", List.of("administrators"));
+        pages = helper.getNodes("p22");
         verifyNodesList(pages, "p221", "p222", "p223");
 
         // invocation of child nodes "p31"; The system returns with nodes p311, p312, p313
-        pages = helper.getNodes("p31", List.of("administrators"));
+        pages = helper.getNodes("p31");
         verifyNodesList(pages, "p311", "p312", "p313");
+    }
+
+    @Test
+    void userThatCanManagePagesOnRandomGroupShouldNotSeeOtherPages() {
+        mockUserGroups("random");
+        Mockito.when(user.getAuthorizations()).thenReturn(List.of(
+                mockAuthorization("random", Permission.MANAGE_PAGES),
+                mockAuthorization("free", Permission.ENTER_BACKEND)));
+        List<IPage> pages = helper.getNodes("p31");
+        verifyNodesList(pages, new String[]{});
     }
 
     private void verifyNodesList(List<IPage> pages, String... expectedCodes) {
@@ -185,5 +220,22 @@ class PageTreeNodeHelperTest {
         Mockito.lenient().when(page.getGroup()).thenReturn(group);
         Mockito.lenient().when(page.getChildrenCodes()).thenReturn(children);
         Mockito.lenient().when(pageManager.getDraftPage(pageCode)).thenReturn(page);
+    }
+
+    private void mockUserGroups(String... groupNames) {
+        List<Group> groups = Arrays.stream(groupNames).map(name ->{
+            Group g = new Group();
+            g.setName(name);
+            return g;
+        }).collect(Collectors.toList());
+        Mockito.when(authorizationManager.getUserGroups(Mockito.any())).thenReturn(groups);
+    }
+
+    private Authorization mockAuthorization(String groupName, String permission) {
+        Group group = new Group();
+        group.setName(groupName);
+        Role role = new Role();
+        role.addPermission(permission);
+        return new Authorization(group, role);
     }
 }

@@ -21,7 +21,6 @@ import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.List;
-import org.entando.entando.aps.system.services.auth.IAuthorizationService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,14 +31,14 @@ import org.junit.jupiter.api.Test;
  */
 class PageAuthorizationServiceIntegrationTest extends BaseTestCase {
 
-    private PageAuthorizationService authorizationService;
+    private IPageAuthorizationService authorizationService;
 
     private IPageService pageService;
 
     @BeforeEach
     private void init() throws Exception {
         try {
-            authorizationService = (PageAuthorizationService) this.getApplicationContext().getBean(IAuthorizationService.BEAN_NAME_FOR_PAGE);
+            authorizationService = (IPageAuthorizationService) this.getApplicationContext().getBean(IPageAuthorizationService.PAGE_AUTHORIZATION_SERVICE_BEAN_NAME);
             pageService = (IPageService) this.getApplicationContext().getBean(IPageService.BEAN_NAME);
         } catch (Exception e) {
             throw e;
@@ -50,10 +49,10 @@ class PageAuthorizationServiceIntegrationTest extends BaseTestCase {
     void testIsAuthOnPage() throws Throwable {
         UserDetails admin = this.getUser("admin");
         UserDetails customer = this.getUser("editorCustomers");
-        assertTrue(authorizationService.isAuth(admin, "coach_page"));
-        assertFalse(authorizationService.isAuth(customer, "coach_page"));
-        assertTrue(authorizationService.isAuth(admin, "customers_page"));
-        assertTrue(authorizationService.isAuth(customer, "customers_page"));
+        assertTrue(authorizationService.canView(admin, "coach_page"));
+        assertFalse(authorizationService.canView(customer, "coach_page"));
+        assertTrue(authorizationService.canView(admin, "customers_page"));
+        assertTrue(authorizationService.canView(customer, "customers_page"));
     }
 
     @Test
