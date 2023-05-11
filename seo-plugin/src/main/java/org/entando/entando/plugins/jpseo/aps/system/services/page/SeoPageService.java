@@ -26,6 +26,7 @@ import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.PageManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
+import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.ApsProperties;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,7 +67,7 @@ public class SeoPageService extends PageService {
     private LangManager langManager;
 
     @Override
-    public SeoPageDto getPage(String pageCode, String status) {
+    public SeoPageDto getPage(String pageCode, String status, UserDetails user) {
         IPage page = super.loadPage(pageCode, status);
         if (null == page) {
             logger.warn("no page found with code {} and status {}", pageCode, status);
@@ -77,7 +78,8 @@ public class SeoPageService extends PageService {
             throw new ResourceNotFoundException(bindingResult);
         }
 
-        return mapPageToSeoPageDto(pageCode, page);
+        SeoPageDto seoPageDto = mapPageToSeoPageDto(pageCode, page);
+        return super.loadVirtualChildren(seoPageDto, user);
     }
 
 
@@ -212,7 +214,7 @@ public class SeoPageService extends PageService {
     }
 
     @Override
-    public SeoPageDto updatePage(String pageCode, PageRequest pageRequest) {
+    public SeoPageDto updatePage(String pageCode, PageRequest pageRequest, UserDetails user) {
         IPage oldPage = this.getPageManager().getDraftPage(pageCode);
         if (null == oldPage) {
             throw new ResourceNotFoundException(null, "page", pageCode);
@@ -243,7 +245,8 @@ public class SeoPageService extends PageService {
                     pageManager.updatePage(newPage);
                     IPage updatedPage = this.getPageManager().getDraftPage(pageCode);
                     updatedPage.setPosition(oldPage.getPosition());
-                    return mapPageToSeoPageDto(pageCode, updatedPage);
+                    SeoPageDto seoPageDto = mapPageToSeoPageDto(pageCode, updatedPage);
+                    return super.loadVirtualChildren(seoPageDto, user);
                 } catch (EntException e) {
                     this.logger.error("Error updating page {}", pageCode, e);
                     throw new RestServerError("error in update page", e);
