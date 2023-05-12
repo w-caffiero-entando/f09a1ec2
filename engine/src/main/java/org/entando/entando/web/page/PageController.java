@@ -247,7 +247,7 @@ public class PageController {
 
         this.getPageValidator().validateMovePage(pageCode, bindingResult, pagePositionRequest);
 
-        PageDto page = this.getPageService().updatePage(pageCode, pageRequest);
+        PageDto page = this.getPageService().updatePage(pageCode, pageRequest, user);
         Map<String, String> metadata = new HashMap<>();
         return new ResponseEntity<>(new RestResponse<>(page, metadata), HttpStatus.OK);
     }
@@ -267,7 +267,7 @@ public class PageController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        PageDto page = this.getPageService().updatePageStatus(pageCode, pageStatusRequest.getStatus());
+        PageDto page = this.getPageService().updatePageStatus(pageCode, pageStatusRequest.getStatus(), user);
         metadata.put("status", pageStatusRequest.getStatus());
         return new ResponseEntity<>(new RestResponse<>(page, metadata), HttpStatus.OK);
     }
@@ -380,7 +380,7 @@ public class PageController {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
 
-        PageDto page = this.getPageService().movePage(pageCode, pageRequest);
+        PageDto page = this.getPageService().movePage(pageCode, pageRequest, user);
         return new ResponseEntity<>(new SimpleRestResponse<>(page), HttpStatus.OK);
     }
 
