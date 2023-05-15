@@ -219,7 +219,11 @@ public class PageService implements IComponentExistsService, IPageService,
     public List<PageDto> getPagesTree(String parentCode, UserDetails user) {
         PageTreeNodeHelper helper = new PageTreeNodeHelper(this.getPageManager(), this.pageAuthorizationService, user);
         return helper.getNodes(parentCode).stream()
-                .map(this::getPageDto).collect(Collectors.toList());
+                .map(page -> {
+                    PageDto pageDto = this.getPageDto(page);
+                    this.loadVirtualChildren(pageDto, user);
+                    return pageDto;
+                }).collect(Collectors.toList());
     }
 
     @Override
