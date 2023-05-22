@@ -36,6 +36,8 @@ public interface IPageManagerCacheWrapper extends ICacheWrapper {
 
     public static final String ONLINE_WIDGET_UTILIZER_CACHE_NAME_PREFIX = "PageManager_onlineUtilizer_";
     public static final String DRAFT_WIDGET_UTILIZER_CACHE_NAME_PREFIX = "PageManager_draftUtilizer_";
+    
+    public static final String WIDGET_UTILIZER_KEYS_CACHE_NAME = "PageManager_widgetUtilizersCacheKeys";
 
     public void initCache(IPageDAO pageDao) throws EntException;
 
