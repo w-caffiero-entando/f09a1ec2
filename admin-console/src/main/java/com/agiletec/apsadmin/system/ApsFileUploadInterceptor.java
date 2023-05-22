@@ -13,43 +13,28 @@
  */
 package com.agiletec.apsadmin.system;
 
-import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.interceptor.FileUploadInterceptor;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.ent.util.EntLogging.EntLogFactory;
-
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
+import com.agiletec.aps.system.services.baseconfig.FileUploadUtils;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.opensymphony.xwork2.ActionInvocation;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.interceptor.FileUploadInterceptor;
 
 /**
  * Extension of default FileUploadInterceptor.
+ *
  * @author E.Santoboni
  */
 public class ApsFileUploadInterceptor extends FileUploadInterceptor {
 
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ApsFileUploadInterceptor.class);
-	
-	@Override
-	public String intercept(ActionInvocation invocation) throws Exception {
-		if (null == super.maximumSize || super.maximumSize == 0) {
-			ConfigInterface configManager = (ConfigInterface) ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, ServletActionContext.getRequest());
-			String maxSizeParam = configManager.getParam(SystemConstants.PAR_FILEUPLOAD_MAXSIZE);
-			if (null != maxSizeParam) {
-				try {
-					this.setMaximumSize(Long.parseLong(maxSizeParam));
-				} catch (Throwable t) {
-					_logger.error("Error parsing param 'maxSize' - value '{}' - message ", maxSizeParam, t);
-				}
-			}
-		}
-		if (null == super.maximumSize || super.maximumSize == 0) {
-			this.setMaximumSize(DEFAULT_MAX_SIZE);
-		}
-		return super.intercept(invocation);
-	}
-	
-	public static final Long DEFAULT_MAX_SIZE = 10485760l;
-	
+    @Override
+    public String intercept(ActionInvocation invocation) throws Exception {
+        if (null == super.maximumSize || super.maximumSize == 0) {
+            ConfigInterface configManager = (ConfigInterface) ApsWebApplicationUtils.getBean(
+                    SystemConstants.BASE_CONFIG_MANAGER, ServletActionContext.getRequest());
+            this.setMaximumSize(FileUploadUtils.getFileUploadMaxSize(configManager));
+        }
+        return super.intercept(invocation);
+    }
 }

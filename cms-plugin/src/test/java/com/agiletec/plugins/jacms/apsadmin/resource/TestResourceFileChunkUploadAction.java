@@ -41,7 +41,7 @@ class TestResourceFileChunkUploadAction extends ApsAdminBaseTestCase {
 
         String result = this.executeAction();
         ResourceFileChunksUploadAction action = (ResourceFileChunksUploadAction) this.getAction();
-        assertEquals(Action.SUCCESS, result);
+        assertEquals(Action.INPUT, result);
         assertEquals("VALIDATION_ERROR", action.getResultMessage());
     }
 
@@ -56,7 +56,7 @@ class TestResourceFileChunkUploadAction extends ApsAdminBaseTestCase {
 
         String result = this.executeAction();
         ResourceFileChunksUploadAction action = (ResourceFileChunksUploadAction) this.getAction();
-        assertEquals(Action.SUCCESS, result);
+        assertEquals(Action.INPUT, result);
         assertEquals("VALIDATION_ERROR", action.getResultMessage());
     }
 
@@ -70,7 +70,7 @@ class TestResourceFileChunkUploadAction extends ApsAdminBaseTestCase {
 
         String result = this.executeAction();
         ResourceFileChunksUploadAction action = (ResourceFileChunksUploadAction) this.getAction();
-        assertEquals(Action.SUCCESS, result);
+        assertEquals(Action.INPUT, result);
         assertEquals("VALIDATION_ERROR", action.getResultMessage());
     }
 
@@ -82,7 +82,7 @@ class TestResourceFileChunkUploadAction extends ApsAdminBaseTestCase {
         this.addParameter("resourceTypeCode", "Attach");
         String result = this.executeAction();
         ResourceFileChunksUploadAction action = (ResourceFileChunksUploadAction) this.getAction();
-        assertEquals(Action.SUCCESS, result);
+        assertEquals(Action.INPUT, result);
         assertEquals("VALIDATION_ERROR", action.getResultMessage());
     }
 
@@ -96,8 +96,7 @@ class TestResourceFileChunkUploadAction extends ApsAdminBaseTestCase {
 
         String result = this.executeAction();
         ResourceFileChunksUploadAction action = (ResourceFileChunksUploadAction) this.getAction();
-        assertEquals(Action.SUCCESS, result);
-
+        assertEquals(Action.INPUT, result);
         assertEquals("VALIDATION_ERROR", action.getResultMessage());
     }
 
@@ -109,8 +108,7 @@ class TestResourceFileChunkUploadAction extends ApsAdminBaseTestCase {
         this.addParameter("resourceTypeCode", "test");
         String result = this.executeAction();
         ResourceFileChunksUploadAction action = (ResourceFileChunksUploadAction) this.getAction();
-        assertEquals(Action.SUCCESS, result);
-
+        assertEquals(Action.INPUT, result);
         assertEquals("VALIDATION_ERROR", action.getResultMessage());
     }
 
