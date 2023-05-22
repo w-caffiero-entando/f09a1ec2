@@ -29,9 +29,9 @@ import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.pagemodel.PageModelUtilizer;
+import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.ApsProperties;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
@@ -144,6 +143,9 @@ public class PageService implements IComponentExistsService, IPageService,
     @Autowired
     private PagedMetadataMapper pagedMetadataMapper;
 
+    @Autowired
+    private IPageAuthorizationService pageAuthorizationService;
+
     protected IPageManager getPageManager() {
         return pageManager;
     }
@@ -214,6 +216,17 @@ public class PageService implements IComponentExistsService, IPageService,
     }
 
     @Override
+    public List<PageDto> getPagesTree(String parentCode, UserDetails user) {
+        PageTreeNodeHelper helper = new PageTreeNodeHelper(this.getPageManager(), this.pageAuthorizationService, user);
+        return helper.getNodes(parentCode).stream()
+                .map(page -> {
+                    PageDto pageDto = this.getPageDto(page);
+                    this.loadVirtualChildren(pageDto, user);
+                    return pageDto;
+                }).collect(Collectors.toList());
+    }
+
+    @Override
     public List<PageDto> getPages(String parentCode,
                                   @Nullable String forLinkingToOwnerGroup, @Nullable Collection<String> forLinkingToExtraGroups) {
         List<PageDto> res = new ArrayList<>();
@@ -226,15 +239,26 @@ public class PageService implements IComponentExistsService, IPageService,
                                     childD.getGroup(), childD.getExtraGroups(),
                                     forLinkingToOwnerGroup, forLinkingToExtraGroups)
                     ) {
-                        PageDto pageDto = dtoBuilder.convert(childD);
-                        String pageCode = pageDto.getCode();
-                        String token = this.getPageTokenManager().encrypt(pageCode);
-                        String urlToken = getUrlToken(token);
-                        pageDto.setToken(urlToken);
+                        PageDto pageDto = getPageDto(childD);
                         res.add(pageDto);
                     }
                 })));
         return res;
+    }
+
+    private PageDto getPageDto(IPage page) {
+        PageDto pageDto = dtoBuilder.convert(page);
+        String pageCode = pageDto.getCode();
+        String token = this.getPageTokenManager().encrypt(pageCode);
+        String urlToken = getUrlToken(token);
+        pageDto.setToken(urlToken);
+        return pageDto;
+    }
+
+    @Override
+    public PageDto getPage(String pageCode, String status, UserDetails user) {
+        PageDto pageDto = this.getPage(pageCode, status);
+        return this.loadVirtualChildren(pageDto, user);
     }
 
     @Override
@@ -302,6 +326,12 @@ public class PageService implements IComponentExistsService, IPageService,
     }
 
     @Override
+    public PageDto updatePage(String pageCode, PageRequest pageRequest, UserDetails user) {
+        PageDto pageDto = this.updatePage(pageCode, pageRequest);
+        return this.loadVirtualChildren(pageDto, user);
+    }
+
+    @Override
     public PageDto updatePage(String pageCode, PageRequest pageRequest) {
         IPage oldPage = this.getPageManager().getDraftPage(pageCode);
         if (null == oldPage) {
@@ -342,6 +372,12 @@ public class PageService implements IComponentExistsService, IPageService,
     public PageDto getPatchedPage(String pageCode, JsonNode patch) {
         PageDto pageDto = this.getPage(pageCode, STATUS_DRAFT);
         return this.jsonPatchService.applyPatch(patch, pageDto);
+    }
+
+    @Override
+    public PageDto updatePageStatus(String pageCode, String status, UserDetails user) {
+        PageDto pageDto = updatePageStatus(pageCode, status);
+        return this.loadVirtualChildren(pageDto, user);
     }
 
     @Override
@@ -397,6 +433,12 @@ public class PageService implements IComponentExistsService, IPageService,
             logger.error("Error updating page {} status", pageCode, e);
             throw new RestServerError("error in update page status", e);
         }
+    }
+
+    @Override
+    public PageDto movePage(String pageCode, PagePositionRequest pageRequest, UserDetails user) {
+        PageDto pageDto = this.movePage(pageCode, pageRequest);
+        return this.loadVirtualChildren(pageDto, user);
     }
 
     @Override
@@ -925,6 +967,12 @@ public class PageService implements IComponentExistsService, IPageService,
     }
 
     @Override
+    public PageDto clonePage(String pageCode, PageCloneRequest pageCloneRequest, BindingResult bindingResult, UserDetails user) {
+        PageDto pageDto = this.clonePage(pageCode, pageCloneRequest, bindingResult);
+        return this.loadVirtualChildren(pageDto, user);
+    }
+
+    @Override
     public PageDto clonePage(String pageCode, PageCloneRequest pageCloneRequest, BindingResult bindingResult) {
         try {
             Page page = loadPage(pageCode);
@@ -958,5 +1006,13 @@ public class PageService implements IComponentExistsService, IPageService,
             result = getPageManager().getOnlinePage(pageCode);
         }
         return (Page) result;
+    }
+
+    protected <T extends PageDto> T loadVirtualChildren(T pageDto, UserDetails user) {
+        PageTreeNodeHelper helper = new PageTreeNodeHelper(this.getPageManager(), this.pageAuthorizationService, user);
+        List<String> virtualChildren = helper.getNodes(pageDto.getCode()).stream()
+                .map(IPage::getCode).collect(Collectors.toList());
+        pageDto.setChildren(virtualChildren);
+        return pageDto;
     }
 }

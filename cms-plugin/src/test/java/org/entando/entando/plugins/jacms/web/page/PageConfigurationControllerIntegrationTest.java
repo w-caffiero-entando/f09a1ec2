@@ -69,7 +69,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
     void testPageConfiguration() throws Exception {
 
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                 .build();
         String accessToken = mockOAuthInterceptor(user);
         ResultActions result = mockMvc
@@ -103,7 +103,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -138,7 +138,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -186,7 +186,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -238,7 +238,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -345,7 +345,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -373,7 +373,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -401,7 +401,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -444,7 +444,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -494,7 +494,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -573,7 +573,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -611,7 +611,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -646,7 +646,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 
@@ -675,7 +675,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
     void testRestoreWithPageChangedShouldUpdatePageStatus() throws EntException {
 
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES,
+                .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES,
                         Permission.ENTER_BACKEND)
                 .build();
         String accessToken = mockOAuthInterceptor(user);
@@ -737,7 +737,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
     void testRestoreWithPageNotChangedShouldNOTUpdatePageStatus() throws EntException {
 
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES,
+                .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES,
                         Permission.ENTER_BACKEND)
                 .build();
         String accessToken = mockOAuthInterceptor(user);
@@ -809,7 +809,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
             assertThat(draftPage, is(not(nullValue())));
 
             UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
-                    .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                    .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                     .build();
             String accessToken = mockOAuthInterceptor(user);
 

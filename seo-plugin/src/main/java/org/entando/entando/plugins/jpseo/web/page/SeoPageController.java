@@ -1,13 +1,16 @@
 package org.entando.entando.plugins.jpseo.web.page;
 
+import static org.entando.entando.plugins.jpseo.web.page.validator.SeoPageValidator.ERRCODE_PAGE_INVALID_FRIENDLY_CODE;
+import static org.entando.entando.plugins.jpseo.web.page.validator.SeoPageValidator.ERRCODE_PAGE_INVALID_TITLE;
+
 import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.user.UserDetails;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import org.entando.entando.aps.system.services.page.IPageAuthorizationService;
 import org.entando.entando.aps.system.services.page.IPageService;
-import org.entando.entando.aps.system.services.page.PageAuthorizationService;
 import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -34,9 +37,6 @@ import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.entando.entando.plugins.jpseo.web.page.validator.SeoPageValidator.ERRCODE_PAGE_INVALID_FRIENDLY_CODE;
-import static org.entando.entando.plugins.jpseo.web.page.validator.SeoPageValidator.ERRCODE_PAGE_INVALID_TITLE;
-
 @RestController
 @RequestMapping(value = "/plugins/seo/pages")
 public class SeoPageController implements ISeoPageController {
@@ -51,7 +51,7 @@ public class SeoPageController implements ISeoPageController {
     private SeoPageValidator seoPageValidator;
 
     @Autowired
-    private PageAuthorizationService authorizationService;
+    private IPageAuthorizationService authorizationService;
 
     @Autowired
     private LangManager langManager;
@@ -72,11 +72,11 @@ public class SeoPageController implements ISeoPageController {
         this.seoPageValidator = seoPageValidator;
     }
 
-    public PageAuthorizationService getAuthorizationService() {
+    public IPageAuthorizationService getAuthorizationService() {
         return authorizationService;
     }
 
-    public void setAuthorizationService(PageAuthorizationService authorizationService) {
+    public void setAuthorizationService(IPageAuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
     }
 
@@ -84,10 +84,10 @@ public class SeoPageController implements ISeoPageController {
     public ResponseEntity<RestResponse<PageDto, Map<String, String>>> getSeoPage(UserDetails user, String pageCode, String status) {
         logger.debug("get seo page {}", pageCode);
         Map<String, String> metadata = new HashMap<>();
-        if (!this.getAuthorizationService().isAuth(user, pageCode, false)) {
+        if (!this.getAuthorizationService().canView(user, pageCode, false)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
-        SeoPageDto page = (SeoPageDto) this.getPageService().getPage(pageCode, status);
+        SeoPageDto page = (SeoPageDto) this.getPageService().getPage(pageCode, status, user);
         metadata.put("status", status);
         return new ResponseEntity<>(new RestResponse<>(page, metadata), HttpStatus.OK);
     }
@@ -119,8 +119,13 @@ public class SeoPageController implements ISeoPageController {
         }
         validatePagePlacement(pageRequest, bindingResult);
 
-        if (!this.getAuthorizationService().getAuthorizationManager().isAuthOnGroup(user, pageRequest.getOwnerGroup())) {
+        if (!this.getAuthorizationService().getGroupCodesForEditing(user).contains(pageRequest.getOwnerGroup())) {
             throw new ResourcePermissionsException(user.getUsername(), pageRequest.getCode());
+        }
+
+        // Check parent page permissions
+        if (!this.getAuthorizationService().canEdit(user, pageRequest.getParentCode())) {
+            throw new ResourcePermissionsException(user.getUsername(), pageRequest.getParentCode());
         }
 
         validateDefaultLangPageTitle(pageRequest, bindingResult);
@@ -143,7 +148,7 @@ public class SeoPageController implements ISeoPageController {
            SeoPageRequest pageRequest, BindingResult bindingResult) {
         logger.debug("updating page {} with request {}", pageCode, pageRequest);
 
-        if (!this.getAuthorizationService().isAuthOnGroup(user, pageCode)) {
+        if (!this.getAuthorizationService().canEdit(user, pageCode)) {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
         if (bindingResult.hasErrors()) {
@@ -179,7 +184,7 @@ public class SeoPageController implements ISeoPageController {
         int position = pageService.getPages(pageCode).size() + 1;
         pagePositionRequest.setPosition(position);
         this.getSeoPageValidator().validateMovePage(pageCode, bindingResult, pagePositionRequest);
-        SeoPageDto page = (SeoPageDto) pageService.updatePage(pageCode, pageRequest);
+        SeoPageDto page = (SeoPageDto) pageService.updatePage(pageCode, pageRequest, user);
         Map<String, String> metadata = new HashMap<>();
         return new ResponseEntity<>(new RestResponse<>(page, metadata), HttpStatus.OK);
     }
@@ -197,5 +202,4 @@ public class SeoPageController implements ISeoPageController {
             throw new ValidationGenericException(bindingResult);
         }
     }
-
 }

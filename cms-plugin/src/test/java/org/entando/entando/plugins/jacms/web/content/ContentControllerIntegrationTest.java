@@ -81,7 +81,6 @@ import org.entando.entando.plugins.jacms.web.content.validator.ContentStatusRequ
 import org.entando.entando.plugins.jacms.web.resource.request.CreateResourceRequest;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.analysis.AnalysisControllerDiffAnalysisEngineTestsStubs;
-import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.PagedRestResponse;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.hamcrest.CoreMatchers;
@@ -94,7 +93,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest {
@@ -3928,15 +3926,13 @@ class ContentControllerIntegrationTest extends AbstractControllerIntegrationTest
             this.executeContentTypePost("1_POST_type_with_link.json", accessToken, status().isCreated());
             Assertions.assertNotNull(this.contentManager.getEntityPrototype("CML"));
 
-            Page mockPage = createPage(pageCode, true, "wrongGroup");
+            Page mockPage = createPage(pageCode, true, "coach");
             this.pageManager.addPage(mockPage);
 
             IPage onlinePage = this.pageManager.getOnlinePage(pageCode);
             assertThat(onlinePage, CoreMatchers.is(nullValue()));
             IPage draftPage = this.pageManager.getDraftPage(pageCode);
             assertThat(draftPage, CoreMatchers.is(not(nullValue())));
-
-            UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
 
             String putPageOnlinePayload = "{\"status\": \"published\"}";
             ResultActions result = mockMvc.perform(

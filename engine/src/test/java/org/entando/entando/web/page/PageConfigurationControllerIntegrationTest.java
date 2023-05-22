@@ -317,7 +317,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
     void testWidgetOfFreeAccessPageCanBeSeenAndEditedByFreeAccessManager() throws Exception {
 
         UserDetails freeAccessManager = new OAuth2TestUtils.UserBuilder("freeAccessManager", "0x24")
-                .withAuthorization(Group.FREE_GROUP_NAME, "managePages", Permission.MANAGE_PAGES)
+                .withAuthorization(Group.FREE_GROUP_NAME, "pageManager", Permission.MANAGE_PAGES)
                 .build();
 
         testEditPageWidgetPermissions(getPageRequest("myFreePage"), freeAccessManager, true, true);
