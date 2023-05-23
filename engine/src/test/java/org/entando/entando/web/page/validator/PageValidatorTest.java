@@ -28,7 +28,6 @@ import org.springframework.validation.Errors;
 @ExtendWith(MockitoExtension.class)
 class PageValidatorTest {
 
-    private UserDetails user = new User();
     @Mock
     private PageAuthorizationService pageAuthorizationService;
     @Mock
@@ -37,11 +36,6 @@ class PageValidatorTest {
     private IPage page;
     @InjectMocks
     private PageValidator validator;
-
-    @BeforeEach
-    private void setUp(){
-        Mockito.reset(pageAuthorizationService);
-    }
 
     @Test
     void validateMovePagePermissionsShouldReturnOk() {
