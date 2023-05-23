@@ -380,6 +380,9 @@ public class PageController {
             throw new ResourcePermissionsException(user.getUsername(), pageCode);
         }
 
+        this.getPageValidator().validateMovePagePermissions(user, pageCode, pageRequest.getParentCode(),
+                this.getAuthorizationService(), bindingResult);
+
         PageDto page = this.getPageService().movePage(pageCode, pageRequest, user);
         return new ResponseEntity<>(new SimpleRestResponse<>(page), HttpStatus.OK);
     }

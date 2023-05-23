@@ -17,9 +17,11 @@ import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.user.UserDetails;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.jsonpatch.validator.JsonPatchValidator;
+import org.entando.entando.aps.system.services.page.IPageAuthorizationService;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.exceptions.ValidationUnprocessableEntityException;
@@ -199,6 +201,31 @@ public class PageValidator extends AbstractPaginationValidator {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
+    }
+
+    public void validateMovePagePermissions(UserDetails user,
+            String pageCode,
+            String newParentPageCode,
+            IPageAuthorizationService pageAuthService,
+            BindingResult bindingResult) {
+
+        if(!canEditParentPage(user, pageCode, pageAuthService) ||
+                !canEditPage(user, newParentPageCode, pageAuthService)){
+            bindingResult.reject(ERRCODE_CHANGE_POSITION_INVALID_REQUEST, "page.move.position.invalid");
+        }
+
+        if (bindingResult.hasErrors()) {
+            throw new ValidationGenericException(bindingResult);
+        }
+    }
+
+    public boolean canEditParentPage(UserDetails user, String pageCode, IPageAuthorizationService pageAuthService){
+        IPage page = getPage(pageCode);
+        return canEditPage(user, page.getParentCode(), pageAuthService);
+    }
+
+    public boolean canEditPage(UserDetails user, String pageCode, IPageAuthorizationService pageAuthService){
+        return pageAuthService.canEdit(user, pageCode);
     }
 
 }
