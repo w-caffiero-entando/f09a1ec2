@@ -92,6 +92,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
     private static String SEO_TEST_7_FC = "seoTest7fc";
 
     private static String SEO_TEST_8 = "seoTest8";
+    private static String SEO_TEST_9 = "seoTest9";
 
     @Test
     void testGetBuiltInSeoPage() throws Exception {
@@ -132,7 +133,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].value", is("entando")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].useDefaultLang", is(false)))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].key", is("description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].key", is("mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].value", is("test page")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].useDefaultLang", is(false)))
@@ -153,7 +154,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value", is("entando")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang", is(false)))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].key", is("description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].key", is("mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value", is("metatag di prova")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].useDefaultLang", is(false)))
@@ -372,7 +373,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].value", is("entando")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].useDefaultLang", is(false)))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].key", is("description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].key", is("mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].value", is("test page")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].useDefaultLang", is(false)))
@@ -388,7 +389,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value", is("entando")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang", is(false)))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].key", is("description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].key", is("mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value", is("metatag di prova")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].useDefaultLang", is(false)));
@@ -427,7 +428,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].value", is("entando")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].useDefaultLang", is(false)))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].key", is("description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].key", is("mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].value", is("test page")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].useDefaultLang", is(false)))
@@ -444,7 +445,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].value", is("entando")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].useDefaultLang", is(false)))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].key", is("description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].key", is("mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].type", is("name")))
                     .andExpect(
                             jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value",
@@ -485,7 +486,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].value", is("entando")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[0].useDefaultLang", is(false)))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].key", is("description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].key", is("mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].value", is("test page")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[1].useDefaultLang", is(false)))
@@ -501,7 +502,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].value", is("entando")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[0].useDefaultLang", is(true)))
-                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].key", is("description")))
+                    .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].key", is("mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].type", is("name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].value", is("test in italiano")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[1].useDefaultLang", is(true)));
@@ -800,7 +801,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                             CoreMatchers.is(
                             false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].key", CoreMatchers.is(
-                            "description")))
+                            "mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].type", CoreMatchers.is(
                             "name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].value", CoreMatchers.is(
@@ -836,7 +837,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                             CoreMatchers.is(
                                     false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].key", CoreMatchers.is(
-                            "description")))
+                            "mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].type", CoreMatchers.is(
                             "name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value", CoreMatchers.is(
@@ -900,7 +901,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                             CoreMatchers.is(
                                     false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].key", CoreMatchers.is(
-                            "description")))
+                            "mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].type", CoreMatchers.is(
                             "name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.en.metaTags[2].value", CoreMatchers.is(
@@ -936,7 +937,7 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
                             CoreMatchers.is(
                                     false)))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].key", CoreMatchers.is(
-                            "description")))
+                            "mydescription")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].type", CoreMatchers.is(
                             "name")))
                     .andExpect(jsonPath("$.payload.seoData.seoDataByLang.it.metaTags[2].value", CoreMatchers.is(
@@ -1130,6 +1131,61 @@ class SeoPageControllerIntegrationTest extends AbstractControllerIntegrationTest
         } finally {
             this.pageManager.deletePage(SEO_TEST_2);
             seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_2);
+        }
+    }
+
+    @Test
+    void testPostPutSeoPageWithWrongMetadataKeys() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+            this.executePostSeoPage("9_POST_invalid_metadata_keys.json", accessToken, status().isConflict())
+                    .andExpect(jsonPath("$.errors.size()", is(2)))
+                    .andExpect(jsonPath("$.errors[0].code", is("13")))
+                    .andExpect(jsonPath("$.errors[0].message", is("SEO duplicated basic keys 'keywords or description'")))
+                    .andExpect(jsonPath("$.errors[0].code", is("13")))
+                    .andExpect(jsonPath("$.errors[0].message", is("SEO duplicated basic keys 'keywords or description'")));
+
+
+
+            this.executePostSeoPage("9_POST_valid.json", accessToken, status().isOk());
+            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_9, IPageService.STATUS_DRAFT));
+
+            this.executePutSeoPage("9_POST_invalid_metadata_keys.json", SEO_TEST_9, accessToken, status().isConflict())
+                    .andExpect(jsonPath("$.errors.size()", is(2)))
+                    .andExpect(jsonPath("$.errors[0].code", is("13")))
+                    .andExpect(jsonPath("$.errors[0].message", is("SEO duplicated basic keys 'keywords or description'")))
+                    .andExpect(jsonPath("$.errors[1].code", is("13")))
+                    .andExpect(jsonPath("$.errors[1].message", is("SEO duplicated basic keys 'keywords or description'")));
+        } finally {
+            this.pageManager.deletePage(SEO_TEST_9);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_9);
+        }
+    }
+
+    @Test
+    void testPostPutSeoPageWithDuplicatedKeys() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+            this.executePostSeoPage("9_POST_duplicated_metadata_keys.json", accessToken, status().isConflict())
+                    .andExpect(jsonPath("$.errors.size()", is(2)))
+                    .andExpect(jsonPath("$.errors[0].code", is("13")))
+                    .andExpect(jsonPath("$.errors[0].message", is("SEO duplicated key:'key2'")))
+                    .andExpect(jsonPath("$.errors[1].code", is("13")))
+                    .andExpect(jsonPath("$.errors[1].message", is("SEO duplicated key:'key2'")));
+
+
+            this.executePostSeoPage("9_POST_valid.json", accessToken, status().isOk());
+            Assertions.assertNotNull(this.pageService.getPage(SEO_TEST_9, IPageService.STATUS_DRAFT));
+
+            this.executePutSeoPage("9_POST_duplicated_metadata_keys.json", SEO_TEST_9, accessToken, status().isConflict())
+                    .andExpect(jsonPath("$.errors.size()", is(2)))
+                    .andExpect(jsonPath("$.errors[0].code", is("13")))
+                    .andExpect(jsonPath("$.errors[0].message", is("SEO duplicated key:'key2'")))
+                    .andExpect(jsonPath("$.errors[1].code", is("13")))
+                    .andExpect(jsonPath("$.errors[1].message", is("SEO duplicated key:'key2'")));
+        } finally {
+            this.pageManager.deletePage(SEO_TEST_9);
+            seoMappingManager.getSeoMappingDAO().deleteMappingForPage(SEO_TEST_9);
         }
     }
 

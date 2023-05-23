@@ -4,19 +4,23 @@
     "contentType": "text/html",
     "displayedInMenu": true,
     "ownerGroup": "free",
-    "pageModel": "home",
-    "parentCode": "homepage",
+    "pageModel": "service",
+    "parentCode": "service",
+    "joinGroups":[ ],
     "seo": true,
-    "joinGroups": [
-        "administrators"
-    ],
     "seoData": {
         "seoDataByLang": {
             "en": {
-                "description": "test page",
-                "keywords": "keyword number 1, keyword number 2",
-                "friendlyCode": "test@page_2_fc_en",
+                "description": "test",
+                "keywords": "keyword1, keyword 2",
+                "friendlyCode": "test_page_2_en",
                 "metaTags": [
+                    {
+                        "key": "copyright",
+                        "type": "name",
+                        "value": "2020",
+                        "useDefaultLang": false
+                    },
                     {
                         "key": "author",
                         "type": "name",
@@ -24,20 +28,27 @@
                         "useDefaultLang": false
                     },
                     {
-                        "key": "description",
+                        "key": "mydescription",
                         "type": "name",
                         "value": "test page",
                         "useDefaultLang": false
                     }
                 ],
                 "inheritDescriptionFromDefaultLang": false,
-                "inheritKeywordsFromDefaultLang": false
+                "inheritKeywordsFromDefaultLang": false,
+                "inheritFriendlyCodeFromDefaultLang": true
             },
             "it": {
                 "description": "",
                 "keywords": "",
-                "friendlyCode": "test%page_2_fc_it",
+                "friendlyCode": "test_page_2_it",
                 "metaTags": [
+                    {
+                        "key": "copyright",
+                        "type": "name",
+                        "value": "entando",
+                        "useDefaultLang": false
+                    },
                     {
                         "key": "author",
                         "type": "name",
@@ -45,9 +56,9 @@
                         "useDefaultLang": false
                     },
                     {
-                        "key": "description",
+                        "key": "mydescription",
                         "type": "name",
-                        "value": "descrizione meta test",
+                        "value": "metatag di prova",
                         "useDefaultLang": false
                     }
                 ],

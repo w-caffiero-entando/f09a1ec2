@@ -1,36 +1,36 @@
 {
     "charset": "utf-8",
-    "code": "seoTest1",
+    "code": "seoTest9",
     "contentType": "text/html",
     "displayedInMenu": true,
     "ownerGroup": "free",
     "pageModel": "service",
     "parentCode": "service",
+    "joinGroups":[ ],
     "seo": true,
-    "joinGroups":["administrators"],
     "seoData": {
         "seoDataByLang": {
             "en": {
                 "description": "test",
                 "keywords": "keyword1, keyword 2",
-                "friendlyCode": "test_page_1_en",
+                "friendlyCode": "test_page_9_en",
                 "metaTags": [
                     {
-                        "key": "copyright",
-                        "type": "name",
+                        "key": "key1",
+                        "type": "name1",
                         "value": "2020",
                         "useDefaultLang": false
                     },
                     {
-                        "key": "author",
-                        "type": "name",
-                        "value": "entando",
+                        "key": "key2",
+                        "type": "name2",
+                        "value": "2020",
                         "useDefaultLang": false
                     },
                     {
-                        "key": "description",
-                        "type": "name",
-                        "value": "test page",
+                        "key": "key2",
+                        "type": "name3",
+                        "value": "2020",
                         "useDefaultLang": false
                     }
                 ],
@@ -41,30 +41,23 @@
             "it": {
                 "description": "",
                 "keywords": "",
-                "friendlyCode": "test_page_1_it",
+                "friendlyCode": "test_page_9_it",
                 "metaTags": [
                     {
-                        "key": "copyright",
-                        "type": "name",
+                        "key": "key2",
+                        "type": "name2",
                         "value": "entando",
                         "useDefaultLang": false
                     },
                     {
-                        "key": "author",
-                        "type": "name",
+                        "key": "key2",
+                        "type": "name2",
                         "value": "entando",
-                        "useDefaultLang": false
-                    },
-                    {
-                        "key": "description",
-                        "type": "name",
-                        "value": "metatag di prova",
                         "useDefaultLang": false
                     }
                 ],
-                "inheritDescriptionFromDefaultLang": false,
-                "inheritKeywordsFromDefaultLang": false,
-                "inheritFriendlyCodeFromDefaultLang": false
+                "inheritDescriptionFromDefaultLang": true,
+                "inheritKeywordsFromDefaultLang": true
             }
         },
         "useExtraDescriptions": true,
@@ -72,7 +65,7 @@
     },
     "status": "draft",
     "titles": {
-        "en": "Test Page",
-        "it": "Pagina di test"
+        "en": "Pagina di test",
+        "it": ""
     }
 }

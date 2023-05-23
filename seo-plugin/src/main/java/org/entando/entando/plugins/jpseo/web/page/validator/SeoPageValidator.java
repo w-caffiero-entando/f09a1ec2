@@ -14,13 +14,16 @@
 package org.entando.entando.plugins.jpseo.web.page.validator;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.FriendlyCodeVO;
 import org.entando.entando.plugins.jpseo.aps.system.services.mapping.ISeoMappingManager;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoDataByLang;
+import org.entando.entando.plugins.jpseo.web.page.model.SeoMetaTag;
 import org.entando.entando.web.page.validator.PageValidator;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -34,6 +37,8 @@ public class SeoPageValidator extends PageValidator {
     private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoPageValidator.class);
     public static final String ERRCODE_PAGE_INVALID_FRIENDLY_CODE = "10";
     public static final String ERRCODE_PAGE_DUPLICATED_FRIENDLY_CODE = "11";
+    public static final String ERROR_CODE_SEO_DUPLICATED_KEY = "13";
+
 
     @Autowired
     private ISeoMappingManager seoMappingManager;
@@ -90,4 +95,35 @@ public class SeoPageValidator extends PageValidator {
                 .collect(Collectors.toSet());
     }
 
+    public void validateKeysDuplicated(Map<String, SeoDataByLang> seoDataByLang, Errors errors){
+        seoDataByLang.entrySet().stream()
+                .map(Entry::getValue)
+                .map(SeoDataByLang::getMetaTags)
+                .filter(Objects::nonNull)
+                .forEach(metaTags -> {
+                        boolean containsForbiddenKeys = metaTags.stream()
+                                .map(SeoMetaTag::getKey)
+                                .filter(Objects::nonNull)
+                                .anyMatch(k -> StringUtils.equalsIgnoreCase(k, "keywords")
+                                        || StringUtils.equalsIgnoreCase(k, "description"));
+                        if (containsForbiddenKeys) {
+                            logger.debug("SEO duplicated basic keys 'keywords or description'");
+                            errors.reject(ERROR_CODE_SEO_DUPLICATED_KEY, "SEO duplicated basic keys 'keywords or description'");
+                        } else {
+                            getDuplicatedKey(metaTags).ifPresent(k -> {
+                                logger.debug("SEO Duplicated key:'{}'", k);
+                                errors.reject(ERROR_CODE_SEO_DUPLICATED_KEY, String.format("SEO duplicated key:'%s'",k));
+                            });
+                        }
+                });
+    }
+
+    private Optional<String> getDuplicatedKey(List<SeoMetaTag> metaTags){
+        Map<String,String> tmpMap = new HashMap<>();
+        return Optional.ofNullable(metaTags)
+                .map(t -> t.stream()
+                        .map(SeoMetaTag::getKey)
+                        .filter(Objects::nonNull)
+                        .reduce(null, (old, k ) -> tmpMap.put(k,k)));
+    }
 }

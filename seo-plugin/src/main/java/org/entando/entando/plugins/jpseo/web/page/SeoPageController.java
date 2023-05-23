@@ -113,6 +113,7 @@ public class SeoPageController implements ISeoPageController {
 
         if (null!=pageRequest.getSeoData()) {
             getSeoPageValidator().validateFriendlyCodeByLang(pageRequest.getSeoData().getSeoDataByLang(), bindingResult);
+            getSeoPageValidator().validateKeysDuplicated(pageRequest.getSeoData().getSeoDataByLang(), bindingResult);
         }
         if (bindingResult.hasErrors()) {
             throw new ValidationConflictException(bindingResult);
@@ -161,6 +162,7 @@ public class SeoPageController implements ISeoPageController {
 
         if (null!=pageRequest.getSeoData()) {
             getSeoPageValidator().validateFriendlyCodeByLang(pageRequest.getSeoData().getSeoDataByLang(), bindingResult);
+            getSeoPageValidator().validateKeysDuplicated(pageRequest.getSeoData().getSeoDataByLang(), bindingResult);
         }
         if (bindingResult.hasErrors()) {
             throw new ValidationConflictException(bindingResult);
