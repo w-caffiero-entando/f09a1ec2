@@ -118,6 +118,11 @@ public class PageController {
         logger.debug("getting page tree for parent {} ({}|{})", parentCode,
                 forLinkingToOwnerGroup, forLinkingToExtraGroups);
 
+        boolean editableParent = this.getAuthorizationService().canEdit(user, parentCode);
+        if (!editableParent && !parentCode.equals("homepage")) {
+            throw new ResourcePermissionsException(user.getUsername(), parentCode);
+        }
+
         List<PageDto> result;
         if (forLinkingToOwnerGroup == null && forLinkingToExtraGroups == null) {
             // Returns the standard tree
@@ -135,7 +140,6 @@ public class PageController {
 
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("parentCode", parentCode);
-        boolean editableParent = this.getAuthorizationService().canEdit(user, parentCode);
         metadata.put("virtualRoot", !editableParent);
         return new ResponseEntity<>(new RestResponse<>(result, metadata), HttpStatus.OK);
     }

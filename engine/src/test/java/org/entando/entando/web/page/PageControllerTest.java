@@ -241,6 +241,8 @@ class PageControllerTest extends AbstractControllerTest {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String accessToken = mockOAuthInterceptor(user);
 
+        when(authorizationService.canEdit(any(UserDetails.class), any(String.class))).thenReturn(true);
+
         String mockJsonResult = FileTextReader.getText(
                 this.getClass().getResourceAsStream("/controllers/pages/essential-page-tree.json"));
         List<PageDto> mockResult = this.createMetadataList(mockJsonResult);
@@ -892,6 +894,31 @@ class PageControllerTest extends AbstractControllerTest {
                 .andExpect(jsonPath("$.payload.size()", is(0)))
                 .andExpect(jsonPath("$.errors.size()", is(1)))
                 .andExpect(jsonPath("$.errors[0].code", is("12")));
+    }
+
+    @Test
+    void shouldDenyRetrievingTreeFromUnauthorizedParentDifferentThanHomepage() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+
+        mockMvc.perform(get("/pages")
+                        .param("parentCode", "service")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldAllowRetrievingTreeFromUnauthorizedHomepage() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+
+        when(pageService.getPagesTree(eq("homepage"), any())).thenReturn(List.of());
+
+        mockMvc.perform(get("/pages")
+                        .param("parentCode", "homepage")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.metaData.virtualRoot", is(true)));
     }
 
     private List<PageDto> createMetadataList(String json) throws IOException, JsonParseException, JsonMappingException {
