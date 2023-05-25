@@ -565,6 +565,11 @@
         <put-attribute name="title" value="document.title.main" />
         <put-attribute name="body" value="/WEB-INF/apsadmin/jsp/common/userNotAllowedMessage.jsp" />
     </definition>
+
+    <definition extends="layout.default" name="admin.genericError">
+        <put-attribute name="title" value="document.title.main" />
+        <put-attribute name="body" value="/WEB-INF/apsadmin/jsp/common/genericErrorMessage.jsp" />
+    </definition>
 	
 	<!-- ************************* DATA TYPE ************************* -->
 
