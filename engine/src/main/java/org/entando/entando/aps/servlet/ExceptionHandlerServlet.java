@@ -1,5 +1,7 @@
 package org.entando.entando.aps.servlet;
 
+import com.agiletec.aps.system.RequestContext;
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
@@ -41,8 +43,8 @@ public class ExceptionHandlerServlet extends HttpServlet {
             if (pageCode != null) {
                 IPage page = this.pageManager.getOnlinePage(pageCode);
                 if (null != page) {
-                    Lang defaultLang = this.langManager.getDefaultLang();
-                    String url = this.urlManager.createURL(page, defaultLang, Map.of(), false, request);
+                    Lang lang = this.getLang(request);
+                    String url = this.urlManager.createURL(page, lang, Map.of(), false, request);
                     String baseUrl = this.urlManager.getApplicationBaseURL(request);
                     String path = url.substring(baseUrl.length() - 1);
                     log.debug("Forwarding to path '{}' (url='{}', baseUrl='{}')", path, url, baseUrl);
@@ -64,4 +66,14 @@ public class ExceptionHandlerServlet extends HttpServlet {
         }
     }
 
+    private Lang getLang(HttpServletRequest request) {
+        RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
+        if (reqCtx != null) {
+            Lang currentLang = (Lang) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG);
+            if (currentLang != null) {
+                return currentLang;
+            }
+        }
+        return this.langManager.getDefaultLang();
+    }
 }

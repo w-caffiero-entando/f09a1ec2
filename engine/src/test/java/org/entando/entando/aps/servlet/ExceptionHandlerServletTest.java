@@ -3,7 +3,10 @@ package org.entando.entando.aps.servlet;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 
+import com.agiletec.aps.system.RequestContext;
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.lang.ILangManager;
+import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.url.IURLManager;
@@ -96,5 +99,25 @@ class ExceptionHandlerServletTest {
     void shouldSuppressErrorInLoadingDefaultErrorPage() throws Exception {
         servlet.doGet(request, response);
         Mockito.verify(servletContext).getRequestDispatcher("/error.jsp");
+    }
+
+    @Test
+    void shouldRetrieveCurrentLangFromRequestContext() throws Exception {
+        RequestContext reqCtx = new RequestContext();
+        Lang currentLang = new Lang();
+        currentLang.setCode("it");
+        reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, currentLang);
+        Mockito.when(request.getAttribute(RequestContext.REQCTX)).thenReturn(reqCtx);
+        Mockito.when(pageManager.getConfig(IPageManager.CONFIG_PARAM_ERROR_PAGE_CODE))
+                .thenReturn(CUSTOM_ERROR_PAGE_CODE);
+        Mockito.when(pageManager.getOnlinePage(CUSTOM_ERROR_PAGE_CODE)).thenReturn(Mockito.mock(IPage.class));
+        Mockito.when(urlManager.createURL(any(), any(), any(), anyBoolean(), any()))
+                .thenReturn("http://localhost:8080/entando-de-app/it/custom_error_page.page");
+        Mockito.when(urlManager.getApplicationBaseURL(any())).thenReturn("http://localhost:8080/entando-de-app/");
+        Mockito.when(servletContext.getRequestDispatcher("/it/custom_error_page.page")).thenReturn(requestDispatcher);
+
+        servlet.doGet(request, response);
+
+        Mockito.verify(requestDispatcher).forward(any(), any());
     }
 }
