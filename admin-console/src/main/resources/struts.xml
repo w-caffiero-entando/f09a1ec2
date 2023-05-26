@@ -77,7 +77,7 @@
     	
 		<global-results>
 			<result name="homepage">/index.jsp</result>
-			<result name="failure">/WEB-INF/apsadmin/jsp/common/error.jsp</result>
+			<result name="failure" type="tiles">admin.genericError</result>
 			<result name="userNotAllowed" type="tiles">admin.userNotAllowedMessage</result>
 			<result name="apslogin" type="redirectAction">
 				<param name="actionName">login</param>
