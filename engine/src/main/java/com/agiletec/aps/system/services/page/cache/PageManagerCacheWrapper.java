@@ -27,9 +27,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -43,23 +44,9 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
 
     private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageManagerCacheWrapper.class);
 
-    private List<String> localObject = new CopyOnWriteArrayList<>();
-
     @Override
     public void release() {
-        Cache cache = this.getCache();
-        List<String> codes = (List<String>) this.get(cache, DRAFT_PAGE_CODES_CACHE_NAME, List.class);
-        if (null != codes) {
-            for (int i = 0; i < codes.size(); i++) {
-                String code = codes.get(i);
-                cache.evict(DRAFT_PAGE_CACHE_NAME_PREFIX + code);
-                cache.evict(ONLINE_PAGE_CACHE_NAME_PREFIX + code);
-            }
-            cache.evict(DRAFT_PAGE_CODES_CACHE_NAME);
-            cache.evict(ONLINE_PAGE_CODES_CACHE_NAME);
-        }
-        cache.evict(DRAFT_ROOT_CACHE_NAME);
-        cache.evict(ONLINE_ROOT_CACHE_NAME);
+        this.getCache().clear();
     }
     
     @Override
@@ -99,7 +86,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
                 throw new EntException("Error in the page tree: root page undefined");
             }
             Cache cache = this.getCache();
-            this.cleanLocalCache(cache);
+            this.cleanUtilizers(cache);
             List<String> draftPageCodes = pageListD.stream().map(p -> p.getCode()).collect(Collectors.toList());
             cache.put(DRAFT_PAGE_CODES_CACHE_NAME, draftPageCodes);
             List<String> onlinePageCodes = pageListO.stream().map(p -> p.getCode()).collect(Collectors.toList());
@@ -113,13 +100,12 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
         }
     }
 
-    private void cleanLocalCache(Cache cache) {
-        for (String key : this.localObject) {
-            if (null != key) {
-                cache.evict(key);
-            }
+    private void cleanUtilizers(Cache cache) {
+        Set<String> utilizers = this.get(cache, WIDGET_UTILIZER_KEYS_CACHE_NAME, Set.class);
+        if (null != utilizers) {
+            utilizers.stream().forEach(cache::evict);
         }
-        this.localObject.clear();
+        cache.evict(WIDGET_UTILIZER_KEYS_CACHE_NAME);
     }
     
     protected void insertObjectsOnCache(Cache cache, PagesStatus status,
@@ -181,7 +167,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
         boolean isChanged = page.isChanged();
         cache.evict(DRAFT_PAGE_CACHE_NAME_PREFIX + pageCode);
         cache.evict(ONLINE_PAGE_CACHE_NAME_PREFIX + pageCode);
-        this.cleanLocalCache(cache);
+        this.cleanUtilizers(cache);
         PagesStatus status = this.getPagesStatus();
         status.setLastUpdate(new Date());
         if (isPublic && isChanged) {
@@ -223,7 +209,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
         cache.put(DRAFT_PAGE_CACHE_NAME_PREFIX + page.getCode(), page);
         this.checkRootModification(page, false, cache);
         this.checkRootModification(parent, false, cache);
-        this.cleanLocalCache(cache);
+        this.cleanUtilizers(cache);
         PagesStatus status = this.getPagesStatus();
         status.setLastUpdate(new Date());
         status.setUnpublished(status.getUnpublished()+1);
@@ -243,7 +229,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
         Cache cache = this.getCache();
         cache.put(DRAFT_PAGE_CACHE_NAME_PREFIX + page.getCode(), page);
         this.checkRootModification(page, false, cache);
-        this.cleanLocalCache(cache);
+        this.cleanUtilizers(cache);
 
         int online = 0;
         int onlineWithChanges = 0;
@@ -312,7 +298,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
                 cache.put(PAGE_STATUS_CACHE_NAME, status);
             }
         }
-        this.cleanLocalCache(cache);
+        this.cleanUtilizers(cache);
     }
 
     @Override
@@ -348,7 +334,7 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
             ((Page) page).setChanged(false);
             cache.put(DRAFT_PAGE_CACHE_NAME_PREFIX + page.getCode(), page);
         }
-        this.cleanLocalCache(cache);
+        this.cleanUtilizers(cache);
     }
 
     protected boolean isChanged(PageMetadata draftMeta, PageMetadata onlineMeta, Widget[] widgetsDraft, Widget[] widgetsOnline) {
@@ -483,30 +469,32 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
     @Override
     public IPage getOnlinePage(String pageCode) {
         IPage page = this.get(ONLINE_PAGE_CACHE_NAME_PREFIX + pageCode, IPage.class);
-        return this.returnClone(page);
+        return this.returnClone(page, ONLINE_PAGE_CACHE_NAME_PREFIX + pageCode);
     }
 
     @Override
     public IPage getDraftPage(String pageCode) {
         IPage page = this.get(DRAFT_PAGE_CACHE_NAME_PREFIX + pageCode, IPage.class);
-        return this.returnClone(page);
+        return this.returnClone(page, DRAFT_PAGE_CACHE_NAME_PREFIX + pageCode);
     }
 
     @Override
     public IPage getOnlineRoot() {
-        IPage page = this.get(ONLINE_ROOT_CACHE_NAME, IPage.class).clone();
-        return this.returnClone(page);
+        IPage page = this.get(ONLINE_ROOT_CACHE_NAME, IPage.class);
+        return this.returnClone(page, ONLINE_ROOT_CACHE_NAME);
     }
 
     @Override
     public IPage getDraftRoot() {
-        IPage page = this.get(DRAFT_ROOT_CACHE_NAME, IPage.class).clone();
-        return this.returnClone(page);
+        IPage page = this.get(DRAFT_ROOT_CACHE_NAME, IPage.class);
+        return this.returnClone(page, DRAFT_ROOT_CACHE_NAME);
     }
     
-    private IPage returnClone(IPage page) {
+    private IPage returnClone(IPage page,String pageCode) {
         if (null != page) {
             return page.clone();
+        } else {
+            _logger.debug("page for key/pageCode:'{}' not found", pageCode);
         }
         return null;
     }
@@ -558,6 +546,11 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
         }
         Cache cache = super.getCache();
         String key = this.getWidgetUtilizerCacheName(widgetTypeCode, draft);
+        Set<String> utilizers = this.get(cache, WIDGET_UTILIZER_KEYS_CACHE_NAME, Set.class);
+        if (null == utilizers) {
+            utilizers = new HashSet<>();
+            cache.put(WIDGET_UTILIZER_KEYS_CACHE_NAME, utilizers);
+        }
         List<String> pageCodes = this.get(cache, key, List.class);
         if (null == pageCodes) {
             Map<String, List> utilizersMap = new HashMap<>();
@@ -569,18 +562,18 @@ public class PageManagerCacheWrapper extends AbstractCacheWrapper implements IPa
                 _logger.error(message, t);
                 throw new EntException(message, t);
             }
-            utilizersMap.keySet().stream().forEach(cacheKey -> {
-                cache.put(cacheKey, utilizersMap.get(cacheKey));
-                if (!this.localObject.contains(cacheKey)) {
-                    this.localObject.add(cacheKey);
-                }
-            });
+            utilizersMap.entrySet().stream().forEach(entry
+                    -> cache.put(entry.getKey(), entry.getValue())
+            );
+            utilizers.addAll(utilizersMap.keySet());
+            cache.put(WIDGET_UTILIZER_KEYS_CACHE_NAME, utilizers);
             pageCodes = utilizersMap.get(key);
         }
         if (null == pageCodes) {
             pageCodes = new ArrayList<>();
             cache.put(key, pageCodes);
-            this.localObject.add(key);
+            utilizers.add(key);
+            cache.put(WIDGET_UTILIZER_KEYS_CACHE_NAME, utilizers);
         }
         return pageCodes;
     }

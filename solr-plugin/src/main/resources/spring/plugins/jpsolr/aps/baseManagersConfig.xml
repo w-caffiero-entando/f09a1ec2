@@ -19,6 +19,7 @@
         <property name="tenantManager" ref="tenantManager"/>
         <property name="cacheInfoManager" ref="CacheInfoManager"/>
         <property name="solrHttpClientBuilder" ref="solrHttpClientBuilder"/>
+        <property name="notifyManager" ref="NotifyManager"/>
     </bean>
 
     <bean id="jacmsSearchEngineManager" factory-bean="searchEngineManagerFactory"
