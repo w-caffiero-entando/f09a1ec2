@@ -16,6 +16,7 @@ package org.entando.entando.aps.system.services.page;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
+import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.GroupUtilizer;
 import com.agiletec.aps.system.services.group.IGroupManager;
@@ -437,8 +438,25 @@ public class PageService implements IComponentExistsService, IPageService,
 
     @Override
     public PageDto movePage(String pageCode, PagePositionRequest pageRequest, UserDetails user) {
+        int absolutePosition = getAbsolutePosition(pageRequest.getParentCode(), pageRequest.getPosition(), user);
+        logger.debug("before move page:'{}' replace position:'{}' with absolutePosition:'{}' under parent:'{}'",
+                pageCode, pageRequest.getPosition(), absolutePosition, pageRequest.getParentCode());
+        pageRequest.setPosition(absolutePosition);
         PageDto pageDto = this.movePage(pageCode, pageRequest);
         return this.loadVirtualChildren(pageDto, user);
+    }
+
+    private int getAbsolutePosition(String parentCode, int position, UserDetails user){
+        PageTreeNodeHelper helper = new PageTreeNodeHelper(this.getPageManager(), this.pageAuthorizationService, user);
+        List<IPage> pages = helper.getNodes(parentCode);
+        int absolutePosition = position;
+        for(int i=0; i < pages.size(); i++) {
+            if(i == position-1){
+                absolutePosition = pages.get(i).getPosition();
+                break;
+            }
+        }
+        return absolutePosition;
     }
 
     @Override
