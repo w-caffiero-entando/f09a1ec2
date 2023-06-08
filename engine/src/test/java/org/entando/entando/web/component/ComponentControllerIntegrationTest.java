@@ -95,7 +95,6 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         result.andExpect(jsonPath("$[0].type", is("pageModel")));
         result.andExpect(jsonPath("$[0].code", is("service")));
         result.andExpect(jsonPath("$[0].exist", is(true)));
-        result.andExpect(jsonPath("$[0].online", is(false)));
         result.andExpect(jsonPath("$[0].usage", is(10)));
         result.andExpect(jsonPath("$[0].references.size()", is(10)));
         int onlinePages = 0;
@@ -159,6 +158,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         result.andExpect(jsonPath("$[0].code", is("pagina_1")));
         result.andExpect(jsonPath("$[0].exist", is(true)));
         result.andExpect(jsonPath("$[0].usage", is(5)));
+        result.andExpect(jsonPath("$[0].online", is(false)));
         result.andExpect(jsonPath("$[0].references.size()", is(5)));
         List<String> categories = List.of("pagina_1", "pagina_11", "pagina_12");
         int online = 0;
