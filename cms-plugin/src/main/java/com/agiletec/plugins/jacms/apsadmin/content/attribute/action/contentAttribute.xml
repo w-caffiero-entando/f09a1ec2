@@ -79,6 +79,7 @@
 		
         <action name="save" class="jacmsExtendedResourceAction" method="save">
             <result type="tiles" name="input">admin.jacms.resource.entry</result>
+            <result type="tiles" name="failure">admin.jacms.resource.entry</result>
             <result type="redirectActionWithAnchor">
                 <param name="namespace">/do/jacms/Content</param>
                 <param name="actionName">entryContent</param>
