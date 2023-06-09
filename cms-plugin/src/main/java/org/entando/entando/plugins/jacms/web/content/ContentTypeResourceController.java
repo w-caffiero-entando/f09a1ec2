@@ -32,7 +32,7 @@ import org.entando.entando.aps.system.services.entity.model.AttributeTypeDto;
 import org.entando.entando.aps.system.services.entity.model.EntityTypeAttributeFullDto;
 import org.entando.entando.aps.system.services.entity.model.EntityTypeShortDto;
 import org.entando.entando.aps.system.services.entity.model.EntityTypesStatusDto;
-import org.entando.entando.plugins.jacms.aps.system.services.ContentTypeService;
+import org.entando.entando.plugins.jacms.aps.system.services.content.ContentTypeService;
 import org.entando.entando.plugins.jacms.web.content.validator.ContentTypeValidator;
 import org.entando.entando.web.common.annotation.RestAccessControl;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;

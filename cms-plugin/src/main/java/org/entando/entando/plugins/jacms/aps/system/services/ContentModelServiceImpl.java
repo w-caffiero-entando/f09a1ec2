@@ -13,6 +13,7 @@
  */
 package org.entando.entando.plugins.jacms.aps.system.services;
 
+import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.SmallEntityType;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
@@ -36,6 +37,7 @@ import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.plugins.jacms.aps.system.services.content.ContentTypeServiceUtilizer;
 import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelReferencesRequestListProcessor;
 import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelRequestListProcessor;
 import org.entando.entando.plugins.jacms.aps.system.services.security.VelocityNonceInjector;
@@ -51,7 +53,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 
 @Service
-public class ContentModelServiceImpl implements ContentModelService {
+public class ContentModelServiceImpl implements ContentModelService, ContentTypeServiceUtilizer<ContentModelDto> {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -421,4 +423,31 @@ public class ContentModelServiceImpl implements ContentModelService {
                     "contentmodel.contentType.notFound");
         }
     }
+
+    @Override
+    public String getManagerName() {
+        return ((IManager) this.contentModelManager).getName();
+    }
+
+    @Override
+    public List<ContentModelDto> getContentTypeUtilizer(String contentTypeCode) {
+        List<ContentModel> models = this.contentModelManager.getModelsForContentType(contentTypeCode);
+        return this.dtoBuilder.convert(models);
+    }
+
+    @Override
+    public String getObjectType() {
+        return "contentModel";
+    }
+
+    @Override
+    public Integer getComponentUsage(String componentCode) {
+        return this.getComponentUsageDetails(componentCode, new RestListRequest()).getTotalItems();
+    }
+
+    @Override
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
 }

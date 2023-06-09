@@ -23,7 +23,7 @@ import org.entando.entando.aps.system.services.analysis.component_existence.Comp
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jacms.aps.system.services.ContentModelService;
-import org.entando.entando.plugins.jacms.aps.system.services.ContentTypeService;
+import org.entando.entando.plugins.jacms.aps.system.services.content.ContentTypeService;
 import org.entando.entando.plugins.jacms.aps.system.services.content.ContentService;
 import org.entando.entando.plugins.jacms.aps.system.services.resource.ResourcesService;
 import org.entando.entando.web.analysis.AnalysisResponse;

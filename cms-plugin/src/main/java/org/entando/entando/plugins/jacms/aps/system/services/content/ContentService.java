@@ -85,7 +85,6 @@ import org.entando.entando.aps.system.services.page.PageServiceUtilizer;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.plugins.jacms.aps.system.services.ContentTypeService;
 import org.entando.entando.plugins.jacms.aps.system.services.content.model.ContentsStatusDto;
 import org.entando.entando.plugins.jacms.aps.system.services.resource.ResourcesService;
 import org.entando.entando.plugins.jacms.web.content.ContentController;

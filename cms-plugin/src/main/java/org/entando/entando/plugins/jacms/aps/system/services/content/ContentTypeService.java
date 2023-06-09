@@ -11,26 +11,32 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.plugins.jacms.aps.system.services;
+package org.entando.entando.plugins.jacms.aps.system.services.content;
 
 import static org.entando.entando.plugins.jacms.web.resource.ResourcesController.ERRCODE_RESOURCE_NOT_FOUND;
 
 import com.agiletec.aps.system.common.entity.IEntityManager;
+import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
+import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
+import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentDto;
-import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.ContentStatusState;
+import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentRecordVO;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDto;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDtoBuilder;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDtoRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
+import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.IComponentDto;
 import org.entando.entando.aps.system.services.IComponentUsageService;
 import org.entando.entando.aps.system.services.IDtoBuilder;
@@ -39,9 +45,10 @@ import org.entando.entando.aps.system.services.entity.model.AttributeTypeDto;
 import org.entando.entando.aps.system.services.entity.model.EntityTypeAttributeFullDto;
 import org.entando.entando.aps.system.services.entity.model.EntityTypeShortDto;
 import org.entando.entando.aps.system.services.entity.model.EntityTypesStatusDto;
-import org.entando.entando.plugins.jacms.aps.system.services.content.ContentService;
 import org.entando.entando.plugins.jacms.web.content.validator.RestContentListRequest;
 import org.entando.entando.web.common.assembler.PagedMetadataMapper;
+import org.entando.entando.web.common.model.Filter;
+import org.entando.entando.web.common.model.FilterOperator;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.component.ComponentUsageEntity;
@@ -57,10 +64,23 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
     private final ContentService contentService;
 
     @Autowired
+    private IContentManager contentManager;
+
+    @Autowired
     private HttpServletRequest httpRequest;
 
     @Autowired
     private PagedMetadataMapper pagedMetadataMapper;
+    
+    @Autowired(required = false)
+    private List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers;
+
+    protected List<ContentTypeServiceUtilizer> getContentTypeServiceUtilizers() {
+        return contentTypeServiceUtilizers;
+    }
+    public void setContentTypeServiceUtilizers(List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers) {
+        this.contentTypeServiceUtilizers = contentTypeServiceUtilizers;
+    }
 
     @Override
     protected IDtoBuilder<Content, ContentTypeDto> getEntityTypeFullDtoBuilder(
@@ -177,24 +197,33 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
     }
 
     @Override
-    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode,
-            RestListRequest restListRequest) {
-
-        RestContentListRequest contentListRequest = new RestContentListRequest();
-        contentListRequest.setFilters(restListRequest.getFilters());
-        contentListRequest.setSort("typeCode");
-
-        PagedMetadata<ContentDto> pagedData = contentService
-                .getContents(contentListRequest, (UserDetails) httpRequest.getAttribute("user"));
-        List<ComponentUsageEntity> componentUsageEntityList = pagedData.getBody().stream()
-                .map(contentDto -> new ComponentUsageEntity(
-                        ComponentUsageEntity.TYPE_CONTENT,
-                        contentDto.getId(),
-                        ContentStatusState.calculateState(contentDto).toString()))
-                .collect(Collectors.toList());
-
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
+        List<ComponentUsageEntity> componentUsageEntityList = null;
+        try {
+            RestContentListRequest contentListRequest = new RestContentListRequest();
+            Filter filter = new Filter("typeCode", componentCode, FilterOperator.EQUAL.getValue());
+            Filter[] filters = ArrayUtils.add(restListRequest.getFilters(), filter);
+            contentListRequest.setFilters(filters);
+            contentListRequest.setSort(IEntityManager.ENTITY_ID_FILTER_KEY);
+            contentListRequest.setStatus(null);
+            PagedMetadata<ContentDto> pagedData = contentService
+                    .getContents(contentListRequest, (UserDetails) httpRequest.getAttribute("user"));
+            componentUsageEntityList = pagedData.getBody().stream()
+                    .map(contentDto -> contentDto.buildUsageEntity(ComponentUsageEntity.TYPE_CONTENT))
+                    .collect(Collectors.toList());
+            if (null != this.getContentTypeServiceUtilizers()) {
+                for (var utilizer : this.getContentTypeServiceUtilizers()) {
+                    List<IComponentDto> objects = utilizer.getContentTypeUtilizer(componentCode);
+                    List<ComponentUsageEntity> utilizerForService = objects.stream()
+                            .map(o -> o.buildUsageEntity(utilizer.getObjectType())).collect(Collectors.toList());
+                    componentUsageEntityList.addAll(utilizerForService);
+                }
+            }
+        } catch (Exception e) {
+            throw new RestServerError("Error extracting content type details : " + componentCode, e);
+        }
         return pagedMetadataMapper
-                .getPagedResult(restListRequest, componentUsageEntityList, "code", pagedData.getTotalItems());
+                .getPagedResult(restListRequest, componentUsageEntityList, "code", componentUsageEntityList.size());
     }
     
     @Override
