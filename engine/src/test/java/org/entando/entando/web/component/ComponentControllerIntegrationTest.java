@@ -78,6 +78,27 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
     }
     
     @Test
+    void extractUsageDetailsForInexistentElement() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        List<Map<String, String>> request = List.of(
+                Map.of("type", "pageModel", "code", "non-existent"));
+        String payload = mapper.writeValueAsString(request);
+        ResultActions result = mockMvc.perform(
+                post("/components/usageDetails")
+                        .content(payload)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken));
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.size()", is(1)));
+        result.andExpect(jsonPath("$[0].type", is("pageModel")));
+        result.andExpect(jsonPath("$[0].code", is("non-existent")));
+        result.andExpect(jsonPath("$[0].exist", is(false)));
+        result.andExpect(jsonPath("$[0].usage").doesNotExist());
+        result.andExpect(jsonPath("$[0].references.size()", is(0)));
+    }
+    
+    @Test
     void extractPageModelUsageDetails() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String accessToken = mockOAuthInterceptor(user);

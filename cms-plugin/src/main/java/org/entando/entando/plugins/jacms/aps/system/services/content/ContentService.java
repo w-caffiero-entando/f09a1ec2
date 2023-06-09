@@ -82,9 +82,11 @@ import org.entando.entando.aps.system.services.entity.model.EntityAttributeDto;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
 import org.entando.entando.aps.system.services.group.GroupServiceUtilizer;
 import org.entando.entando.aps.system.services.page.PageServiceUtilizer;
+import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.plugins.jacms.aps.system.services.page.CmsPageServiceWrapper;
 import org.entando.entando.plugins.jacms.aps.system.services.content.model.ContentsStatusDto;
 import org.entando.entando.plugins.jacms.aps.system.services.resource.ResourcesService;
 import org.entando.entando.plugins.jacms.web.content.ContentController;
@@ -128,6 +130,9 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     @Autowired
     private ResourcesService resourcesService;
+
+    @Autowired
+    private CmsPageServiceWrapper cmsPageServiceWrapper;
 
     @Autowired
     private ContentTypeService contentTypeService;
@@ -890,6 +895,9 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
                     .map(o -> o.buildUsageEntity(objectName)).collect(Collectors.toList());
             components.addAll(utilizerForService);
         }
+        List<PageDto> pages = this.cmsPageServiceWrapper.getContentUtilizer(componentCode);
+        List<ComponentUsageEntity> pageUsage = pages.stream().map(dto -> dto.buildUsageEntity(ComponentUsageEntity.TYPE_PAGE)).collect(Collectors.toList());
+        components.addAll(pageUsage);
         List<ComponentUsageEntity> sublist = restListRequest.getSublist(components);
         PagedMetadata<ComponentUsageEntity> usageEntries = new PagedMetadata<>(restListRequest, components.size());
         usageEntries.setBody(sublist);

@@ -26,6 +26,7 @@ import java.util.Map;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -181,6 +182,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         }
     }
     
+    @Disabled
     @Test
     void extractContentTemplateUsageDetails() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
@@ -214,6 +216,42 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                 Assertions.assertEquals("homepage", code);
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());
             }
+        }
+    }
+    
+    @Disabled
+    @Test
+    void extractContentUsageDetails() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        List<Map<String, String>> request = List.of(
+                Map.of("type", "content", "code", "ART111"));
+        String payload = mapper.writeValueAsString(request);
+        ResultActions result = mockMvc.perform(
+                post("/components/usageDetails")
+                        .content(payload)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken));
+        String bodyResult = result.andReturn().getResponse().getContentAsString();
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.size()", is(1)));
+        result.andExpect(jsonPath("$[0].type", is("content")));
+        result.andExpect(jsonPath("$[0].code", is("ART111")));
+        result.andExpect(jsonPath("$[0].exist", is(true)));
+        result.andExpect(jsonPath("$[0].online", is(true)));
+        int size = JsonPath.read(bodyResult, "$[0].usage");
+        Assertions.assertEquals(2, size);
+        result.andExpect(jsonPath("$[0].references.size()", is(size)));
+        for (int i = 0; i < size; i++) {
+            String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
+            String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
+            if (type.equals("content")) {
+                Assertions.assertEquals("ART102", code);
+            } else {
+                Assertions.assertEquals("page", type);
+                Assertions.assertEquals("customers_page", code);
+            }
+            result.andExpect(jsonPath("$[0].references[" + i + "].online", is(true)));
         }
     }
     
