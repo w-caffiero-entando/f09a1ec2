@@ -66,6 +66,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
             } else {
                 Assertions.assertEquals("category", type);
                 Assertions.assertTrue(categories.contains(code));
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
             }
         }
     }
@@ -101,6 +102,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
             } else {
                 Assertions.assertEquals("category", type);
                 Assertions.assertTrue(categories.contains(code));
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
             }
         }
     }
@@ -136,12 +138,13 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
             } else {
                 Assertions.assertEquals("content", type);
                 Assertions.assertTrue(contents.contains(code));
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());
             }
         }
     }
     
     @Test
-    void extractContentUsageDetails() throws Exception {
+    void extractContentTypeUsageDetails() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String accessToken = mockOAuthInterceptor(user);
         List<Map<String, String>> request = List.of(
@@ -153,19 +156,17 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         String bodyResult = result.andReturn().getResponse().getContentAsString();
-        System.out.println("****************************");
-        System.out.println(bodyResult);
-        System.out.println("****************************");
         result.andExpect(status().isOk());
         result.andExpect(jsonPath("$.size()", is(1)));
         result.andExpect(jsonPath("$[0].type", is("contentType")));
         result.andExpect(jsonPath("$[0].code", is("ART")));
         result.andExpect(jsonPath("$[0].exist", is(true)));
         result.andExpect(jsonPath("$[0].online").doesNotExist());
-        result.andExpect(jsonPath("$[0].usage", is(15)));
-        result.andExpect(jsonPath("$[0].references.size()", is(15)));
+        int size = JsonPath.read(bodyResult, "$[0].usage");
+        Assertions.assertEquals(15, size);
+        result.andExpect(jsonPath("$[0].references.size()", is(size)));
         List<String> contentModels = List.of("1", "11", "2", "3");
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < size; i++) {
             String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
             String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
             if (type.equals("content")) {
@@ -173,8 +174,45 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                 boolean online = JsonPath.read(bodyResult, "$[0].references[" + i + "].online");
                 Assertions.assertEquals(!code.equals("ART179"), online);
             } else {
-                result.andExpect(jsonPath("$[0].references[" + i + "].type", is("contentModel")));
+                Assertions.assertEquals("contentTemplate", type);
                 Assertions.assertTrue(contentModels.contains(code));
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
+            }
+        }
+    }
+    
+    @Test
+    void extractContentTemplateUsageDetails() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        List<Map<String, String>> request = List.of(
+                Map.of("type", "contentTemplate", "code", "11"));
+        String payload = mapper.writeValueAsString(request);
+        ResultActions result = mockMvc.perform(
+                post("/components/usageDetails")
+                        .content(payload)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken));
+        String bodyResult = result.andReturn().getResponse().getContentAsString();
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.size()", is(1)));
+        result.andExpect(jsonPath("$[0].type", is("contentTemplate")));
+        result.andExpect(jsonPath("$[0].code", is("11")));
+        result.andExpect(jsonPath("$[0].exist", is(true)));
+        result.andExpect(jsonPath("$[0].online").doesNotExist());
+        int size = JsonPath.read(bodyResult, "$[0].usage");
+        Assertions.assertEquals(3, size);
+        result.andExpect(jsonPath("$[0].references.size()", is(size)));
+        for (int i = 0; i < size; i++) {
+            String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
+            String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
+            if (type.equals("contentType")) {
+                Assertions.assertTrue(code.startsWith("ART"));
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
+            } else {
+                Assertions.assertEquals("page", type);
+                Assertions.assertEquals("homepage", code);
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());
             }
         }
     }

@@ -25,7 +25,7 @@ import java.util.Properties;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.plugins.jacms.aps.system.services.ContentModelService;
+import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelService;
 import org.entando.entando.plugins.jacms.apsadmin.tags.CmsAdminPagerTag;
 import org.entando.entando.plugins.jacms.web.contentmodel.model.ContentModelReferenceDTO;
 import org.entando.entando.plugins.jacms.web.contentmodel.validator.ContentModelReferencesValidator;

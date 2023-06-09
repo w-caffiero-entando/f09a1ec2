@@ -11,8 +11,9 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.plugins.jacms.aps.system.services;
+package org.entando.entando.plugins.jacms.aps.system.services.contentmodel;
 
+import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelService;
 import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.SmallEntityType;
@@ -229,16 +230,20 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
         componentUsage.setUsage(usage);
         return componentUsage;
     }
-
+    
+    @Override
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
+        return this.getComponentUsageDetails(Long.parseLong(componentCode), restListRequest);
+    }
+    
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(Long modelId, RestListRequest restListRequest) {
-
         final List<ContentModelReference> contentModelReferences = contentModelManager
                 .getContentModelReferences(modelId, false);
 
         final List<ComponentUsageEntity> componentUsageDetails = contentModelReferences.stream()
                 .map(f -> createToComponentUsageEntity(f.getPageCode(), getStatusString(f.isOnline()),
-                        ComponentUsageEntity.TYPE_PAGE)).collect(Collectors.toList());
+                        ComponentUsageEntity.TYPE_PAGE, f.isOnline())).collect(Collectors.toList());
 
         final List<SmallEntityType> defaultContentTemplateUsedList = this.contentManager.getSmallEntityTypes().stream()
                 .filter(
@@ -254,8 +259,8 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
                 ).collect(Collectors.toList());
 
         final List<ComponentUsageEntity> contentTemplateUsageDetails = defaultContentTemplateUsedList.stream()
-                .map(f -> createToComponentUsageEntity(f.getCode(), "",
-                        "contentType")).collect(Collectors.toList());
+                .map(f -> createToComponentUsageEntity(f.getCode(), null,
+                        "contentType", null)).collect(Collectors.toList());
 
         componentUsageDetails.addAll(contentTemplateUsageDetails);
 
@@ -279,11 +284,12 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
         return "offline";
     }
 
-    private ComponentUsageEntity createToComponentUsageEntity(String code, String status, String type) {
+    private ComponentUsageEntity createToComponentUsageEntity(String code, String status, String type, Boolean online) {
         ComponentUsageEntity componentUsage = new ComponentUsageEntity();
         componentUsage.setCode(code);
-        componentUsage.setStatus(status);
+        Optional.ofNullable(status).ifPresent(componentUsage::setStatus);
         componentUsage.setType(type);
+        Optional.ofNullable(online).ifPresent(b -> componentUsage.getExtraProperties().put(ComponentUsageEntity.ONLINE_PROPERTY, b.booleanValue()));
         return componentUsage;
     }
 
@@ -437,17 +443,12 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
 
     @Override
     public String getObjectType() {
-        return "contentModel";
+        return "contentTemplate";
     }
 
     @Override
     public Integer getComponentUsage(String componentCode) {
         return this.getComponentUsageDetails(componentCode, new RestListRequest()).getTotalItems();
-    }
-
-    @Override
-    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

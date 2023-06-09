@@ -39,7 +39,6 @@ import java.util.Properties;
 import org.assertj.core.api.Condition;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.services.IComponentDto;
-import org.entando.entando.plugins.jacms.aps.system.services.ContentModelServiceImpl;
 import org.entando.entando.plugins.jacms.web.contentmodel.model.ContentModelReferenceDTO;
 import org.entando.entando.plugins.jacms.web.contentmodel.validator.ContentModelValidator;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;

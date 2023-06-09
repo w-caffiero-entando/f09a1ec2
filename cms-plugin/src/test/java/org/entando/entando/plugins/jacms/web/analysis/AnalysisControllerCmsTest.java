@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
-import org.entando.entando.plugins.jacms.aps.system.services.ContentModelServiceImpl;
+import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelServiceImpl;
 import org.entando.entando.plugins.jacms.aps.system.services.content.ContentTypeService;
 import org.entando.entando.plugins.jacms.aps.system.services.content.ContentService;
 import org.entando.entando.plugins.jacms.aps.system.services.resource.ResourcesService;
