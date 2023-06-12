@@ -19,6 +19,12 @@ import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.GroupUtilizer;
 import com.agiletec.aps.system.services.group.IGroupManager;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.IDtoBuilder;
@@ -27,6 +33,7 @@ import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.web.group.model.GroupRequest;
 import org.entando.entando.web.group.validator.GroupValidator;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -36,11 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.validation.BeanPropertyBindingResult;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import org.entando.entando.aps.system.services.category.model.CategoryDto;
-import org.entando.entando.aps.system.services.component.IComponentDto;
 
 public class GroupService implements IGroupService, ApplicationContextAware {
 
@@ -78,6 +80,14 @@ public class GroupService implements IGroupService, ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+    
+    public List<GroupServiceUtilizer> getGroupServiceUtilizers() {
+        return groupServiceUtilizers;
+    }
+
+    public void setGroupServiceUtilizers(List<GroupServiceUtilizer> groupServiceUtilizers) {
+        this.groupServiceUtilizers = groupServiceUtilizers;
     }
 
     @SuppressWarnings("rawtypes")
@@ -228,7 +238,17 @@ public class GroupService implements IGroupService, ApplicationContextAware {
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode,
             RestListRequest restListRequest) {
-        return null;
+        List<ComponentUsageEntity> components = new ArrayList<>();
+        for (var utilizer : this.getGroupServiceUtilizers()) {
+            List<IComponentDto> objects = utilizer.getGroupUtilizer(componentCode);
+            List<ComponentUsageEntity> utilizerForService = objects.stream()
+                    .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
+            components.addAll(utilizerForService);
+        }
+        List<ComponentUsageEntity> sublist = restListRequest.getSublist(components);
+        PagedMetadata<ComponentUsageEntity> usageEntries = new PagedMetadata<>(restListRequest, components.size());
+        usageEntries.setBody(sublist);
+        return usageEntries;
     }
 
     protected Group createGroup(GroupRequest groupRequest) {

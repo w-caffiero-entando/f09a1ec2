@@ -219,7 +219,6 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         }
     }
     
-    //@Disabled
     @Test
     void extractContentUsageDetails() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
@@ -252,6 +251,53 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                 Assertions.assertEquals("customers_page", code);
             }
             result.andExpect(jsonPath("$[0].references[" + i + "].online", is(true)));
+        }
+    }
+    
+    @Disabled
+    @Test
+    void extractGroupUsageDetails() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        List<Map<String, String>> request = List.of(
+                Map.of("type", "group", "code", "customers"));
+        String payload = mapper.writeValueAsString(request);
+        ResultActions result = mockMvc.perform(
+                post("/components/usageDetails")
+                        .content(payload)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken));
+        String bodyResult = result.andReturn().getResponse().getContentAsString();
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.size()", is(1)));
+        result.andExpect(jsonPath("$[0].type", is("group")));
+        result.andExpect(jsonPath("$[0].code", is("customers")));
+        result.andExpect(jsonPath("$[0].exist", is(true)));
+        result.andExpect(jsonPath("$[0].online").doesNotExist());
+        int size = JsonPath.read(bodyResult, "$[0].usage");
+        Assertions.assertEquals(16, size);
+        result.andExpect(jsonPath("$[0].references.size()", is(size)));
+        List<String> users = List.of("pageManagerCustomers", "supervisorCustomers", "editorCustomers", 
+                "supervisorCoach", "editorCoach", "pageManagerCoach");
+        List<String> pages = List.of("customers_page", "customer_subpage_1", "customer_subpage_2");
+        List<String> contents = List.of("ART102", "ART111", "ART112", "ART122", "RAH101");
+        for (int i = 0; i < size; i++) {
+            String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
+            String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
+            if (type.equals("user")) {
+                Assertions.assertTrue(users.contains(code));
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
+            } else if (type.equals("page")) {
+                Assertions.assertTrue(pages.contains(code));
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());
+            } else if (type.equals("asset")) {
+                Assertions.assertTrue(List.of("8", "82").contains(code));
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
+            } else {
+                Assertions.assertEquals("content", type);
+                Assertions.assertTrue(contents.contains(code));
+                result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());
+            }
         }
     }
     
