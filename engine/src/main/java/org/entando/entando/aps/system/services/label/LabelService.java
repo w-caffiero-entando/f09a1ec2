@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.label.model.LabelDto;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;

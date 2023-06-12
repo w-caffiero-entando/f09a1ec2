@@ -20,7 +20,7 @@ import org.entando.entando.aps.system.services.guifragment.model.GuiFragmentDtoS
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.guifragment.model.GuiFragmentRequestBody;
-import org.entando.entando.aps.system.services.IComponentUsageService;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 
 public interface IGuiFragmentService extends IComponentUsageService {
 

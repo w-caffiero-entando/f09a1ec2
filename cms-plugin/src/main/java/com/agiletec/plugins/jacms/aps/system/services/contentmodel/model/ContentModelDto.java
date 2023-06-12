@@ -8,7 +8,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -39,8 +40,14 @@ public class ContentModelDto implements IComponentDto {
     @JsonProperty("stylesheet")
     private String stylesheet;
 
-    @Override
     @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_CONTENT_TEMPLATE;
+    }
+
+    @JsonIgnore
+    @Override
     public String getCode() {
         return String.valueOf(this.getId());
     }

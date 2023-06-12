@@ -14,7 +14,6 @@
 package org.entando.entando.plugins.jacms.web.content;
 
 import com.agiletec.aps.system.services.role.Permission;
-import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentDto;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDto;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDtoRequest;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeRefreshRequest;
@@ -26,18 +25,14 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
+import org.entando.entando.aps.system.services.component.ComponentUsage;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.entity.model.AttributeTypeDto;
 import org.entando.entando.aps.system.services.entity.model.EntityTypeAttributeFullDto;
 import org.entando.entando.aps.system.services.entity.model.EntityTypeShortDto;
 import org.entando.entando.aps.system.services.entity.model.EntityTypesStatusDto;
-import org.entando.entando.plugins.jacms.web.content.validator.RestContentListRequest;
 import org.entando.entando.web.common.annotation.RestAccessControl;
 import org.entando.entando.web.common.model.*;
-import org.entando.entando.web.component.ComponentUsage;
-import org.entando.entando.web.component.ComponentUsageEntity;
-import org.entando.entando.web.page.model.PageSearchRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;

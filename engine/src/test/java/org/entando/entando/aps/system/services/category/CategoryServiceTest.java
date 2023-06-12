@@ -35,10 +35,10 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

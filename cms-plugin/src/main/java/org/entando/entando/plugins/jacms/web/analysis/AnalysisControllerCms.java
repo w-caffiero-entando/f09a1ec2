@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.entando.entando.aps.system.services.IComponentExistsService;
+import org.entando.entando.aps.system.services.component.IComponentExistsService;
 import org.entando.entando.aps.system.services.analysis.component_existence.ComponentExistenceAnalysis;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;

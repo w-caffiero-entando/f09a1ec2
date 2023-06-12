@@ -19,11 +19,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.RequestListProcessor;
 import org.entando.entando.aps.util.FilterUtils;
 import org.entando.entando.web.common.model.Filter;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
 
 public class ContentModelUsageDetailsRequestListProcessor extends RequestListProcessor<ComponentUsageEntity> {
 

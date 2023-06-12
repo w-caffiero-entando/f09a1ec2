@@ -2,7 +2,7 @@ package org.entando.entando.aps.system.services.assertionhelper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 
 public class ComponentUsageEntityAssertionHelper {
 

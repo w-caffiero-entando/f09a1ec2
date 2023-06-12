@@ -29,7 +29,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.model.*;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.pagemodel.model.*;
 import org.entando.entando.web.pagemodel.validator.PageModelValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;

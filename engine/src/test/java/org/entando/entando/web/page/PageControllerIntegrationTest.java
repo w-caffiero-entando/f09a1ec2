@@ -59,7 +59,7 @@ import org.entando.entando.web.JsonPatchBuilder;
 import org.entando.entando.web.analysis.AnalysisControllerDiffAnalysisEngineTestsStubs;
 import org.entando.entando.web.assertionhelper.PageAssertionHelper;
 import org.entando.entando.web.assertionhelper.PageRestResponseAssertionHelper;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.mockhelper.PageRequestMockHelper;
 import org.entando.entando.web.page.model.PageCloneRequest;
 import org.entando.entando.web.page.model.PagePositionRequest;

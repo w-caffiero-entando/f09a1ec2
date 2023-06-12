@@ -26,7 +26,7 @@ import org.entando.entando.aps.system.services.group.model.GroupDto;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.group.model.GroupRequest;
 import org.entando.entando.web.group.validator.GroupValidator;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -38,7 +38,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.validation.BeanPropertyBindingResult;
 
 import java.util.*;
-import org.entando.entando.aps.system.services.IComponentDto;
+import java.util.stream.Collectors;
+import org.entando.entando.aps.system.services.category.model.CategoryDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 public class GroupService implements IGroupService, ApplicationContextAware {
 
@@ -51,6 +53,9 @@ public class GroupService implements IGroupService, ApplicationContextAware {
 
     @Autowired
     private IDtoBuilder<Group, GroupDto> dtoBuilder;
+    
+    @Autowired(required = false)
+    private List<GroupServiceUtilizer> groupServiceUtilizers;
 
     private ApplicationContext applicationContext;
 

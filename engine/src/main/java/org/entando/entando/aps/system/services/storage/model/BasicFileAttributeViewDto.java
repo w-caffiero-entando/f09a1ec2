@@ -15,8 +15,10 @@ package org.entando.entando.aps.system.services.storage.model;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.util.DateConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.storage.BasicFileAttributeView;
 import org.entando.entando.aps.system.services.storage.RootFolderAttributeView;
 
@@ -54,6 +56,12 @@ public class BasicFileAttributeViewDto implements IComponentDto {
         }
         path += this.getName();
         this.setPath(path);
+    }
+    
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_ASSET;
     }
     
     @Override

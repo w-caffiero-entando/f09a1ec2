@@ -5,7 +5,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentDto;
 import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;

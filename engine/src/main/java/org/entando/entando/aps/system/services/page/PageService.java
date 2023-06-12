@@ -49,8 +49,8 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.aps.system.services.IComponentDto;
-import org.entando.entando.aps.system.services.IComponentExistsService;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentExistsService;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.group.GroupServiceUtilizer;
 import org.entando.entando.aps.system.services.jsonpatch.JsonPatchService;
@@ -76,7 +76,7 @@ import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.page.model.PageCloneRequest;
 import org.entando.entando.web.page.model.PagePositionRequest;
 import org.entando.entando.web.page.model.PageRequest;
@@ -888,13 +888,13 @@ public class PageService implements IComponentExistsService, IPageService,
         PageDto pageDto = this.getPage(pageCode, IPageService.STATUS_DRAFT);
         List<ComponentUsageEntity> componentUsageEntityList = new ArrayList<>();
         if (pageDto.getStatus().equals(IPageService.STATUS_ONLINE)) {
-            ComponentUsageEntity cue = pageDto.buildUsageEntity(ComponentUsageEntity.TYPE_PAGE);
+            ComponentUsageEntity cue = pageDto.buildUsageEntity();
             cue.getExtraProperties().put(ComponentUsageEntity.ONLINE_PROPERTY, true);
             componentUsageEntityList.add(cue);
         }
         BiFunction<String, Boolean, ComponentUsageEntity> buildEntityFromPage = (draftPageCode, online) -> {
             PageDto dto = this.getPage(draftPageCode, (online.booleanValue() ? IPageService.STATUS_ONLINE : IPageService.STATUS_DRAFT));
-            return dto.buildUsageEntity(ComponentUsageEntity.TYPE_PAGE);
+            return dto.buildUsageEntity();
         };
         pageDto.getChildren().forEach(c -> {
             IPage draftChild = this.getPageManager().getDraftPage(c);
@@ -907,7 +907,7 @@ public class PageService implements IComponentExistsService, IPageService,
             for (var utilizer : this.pageServiceUtilizers) {
                 List<IComponentDto> objects = utilizer.getPageUtilizer(pageCode);
                 List<ComponentUsageEntity> utilizerForService = objects.stream()
-                        .map(o -> o.buildUsageEntity(utilizer.getObjectType())).collect(Collectors.toList());
+                        .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
                 componentUsageEntityList.addAll(utilizerForService);
             }
         }

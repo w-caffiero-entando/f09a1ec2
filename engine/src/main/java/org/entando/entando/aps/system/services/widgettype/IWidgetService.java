@@ -18,7 +18,7 @@ import org.entando.entando.aps.system.services.widgettype.model.WidgetInfoDto;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.widget.model.WidgetRequest;
-import org.entando.entando.aps.system.services.IComponentUsageService;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 
 public interface IWidgetService extends IComponentUsageService {
 

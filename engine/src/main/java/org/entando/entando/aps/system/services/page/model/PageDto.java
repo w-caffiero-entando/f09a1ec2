@@ -17,13 +17,15 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.util.ApsProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 /**
  *
@@ -109,7 +111,13 @@ public class PageDto implements IComponentDto {
 
     @Override
     public Map<String, Object> getExtraProperties() {
-        return Map.of("online", this.isOnlineInstance());
+        return Map.of(ComponentUsageEntity.ONLINE_PROPERTY, this.isOnlineInstance());
+    }
+    
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_PAGE;
     }
     
     @Override

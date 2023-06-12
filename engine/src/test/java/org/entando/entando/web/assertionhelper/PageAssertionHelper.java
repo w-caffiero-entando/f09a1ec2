@@ -1,6 +1,6 @@
 package org.entando.entando.web.assertionhelper;
 
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;

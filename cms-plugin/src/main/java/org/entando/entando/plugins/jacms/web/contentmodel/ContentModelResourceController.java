@@ -19,6 +19,8 @@ import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.IEntity
 import java.util.Collections;
 import java.util.Map;
 import javax.validation.Valid;
+import org.entando.entando.aps.system.services.component.ComponentUsage;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelService;
@@ -32,8 +34,6 @@ import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.PagedRestResponse;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.common.model.SimpleRestResponse;
-import org.entando.entando.web.component.ComponentUsage;
-import org.entando.entando.web.component.ComponentUsageEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

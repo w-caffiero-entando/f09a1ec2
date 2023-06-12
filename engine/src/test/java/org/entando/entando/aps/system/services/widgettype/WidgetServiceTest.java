@@ -63,7 +63,7 @@ import org.entando.entando.web.common.model.Filter;
 import org.entando.entando.web.common.model.FilterOperator;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.page.model.PageSearchRequest;
 import org.entando.entando.web.widget.model.WidgetRequest;
 import org.junit.jupiter.api.Assertions;
@@ -79,7 +79,7 @@ import org.springframework.util.FileSystemUtils;
 
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 @ExtendWith(MockitoExtension.class)
 class WidgetServiceTest {

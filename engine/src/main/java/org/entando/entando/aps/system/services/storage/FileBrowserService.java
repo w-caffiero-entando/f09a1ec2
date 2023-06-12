@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.springframework.validation.BeanPropertyBindingResult;
 

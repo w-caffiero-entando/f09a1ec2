@@ -33,7 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.entity.model.EntityAttributeDto;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
 import org.entando.entando.web.common.json.JsonDateDeserializer;
@@ -95,7 +96,13 @@ public class ContentDto extends EntityDto implements IComponentDto, Serializable
     @JsonIgnore
     @Override
     public Map<String, Object> getExtraProperties() {
-        return Map.of("online", this.isOnLine());
+        return Map.of(ComponentUsageEntity.ONLINE_PROPERTY, this.isOnLine());
+    }
+
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_CONTENT;
     }
 
     @Override

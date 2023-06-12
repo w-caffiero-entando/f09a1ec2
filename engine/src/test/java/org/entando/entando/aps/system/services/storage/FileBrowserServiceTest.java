@@ -15,7 +15,7 @@ package org.entando.entando.aps.system.services.storage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

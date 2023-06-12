@@ -14,7 +14,7 @@
 package org.entando.entando.web.analysis;
 
 import com.agiletec.aps.system.services.role.Permission;
-import org.entando.entando.aps.system.services.IComponentExistsService;
+import org.entando.entando.aps.system.services.component.IComponentExistsService;
 import org.entando.entando.aps.system.services.analysis.component_existence.ComponentExistenceAnalysis;
 import org.entando.entando.aps.system.services.category.ICategoryService;
 import org.entando.entando.aps.system.services.group.IGroupService;

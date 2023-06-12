@@ -13,7 +13,6 @@
  */
 package org.entando.entando.plugins.jacms.aps.system.services.contentmodel;
 
-import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelService;
 import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.SmallEntityType;
@@ -32,23 +31,21 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.ComponentUsage;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.DtoBuilder;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.plugins.jacms.aps.system.services.content.ContentTypeServiceUtilizer;
-import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelReferencesRequestListProcessor;
-import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelRequestListProcessor;
 import org.entando.entando.plugins.jacms.aps.system.services.security.VelocityNonceInjector;
 import org.entando.entando.plugins.jacms.web.contentmodel.model.ContentModelReferenceDTO;
 import org.entando.entando.plugins.jacms.web.contentmodel.validator.ContentModelValidator;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsage;
-import org.entando.entando.web.component.ComponentUsageEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -57,6 +54,8 @@ import org.springframework.validation.BeanPropertyBindingResult;
 public class ContentModelServiceImpl implements ContentModelService, ContentTypeServiceUtilizer<ContentModelDto> {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
+    
+    public static final String TYPE_CONTENT_TEMPLATE = ComponentUsageEntity.TYPE_CONTENT_TEMPLATE;
 
     private final IContentManager contentManager;
     private final IContentModelManager contentModelManager;
@@ -289,7 +288,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
         componentUsage.setCode(code);
         Optional.ofNullable(status).ifPresent(componentUsage::setStatus);
         componentUsage.setType(type);
-        Optional.ofNullable(online).ifPresent(b -> componentUsage.getExtraProperties().put(ComponentUsageEntity.ONLINE_PROPERTY, b.booleanValue()));
+        Optional.ofNullable(online).ifPresent(b -> componentUsage.getExtraProperties().put(ComponentUsageEntity.ONLINE_PROPERTY, b));
         return componentUsage;
     }
 
@@ -387,7 +386,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
                         }
                 ).collect(Collectors.toList());
 
-        if (defaultContentTemplateUsedList.size() > 0) {
+        if (!defaultContentTemplateUsedList.isEmpty()) {
             ArrayList<String> defList = new ArrayList<>();
             defaultContentTemplateUsedList.forEach(f -> defList.add(f.getCode()));
             final String defListString = String.join(", ", defList);
@@ -443,7 +442,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
 
     @Override
     public String getObjectType() {
-        return "contentTemplate";
+        return TYPE_CONTENT_TEMPLATE;
     }
 
     @Override

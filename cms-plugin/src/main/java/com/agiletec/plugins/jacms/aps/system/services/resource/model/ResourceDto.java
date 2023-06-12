@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 public class ResourceDto implements IComponentDto {
 
@@ -57,6 +58,12 @@ public class ResourceDto implements IComponentDto {
             this.setInstances(new HashMap<>());
             this.getInstances().put("0", new ResourceInstanceDto(src.getDefaultInstance()));
         }
+    }
+
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_ASSET;
     }
 
     @JsonIgnore

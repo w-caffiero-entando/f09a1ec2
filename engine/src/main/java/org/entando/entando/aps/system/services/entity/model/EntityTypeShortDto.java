@@ -21,12 +21,11 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.Objects;
-import org.entando.entando.aps.system.services.IComponentDto;
 
 /**
  * @author E.Santoboni
  */
-public class EntityTypeShortDto implements IComponentDto {
+public class EntityTypeShortDto {
     
     @NotNull(message = "entityType.code.notBlank")
     @Size(min = 3, max = 3, message = "entityType.code.invalidCharacters")
@@ -45,8 +44,7 @@ public class EntityTypeShortDto implements IComponentDto {
         this.setCode(entityType.getTypeCode());
         this.setName(entityType.getTypeDescription());
     }
-
-    @Override
+    
     public String getCode() {
         return code;
     }

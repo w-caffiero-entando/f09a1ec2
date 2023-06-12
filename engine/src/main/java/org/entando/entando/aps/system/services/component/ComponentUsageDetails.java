@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.web.component;
+package org.entando.entando.aps.system.services.component;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.Serializable;
@@ -19,17 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.entando.entando.aps.system.services.IComponentDto;
 
 @JsonPropertyOrder({"type", "code", "exist", "usage", "status", "extraProperties", "references"})
 public class ComponentUsageDetails extends ComponentUsage implements Serializable {
     
-    ComponentUsageDetails(String type, String code) {
+    public ComponentUsageDetails(String type, String code) {
         super.setType(type);
         super.setCode(code);
     }
     
-    ComponentUsageDetails(String type, String code, IComponentDto dto) {
+    public ComponentUsageDetails(String type, String code, IComponentDto dto) {
         this(type, code);
         if (null != dto) {
             this.setExist(true);

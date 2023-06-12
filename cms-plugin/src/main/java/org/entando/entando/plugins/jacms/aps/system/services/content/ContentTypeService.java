@@ -16,18 +16,14 @@ package org.entando.entando.plugins.jacms.aps.system.services.content;
 import static org.entando.entando.plugins.jacms.web.resource.ResourcesController.ERRCODE_RESOURCE_NOT_FOUND;
 
 import com.agiletec.aps.system.common.entity.IEntityManager;
-import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
-import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentDto;
-import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentRecordVO;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDto;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDtoBuilder;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDtoRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,8 +33,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.aps.system.services.IComponentDto;
-import org.entando.entando.aps.system.services.IComponentUsageService;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.entity.AbstractEntityTypeService;
 import org.entando.entando.aps.system.services.entity.model.AttributeTypeDto;
@@ -51,7 +48,6 @@ import org.entando.entando.web.common.model.Filter;
 import org.entando.entando.web.common.model.FilterOperator;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
 import org.entando.entando.web.entity.model.EntityTypeDtoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,12 +69,12 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
     private PagedMetadataMapper pagedMetadataMapper;
     
     @Autowired(required = false)
-    private List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers;
+    private List<? extends ContentTypeServiceUtilizer> contentTypeServiceUtilizers;
 
-    protected List<ContentTypeServiceUtilizer> getContentTypeServiceUtilizers() {
+    protected List<? extends ContentTypeServiceUtilizer> getContentTypeServiceUtilizers() {
         return contentTypeServiceUtilizers;
     }
-    public void setContentTypeServiceUtilizers(List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers) {
+    public void setContentTypeServiceUtilizers(List<? extends ContentTypeServiceUtilizer> contentTypeServiceUtilizers) {
         this.contentTypeServiceUtilizers = contentTypeServiceUtilizers;
     }
 
@@ -209,13 +205,13 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
             PagedMetadata<ContentDto> pagedData = contentService
                     .getContents(contentListRequest, (UserDetails) httpRequest.getAttribute("user"));
             componentUsageEntityList = pagedData.getBody().stream()
-                    .map(contentDto -> contentDto.buildUsageEntity(ComponentUsageEntity.TYPE_CONTENT))
+                    .map(contentDto -> contentDto.buildUsageEntity())
                     .collect(Collectors.toList());
             if (null != this.getContentTypeServiceUtilizers()) {
                 for (var utilizer : this.getContentTypeServiceUtilizers()) {
                     List<IComponentDto> objects = utilizer.getContentTypeUtilizer(componentCode);
                     List<ComponentUsageEntity> utilizerForService = objects.stream()
-                            .map(o -> o.buildUsageEntity(utilizer.getObjectType())).collect(Collectors.toList());
+                            .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
                     componentUsageEntityList.addAll(utilizerForService);
                 }
             }
@@ -230,7 +226,7 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
     public IComponentDto getComponentDto(String code) {
         IEntityManager entityManager = this.extractEntityManager(JacmsSystemConstants.CONTENT_MANAGER);
         return Optional.ofNullable(entityManager.getEntityPrototype(code))
-                .map(f -> this.getEntityTypeShortDtoBuilder().convert(f)).orElse(null);
+                .map(f -> this.getEntityTypeFullDtoBuilder(entityManager).convert((Content) f)).orElse(null);
     }
 
     @Override

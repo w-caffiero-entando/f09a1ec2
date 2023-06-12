@@ -73,8 +73,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.DtoBuilder;
-import org.entando.entando.aps.system.services.IComponentDto;
-import org.entando.entando.aps.system.services.IComponentExistsService;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.category.CategoryServiceUtilizer;
 import org.entando.entando.aps.system.services.entity.AbstractEntityService;
@@ -82,7 +80,6 @@ import org.entando.entando.aps.system.services.entity.model.EntityAttributeDto;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
 import org.entando.entando.aps.system.services.group.GroupServiceUtilizer;
 import org.entando.entando.aps.system.services.page.PageServiceUtilizer;
-import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -97,7 +94,6 @@ import org.entando.entando.web.common.exceptions.ResourcePermissionsException;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
 import org.entando.entando.web.entity.validator.EntityValidator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +101,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-import org.entando.entando.aps.system.services.IComponentUsageService;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentExistsService;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 
 public class ContentService extends AbstractEntityService<Content, ContentDto>
         implements IContentService,
@@ -890,14 +889,10 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
         Map<String, ? extends ContentServiceUtilizer> beans = this.applicationContext.getBeansOfType(ContentServiceUtilizer.class);
         for (var utilizer : beans.values()) {
             List<IComponentDto> objects = utilizer.getContentUtilizer(componentCode);
-            String objectName = utilizer.getObjectType();
             List<ComponentUsageEntity> utilizerForService = objects.stream()
-                    .map(o -> o.buildUsageEntity(objectName)).collect(Collectors.toList());
+                    .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
             components.addAll(utilizerForService);
         }
-        List<PageDto> pages = this.cmsPageServiceWrapper.getContentUtilizer(componentCode);
-        List<ComponentUsageEntity> pageUsage = pages.stream().map(dto -> dto.buildUsageEntity(ComponentUsageEntity.TYPE_PAGE)).collect(Collectors.toList());
-        components.addAll(pageUsage);
         List<ComponentUsageEntity> sublist = restListRequest.getSublist(components);
         PagedMetadata<ComponentUsageEntity> usageEntries = new PagedMetadata<>(restListRequest, components.size());
         usageEntries.setBody(sublist);

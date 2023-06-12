@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.DtoBuilder;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.category.model.CategoryDto;
 import org.entando.entando.ent.exception.EntException;
@@ -35,7 +35,7 @@ import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
     
-    public static final String TYPE_CATEGORY = "category";
+    public static final String TYPE_CATEGORY = ComponentUsageEntity.TYPE_CATEGORY;
 
     private ICategoryManager categoryManager;
     @Autowired(required = false)
@@ -87,13 +87,13 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
             for (var utilizer : this.getCategoryServiceUtilizers()) {
                 List<IComponentDto> objects = utilizer.getCategoryUtilizer(componentCode);
                 List<ComponentUsageEntity> utilizerForService = objects.stream()
-                        .map(o -> o.buildUsageEntity(utilizer.getObjectType())).collect(Collectors.toList());
+                        .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
                 components.addAll(utilizerForService);
             }
         }
         List<CategoryDto> categories = this.getCategoryUtilizer(componentCode);
         components.addAll(categories.stream()
-                        .map(o -> o.buildUsageEntity(this.getObjectType())).collect(Collectors.toList()));
+                        .map(o -> o.buildUsageEntity()).collect(Collectors.toList()));
         List<ComponentUsageEntity> sublist = restListRequest.getSublist(components);
         PagedMetadata<ComponentUsageEntity> usageEntries = new PagedMetadata<>(restListRequest, components.size());
         usageEntries.setBody(sublist);

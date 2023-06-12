@@ -21,27 +21,17 @@ import static com.agiletec.plugins.jacms.aps.system.services.content.model.attri
 import static com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.ContentStatusState.UNPUBLISHED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.agiletec.aps.system.services.user.UserDetails;
-import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
-import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentRecordVO;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentDto;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.attribute.ContentStatusState;
-import com.agiletec.plugins.jacms.aps.system.services.contentmodel.ContentModel;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentModelDto;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.ArrayUtils;
-import org.entando.entando.aps.system.services.mockhelper.PageMockHelper;
 import org.entando.entando.aps.system.services.userprofile.MockUser;
 import org.entando.entando.plugins.jacms.aps.system.services.assertionhelper.ContentTypeAssertionHelper;
 import org.entando.entando.plugins.jacms.aps.system.services.mockhelper.ContentMockHelper;
@@ -50,9 +40,7 @@ import org.entando.entando.plugins.jacms.web.content.validator.RestContentListRe
 import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
-import org.entando.entando.web.page.model.PageSearchRequest;
-import org.junit.jupiter.api.Assertions;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,7 +68,7 @@ class ContentTypeServiceTest {
     private ContentTypeService contentTypeService;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         Mockito.lenient().when(this.httpRequest.getAttribute("user")).thenReturn(new MockUser());
         this.restListRequest = ContentTypeMockHelper.mockRestListRequest();
 
@@ -95,14 +83,13 @@ class ContentTypeServiceTest {
     }
 
     @Test
-    public void getContentTypeUsageForNonExistingCodeShouldReturnZero() {
-
+    void getContentTypeUsageForNonExistingCodeShouldReturnZero() {
         int componentUsage = contentTypeService.getComponentUsage("not_existing");
         assertEquals(0, componentUsage);
     }
     
     @Test
-    public void getContentTypeUsageDetailsWithContentsTest() {
+    void getContentTypeUsageDetailsWithContentsTest() {
         int relatedContents = 3;
         PagedMetadata<ContentDto> contentDtoPagedMetadata = ContentMockHelper.mockPagedContentDto(this.restListRequest, relatedContents);
         when(this.contentService.getContents(any(RestContentListRequest.class), any(UserDetails.class))).thenReturn(contentDtoPagedMetadata);
@@ -111,7 +98,7 @@ class ContentTypeServiceTest {
     }
     
     @Test
-    public void getContentTypeUsageDetailsWithTemplateTest() throws Exception {
+    void getContentTypeUsageDetailsWithTemplateTest() throws Exception {
         List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers = new ArrayList<>();
         this.contentTypeService.setContentTypeServiceUtilizers(contentTypeServiceUtilizers);
         ContentTypeServiceUtilizer utilizer = Mockito.mock(ContentTypeServiceUtilizer.class);
@@ -127,16 +114,14 @@ class ContentTypeServiceTest {
     }
 
     @Test
-    public void getContentStatusWithContentStatusPublicWillReturnPublished() throws Exception {
-
+    void getContentStatusWithContentStatusPublicWillReturnPublished() throws Exception {
         ContentDto contentDto = new ContentDto();
         contentDto.setStatus(Content.STATUS_PUBLIC);
         assertEquals(PUBLISHED, ContentStatusState.calculateState(contentDto));
     }
 
     @Test
-    public void getContentStatusWithContentStatusReadyAndOnlineWillReturnPublicNotEqualToReady() throws Exception {
-
+    void getContentStatusWithContentStatusReadyAndOnlineWillReturnPublicNotEqualToReady() throws Exception {
         ContentDto contentDto = new ContentDto();
         contentDto.setStatus(Content.STATUS_READY);
         contentDto.setOnLine(true);
@@ -144,16 +129,14 @@ class ContentTypeServiceTest {
     }
 
     @Test
-    public void getContentStatusWithContentStatusReadyAndNOTOnlineWillReturnReady() throws Exception {
-
+    void getContentStatusWithContentStatusReadyAndNOTOnlineWillReturnReady() throws Exception {
         ContentDto contentDto = new ContentDto();
         contentDto.setStatus(Content.STATUS_READY);
         assertEquals(READY, ContentStatusState.calculateState(contentDto));
     }
 
     @Test
-    public void getContentStatusWithContentStatusDraftAndOnlineWillReturnPublicNotEqualToDraft() throws Exception {
-
+    void getContentStatusWithContentStatusDraftAndOnlineWillReturnPublicNotEqualToDraft() throws Exception {
         ContentDto contentDto = new ContentDto();
         contentDto.setStatus(Content.STATUS_DRAFT);
         contentDto.setOnLine(true);
@@ -161,12 +144,10 @@ class ContentTypeServiceTest {
     }
 
     @Test
-    public void getContentStatusWithContentStatusDraftAndNOTOnlineWillReturnUnpublished() throws Exception {
-
+    void getContentStatusWithContentStatusDraftAndNOTOnlineWillReturnUnpublished() throws Exception {
         ContentDto contentDto = new ContentDto();
         contentDto.setStatus(Content.STATUS_DRAFT);
         assertEquals(UNPUBLISHED, ContentStatusState.calculateState(contentDto));
     }
-
 
 }

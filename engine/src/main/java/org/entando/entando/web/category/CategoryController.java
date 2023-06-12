@@ -34,7 +34,7 @@ import org.entando.entando.web.common.model.PagedRestResponse;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.common.model.RestResponse;
 import org.entando.entando.web.common.model.SimpleRestResponse;
-import org.entando.entando.web.component.ComponentUsage;
+import org.entando.entando.aps.system.services.component.ComponentUsage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

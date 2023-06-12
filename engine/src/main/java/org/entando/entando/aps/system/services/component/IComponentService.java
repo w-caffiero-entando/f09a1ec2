@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ * Copyright 2023-Present Entando S.r.l. (http://www.entando.com) All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -11,16 +11,12 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.aps.system.services.page;
+package org.entando.entando.aps.system.services.component;
 
 import java.util.List;
-import org.entando.entando.aps.system.services.component.IComponentDto;
-import org.entando.entando.aps.system.services.component.IComponentUsageService;
+import java.util.Map;
 
-public interface PageServiceUtilizer<T extends IComponentDto> extends IComponentUsageService {
+public interface IComponentService {
 
-    public String getManagerName();
-
-    public List<T> getPageUtilizer(String pageCode);
-
+    public List<ComponentUsageDetails> extractComponentUsageDetails(List<Map<String, String>> components);
 }

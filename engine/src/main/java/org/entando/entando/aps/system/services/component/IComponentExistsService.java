@@ -11,25 +11,11 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.aps.system.services;
+package org.entando.entando.aps.system.services.component;
 
-import java.util.Map;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.ent.exception.EntException;
 
-public interface IComponentDto {
-    
-    public default ComponentUsageEntity buildUsageEntity(String type) {
-        return new ComponentUsageEntity(type, this);
-    }
-    
-    public String getCode();
-    
-    public default String getStatus() {
-        return null;
-    }
-    
-    public default Map<String, Object> getExtraProperties() {
-        return Map.of();
-    }
-    
+public interface IComponentExistsService {
+    boolean exists(String code) throws EntException;
+    IComponentDto getComponentDto(String code) throws EntException;
 }

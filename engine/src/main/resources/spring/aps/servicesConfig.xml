@@ -59,6 +59,8 @@
 
     <!-- === SERVICES === -->
 
+    <bean id="ComponentService" class="org.entando.entando.aps.system.services.component.ComponentService" />
+
     <bean id="GroupService" class="org.entando.entando.aps.system.services.group.GroupService" >
         <property name="dtoBuilder" ref="GroupDtoBuilder" />
         <property name="groupManager" ref="GroupManager" />

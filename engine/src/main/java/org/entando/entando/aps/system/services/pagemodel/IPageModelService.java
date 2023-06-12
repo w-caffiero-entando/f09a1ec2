@@ -5,7 +5,7 @@ import java.util.Map;
 import org.entando.entando.aps.system.services.pagemodel.model.PageModelDto;
 import org.entando.entando.web.common.model.*;
 import org.entando.entando.web.pagemodel.model.PageModelRequest;
-import org.entando.entando.aps.system.services.IComponentUsageService;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 
 public interface IPageModelService extends IComponentUsageService {
 

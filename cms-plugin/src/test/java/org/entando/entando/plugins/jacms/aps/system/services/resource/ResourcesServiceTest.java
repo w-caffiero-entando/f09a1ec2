@@ -20,7 +20,7 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInt
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResource;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInstance;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.util.IImageDimensionReader;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.plugins.jacms.web.resource.model.AssetDto;
 import org.entando.entando.plugins.jacms.web.resource.model.ImageAssetDto;
 import org.junit.jupiter.api.Test;

@@ -26,6 +26,7 @@ import com.agiletec.aps.util.ApsProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Iterables;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -36,7 +37,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.group.GroupServiceUtilizer;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
@@ -52,7 +53,7 @@ import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.widget.model.WidgetRequest;
 import org.entando.entando.web.widget.validator.WidgetValidator;
 import org.springframework.stereotype.Service;
@@ -330,7 +331,7 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
     public List<WidgetDto> getGroupUtilizer(String groupCode) {
         try {
             List<WidgetType> list = ((GroupUtilizer<WidgetType>) this.getWidgetManager()).getGroupUtilizers(groupCode);
-            return this.getDtoBuilder().convert(list);
+            return Optional.ofNullable(list).map(l -> this.getDtoBuilder().convert(l)).orElse(new ArrayList<>());
         } catch (EntException ex) {
             logger.error("Error loading WidgetType references for group {}", groupCode, ex);
             throw new RestServerError("Error loading WidgetType references for group", ex);

@@ -31,8 +31,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.DtoBuilder;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.category.CategoryServiceUtilizer;
 import org.entando.entando.aps.system.services.group.GroupServiceUtilizer;
@@ -40,9 +42,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.entando.entando.aps.system.services.IComponentUsageService;
 
 public class ResourceService implements IResourceService,
         GroupServiceUtilizer<ResourceDto>, CategoryServiceUtilizer<ResourceDto>, IComponentUsageService {
@@ -157,9 +157,8 @@ public class ResourceService implements IResourceService,
         if (null != this.getResourceServiceUtilizers()) {
             for (var utilizer : this.getResourceServiceUtilizers()) {
                 List<IComponentDto> objects = utilizer.getResourceUtilizer(componentCode);
-                String objectName = utilizer.getObjectType();
                 List<ComponentUsageEntity> utilizerForService = objects.stream()
-                        .map(o -> o.buildUsageEntity(objectName)).collect(Collectors.toList());
+                        .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
                 components.addAll(utilizerForService);
             }
         }

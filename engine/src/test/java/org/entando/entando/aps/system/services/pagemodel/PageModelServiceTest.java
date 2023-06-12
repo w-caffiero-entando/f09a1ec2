@@ -28,7 +28,7 @@ import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.page.model.PageSearchRequest;
 import org.entando.entando.web.pagemodel.model.PageModelRequest;
 import org.junit.jupiter.api.BeforeEach;

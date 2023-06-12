@@ -13,7 +13,7 @@
  */
 package org.entando.entando.web.analysis;
 
-import org.entando.entando.aps.system.services.IComponentExistsService;
+import org.entando.entando.aps.system.services.component.IComponentExistsService;
 import org.entando.entando.aps.system.services.analysis.component_existence.ComponentExistenceAnalysis;
 import org.entando.entando.aps.system.services.analysis.component_existence.ComponentExistenceAnalysis.ServiceParams;
 import org.entando.entando.web.analysis.AnalysisResponse.Status;

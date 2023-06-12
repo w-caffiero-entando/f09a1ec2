@@ -14,8 +14,8 @@
 package org.entando.entando.aps.system.services.category;
 
 import java.util.List;
-import org.entando.entando.aps.system.services.IComponentDto;
-import org.entando.entando.aps.system.services.IComponentUsageService;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 
 public interface CategoryServiceUtilizer<T extends IComponentDto> extends IComponentUsageService {
 

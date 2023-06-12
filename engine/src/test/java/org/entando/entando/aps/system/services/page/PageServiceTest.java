@@ -47,7 +47,7 @@ import org.entando.entando.aps.system.services.page.model.PageSearchDto;
 import org.entando.entando.web.common.assembler.PageSearchMapper;
 import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.model.PagedMetadata;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.page.model.PageRequest;
 import org.entando.entando.web.page.model.PageSearchRequest;
 import org.junit.jupiter.api.Assertions;

@@ -16,9 +16,11 @@ package org.entando.entando.aps.system.services.group.model;
 import java.util.Map;
 
 import com.agiletec.aps.system.services.group.Group;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 public class GroupDto implements IComponentDto {
 
@@ -36,8 +38,13 @@ public class GroupDto implements IComponentDto {
     public GroupDto() {
 
     }
-
-
+    
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_GROUP;
+    }
+    
     public GroupDto(String code, String name) {
         this.code = code;
         this.name = name;

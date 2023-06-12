@@ -14,12 +14,14 @@
 package org.entando.entando.aps.system.services.guifragment.model;
 
 import com.agiletec.aps.system.services.lang.ILangManager;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.widgettype.WidgetType;
 
 import java.util.Optional;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 /**
  * @author E.Santoboni
@@ -47,6 +49,13 @@ public class GuiFragmentDtoSmall implements IComponentDto {
         }
     }
 
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_FRAGMENT;
+    }
+    
+    @Override
     public String getCode() {
         return code;
     }

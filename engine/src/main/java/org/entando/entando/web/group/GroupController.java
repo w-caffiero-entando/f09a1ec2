@@ -31,7 +31,7 @@ import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.PagedRestResponse;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.common.model.SimpleRestResponse;
-import org.entando.entando.web.component.ComponentUsage;
+import org.entando.entando.aps.system.services.component.ComponentUsage;
 import org.entando.entando.web.group.model.GroupRequest;
 import org.entando.entando.web.group.validator.GroupValidator;
 import org.springframework.beans.factory.annotation.Autowired;

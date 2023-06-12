@@ -27,7 +27,7 @@ import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.guifragment.model.GuiFragmentRequestBody;
 import org.entando.entando.web.guifragment.validator.GuiFragmentValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 public class GuiFragmentService implements IGuiFragmentService {
 

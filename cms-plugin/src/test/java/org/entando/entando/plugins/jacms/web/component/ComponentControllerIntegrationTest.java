@@ -219,7 +219,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         }
     }
     
-    @Disabled
+    //@Disabled
     @Test
     void extractContentUsageDetails() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();

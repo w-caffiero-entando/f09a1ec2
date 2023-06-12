@@ -5,7 +5,7 @@ import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentDto;
 import org.entando.entando.aps.system.services.assertionhelper.ComponentUsageEntityAssertionHelper;
 import org.entando.entando.plugins.jacms.aps.system.services.mockhelper.ContentMockHelper;
 import org.entando.entando.web.common.model.PagedMetadata;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

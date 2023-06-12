@@ -31,7 +31,7 @@ import org.entando.entando.web.page.model.PageSearchRequest;
 import org.entando.entando.web.page.model.WidgetConfigurationRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;
-import org.entando.entando.aps.system.services.IComponentUsageService;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 
 /**
  *

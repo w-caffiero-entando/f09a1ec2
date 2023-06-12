@@ -34,7 +34,7 @@ import org.entando.entando.plugins.jacms.web.contentmodel.validator.ContentModel
 import org.entando.entando.web.AbstractControllerTest;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.web.component;
+package org.entando.entando.aps.system.services.component;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -19,15 +19,21 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
-import org.entando.entando.aps.system.services.IComponentDto;
 
 public class ComponentUsageEntity implements Serializable {
 
     public static final String TYPE_PAGE = "page";
+    public static final String TYPE_CATEGORY = "category";
     public static final String TYPE_WIDGET = "widget";
     public static final String TYPE_FRAGMENT = "fragment";
     public static final String TYPE_PAGE_TEMPLATE = "pageTemplate";
+    public static final String TYPE_LABEL = "label";
+    public static final String TYPE_LANGUAGE = "language";
     public static final String TYPE_CONTENT = "content";
+    public static final String TYPE_CONTENT_TYPE = "contentType";
+    public static final String TYPE_CONTENT_TEMPLATE = "contentTemplate";
+    public static final String TYPE_ASSET = "asset";
+    public static final String TYPE_GROUP = "group";
     
     public static final String ONLINE_PROPERTY = "online";
     
@@ -35,7 +41,7 @@ public class ComponentUsageEntity implements Serializable {
     private String code;
     private String status;
     
-    private Map<String, Object> extraProperties = new TreeMap<>();
+    private transient Map<String, Object> extraProperties = new TreeMap<>();
 
     public ComponentUsageEntity() {
     }

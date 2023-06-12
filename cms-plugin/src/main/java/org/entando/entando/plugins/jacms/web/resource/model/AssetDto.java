@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
-import org.entando.entando.aps.system.services.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 @Data
 @AllArgsConstructor
