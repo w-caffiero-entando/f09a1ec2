@@ -45,7 +45,6 @@ public class ComponentService implements IComponentService {
                             }
                             details.add(cu);
                         } catch (Exception e) {
-                            e.printStackTrace();
                             throw new RestServerError("Error extracting Component details ", e);
                         }
                     });

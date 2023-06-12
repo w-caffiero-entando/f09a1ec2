@@ -56,6 +56,9 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
     
     public static final String TYPE_CONTENT_TEMPLATE = ComponentUsageEntity.TYPE_CONTENT_TEMPLATE;
+    
+    private static final String MESSAGE_NO_CONTENT_MODEL_FOUND = "no contentModel found with id {}";
+    private static final String MESSAGE_ERROR_SAVING_CONTENT_MODEL = "Error saving a content model";
 
     private final IContentManager contentManager;
     private final IContentModelManager contentModelManager;
@@ -104,7 +107,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
     public ContentModelDto getContentModel(Long modelId) {
         ContentModel contentModel = this.contentModelManager.getContentModel(modelId);
         if (null == contentModel) {
-            logger.warn("no contentModel found with id {}", modelId);
+            logger.warn(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
             throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, "contentModel",
                     String.valueOf(modelId));
         }
@@ -143,8 +146,8 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
             this.contentModelManager.addContentModel(contentModel);
             return this.dtoBuilder.convert(contentModel);
         } catch (EntException e) {
-            logger.error("Error saving a content model", e);
-            throw new RestServerError("Error saving a content model", e);
+            logger.error(MESSAGE_ERROR_SAVING_CONTENT_MODEL, e);
+            throw new RestServerError(MESSAGE_ERROR_SAVING_CONTENT_MODEL, e);
         }
     }
 
@@ -155,7 +158,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
 
             ContentModel contentModel = this.contentModelManager.getContentModel(entity.getId());
             if (null == contentModel) {
-                logger.warn("no contentModel found with id {}", modelId);
+                logger.warn(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
                 throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND,
                         "contentModel", String.valueOf(modelId));
             }
@@ -169,8 +172,8 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
             this.contentModelManager.updateContentModel(contentModel);
             return this.dtoBuilder.convert(contentModel);
         } catch (EntException e) {
-            logger.error("Error saving a content model", e);
-            throw new RestServerError("Error saving a content model", e);
+            logger.error(MESSAGE_ERROR_SAVING_CONTENT_MODEL, e);
+            throw new RestServerError(MESSAGE_ERROR_SAVING_CONTENT_MODEL, e);
         }
     }
 
@@ -179,7 +182,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
         try {
             ContentModel contentModel = this.contentModelManager.getContentModel(modelId);
             if (null == contentModel) {
-                logger.info("contentModel {} does not exists", modelId);
+                logger.info(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
                 return;
             }
             BeanPropertyBindingResult validationResult = this.validateForDelete(contentModel);
@@ -297,7 +300,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
             RestListRequest requestList) {
         ContentModel contentModel = this.contentModelManager.getContentModel(modelId);
         if (null == contentModel) {
-            logger.debug("contentModel {} does not exists", modelId);
+            logger.debug(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
             throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, "contentModel",
                     String.valueOf(modelId));
         }
@@ -338,7 +341,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
         }
         IApsEntity prototype = this.contentManager.getEntityPrototype(typeCode);
         if (null == prototype) {
-            logger.warn("no contentModel found with id {}", typeCode);
+            logger.warn(MESSAGE_NO_CONTENT_MODEL_FOUND, typeCode);
             throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_TYPECODE_NOT_FOUND,
                     "contentType", typeCode);
         }

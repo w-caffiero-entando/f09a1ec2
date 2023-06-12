@@ -136,8 +136,8 @@ class ContentModelServiceImplTest {
     @Test
     void shouldFindComponentDto() {
         IComponentDto dto = this.contentModelService.getComponentDto(String.valueOf(3L));
-        assertThat(dto).isNotNull();
-        assertThat(dto).isInstanceOf(ContentModelDto.class);
+        assertThat(dto).isNotNull()
+                .isInstanceOf(ContentModelDto.class);
         assertEquals(dto.getCode(), String.valueOf(((ContentModelDto) dto).getId()));
     }
 

@@ -41,7 +41,7 @@ public class ContentModelRequestListProcessor extends RequestListProcessor<Conte
 
     @Override
     protected Function<Filter, Predicate<ContentModel>> getPredicates() {
-        return (filter) -> {
+        return filter -> {
             switch (filter.getAttribute()) {
                 case KEY_ID:
                     return c -> FilterUtils.filterLong(filter, c.getId());
@@ -59,13 +59,13 @@ public class ContentModelRequestListProcessor extends RequestListProcessor<Conte
     protected Function<String, Comparator<ContentModel>> getComparators() {
         return sort -> {
             switch (sort) {
-                case KEY_ID:
-                default:
-                    return (a, b) -> Long.compare(a.getId(), b.getId());
                 case KEY_CONTENT_TYPE:
                     return (a, b) -> StringUtils.compare(a.getContentType(), b.getContentType());
                 case KEY_DESCR:
                     return (a, b) -> StringUtils.compare(a.getDescription(), b.getDescription());
+                case KEY_ID:
+                default:
+                    return (a, b) -> Long.compare(a.getId(), b.getId());
             }
         };
     }

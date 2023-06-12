@@ -69,12 +69,12 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
     private PagedMetadataMapper pagedMetadataMapper;
     
     @Autowired(required = false)
-    private List<? extends ContentTypeServiceUtilizer> contentTypeServiceUtilizers;
+    private List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers;
 
-    protected List<? extends ContentTypeServiceUtilizer> getContentTypeServiceUtilizers() {
+    protected List<ContentTypeServiceUtilizer> getContentTypeServiceUtilizers() {
         return contentTypeServiceUtilizers;
     }
-    public void setContentTypeServiceUtilizers(List<? extends ContentTypeServiceUtilizer> contentTypeServiceUtilizers) {
+    public void setContentTypeServiceUtilizers(List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers) {
         this.contentTypeServiceUtilizers = contentTypeServiceUtilizers;
     }
 
