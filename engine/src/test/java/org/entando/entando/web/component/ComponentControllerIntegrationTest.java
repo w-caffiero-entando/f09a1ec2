@@ -121,8 +121,8 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         int onlinePages = 0;
         List<String> pages = List.of("errorpage", "login", "notfound", "primapagina", "service");
         for (int i = 0; i < 10; i++) {
+            result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
             result.andExpect(jsonPath("$[0].references[" + i + "].type", is("page")));
-            result.andExpect(jsonPath("$[0].references[" + i + "].status", is("published")));
             String pageCode = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
             Assertions.assertTrue(pages.contains(pageCode));
             if (JsonPath.read(bodyResult, "$[0].references[" + i + "].online")) {
@@ -154,6 +154,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         result.andExpect(jsonPath("$[0].references.size()", is(3)));
         List<String> categories = List.of("general_cat1", "general_cat2", "general_cat3");
         for (int i = 0; i < 3; i++) {
+            result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
             result.andExpect(jsonPath("$[0].references[" + i + "].type", is("category")));
             String categoryCode = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
             Assertions.assertTrue(categories.contains(categoryCode));
@@ -184,6 +185,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         List<String> categories = List.of("pagina_1", "pagina_11", "pagina_12");
         int online = 0;
         for (int i = 0; i < 5; i++) {
+            result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
             result.andExpect(jsonPath("$[0].references[" + i + "].type", is("page")));
             String pageCode = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
             Assertions.assertTrue(categories.contains(pageCode));
@@ -224,9 +226,11 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
             String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
             String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
             if (type.equals("user")) {
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
                 Assertions.assertTrue(users.contains(code));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
             } else {
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
                 Assertions.assertEquals("page", type);
                 Assertions.assertTrue(pages.contains(code));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());

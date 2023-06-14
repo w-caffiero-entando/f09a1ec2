@@ -62,9 +62,11 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
             String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
             String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
             if (type.equals("content")) {
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
                 Assertions.assertTrue(contents.contains(code));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online", is(true)));
             } else {
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
                 Assertions.assertEquals("category", type);
                 Assertions.assertTrue(categories.contains(code));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
@@ -98,6 +100,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         for (int i = 0; i < 4; i++) {
             String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
             String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
+            result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
             if (type.equals("asset")) {
                 Assertions.assertTrue(resources.contains(code));
             } else {
@@ -133,6 +136,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         for (int i = 0; i < 3; i++) {
             String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
             String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
+            result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
             if (type.equals("page")) {
                 Assertions.assertEquals("pagina_11", code);
                 result.andExpect(jsonPath("$[0].references[" + i + "].online", is(true)));
@@ -172,9 +176,11 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
             String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
             if (type.equals("content")) {
                 Assertions.assertTrue(code.startsWith("ART"));
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
                 boolean online = JsonPath.read(bodyResult, "$[0].references[" + i + "].online");
                 Assertions.assertEquals(!code.equals("ART179"), online);
             } else {
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
                 Assertions.assertEquals("contentTemplate", type);
                 Assertions.assertTrue(contentModels.contains(code));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
@@ -209,9 +215,11 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
             String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
             String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
             if (type.equals("contentType")) {
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
                 Assertions.assertTrue(code.startsWith("ART"));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
             } else {
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
                 Assertions.assertEquals("page", type);
                 Assertions.assertEquals("homepage", code);
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());
@@ -242,6 +250,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         Assertions.assertEquals(2, size);
         result.andExpect(jsonPath("$[0].references.size()", is(size)));
         for (int i = 0; i < size; i++) {
+            result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
             String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
             String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
             if (type.equals("content")) {
@@ -287,16 +296,20 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
             if (type.equals("user")) {
                 Assertions.assertTrue(users.contains(code));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
             } else if (type.equals("page")) {
                 Assertions.assertTrue(pages.contains(code));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
             } else if (type.equals("asset")) {
                 Assertions.assertTrue(List.of("8", "82").contains(code));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
             } else {
                 Assertions.assertEquals("content", type);
                 Assertions.assertTrue(contents.contains(code));
                 result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());
+                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
             }
         }
     }

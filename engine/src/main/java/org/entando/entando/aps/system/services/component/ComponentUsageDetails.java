@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,6 +42,6 @@ public class ComponentUsageDetails extends ComponentUsage implements Serializabl
     private boolean exist;
     
     @Getter@Setter
-    private List<ComponentUsageEntity> references = new ArrayList<>();
+    private List<Map<String, Object>> references = new ArrayList<>();
     
 }

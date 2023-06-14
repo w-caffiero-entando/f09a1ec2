@@ -14,8 +14,11 @@
 package org.entando.entando.aps.system.services.component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.web.common.model.PagedMetadata;
@@ -52,13 +55,20 @@ public class ComponentService implements IComponentService {
         return details;
     }
     
-    private List<ComponentUsageEntity> extractReferences(ComponentUsageDetails usage, IComponentUsageService service) {
+    private List<Map<String, Object>> extractReferences(ComponentUsageDetails usage, IComponentUsageService service) {
         try {
             RestListRequest listRequest = new RestListRequest();
             listRequest.setPageSize(0); // get all elements - no pagination
             PagedMetadata<ComponentUsageEntity> result = service.getComponentUsageDetails(usage.getCode(), listRequest);
             usage.setUsage(result.getTotalItems());
-            return result.getBody();
+            return result.getBody().stream().map(cue -> {
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(REFERENCE_TYPE_PROPERTY, cue.getType());
+                properties.put(REFERENCE_CODE_PROPERTY, cue.getCode());
+                Optional.ofNullable(cue.getExtraProperties().get(ComponentUsageEntity.ONLINE_PROPERTY))
+                        .ifPresent(b -> properties.put(REFERENCE_ONLINE_PROPERTY, b));
+                return properties;
+            }).collect(Collectors.toList());
         } catch (Exception e) {
             throw new EntRuntimeException("Error extracting references", e);
         }

@@ -17,6 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface IComponentService {
+    
+    public static final String REFERENCE_TYPE_PROPERTY = "type";
+    public static final String REFERENCE_CODE_PROPERTY = "code";
+    public static final String REFERENCE_ONLINE_PROPERTY = "online";
 
     public List<ComponentUsageDetails> extractComponentUsageDetails(List<Map<String, String>> components);
+    
 }
