@@ -115,7 +115,7 @@
 				<param name="inputStream">inputStream</param>
 			</result>
 			<interceptor-ref name="apsFileUpload" />
-			<interceptor-ref name="entandoDefaultStack">
+			<interceptor-ref name="entandoValidationStack">
 				<param name="requestAuth.requiredPermission">manageResources</param>
 			</interceptor-ref>
 		</action>
