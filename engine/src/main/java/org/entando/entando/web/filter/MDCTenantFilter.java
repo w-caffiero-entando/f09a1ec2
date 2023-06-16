@@ -7,8 +7,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
+@Slf4j
 public class MDCTenantFilter extends HttpFilter {
 
     private static final String MDC_KEY_TENANT = "tenant";
@@ -17,7 +19,10 @@ public class MDCTenantFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
-            MDC.put(MDC_KEY_TENANT, ApsTenantApplicationUtils.getTenant().orElse(""));
+            String tenant = ApsTenantApplicationUtils.getTenant()
+                    .orElseGet(() -> ApsTenantApplicationUtils.extractCurrentTenantCode(request).orElse(""));
+            log.trace("Adding to MDC the key:'{}' with value:'{}'", MDC_KEY_TENANT, tenant);
+            MDC.put(MDC_KEY_TENANT, tenant);
             chain.doFilter(request, response);
         } finally {
             MDC.remove(MDC_KEY_TENANT);
