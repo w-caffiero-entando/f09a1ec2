@@ -56,6 +56,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
     
     public static final String TYPE_CONTENT_TEMPLATE = ComponentUsageEntity.TYPE_CONTENT_TEMPLATE;
+    private static final String CONTENT_MODEL_LABEL = "contentModel";
     
     private static final String MESSAGE_NO_CONTENT_MODEL_FOUND = "no contentModel found with id {}";
     private static final String MESSAGE_ERROR_SAVING_CONTENT_MODEL = "Error saving a content model";
@@ -108,7 +109,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
         ContentModel contentModel = this.contentModelManager.getContentModel(modelId);
         if (null == contentModel) {
             logger.warn(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
-            throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, "contentModel",
+            throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, CONTENT_MODEL_LABEL,
                     String.valueOf(modelId));
         }
         return this.dtoBuilder.convert(contentModel);
@@ -160,7 +161,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
             if (null == contentModel) {
                 logger.warn(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
                 throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND,
-                        "contentModel", String.valueOf(modelId));
+                        CONTENT_MODEL_LABEL, String.valueOf(modelId));
             }
 
             BeanPropertyBindingResult validationResult = this.validateForUpdate(entity, contentModel);
@@ -301,7 +302,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
         ContentModel contentModel = this.contentModelManager.getContentModel(modelId);
         if (null == contentModel) {
             logger.debug(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
-            throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, "contentModel",
+            throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, CONTENT_MODEL_LABEL,
                     String.valueOf(modelId));
         }
 
@@ -363,14 +364,14 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
     }
 
     protected BeanPropertyBindingResult validateForAdd(ContentModel contentModel) {
-        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, "contentModel");
+        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, CONTENT_MODEL_LABEL);
         validateIdIsUnique(contentModel, errors);
         validateContentType(contentModel.getContentType(), errors);
         return errors;
     }
 
     protected BeanPropertyBindingResult validateForDelete(ContentModel contentModel) {
-        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, "contentModel");
+        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, CONTENT_MODEL_LABEL);
         List<ContentModelReference> references = this.contentModelManager
                 .getContentModelReferences(contentModel.getId(), false);
         if (!references.isEmpty()) {
@@ -402,7 +403,7 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
     }
 
     protected BeanPropertyBindingResult validateForUpdate(ContentModelDto request, ContentModel contentModel) {
-        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, "contentModel");
+        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, CONTENT_MODEL_LABEL);
         this.validateContentType(request.getContentType(), errors);
         return errors;
     }

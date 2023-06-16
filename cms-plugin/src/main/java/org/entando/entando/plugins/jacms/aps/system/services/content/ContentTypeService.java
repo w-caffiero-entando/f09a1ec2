@@ -69,12 +69,9 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
     private PagedMetadataMapper pagedMetadataMapper;
     
     @Autowired(required = false)
-    private List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers;
+    private List<? extends ContentTypeServiceUtilizer> contentTypeServiceUtilizers;
 
-    protected List<ContentTypeServiceUtilizer> getContentTypeServiceUtilizers() {
-        return contentTypeServiceUtilizers;
-    }
-    public void setContentTypeServiceUtilizers(List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers) {
+    public void setContentTypeServiceUtilizers(List<? extends ContentTypeServiceUtilizer> contentTypeServiceUtilizers) {
         this.contentTypeServiceUtilizers = contentTypeServiceUtilizers;
     }
 
@@ -205,10 +202,10 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
             PagedMetadata<ContentDto> pagedData = contentService
                     .getContents(contentListRequest, (UserDetails) httpRequest.getAttribute("user"));
             componentUsageEntityList = pagedData.getBody().stream()
-                    .map(contentDto -> contentDto.buildUsageEntity())
+                    .map(ContentDto::buildUsageEntity)
                     .collect(Collectors.toList());
-            if (null != this.getContentTypeServiceUtilizers()) {
-                for (var utilizer : this.getContentTypeServiceUtilizers()) {
+            if (null != this.contentTypeServiceUtilizers) {
+                for (var utilizer : this.contentTypeServiceUtilizers) {
                     List<IComponentDto> objects = utilizer.getContentTypeUtilizer(componentCode);
                     List<ComponentUsageEntity> utilizerForService = objects.stream()
                             .map(o -> o.buildUsageEntity()).collect(Collectors.toList());

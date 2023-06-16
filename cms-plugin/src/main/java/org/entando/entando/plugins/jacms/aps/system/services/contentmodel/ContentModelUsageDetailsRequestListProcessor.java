@@ -41,7 +41,7 @@ public class ContentModelUsageDetailsRequestListProcessor extends RequestListPro
 
     @Override
     protected Function<Filter, Predicate<ComponentUsageEntity>> getPredicates() {
-        return (filter) -> {
+        return filter -> {
             switch (filter.getAttribute()) {
                 case KEY_TYPE:
                     return c -> FilterUtils.filterString(filter, c.getType());
@@ -59,14 +59,15 @@ public class ContentModelUsageDetailsRequestListProcessor extends RequestListPro
     protected Function<String, Comparator<ComponentUsageEntity>> getComparators() {
         return sort -> {
             switch (sort) {
-                case KEY_CODE:
-                default:
-                    return (a, b) -> StringUtils.compare(a.getCode(), b.getCode());
                 case KEY_STATUS:
                     return (a, b) -> StringUtils.compare(a.getStatus(), b.getStatus());
                 case KEY_TYPE:
                     return (a, b) -> StringUtils.compare(a.getType(), b.getType());
+                case KEY_CODE:
+                default:
+                    return (a, b) -> StringUtils.compare(a.getCode(), b.getCode());
             }
         };
     }
+    
 }

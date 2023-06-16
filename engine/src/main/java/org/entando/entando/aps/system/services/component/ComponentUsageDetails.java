@@ -42,6 +42,6 @@ public class ComponentUsageDetails extends ComponentUsage implements Serializabl
     private boolean exist;
     
     @Getter@Setter
-    private List<Map<String, Object>> references = new ArrayList<>();
+    private transient List<Map<String, Object>> references = new ArrayList<>();
     
 }

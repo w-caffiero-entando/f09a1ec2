@@ -57,7 +57,7 @@ public class GroupService implements IGroupService, ApplicationContextAware {
     private IDtoBuilder<Group, GroupDto> dtoBuilder;
     
     @Autowired(required = false)
-    private List<GroupServiceUtilizer> groupServiceUtilizers;
+    private List<? extends GroupServiceUtilizer> groupServiceUtilizers;
 
     private ApplicationContext applicationContext;
 
@@ -82,11 +82,7 @@ public class GroupService implements IGroupService, ApplicationContextAware {
         this.applicationContext = applicationContext;
     }
     
-    public List<GroupServiceUtilizer> getGroupServiceUtilizers() {
-        return groupServiceUtilizers;
-    }
-
-    public void setGroupServiceUtilizers(List<GroupServiceUtilizer> groupServiceUtilizers) {
+    public void setGroupServiceUtilizers(List<? extends GroupServiceUtilizer> groupServiceUtilizers) {
         this.groupServiceUtilizers = groupServiceUtilizers;
     }
 
@@ -239,7 +235,7 @@ public class GroupService implements IGroupService, ApplicationContextAware {
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode,
             RestListRequest restListRequest) {
         List<ComponentUsageEntity> components = new ArrayList<>();
-        for (var utilizer : this.getGroupServiceUtilizers()) {
+        for (var utilizer : this.groupServiceUtilizers) {
             List<IComponentDto> objects = utilizer.getGroupUtilizer(componentCode);
             List<ComponentUsageEntity> utilizerForService = objects.stream()
                     .map(o -> o.buildUsageEntity()).collect(Collectors.toList());

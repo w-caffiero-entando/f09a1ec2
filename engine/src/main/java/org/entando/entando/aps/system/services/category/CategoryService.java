@@ -83,8 +83,8 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
         List<ComponentUsageEntity> components = new ArrayList<>();
-        if (null != this.getCategoryServiceUtilizers()) {
-            for (var utilizer : this.getCategoryServiceUtilizers()) {
+        if (null != this.categoryServiceUtilizers) {
+            for (var utilizer : this.categoryServiceUtilizers) {
                 List<IComponentDto> objects = utilizer.getCategoryUtilizer(componentCode);
                 List<ComponentUsageEntity> utilizerForService = objects.stream()
                         .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
@@ -200,11 +200,11 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
     }
 
     private CategoryServiceUtilizer<?> getCategoryServiceUtilizer(String managerName) {
-        List<CategoryServiceUtilizer> beans = this.getCategoryServiceUtilizers();
+        List<? extends CategoryServiceUtilizer> beans = this.categoryServiceUtilizers;
         if (null == beans) {
             return null;
         }
-        Optional<CategoryServiceUtilizer> defName = beans.stream()
+        Optional<? extends CategoryServiceUtilizer> defName = beans.stream()
                 .filter(service -> service.getManagerName().equals(managerName)).findFirst();
         if (defName.isPresent()) {
             return defName.get();
@@ -316,10 +316,6 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
 
     public void setCategoryUtilizers(List<CategoryUtilizer> categoryUtilizers) {
         this.categoryUtilizers = categoryUtilizers;
-    }
-
-    protected List<CategoryServiceUtilizer> getCategoryServiceUtilizers() {
-        return categoryServiceUtilizers;
     }
 
     public void setCategoryServiceUtilizers(List<CategoryServiceUtilizer> categoryServiceUtilizers) {
