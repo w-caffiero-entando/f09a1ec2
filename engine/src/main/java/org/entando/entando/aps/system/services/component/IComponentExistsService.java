@@ -13,9 +13,13 @@
  */
 package org.entando.entando.aps.system.services.component;
 
+import java.util.Optional;
 import org.entando.entando.ent.exception.EntException;
 
 public interface IComponentExistsService {
+    
     boolean exists(String code) throws EntException;
-    IComponentDto getComponentDto(String code) throws EntException;
+    
+    Optional<IComponentDto> getComponentDto(String code) throws EntException;
+    
 }

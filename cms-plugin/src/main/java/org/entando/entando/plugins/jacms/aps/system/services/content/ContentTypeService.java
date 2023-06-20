@@ -18,7 +18,6 @@ import static org.entando.entando.plugins.jacms.web.resource.ResourcesController
 import com.agiletec.aps.system.common.entity.IEntityManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
-import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.ContentDto;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDto;
@@ -60,21 +59,12 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
     private final ContentService contentService;
 
     @Autowired
-    private IContentManager contentManager;
-
-    @Autowired
     private HttpServletRequest httpRequest;
 
-    @Autowired
-    private PagedMetadataMapper pagedMetadataMapper;
+    private final PagedMetadataMapper pagedMetadataMapper;
     
-    @Autowired(required = false)
-    private List<? extends ContentTypeServiceUtilizer> contentTypeServiceUtilizers;
-
-    public void setContentTypeServiceUtilizers(List<? extends ContentTypeServiceUtilizer> contentTypeServiceUtilizers) {
-        this.contentTypeServiceUtilizers = contentTypeServiceUtilizers;
-    }
-
+    private final List<? extends ContentTypeServiceUtilizer> contentTypeServiceUtilizers;
+    
     @Override
     protected IDtoBuilder<Content, ContentTypeDto> getEntityTypeFullDtoBuilder(
             IEntityManager masterManager) {
@@ -181,7 +171,7 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
 
     @Override
     public String getObjectType() {
-        return "contentType";
+        return ComponentUsageEntity.TYPE_CONTENT_TYPE;
     }
 
     @Override
@@ -198,37 +188,34 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
             Filter[] filters = ArrayUtils.add(restListRequest.getFilters(), filter);
             contentListRequest.setFilters(filters);
             contentListRequest.setSort(IEntityManager.ENTITY_ID_FILTER_KEY);
-            contentListRequest.setStatus(null);
             PagedMetadata<ContentDto> pagedData = contentService
                     .getContents(contentListRequest, (UserDetails) httpRequest.getAttribute("user"));
             componentUsageEntityList = pagedData.getBody().stream()
                     .map(ContentDto::buildUsageEntity)
                     .collect(Collectors.toList());
-            if (null != this.contentTypeServiceUtilizers) {
-                for (var utilizer : this.contentTypeServiceUtilizers) {
-                    List<IComponentDto> objects = utilizer.getContentTypeUtilizer(componentCode);
-                    List<ComponentUsageEntity> utilizerForService = objects.stream()
-                            .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
-                    componentUsageEntityList.addAll(utilizerForService);
-                }
+            for (var utilizer : this.contentTypeServiceUtilizers) {
+                List<IComponentDto> objects = utilizer.getContentTypeUtilizer(componentCode);
+                List<ComponentUsageEntity> utilizerForService = objects.stream()
+                        .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
+                componentUsageEntityList.addAll(utilizerForService);
             }
         } catch (Exception e) {
-            throw new RestServerError("Error extracting content type details : " + componentCode, e);
+            throw new RestServerError(String.format("Error extracting content type details : %s", componentCode), e);
         }
         return pagedMetadataMapper
                 .getPagedResult(restListRequest, componentUsageEntityList, "code", componentUsageEntityList.size());
     }
     
     @Override
-    public IComponentDto getComponentDto(String code) {
+    public Optional<IComponentDto> getComponentDto(String code) {
         IEntityManager entityManager = this.extractEntityManager(JacmsSystemConstants.CONTENT_MANAGER);
         return Optional.ofNullable(entityManager.getEntityPrototype(code))
-                .map(f -> this.getEntityTypeFullDtoBuilder(entityManager).convert((Content) f)).orElse(null);
+                .map(f -> this.getEntityTypeFullDtoBuilder(entityManager).convert((Content) f));
     }
 
     @Override
     public boolean exists(String code) {
-        return null != this.getComponentDto(code);
+        return this.getComponentDto(code).isPresent();
     }
     
 }

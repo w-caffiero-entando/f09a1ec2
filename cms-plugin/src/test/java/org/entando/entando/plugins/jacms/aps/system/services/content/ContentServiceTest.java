@@ -13,7 +13,6 @@
  */
 package org.entando.entando.plugins.jacms.aps.system.services.content;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
@@ -423,19 +423,19 @@ class ContentServiceTest {
     protected void addMockedContent(String id, String typeCode,
             @Nullable String ownerGroup, @Nullable String extraGroup) throws Exception {
         Content mockContent = Mockito.mock(Content.class);
-        Mockito.lenient().when(mockContent.getListModel()).thenReturn("10");
-        Mockito.lenient().when(mockContent.getDefaultModel()).thenReturn("20");
-        Mockito.lenient().when(mockContent.getTypeCode()).thenReturn(typeCode);
+        Mockito.when(mockContent.getListModel()).thenReturn("10");
+        Mockito.when(mockContent.getDefaultModel()).thenReturn("20");
+        Mockito.when(mockContent.getTypeCode()).thenReturn(typeCode);
         if (ownerGroup != null) {
-            Mockito.lenient().when(mockContent.getMainGroup()).thenReturn(ownerGroup);
+            Mockito.when(mockContent.getMainGroup()).thenReturn(ownerGroup);
         }
         if (extraGroup != null) {
-            Mockito.lenient().when(mockContent.getGroups()).thenReturn(new HashSet<>(Arrays.asList(extraGroup.split(","))));
+            Mockito.when(mockContent.getGroups()).thenReturn(new HashSet<>(Arrays.asList(extraGroup.split(","))));
         }
         if (id == null) {
-            Mockito.lenient().when(this.contentManager.loadContent(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(mockContent);
+            Mockito.when(this.contentManager.loadContent(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(mockContent);
         } else {
-            Mockito.lenient().when(this.contentManager.loadContent(Mockito.eq(id), Mockito.anyBoolean())).thenReturn(mockContent);
+            Mockito.when(this.contentManager.loadContent(Mockito.eq(id), Mockito.anyBoolean())).thenReturn(mockContent);
         }
     }
 
@@ -528,9 +528,9 @@ class ContentServiceTest {
     @Test
     void shouldFindComponentDto() throws Exception {
         this.addMockedContent("ART123", "ART", null, null);
-        IComponentDto dto = this.contentService.getComponentDto("ART123");
-        assertThat(dto).isNotNull()
-                .isInstanceOf(ContentDto.class);
+        Optional<IComponentDto> dto = this.contentService.getComponentDto("ART123");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof ContentDto);
     }
     
     @Test

@@ -15,8 +15,11 @@ package org.entando.entando.aps.system.services.storage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
 import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.label.model.LabelDto;
 import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,9 +40,9 @@ class FileBrowserServiceTest {
     void shouldFindComponentDto() throws Exception {
         Mockito.lenient().when(this.storageManager.getAttributes("/path/myFile", false))
                 .thenReturn(Mockito.mock(BasicFileAttributeView.class));
-        IComponentDto dto = this.fileBrowserService.getComponentDto("/path/myFile");
-        assertThat(dto).isNotNull()
-                .isInstanceOf(BasicFileAttributeViewDto.class);
+        Optional<IComponentDto> dto = this.fileBrowserService.getComponentDto("/path/myFile");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof BasicFileAttributeViewDto);
     }
     
 }

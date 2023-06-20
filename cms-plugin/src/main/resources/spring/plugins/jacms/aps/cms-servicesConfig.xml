@@ -32,9 +32,7 @@
     
     <!-- ************************************* -->
     
-    <bean id="jacmsResourceService" class="com.agiletec.plugins.jacms.aps.system.services.resource.ResourceService" >
-        <property name="resourceManager" ref="jacmsResourceManager" />
-    </bean>
+    <bean id="jacmsResourceService" class="com.agiletec.plugins.jacms.aps.system.services.resource.ResourceService" />
 
     <bean id="jacmsContentService" class="org.entando.entando.plugins.jacms.aps.system.services.content.ContentService" >
         <property name="contentManager" ref="jacmsContentManager" />

@@ -34,6 +34,7 @@ public class ComponentUsageEntity implements Serializable {
     public static final String TYPE_CONTENT_TEMPLATE = "contentTemplate";
     public static final String TYPE_ASSET = "asset";
     public static final String TYPE_GROUP = "group";
+    public static final String TYPE_USER = "user";
     
     public static final String ONLINE_PROPERTY = "online";
     
@@ -57,7 +58,7 @@ public class ComponentUsageEntity implements Serializable {
     }
 
     public ComponentUsageEntity(String type, IComponentDto dto) {
-        this(type, dto.getCode(), dto.getStatus());
+        this(type, dto.getCode());
         this.extraProperties.putAll(dto.getExtraProperties());
     }
 

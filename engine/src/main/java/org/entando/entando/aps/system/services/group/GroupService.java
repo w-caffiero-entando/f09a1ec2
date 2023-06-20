@@ -49,41 +49,34 @@ public class GroupService implements IGroupService, ApplicationContextAware {
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
     
     public static final String TYPE_GROUP = "group";
-
-    @Autowired
-    private IGroupManager groupManager;
-
-    @Autowired
-    private IDtoBuilder<Group, GroupDto> dtoBuilder;
     
-    @Autowired(required = false)
-    private List<? extends GroupServiceUtilizer> groupServiceUtilizers;
+    private final IGroupManager groupManager;
+    
+    private final IDtoBuilder<Group, GroupDto> dtoBuilder;
+    
+    private final List<? extends GroupServiceUtilizer> groupServiceUtilizers;
 
     private ApplicationContext applicationContext;
+    
+    @Autowired
+    public GroupService(IGroupManager groupManager, 
+            IDtoBuilder<Group, GroupDto> dtoBuilder, List<? extends GroupServiceUtilizer> groupServiceUtilizers) {
+        this.groupManager = groupManager;
+        this.dtoBuilder = dtoBuilder;
+        this.groupServiceUtilizers = groupServiceUtilizers;
+    }
 
     protected IGroupManager getGroupManager() {
         return groupManager;
-    }
-
-    public void setGroupManager(IGroupManager groupManager) {
-        this.groupManager = groupManager;
     }
 
     protected IDtoBuilder<Group, GroupDto> getDtoBuilder() {
         return dtoBuilder;
     }
 
-    public void setDtoBuilder(IDtoBuilder<Group, GroupDto> dtoBuilder) {
-        this.dtoBuilder = dtoBuilder;
-    }
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-    }
-    
-    public void setGroupServiceUtilizers(List<? extends GroupServiceUtilizer> groupServiceUtilizers) {
-        this.groupServiceUtilizers = groupServiceUtilizers;
     }
 
     @SuppressWarnings("rawtypes")
@@ -123,9 +116,9 @@ public class GroupService implements IGroupService, ApplicationContextAware {
     }
     
     @Override
-    public IComponentDto getComponentDto(String code) {
+    public Optional<IComponentDto> getComponentDto(String code) {
         return Optional.ofNullable(this.getGroupManager().getGroup(code))
-                .map(g -> this.getDtoBuilder().convert(g)).orElse(null);
+                .map(g -> this.getDtoBuilder().convert(g));
     }
 
     @Override

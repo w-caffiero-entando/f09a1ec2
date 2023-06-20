@@ -20,9 +20,11 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInt
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResource;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInstance;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.util.IImageDimensionReader;
+import java.util.Optional;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.plugins.jacms.web.resource.model.AssetDto;
 import org.entando.entando.plugins.jacms.web.resource.model.ImageAssetDto;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,10 +50,10 @@ class ResourcesServiceTest {
         Mockito.when(resource.getType()).thenReturn("Image");
         Mockito.when(resource.getDefaultInstance()).thenReturn(Mockito.mock(ResourceInstance.class));
         Mockito.when(this.resourceManager.loadResource("id")).thenReturn(resource);
-        IComponentDto dto = this.resourcesService.getComponentDto("id");
-        assertThat(dto).isNotNull()
-                .isInstanceOf(AssetDto.class)
-                .isInstanceOf(ImageAssetDto.class);
+        Optional<IComponentDto> dto = this.resourcesService.getComponentDto("id");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof AssetDto);
+        Assertions.assertTrue(dto.get() instanceof ImageAssetDto);
     }
     
 }

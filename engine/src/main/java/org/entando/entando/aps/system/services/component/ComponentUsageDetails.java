@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,13 +30,12 @@ public class ComponentUsageDetails extends ComponentUsage implements Serializabl
         super.setCode(code);
     }
     
-    public ComponentUsageDetails(String type, String code, IComponentDto dto) {
+    public ComponentUsageDetails(String type, String code, Optional<IComponentDto> dtoOp) {
         this(type, code);
-        if (null != dto) {
+        dtoOp.ifPresent(dto -> {
             this.setExist(true);
-            this.setStatus(dto.getStatus());
             this.getExtraProperties().putAll(dto.getExtraProperties());
-        }
+        });
     }
     
     @Getter@Setter

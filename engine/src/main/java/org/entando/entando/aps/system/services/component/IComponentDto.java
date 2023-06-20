@@ -25,10 +25,6 @@ public interface IComponentDto {
     
     public String getType();
     
-    public default String getStatus() {
-        return null;
-    }
-    
     public default Map<String, Object> getExtraProperties() {
         return Map.of();
     }

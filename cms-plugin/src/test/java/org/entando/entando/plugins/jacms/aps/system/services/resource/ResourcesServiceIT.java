@@ -39,11 +39,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-/*
-@ActiveProfiles("test")
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
-@RunWith(SpringJUnit4ClassRunner.class)
-*/
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
     "classpath*:spring/testpropertyPlaceholder.xml",
@@ -55,7 +50,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
     "classpath*:spring/web/**.xml"
 })
 @WebAppConfiguration(value = "")
-class ResourcesServiceIntegrationTest {
+class ResourcesServiceIT {
 
     @Autowired
     private MessageSource messageSource;

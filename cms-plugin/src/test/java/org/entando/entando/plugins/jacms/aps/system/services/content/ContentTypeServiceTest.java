@@ -55,6 +55,8 @@ class ContentTypeServiceTest {
 
     private RestListRequest restListRequest;
     
+    private List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers = new ArrayList<>();
+    
     @Mock
     private HttpServletRequest httpRequest;
     
@@ -69,17 +71,15 @@ class ContentTypeServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        contentTypeServiceUtilizers.clear();
+        this.contentTypeService = new ContentTypeService(contentService, pagedMetadataMapper, contentTypeServiceUtilizers);
+        
         Mockito.lenient().when(this.httpRequest.getAttribute("user")).thenReturn(new MockUser());
         this.restListRequest = ContentTypeMockHelper.mockRestListRequest();
 
         Field f = this.contentTypeService.getClass().getDeclaredField("httpRequest");
         f.setAccessible(true);
         f.set(this.contentTypeService, this.httpRequest);
-
-        Field fp = this.contentTypeService.getClass().getDeclaredField("pagedMetadataMapper");
-        fp.setAccessible(true);
-        fp.set(this.contentTypeService, this.pagedMetadataMapper);
-
     }
 
     @Test
@@ -99,14 +99,11 @@ class ContentTypeServiceTest {
     
     @Test
     void getContentTypeUsageDetailsWithTemplateTest() throws Exception {
-        List<ContentTypeServiceUtilizer> contentTypeServiceUtilizers = new ArrayList<>();
-        this.contentTypeService.setContentTypeServiceUtilizers(contentTypeServiceUtilizers);
         ContentTypeServiceUtilizer utilizer = Mockito.mock(ContentTypeServiceUtilizer.class);
         contentTypeServiceUtilizers.add(utilizer);
         ContentModelDto contentModelDto = new ContentModelDto();
         contentModelDto.setId(23l);
-        when(utilizer.getContentTypeUtilizer(Mockito.anyString())).thenReturn(List.of(contentModelDto));
-        
+        Mockito.when(utilizer.getContentTypeUtilizer(Mockito.anyString())).thenReturn(List.of(contentModelDto));
         PagedMetadata<ContentDto> contentDtoPagedMetadata = ContentMockHelper.mockPagedContentDto(this.restListRequest, 0);
         when(this.contentService.getContents(any(RestContentListRequest.class), any(UserDetails.class))).thenReturn(contentDtoPagedMetadata);
         PagedMetadata<ComponentUsageEntity> pageUsageDetails = this.contentTypeService.getComponentUsageDetails(ContentTypeMockHelper.CONTENT_TYPE_CODE,  this.restListRequest);

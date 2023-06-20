@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.web.common.model.PagedMetadata;
@@ -26,29 +27,36 @@ import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.component.validator.ComponentValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 public class ComponentService implements IComponentService {
-
+    
+    private final List<IComponentUsageService> services;
+    
     @Autowired
-    private List<IComponentUsageService> services;
+    public ComponentService(List<IComponentUsageService> services) {
+        this.services = services;
+    }
     
     @Override
     public List<ComponentUsageDetails> extractComponentUsageDetails(List<Map<String, String>> components) {
         List<ComponentUsageDetails> details = new ArrayList<>();
+        log.debug("request for components '{}'", components);
         components.stream().forEach(m -> {
             String type = m.get(ComponentValidator.TYPE_FIELD);
             String code = m.get(ComponentValidator.CODE_FIELD);
+            log.debug("Type '{}', Object code '{}'", type, code);
             services.stream()
                     .filter(s -> s.getObjectType().equalsIgnoreCase(type)).findFirst()
                     .ifPresent(service -> {
                         try {
-                            IComponentDto dto = service.getComponentDto(code);
+                            Optional<IComponentDto> dto = service.getComponentDto(code);
                             ComponentUsageDetails cu = new ComponentUsageDetails(type, code, dto);
-                            if (null != dto) {
+                            if (dto.isPresent()) {
                                 cu.getReferences().addAll(this.extractReferences(cu, service));
                             }
                             details.add(cu);
                         } catch (Exception e) {
-                            throw new RestServerError("Error extracting Component details ", e);
+                            throw new RestServerError("Error extracting Component details", e);
                         }
                     });
         });
@@ -60,6 +68,7 @@ public class ComponentService implements IComponentService {
             RestListRequest listRequest = new RestListRequest();
             listRequest.setPageSize(0); // get all elements - no pagination
             PagedMetadata<ComponentUsageEntity> result = service.getComponentUsageDetails(usage.getCode(), listRequest);
+            log.debug("Type '{}', Object code '{}' - extracted {} references", usage.getType(), usage.getCode(), result.getTotalItems());
             usage.setUsage(result.getTotalItems());
             return result.getBody().stream().map(cue -> {
                 Map<String, Object> properties = new HashMap<>();

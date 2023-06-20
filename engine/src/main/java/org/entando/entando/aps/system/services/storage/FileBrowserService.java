@@ -209,9 +209,9 @@ public class FileBrowserService implements IFileBrowserService {
     }
     
     @Override
-    public IComponentDto getComponentDto(String path) throws EntException {
+    public Optional<IComponentDto> getComponentDto(String path) throws EntException {
         return Optional.ofNullable(this.getStorageManager().getAttributes(path, false))
-                .map(a -> this.getFileAttributeViewDtoDtoBuilder().convert(a)).orElse(null);
+                .map(a -> this.getFileAttributeViewDtoDtoBuilder().convert(a));
     }
     
     @Override

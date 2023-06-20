@@ -113,9 +113,9 @@ public class PageModelService implements IPageModelService, ApplicationContextAw
     }
     
     @Override
-    public IComponentDto getComponentDto(String code) {
+    public Optional<IComponentDto> getComponentDto(String code) {
         return Optional.ofNullable(this.pageModelManager.getPageModel(code))
-                .map(this.dtoBuilder::convert).orElse(null);
+                .map(this.dtoBuilder::convert);
     }
 
     @Override

@@ -35,11 +35,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -57,7 +59,12 @@ class CategoryServiceTest {
     private IDtoBuilder<Category, CategoryDto> dtoBuilder;
     @Mock
     private CategoryValidator categoryValidator;
-
+    
+    @BeforeEach
+    void init() {
+        categoryService = new CategoryService(categoryManager, categoryValidator, null, null);
+    }
+    
     @Test
     void getTreeWithInvalidParent() {
         when(categoryManager.getCategory(ArgumentMatchers.anyString())).thenReturn(null);
@@ -102,9 +109,9 @@ class CategoryServiceTest {
     @Test
     void shouldFindComponentDto() {
         when(categoryManager.getCategory("test")).thenReturn(Mockito.mock(Category.class));
-        IComponentDto dto = this.categoryService.getComponentDto("test");
-        assertThat(dto).isNotNull()
-                .isInstanceOf(CategoryDto.class);
+        Optional<IComponentDto> dto = this.categoryService.getComponentDto("test");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof CategoryDto);
     }
     
     @Test
@@ -116,8 +123,7 @@ class CategoryServiceTest {
             components1.add(dto);
         }
         when(utilizer1.getCategoryUtilizer(Mockito.anyString())).thenReturn(components1);
-        categoryService.setCategoryServiceUtilizers(List.of(utilizer1));
-        
+        this.categoryService = new CategoryService(categoryManager, categoryValidator, null, List.of(utilizer1));
         PagedMetadata<ComponentUsageEntity> result = categoryService.getComponentUsageDetails("test", new RestListRequest());
         Assertions.assertEquals(7, result.getBody().size());
     }

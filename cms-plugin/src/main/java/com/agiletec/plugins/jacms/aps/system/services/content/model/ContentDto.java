@@ -92,7 +92,14 @@ public class ContentDto extends EntityDto implements IComponentDto, Serializable
             this.setCategories(src.getCategories().stream().map(Category::getCode).collect(Collectors.toList()));
         }
     }
-
+    
+    @Override
+    public ComponentUsageEntity buildUsageEntity() {
+        ComponentUsageEntity cue = new ComponentUsageEntity(this.getType(), this);
+        cue.setStatus(this.getStatus());
+        return cue;
+    }
+    
     @JsonIgnore
     @Override
     public Map<String, Object> getExtraProperties() {
@@ -110,8 +117,7 @@ public class ContentDto extends EntityDto implements IComponentDto, Serializable
     public String getCode() {
         return super.getId();
     }
-
-    @Override
+    
     public String getStatus() {
         return status;
     }

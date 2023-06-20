@@ -47,23 +47,30 @@ import org.springframework.validation.BeanPropertyBindingResult;
 public class CategoryService implements ICategoryService, CategoryServiceUtilizer<CategoryDto> {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
+
+    private final ICategoryManager categoryManager;
     
-    public static final String TYPE_CATEGORY = ComponentUsageEntity.TYPE_CATEGORY;
-
-    private ICategoryManager categoryManager;
-    @Autowired(required = false)
-    private List<CategoryUtilizer> categoryUtilizers;
-    @Autowired(required = false)
-    private List<CategoryServiceUtilizer> categoryServiceUtilizers;
+    private final List<CategoryUtilizer> categoryUtilizers;
+    
+    private final List<? extends CategoryServiceUtilizer> categoryServiceUtilizers;
+    
+    private final CategoryValidator categoryValidator;
+    
     @Autowired
-    private CategoryValidator categoryValidator;
-
+    public CategoryService(ICategoryManager categoryManager, CategoryValidator categoryValidator, 
+            List<CategoryUtilizer> categoryUtilizers, List<? extends CategoryServiceUtilizer> categoryServiceUtilizers) {
+        this.categoryManager = categoryManager;
+        this.categoryValidator = categoryValidator;
+        this.categoryUtilizers = categoryUtilizers;
+        this.categoryServiceUtilizers = categoryServiceUtilizers;
+    }
+    
     protected IDtoBuilder<Category, CategoryDto> getDtoBuilder() {
         CategoryDtoBuilder builder = new CategoryDtoBuilder();
         builder.setCategoryManager(this.categoryManager);
         return builder;
     }
-
+    
     @Override
     public Integer getComponentUsage(String componentCode) {
         int totalCount = 0;
@@ -83,14 +90,14 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
         List<ComponentUsageEntity> components = new ArrayList<>();
-        if (null != this.categoryServiceUtilizers) {
-            for (var utilizer : this.categoryServiceUtilizers) {
+        Optional.of(this.categoryServiceUtilizers).ifPresent(list -> {
+            for (var utilizer : list) {
                 List<IComponentDto> objects = utilizer.getCategoryUtilizer(componentCode);
                 List<ComponentUsageEntity> utilizerForService = objects.stream()
                         .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
                 components.addAll(utilizerForService);
             }
-        }
+        });
         List<CategoryDto> categories = this.getCategoryUtilizer(componentCode);
         components.addAll(categories.stream()
                         .map(o -> o.buildUsageEntity()).collect(Collectors.toList()));
@@ -102,7 +109,7 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
 
     @Override
     public String getObjectType() {
-        return TYPE_CATEGORY;
+        return ComponentUsageEntity.TYPE_CATEGORY;
     }
 
     @Override
@@ -134,7 +141,7 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
         List<CategoryDto> res = new ArrayList<>();
         Category parent = this.getCategoryManager().getCategory(parentCode);
         if (null == parent) {
-            throw new ResourceNotFoundException(CategoryValidator.ERRCODE_PARENT_CATEGORY_NOT_FOUND, TYPE_CATEGORY, parentCode);
+            throw new ResourceNotFoundException(CategoryValidator.ERRCODE_PARENT_CATEGORY_NOT_FOUND, ComponentUsageEntity.TYPE_CATEGORY, parentCode);
         }
         Optional.ofNullable(parent.getChildrenCodes()).ifPresent(children -> Arrays.asList(children).forEach(childCode -> {
             Category child = this.getCategoryManager().getCategory(childCode);
@@ -149,7 +156,7 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
     public CategoryDto getCategory(String categoryCode) {
         Category category = this.getCategoryManager().getCategory(categoryCode);
         if (null == category) {
-            throw new ResourceNotFoundException(CategoryValidator.ERRCODE_CATEGORY_NOT_FOUND, TYPE_CATEGORY, categoryCode);
+            throw new ResourceNotFoundException(CategoryValidator.ERRCODE_CATEGORY_NOT_FOUND, ComponentUsageEntity.TYPE_CATEGORY, categoryCode);
         }
         CategoryDto dto = null;
         try {
@@ -169,14 +176,14 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
     }
 
     @Override
-    public IComponentDto getComponentDto(String code) {
+    public Optional<IComponentDto> getComponentDto(String code) {
         return Optional.ofNullable(this.getCategoryManager().getCategory(code))
-                .map(c -> this.getDtoBuilder().convert(c)).orElse(null);
+                .map(c -> this.getDtoBuilder().convert(c));
     }
 
     @Override
     public boolean exists(String categoryCode) {
-        return null != this.getComponentDto(categoryCode);
+        return this.getComponentDto(categoryCode).isPresent();
     }
 
     @Override
@@ -184,7 +191,7 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
         Category group = this.getCategoryManager().getCategory(categoryCode);
         if (null == group) {
             logger.warn("no category found with code {}", categoryCode);
-            throw new ResourceNotFoundException(CategoryValidator.ERRCODE_CATEGORY_NOT_FOUND, TYPE_CATEGORY, categoryCode);
+            throw new ResourceNotFoundException(CategoryValidator.ERRCODE_CATEGORY_NOT_FOUND, ComponentUsageEntity.TYPE_CATEGORY, categoryCode);
         }
         CategoryServiceUtilizer<?> utilizer = this.getCategoryServiceUtilizer(managerName);
         if (null == utilizer) {
@@ -250,7 +257,7 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
         }
         Category category = this.getCategoryManager().getCategory(categoryDto.getCode());
         if (null == category) {
-            throw new ResourceNotFoundException(CategoryValidator.ERRCODE_CATEGORY_NOT_FOUND, TYPE_CATEGORY, categoryDto.getCode());
+            throw new ResourceNotFoundException(CategoryValidator.ERRCODE_CATEGORY_NOT_FOUND, ComponentUsageEntity.TYPE_CATEGORY, categoryDto.getCode());
         }
         CategoryDto dto = null;
         try {
@@ -273,12 +280,12 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
             throw new ResourceNotFoundException("category", categoryCode);
         }
         if (categoryCode.equals(CategoryValidator.ROOT_CATEGORY)) {
-            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(category, TYPE_CATEGORY);
+            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(category, ComponentUsageEntity.TYPE_CATEGORY);
             bindingResult.reject(CategoryValidator.ERRCODE_ROOT_CATEGORY_CANNOT_BE_DELETED, new String[]{categoryCode}, "category.cannot.delete.root");
             throw new ValidationGenericException(bindingResult);
         }
         if (category.getChildrenCodes().length > 0) {
-            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(category, TYPE_CATEGORY);
+            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(category, ComponentUsageEntity.TYPE_CATEGORY);
             bindingResult.reject(CategoryValidator.ERRCODE_CATEGORY_HAS_CHILDREN, new String[]{categoryCode}, "category.cannot.delete.children");
             throw new ValidationGenericException(bindingResult);
         }
@@ -287,7 +294,7 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
                 for (CategoryUtilizer categoryUtilizer : this.getCategoryUtilizers()) {
                     List references = categoryUtilizer.getCategoryUtilizers(categoryCode);
                     if (null != references && !references.isEmpty()) {
-                        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(category, TYPE_CATEGORY);
+                        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(category, ComponentUsageEntity.TYPE_CATEGORY);
                         bindingResult.reject(CategoryValidator.ERRCODE_CATEGORY_REFERENCES, new String[]{categoryCode}, "category.cannot.delete.references");
                         throw new ValidationGenericException(bindingResult);
                     }
@@ -306,29 +313,12 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
         return categoryManager;
     }
 
-    public void setCategoryManager(ICategoryManager categoryManager) {
-        this.categoryManager = categoryManager;
-    }
-
     protected List<CategoryUtilizer> getCategoryUtilizers() {
         return categoryUtilizers;
     }
 
-    public void setCategoryUtilizers(List<CategoryUtilizer> categoryUtilizers) {
-        this.categoryUtilizers = categoryUtilizers;
-    }
-
-    public void setCategoryServiceUtilizers(List<CategoryServiceUtilizer> categoryServiceUtilizers) {
-        this.categoryServiceUtilizers = categoryServiceUtilizers;
-    }
-
     public CategoryValidator getCategoryValidator() {
         return categoryValidator;
-    }
-
-    public CategoryService setCategoryValidator(CategoryValidator categoryValidator) {
-        this.categoryValidator = categoryValidator;
-        return this;
     }
 
     /**
@@ -340,7 +330,7 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
      * @return the optional of the dto resulting from the validation, if empty the group has NOT to be saved
      */
     protected Optional<CategoryDto> checkForExistenceOrThrowValidationConflictException(CategoryDto categoryDto) {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(categoryDto, TYPE_CATEGORY);
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(categoryDto, ComponentUsageEntity.TYPE_CATEGORY);
         Category savedCategory = this.getCategoryManager().getCategory(categoryDto.getCode());
         // check for idempotemcy
         if (null != savedCategory && savedCategory.getCode().equals(categoryDto.getCode())) {

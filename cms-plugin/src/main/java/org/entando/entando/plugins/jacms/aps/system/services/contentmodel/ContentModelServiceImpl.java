@@ -24,7 +24,6 @@ import com.agiletec.plugins.jacms.aps.system.services.contentmodel.dictionary.Co
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentModelDto;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentModelReference;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.IEntityModelDictionary;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -126,9 +125,9 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
     }
     
     @Override
-    public IComponentDto getComponentDto(String code) {
+    public Optional<IComponentDto> getComponentDto(String code) {
         return Optional.ofNullable(this.contentModelManager.getContentModel(Long.valueOf(code)))
-                .map(this.dtoBuilder::convert).orElse(null);
+                .map(this.dtoBuilder::convert);
     }
     
     @Override
@@ -243,10 +242,9 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(Long modelId, RestListRequest restListRequest) {
         final List<ContentModelReference> contentModelReferences = contentModelManager
                 .getContentModelReferences(modelId, false);
-
         final List<ComponentUsageEntity> componentUsageDetails = contentModelReferences.stream()
-                .map(f -> createToComponentUsageEntity(f.getPageCode(), getStatusString(f.isOnline()),
-                        ComponentUsageEntity.TYPE_PAGE, f.isOnline())).collect(Collectors.toList());
+                .map(f -> createToComponentUsageEntity(f.getPageCode(), Optional.of(getStatusString(f.isOnline())),
+                        ComponentUsageEntity.TYPE_PAGE, Optional.of(f.isOnline()))).collect(Collectors.toList());
 
         final List<SmallEntityType> defaultContentTemplateUsedList = this.contentManager.getSmallEntityTypes().stream()
                 .filter(
@@ -262,8 +260,8 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
                 ).collect(Collectors.toList());
 
         final List<ComponentUsageEntity> contentTemplateUsageDetails = defaultContentTemplateUsedList.stream()
-                .map(f -> createToComponentUsageEntity(f.getCode(), null,
-                        "contentType", null)).collect(Collectors.toList());
+                .map(f -> createToComponentUsageEntity(f.getCode(), Optional.empty(),
+                        ComponentUsageEntity.TYPE_CONTENT_TYPE, Optional.empty())).collect(Collectors.toList());
 
         componentUsageDetails.addAll(contentTemplateUsageDetails);
 
@@ -287,12 +285,12 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
         return "offline";
     }
 
-    private ComponentUsageEntity createToComponentUsageEntity(String code, String status, String type, Boolean online) {
+    private ComponentUsageEntity createToComponentUsageEntity(String code, Optional<String> status, String type, Optional<Boolean> online) {
         ComponentUsageEntity componentUsage = new ComponentUsageEntity();
         componentUsage.setCode(code);
-        Optional.ofNullable(status).ifPresent(componentUsage::setStatus);
+        status.ifPresent(componentUsage::setStatus);
         componentUsage.setType(type);
-        Optional.ofNullable(online).ifPresent(b -> componentUsage.getExtraProperties().put(ComponentUsageEntity.ONLINE_PROPERTY, b));
+        online.ifPresent(b -> componentUsage.getExtraProperties().put(ComponentUsageEntity.ONLINE_PROPERTY, b));
         return componentUsage;
     }
 
@@ -389,14 +387,10 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
                             return (defaultModelUsed || listModelUsed);
                         }
                 ).collect(Collectors.toList());
-
-        if (!defaultContentTemplateUsedList.isEmpty()) {
-            ArrayList<String> defList = new ArrayList<>();
-            defaultContentTemplateUsedList.forEach(f -> defList.add(f.getCode()));
-            final String defListString = String.join(", ", defList);
-            ArrayList<String> args = new ArrayList<>();
-            args.add(defListString);
-            errors.reject(ContentModelValidator.ERRCODE_CONTENTMODEL_METADATA_REFERENCES, args.toArray(),
+        final String defListString = defaultContentTemplateUsedList.stream()
+                .map(SmallEntityType::getCode).collect(Collectors.joining(", "));
+        if (StringUtils.isNotEmpty(defListString)) {
+            errors.reject(ContentModelValidator.ERRCODE_CONTENTMODEL_METADATA_REFERENCES, defListString.split(""),
                     "contentmodel.defaultMetadata.references");
         }
         return errors;

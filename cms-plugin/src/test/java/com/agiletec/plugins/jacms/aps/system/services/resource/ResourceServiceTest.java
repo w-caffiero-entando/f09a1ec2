@@ -22,6 +22,7 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInt
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceDto;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
@@ -46,18 +47,19 @@ class ResourceServiceTest {
     
     @BeforeEach
     void setUp() throws Exception {
+        this.resourceService = new ResourceService(resourceManager, null);
         this.resourceService.setUp();
     }
     
     @Test
     void shouldFindComponentDto() throws Exception {
         ResourceInterface resource = Mockito.mock(ImageResource.class);
-        Mockito.lenient().when(resource.getType()).thenReturn("Image");
-        Mockito.lenient().when(resource.getDefaultInstance()).thenReturn(Mockito.mock(ResourceInstance.class));
-        Mockito.lenient().when(this.resourceManager.loadResource("id")).thenReturn(resource);
-        IComponentDto dto = this.resourceService.getComponentDto("id");
-        assertThat(dto).isNotNull()
-                .isInstanceOf(ResourceDto.class);
+        Mockito.when(resource.getType()).thenReturn("Image");
+        Mockito.when(resource.getDefaultInstance()).thenReturn(Mockito.mock(ResourceInstance.class));
+        Mockito.when(this.resourceManager.loadResource("id")).thenReturn(resource);
+        Optional<IComponentDto> dto = this.resourceService.getComponentDto("id");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof ResourceDto);
     }
     
     @Test
@@ -69,7 +71,9 @@ class ResourceServiceTest {
             components.add(dto);
         }
         when(utilizer.getResourceUtilizer(Mockito.anyString())).thenReturn(components);
-        resourceService.setResourceServiceUtilizers(List.of(utilizer));
+        
+        this.resourceService = new ResourceService(resourceManager, List.of(utilizer));
+        this.resourceService.setUp();
         
         PagedMetadata<ComponentUsageEntity> result = resourceService.getComponentUsageDetails("test", new RestListRequest());
         Assertions.assertEquals(9, result.getBody().size());

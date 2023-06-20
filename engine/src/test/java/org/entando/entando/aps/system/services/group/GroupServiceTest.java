@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.group.model.GroupDtoBuilder;
 import org.junit.jupiter.api.Assertions;
@@ -33,7 +34,7 @@ class GroupServiceTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        groupService.setDtoBuilder(new GroupDtoBuilder());
+        groupService = new GroupService(groupManager, new GroupDtoBuilder(), null);
     }
 
     @Test
@@ -78,9 +79,9 @@ class GroupServiceTest {
         group.setDescription("test description");
         when(groupManager.getGroup(group.getName())).thenReturn(group);
         Mockito.when(this.groupManager.getGroup("test")).thenReturn(group);
-        IComponentDto dto = this.groupService.getComponentDto("test");
-        assertThat(dto).isNotNull()
-                .isInstanceOf(GroupDto.class);
+        Optional<IComponentDto> dto = this.groupService.getComponentDto("test");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof GroupDto);
     }
 
 }

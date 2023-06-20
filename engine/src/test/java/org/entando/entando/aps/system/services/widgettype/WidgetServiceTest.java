@@ -79,7 +79,9 @@ import org.springframework.util.FileSystemUtils;
 
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
+import java.util.Optional;
 import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
 
 @ExtendWith(MockitoExtension.class)
 class WidgetServiceTest {
@@ -391,7 +393,6 @@ class WidgetServiceTest {
 
     @Test
     void getWidgetUsageForNonExistingCodeShouldReturnZero() {
-
         int componentUsage = widgetService.getComponentUsage("non_existing");
         assertEquals(0, componentUsage);
     }
@@ -401,9 +402,9 @@ class WidgetServiceTest {
         WidgetType type = Mockito.mock(WidgetType.class);
         when(type.getCode()).thenReturn("test");
         when(widgetManager.getWidgetType("test")).thenReturn(type);
-        IComponentDto dto = this.widgetService.getComponentDto("test");
-        assertThat(dto).isNotNull()
-                .isInstanceOf(WidgetDto.class);
+        Optional<IComponentDto> dto = this.widgetService.getComponentDto("test");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof WidgetDto);
     }
 
     @Test

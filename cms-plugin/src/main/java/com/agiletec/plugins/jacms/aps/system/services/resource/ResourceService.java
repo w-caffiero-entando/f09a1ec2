@@ -27,9 +27,6 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceDto
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.DtoBuilder;
@@ -48,13 +45,18 @@ public class ResourceService implements IResourceService,
         GroupServiceUtilizer<ResourceDto>, CategoryServiceUtilizer<ResourceDto>, IComponentUsageService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
+    
+    public static final String TYPE_ASSET = ComponentUsageEntity.TYPE_ASSET;
 
     private IResourceManager resourceManager;
     private IDtoBuilder<ResourceInterface, ResourceDto> dtoBuilder;
+    private List<? extends ResourceServiceUtilizer> resourceServiceUtilizers = new ArrayList<>();
     
-    @Getter(AccessLevel.PROTECTED)@Setter
-    @Autowired(required = false)
-    private List<? extends ResourceServiceUtilizer> resourceServiceUtilizers;
+    @Autowired
+    public ResourceService(IResourceManager resourceManager, List<? extends ResourceServiceUtilizer> resourceServiceUtilizers) {
+        this.resourceManager = resourceManager;
+        this.resourceServiceUtilizers = resourceServiceUtilizers;
+    }
 
     public IResourceManager getResourceManager() {
         return resourceManager;
@@ -128,9 +130,9 @@ public class ResourceService implements IResourceService,
     }
 
     @Override
-    public IComponentDto getComponentDto(String code) throws EntException {
+    public Optional<IComponentDto> getComponentDto(String code) throws EntException {
         return Optional.ofNullable(this.resourceManager.loadResource(code))
-                .map(c -> this.getDtoBuilder().convert(c)).orElse(null);
+                .map(c -> this.getDtoBuilder().convert(c));
     }
 
     @Override
@@ -140,7 +142,7 @@ public class ResourceService implements IResourceService,
 
     @Override
     public String getObjectType() {
-        return "asset";
+        return TYPE_ASSET;
     }
 
     @Override
@@ -154,13 +156,11 @@ public class ResourceService implements IResourceService,
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
         List<ComponentUsageEntity> components = new ArrayList<>();
-        if (null != this.getResourceServiceUtilizers()) {
-            for (var utilizer : this.getResourceServiceUtilizers()) {
-                List<IComponentDto> objects = utilizer.getResourceUtilizer(componentCode);
-                List<ComponentUsageEntity> utilizerForService = objects.stream()
-                        .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
-                components.addAll(utilizerForService);
-            }
+        for (var utilizer : this.resourceServiceUtilizers) {
+            List<IComponentDto> objects = utilizer.getResourceUtilizer(componentCode);
+            List<ComponentUsageEntity> utilizerForService = objects.stream()
+                    .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
+            components.addAll(utilizerForService);
         }
         List<ComponentUsageEntity> sublist = restListRequest.getSublist(components);
         PagedMetadata<ComponentUsageEntity> usageEntries = new PagedMetadata<>(restListRequest, components.size());

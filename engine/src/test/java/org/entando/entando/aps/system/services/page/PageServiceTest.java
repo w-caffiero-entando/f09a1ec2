@@ -86,12 +86,15 @@ class PageServiceTest {
     private PageSearchMapper pageSearchMapper;
     @Mock
     private PagedMetadataMapper pagedMetadataMapper;
-
-    @InjectMocks
+    
     private PageService pageService;
 
     @BeforeEach
     public void setUp() {
+        pageService = new PageService(pageManager, pageModelManager, groupManager, 
+                null, null, null, 
+                dtoBuilder, pageTokenManager, pageSearchMapper, pagedMetadataMapper, null, null);
+        pageService.setApplicationContext(this.applicationContext);
         Mockito.lenient().when(groupManager.getGroup("free")).thenReturn(new Group());
         Mockito.lenient().when(groupManager.getGroup("admin")).thenReturn(new Group());
     }

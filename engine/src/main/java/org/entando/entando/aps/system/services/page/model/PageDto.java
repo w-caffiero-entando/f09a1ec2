@@ -108,6 +108,13 @@ public class PageDto implements IComponentDto {
         }
         this.setFullPath(page.getPath(pageManager));
     }
+    
+    @Override
+    public ComponentUsageEntity buildUsageEntity() {
+        ComponentUsageEntity cue = new ComponentUsageEntity(this.getType(), this);
+        cue.setStatus(this.getStatus());
+        return cue;
+    }
 
     @Override
     public Map<String, Object> getExtraProperties() {
@@ -128,8 +135,7 @@ public class PageDto implements IComponentDto {
     public void setCode(String code) {
         this.code = code;
     }
-
-    @Override
+    
     public String getStatus() {
         return status;
     }

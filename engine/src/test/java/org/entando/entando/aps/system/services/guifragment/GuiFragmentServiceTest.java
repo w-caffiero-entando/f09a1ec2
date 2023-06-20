@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.assertionhelper.ComponentUsageEntityAssertionHelper;
@@ -43,6 +44,7 @@ import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.group.model.GroupDto;
 import org.entando.entando.web.guifragment.model.GuiFragmentRequestBody;
 import org.entando.entando.web.page.model.PageSearchRequest;
 import org.junit.jupiter.api.Assertions;
@@ -219,13 +221,13 @@ class GuiFragmentServiceTest {
         builder.setBeanFactory(factory);
         guiFragmentService.setDtoBuilder(builder);
         Mockito.when(guiFragmentManager.getGuiFragment("test_dto")).thenReturn(fragment);
-        IComponentDto dto = this.guiFragmentService.getComponentDto("test_dto");
-        assertThat(dto).isNotNull()
-                .isInstanceOf(GuiFragmentDto.class);
+        Optional<IComponentDto> dto = this.guiFragmentService.getComponentDto("test_dto");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof GuiFragmentDto);
         if (nullWidgetRef) {
-            Assertions.assertNull(((GuiFragmentDto) dto).getWidgetType());
+            Assertions.assertNull(((GuiFragmentDto) dto.get()).getWidgetType());
         } else {
-            Assertions.assertNotNull(((GuiFragmentDto) dto).getWidgetType());
+            Assertions.assertNotNull(((GuiFragmentDto) dto.get()).getWidgetType());
         }
     }
     

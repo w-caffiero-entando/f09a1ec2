@@ -21,6 +21,7 @@ import com.agiletec.aps.util.ApsProperties;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.component.IComponentDto;
@@ -37,7 +38,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,10 +51,7 @@ class LabelServiceTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        labelService = new LabelService();
-        labelService.setI18nManager(i18nManager);
-        labelService.setLangManager(langManager);
+        labelService = new LabelService(this.i18nManager, this.langManager);
         lang = new Lang();
         lang.setCode("EN");
     }
@@ -313,11 +310,11 @@ class LabelServiceTest {
     void shouldFindComponentDto() throws Exception {
         ApsProperties existinglabels = LabelTestHelper.stubTestApsProperties();
         Mockito.when(i18nManager.getLabelGroup(anyString())).thenReturn(existinglabels);
-        IComponentDto dto = this.labelService.getComponentDto("test");
-        assertThat(dto).isNotNull()
-                .isInstanceOf(LabelDto.class);
-        Assertions.assertEquals("test", dto.getCode());
-        Assertions.assertEquals("test", ((LabelDto) dto).getKey());
+        Optional<IComponentDto> dto = this.labelService.getComponentDto("test");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof LabelDto);
+        Assertions.assertEquals("test", dto.get().getCode());
+        Assertions.assertEquals("test", ((LabelDto) dto.get()).getKey());
     }
 
 }

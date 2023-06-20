@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.user.IUserService;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
@@ -82,7 +83,7 @@ public class UserDto implements IComponentDto {
     @JsonIgnore
     @Override
     public String getType() {
-        return "user";
+        return ComponentUsageEntity.TYPE_USER;
     }
     
     @JsonIgnore

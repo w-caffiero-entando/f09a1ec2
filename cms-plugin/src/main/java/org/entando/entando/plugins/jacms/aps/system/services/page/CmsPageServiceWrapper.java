@@ -78,13 +78,15 @@ public class CmsPageServiceWrapper implements ContentServiceUtilizer<PageDto> {
     
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
-        return null;
+        PagedMetadata<ComponentUsageEntity> pm = new PagedMetadata<>(restListRequest, 0);
+        pm.setBody(List.of());
+        return pm;
     }
 
     @Override
-    public IComponentDto getComponentDto(String code) {
+    public Optional<IComponentDto> getComponentDto(String code) {
         return Optional.ofNullable(this.pageManager.getDraftPage(code))
-                .map(c -> this.getDtoBuilder().convert(c)).orElse(null);
+                .map(c -> this.getDtoBuilder().convert(c));
     }
     
     @Override

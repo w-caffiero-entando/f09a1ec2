@@ -21,10 +21,12 @@
  */
 package org.entando.entando.plugins.jpseo.aps.system.services.page;
 
+import com.agiletec.aps.system.services.group.IGroupManager;
+import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
-import com.agiletec.aps.system.services.lang.LangManager;
 import com.agiletec.aps.system.services.page.IPage;
-import com.agiletec.aps.system.services.page.PageManager;
+import com.agiletec.aps.system.services.page.IPageManager;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.ApsProperties;
@@ -37,8 +39,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.IDtoBuilder;
+import org.entando.entando.aps.system.services.page.IPageAuthorizationService;
+import org.entando.entando.aps.system.services.page.IPageTokenManager;
 import org.entando.entando.aps.system.services.page.PageService;
+import org.entando.entando.aps.system.services.page.PageServiceUtilizer;
 import org.entando.entando.aps.system.services.page.model.PageDto;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
+import org.entando.entando.aps.system.services.widgettype.validators.WidgetProcessorFactory;
+import org.entando.entando.aps.system.services.widgettype.validators.WidgetValidatorFactory;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -46,10 +55,11 @@ import org.entando.entando.plugins.jpseo.web.page.model.SeoData;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoDataByLang;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoMetaTag;
 import org.entando.entando.plugins.jpseo.web.page.model.SeoPageRequest;
+import org.entando.entando.web.common.assembler.PageSearchMapper;
+import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.page.model.PagePositionRequest;
 import org.entando.entando.web.page.model.PageRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -58,13 +68,25 @@ import org.springframework.validation.DataBinder;
 @Service("SeoPageService")
 public class SeoPageService extends PageService {
 
+    public SeoPageService(IPageManager pageManager,
+            IPageModelManager pageModelManager, IGroupManager groupManager,
+            IWidgetTypeManager widgetTypeManager, WidgetValidatorFactory widgetValidatorFactory,
+            WidgetProcessorFactory widgetProcessorFactory, IDtoBuilder<IPage, PageDto> dtoBuilder,
+            IPageTokenManager pageTokenManager, PageSearchMapper pageSearchMapper,
+            PagedMetadataMapper pagedMetadataMapper, IPageAuthorizationService pageAuthorizationService,
+            List<? extends PageServiceUtilizer> pageServiceUtilizers, ILangManager langManager) {
+        super(pageManager, pageModelManager, groupManager, widgetTypeManager, widgetValidatorFactory,
+                widgetProcessorFactory, dtoBuilder, pageTokenManager, pageSearchMapper, pagedMetadataMapper,
+                pageAuthorizationService, pageServiceUtilizers);
+        this.pageManager = pageManager;
+        this.langManager = langManager;
+    }
+
     private static final EntLogger logger =  EntLogFactory.getSanitizedLogger(SeoPageService.class);
-
-    @Autowired
-    private PageManager pageManager;
-
-    @Autowired
-    private LangManager langManager;
+    
+    private final IPageManager pageManager;
+    
+    private final ILangManager langManager;
 
     @Override
     public SeoPageDto getPage(String pageCode, String status, UserDetails user) {

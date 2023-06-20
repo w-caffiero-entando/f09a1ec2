@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
@@ -85,7 +86,6 @@ import org.entando.entando.web.page.model.WidgetConfigurationRequest;
 import org.entando.entando.web.page.validator.PageValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.Nullable;
@@ -96,10 +96,13 @@ import org.springframework.validation.DataBinder;
 /**
  * @author paddeo
  */
+@RequiredArgsConstructor
 public class PageService implements IComponentExistsService, IPageService,
         GroupServiceUtilizer<PageDto>, PageModelServiceUtilizer<PageDto>, ApplicationContextAware {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
+    
+    public static final String TYPE_PAGE = ComponentUsageEntity.TYPE_PAGE;
 
     public static final String ERRCODE_PAGE_NOT_FOUND = "1";
     public static final String ERRCODE_PAGEMODEL_NOT_FOUND = "1";
@@ -111,100 +114,60 @@ public class PageService implements IComponentExistsService, IPageService,
     public static final String ERRCODE_STATUS_INVALID = "3";
     public static final String ERRCODE_PAGE_REFERENCES = "5";
 
-    @Autowired
-    private IPageManager pageManager;
+    private final IPageManager pageManager;
 
-    @Autowired
-    private IPageModelManager pageModelManager;
+    private final IPageModelManager pageModelManager;
 
-    @Autowired
-    private IGroupManager groupManager;
+    private final IGroupManager groupManager;
 
-    @Autowired
-    private IWidgetTypeManager widgetTypeManager;
+    private final IWidgetTypeManager widgetTypeManager;
 
-    @Autowired
-    private WidgetValidatorFactory widgetValidatorFactory;
+    private final WidgetValidatorFactory widgetValidatorFactory;
 
-    @Autowired
-    private WidgetProcessorFactory widgetProcessorFactory;
+    private final WidgetProcessorFactory widgetProcessorFactory;
 
-    @Autowired
-    private IDtoBuilder<IPage, PageDto> dtoBuilder;
+    private final IDtoBuilder<IPage, PageDto> dtoBuilder;
 
     private JsonPatchService<PageDto> jsonPatchService = new JsonPatchService<>(PageDto.class);
 
     private ApplicationContext applicationContext;
 
-    @Autowired
-    private IPageTokenManager pageTokenManager;
+    private final IPageTokenManager pageTokenManager;
 
-    @Autowired
-    private PageSearchMapper pageSearchMapper;
+    private final PageSearchMapper pageSearchMapper;
 
-    @Autowired
-    private PagedMetadataMapper pagedMetadataMapper;
+    private final PagedMetadataMapper pagedMetadataMapper;
 
-    @Autowired
-    private IPageAuthorizationService pageAuthorizationService;
+    private final IPageAuthorizationService pageAuthorizationService;
     
-    @Autowired(required = false)
-    private List<? extends PageServiceUtilizer> pageServiceUtilizers;
+    private final List<? extends PageServiceUtilizer> pageServiceUtilizers;
 
     protected IPageManager getPageManager() {
         return pageManager;
-    }
-
-    public void setPageManager(IPageManager pageManager) {
-        this.pageManager = pageManager;
     }
 
     protected IPageModelManager getPageModelManager() {
         return pageModelManager;
     }
 
-    public void setPageModelManager(IPageModelManager pageModelManager) {
-        this.pageModelManager = pageModelManager;
-    }
-
     public IGroupManager getGroupManager() {
         return groupManager;
-    }
-
-    public void setGroupManager(IGroupManager groupManager) {
-        this.groupManager = groupManager;
     }
 
     protected IDtoBuilder<IPage, PageDto> getDtoBuilder() {
         return dtoBuilder;
     }
 
-    public void setDtoBuilder(IDtoBuilder<IPage, PageDto> dtoBuilder) {
-        this.dtoBuilder = dtoBuilder;
-    }
-
     protected WidgetValidatorFactory getWidgetValidatorFactory() {
         return widgetValidatorFactory;
-    }
-
-    public void setWidgetValidatorFactory(WidgetValidatorFactory widgetValidatorFactory) {
-        this.widgetValidatorFactory = widgetValidatorFactory;
     }
 
     protected WidgetProcessorFactory getWidgetProcessorFactory() {
         return widgetProcessorFactory;
     }
 
-    public void setWidgetProcessorFactory(WidgetProcessorFactory widgetProcessorFactory) {
-        this.widgetProcessorFactory = widgetProcessorFactory;
-    }
-
     protected IWidgetTypeManager getWidgetTypeManager() {
         return widgetTypeManager;
-    }
-
-    public void setWidgetTypeManager(IWidgetTypeManager widgetTypeManager) {
-        this.widgetTypeManager = widgetTypeManager;
     }
 
     @Override
@@ -214,10 +177,6 @@ public class PageService implements IComponentExistsService, IPageService,
 
     public IPageTokenManager getPageTokenManager() {
         return pageTokenManager;
-    }
-
-    public void setPageTokenManager(IPageTokenManager pageTokenManager) {
-        this.pageTokenManager = pageTokenManager;
     }
 
     @Override
@@ -295,9 +254,9 @@ public class PageService implements IComponentExistsService, IPageService,
     }
 
     @Override
-    public IComponentDto getComponentDto(String code) {
+    public Optional<IComponentDto> getComponentDto(String code) {
         return Optional.ofNullable(this.loadPage(code, IPageService.STATUS_DRAFT))
-                .map(c -> this.getDtoBuilder().convert(c)).orElse(null);
+                .map(c -> this.getDtoBuilder().convert(c));
     }
 
     public boolean exists(String pageCode, String status) {
@@ -916,7 +875,7 @@ public class PageService implements IComponentExistsService, IPageService,
     
     @Override
     public String getObjectType() {
-        return "page";
+        return TYPE_PAGE;
     }
 
     private PagedMetadata<PageDto> getPagedResult(PageSearchRequest request, List<PageDto> pages) {
