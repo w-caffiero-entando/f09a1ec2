@@ -50,6 +50,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.payload", Matchers.hasSize(0)))
+                .andExpect(jsonPath("$.metaData", Matchers.hasSize(0)))
                 .andExpect(jsonPath("$.errors", Matchers.hasSize(2)))
                 .andExpect(jsonPath("$.errors[0].code", is("1")))
                 .andExpect(jsonPath("$.errors[1].code", is("1")));
@@ -72,6 +73,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.payload", Matchers.hasSize(0)))
+                .andExpect(jsonPath("$.metaData", Matchers.hasSize(0)))
                 .andExpect(jsonPath("$.errors", Matchers.hasSize(2)))
                 .andExpect(jsonPath("$.errors[0].code", is("1")))
                 .andExpect(jsonPath("$.errors[1].code", is("2")));
@@ -90,12 +92,15 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isOk());
-        result.andExpect(jsonPath("$.size()", is(1)));
-        result.andExpect(jsonPath("$[0].type", is("pageModel")));
-        result.andExpect(jsonPath("$[0].code", is("non-existent")));
-        result.andExpect(jsonPath("$[0].exist", is(false)));
-        result.andExpect(jsonPath("$[0].usage").doesNotExist());
-        result.andExpect(jsonPath("$[0].references.size()", is(0)));
+        result.andExpect(jsonPath("$.size()", is(3)));
+        result.andExpect(jsonPath("$.metaData.size()", is(0)));
+        result.andExpect(jsonPath("$.errors.size()", is(0)));
+        result.andExpect(jsonPath("$.payload.size()", is(1)));
+        result.andExpect(jsonPath("$.payload[0].type", is("pageModel")));
+        result.andExpect(jsonPath("$.payload[0].code", is("non-existent")));
+        result.andExpect(jsonPath("$.payload[0].exist", is(false)));
+        result.andExpect(jsonPath("$.payload[0].usage").doesNotExist());
+        result.andExpect(jsonPath("$.payload[0].references.size()", is(0)));
     }
     
     @Test
@@ -112,20 +117,24 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken));
         String bodyResult = result.andReturn().getResponse().getContentAsString();
         result.andExpect(status().isOk());
-        result.andExpect(jsonPath("$.size()", is(1)));
-        result.andExpect(jsonPath("$[0].type", is("pageModel")));
-        result.andExpect(jsonPath("$[0].code", is("service")));
-        result.andExpect(jsonPath("$[0].exist", is(true)));
-        result.andExpect(jsonPath("$[0].usage", is(10)));
-        result.andExpect(jsonPath("$[0].references.size()", is(10)));
+        
+        result.andExpect(jsonPath("$.size()", is(3)));
+        result.andExpect(jsonPath("$.metaData.size()", is(0)));
+        result.andExpect(jsonPath("$.errors.size()", is(0)));
+        result.andExpect(jsonPath("$.payload.size()", is(1)));
+        result.andExpect(jsonPath("$.payload[0].type", is("pageModel")));
+        result.andExpect(jsonPath("$.payload[0].code", is("service")));
+        result.andExpect(jsonPath("$.payload[0].exist", is(true)));
+        result.andExpect(jsonPath("$.payload[0].usage", is(10)));
+        result.andExpect(jsonPath("$.payload[0].references.size()", is(10)));
         int onlinePages = 0;
         List<String> pages = List.of("errorpage", "login", "notfound", "primapagina", "service");
         for (int i = 0; i < 10; i++) {
-            result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
-            result.andExpect(jsonPath("$[0].references[" + i + "].type", is("page")));
-            String pageCode = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
+            result.andExpect(jsonPath("$.payload[0].references[" + i + "].size()", is(3)));
+            result.andExpect(jsonPath("$.payload[0].references[" + i + "].type", is("page")));
+            String pageCode = JsonPath.read(bodyResult, "$.payload[0].references[" + i + "].code");
             Assertions.assertTrue(pages.contains(pageCode));
-            if (JsonPath.read(bodyResult, "$[0].references[" + i + "].online")) {
+            if (JsonPath.read(bodyResult, "$.payload[0].references[" + i + "].online")) {
                 onlinePages++;
             }
         }
@@ -146,17 +155,20 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken));
         String bodyResult = result.andReturn().getResponse().getContentAsString();
         result.andExpect(status().isOk());
-        result.andExpect(jsonPath("$.size()", is(1)));
-        result.andExpect(jsonPath("$[0].type", is("category")));
-        result.andExpect(jsonPath("$[0].code", is("general")));
-        result.andExpect(jsonPath("$[0].exist", is(true)));
-        result.andExpect(jsonPath("$[0].usage", is(3)));
-        result.andExpect(jsonPath("$[0].references.size()", is(3)));
+        result.andExpect(jsonPath("$.size()", is(3)));
+        result.andExpect(jsonPath("$.metaData.size()", is(0)));
+        result.andExpect(jsonPath("$.errors.size()", is(0)));
+        result.andExpect(jsonPath("$.payload.size()", is(1)));
+        result.andExpect(jsonPath("$.payload[0].type", is("category")));
+        result.andExpect(jsonPath("$.payload[0].code", is("general")));
+        result.andExpect(jsonPath("$.payload[0].exist", is(true)));
+        result.andExpect(jsonPath("$.payload[0].usage", is(3)));
+        result.andExpect(jsonPath("$.payload[0].references.size()", is(3)));
         List<String> categories = List.of("general_cat1", "general_cat2", "general_cat3");
         for (int i = 0; i < 3; i++) {
-            result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
-            result.andExpect(jsonPath("$[0].references[" + i + "].type", is("category")));
-            String categoryCode = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
+            result.andExpect(jsonPath("$.payload[0].references[" + i + "].size()", is(2)));
+            result.andExpect(jsonPath("$.payload[0].references[" + i + "].type", is("category")));
+            String categoryCode = JsonPath.read(bodyResult, "$.payload[0].references[" + i + "].code");
             Assertions.assertTrue(categories.contains(categoryCode));
         }
     }
@@ -175,21 +187,24 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken));
         String bodyResult = result.andReturn().getResponse().getContentAsString();
         result.andExpect(status().isOk());
-        result.andExpect(jsonPath("$.size()", is(1)));
-        result.andExpect(jsonPath("$[0].type", is("page")));
-        result.andExpect(jsonPath("$[0].code", is("pagina_1")));
-        result.andExpect(jsonPath("$[0].exist", is(true)));
-        result.andExpect(jsonPath("$[0].usage", is(5)));
-        result.andExpect(jsonPath("$[0].online", is(false)));
-        result.andExpect(jsonPath("$[0].references.size()", is(5)));
+        result.andExpect(jsonPath("$.size()", is(3)));
+        result.andExpect(jsonPath("$.metaData.size()", is(0)));
+        result.andExpect(jsonPath("$.errors.size()", is(0)));
+        result.andExpect(jsonPath("$.payload.size()", is(1)));
+        result.andExpect(jsonPath("$.payload[0].type", is("page")));
+        result.andExpect(jsonPath("$.payload[0].code", is("pagina_1")));
+        result.andExpect(jsonPath("$.payload[0].exist", is(true)));
+        result.andExpect(jsonPath("$.payload[0].usage", is(5)));
+        result.andExpect(jsonPath("$.payload[0].online", is(false)));
+        result.andExpect(jsonPath("$.payload[0].references.size()", is(5)));
         List<String> categories = List.of("pagina_1", "pagina_11", "pagina_12");
         int online = 0;
         for (int i = 0; i < 5; i++) {
-            result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
-            result.andExpect(jsonPath("$[0].references[" + i + "].type", is("page")));
-            String pageCode = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
+            result.andExpect(jsonPath("$.payload[0].references[" + i + "].size()", is(3)));
+            result.andExpect(jsonPath("$.payload[0].references[" + i + "].type", is("page")));
+            String pageCode = JsonPath.read(bodyResult, "$.payload[0].references[" + i + "].code");
             Assertions.assertTrue(categories.contains(pageCode));
-            boolean isOnline = JsonPath.read(bodyResult, "$[0].references[" + i + "].online");
+            boolean isOnline = JsonPath.read(bodyResult, "$.payload[0].references[" + i + "].online");
             if (isOnline) {
                 online++;
             }
@@ -211,29 +226,32 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                         .header("Authorization", "Bearer " + accessToken));
         String bodyResult = result.andReturn().getResponse().getContentAsString();
         result.andExpect(status().isOk());
-        result.andExpect(jsonPath("$.size()", is(1)));
-        result.andExpect(jsonPath("$[0].type", is("group")));
-        result.andExpect(jsonPath("$[0].code", is("customers")));
-        result.andExpect(jsonPath("$[0].exist", is(true)));
-        result.andExpect(jsonPath("$[0].online").doesNotExist());
-        int size = JsonPath.read(bodyResult, "$[0].usage");
+        result.andExpect(jsonPath("$.size()", is(3)));
+        result.andExpect(jsonPath("$.metaData.size()", is(0)));
+        result.andExpect(jsonPath("$.errors.size()", is(0)));
+        result.andExpect(jsonPath("$.payload.size()", is(1)));
+        result.andExpect(jsonPath("$.payload[0].type", is("group")));
+        result.andExpect(jsonPath("$.payload[0].code", is("customers")));
+        result.andExpect(jsonPath("$.payload[0].exist", is(true)));
+        result.andExpect(jsonPath("$.payload[0].online").doesNotExist());
+        int size = JsonPath.read(bodyResult, "$.payload[0].usage");
         Assertions.assertEquals(9, size);
-        result.andExpect(jsonPath("$[0].references.size()", is(size)));
+        result.andExpect(jsonPath("$.payload[0].references.size()", is(size)));
         List<String> users = List.of("pageManagerCustomers", "supervisorCustomers", "editorCustomers", 
                 "supervisorCoach", "editorCoach", "pageManagerCoach");
         List<String> pages = List.of("customers_page", "customer_subpage_1", "customer_subpage_2");
         for (int i = 0; i < size; i++) {
-            String type = JsonPath.read(bodyResult, "$[0].references[" + i + "].type");
-            String code = JsonPath.read(bodyResult, "$[0].references[" + i + "].code");
+            String type = JsonPath.read(bodyResult, "$.payload[0].references[" + i + "].type");
+            String code = JsonPath.read(bodyResult, "$.payload[0].references[" + i + "].code");
             if (type.equals("user")) {
-                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(2)));
+                result.andExpect(jsonPath("$.payload[0].references[" + i + "].size()", is(2)));
                 Assertions.assertTrue(users.contains(code));
-                result.andExpect(jsonPath("$[0].references[" + i + "].online").doesNotExist());
+                result.andExpect(jsonPath("$.payload[0].references[" + i + "].online").doesNotExist());
             } else {
-                result.andExpect(jsonPath("$[0].references[" + i + "].size()", is(3)));
+                result.andExpect(jsonPath("$.payload[0].references[" + i + "].size()", is(3)));
                 Assertions.assertEquals("page", type);
                 Assertions.assertTrue(pages.contains(code));
-                result.andExpect(jsonPath("$[0].references[" + i + "].online").exists());
+                result.andExpect(jsonPath("$.payload[0].references[" + i + "].online").exists());
             }
         }
     }

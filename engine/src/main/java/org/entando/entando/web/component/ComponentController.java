@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.entando.entando.aps.system.services.component.IComponentService;
+import org.entando.entando.web.common.model.SimpleRestResponse;
 
 @RestController
 @RequestMapping(value = "/components")
@@ -43,14 +44,14 @@ public class ComponentController {
 
     @RestAccessControl(permission = Permission.SUPERUSER)
     @PostMapping(value = "/usageDetails", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ComponentUsageDetails>> extractComponentsDetails(
+    public ResponseEntity<SimpleRestResponse<List<ComponentUsageDetails>>> extractComponentsDetails(
             @RequestBody List<Map<String, String>> components, BindingResult bindingResult) {
         validator.validate(components, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
         List<ComponentUsageDetails> details = this.service.extractComponentUsageDetails(components);
-        return new ResponseEntity<>(details, HttpStatus.OK);
+        return new ResponseEntity<>(new SimpleRestResponse<>(details), HttpStatus.OK);
     }
 
 }

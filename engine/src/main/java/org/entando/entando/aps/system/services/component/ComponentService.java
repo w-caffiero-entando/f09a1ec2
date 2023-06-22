@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.ent.exception.EntRuntimeException;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.component.validator.ComponentValidator;
@@ -55,7 +55,7 @@ public class ComponentService implements IComponentService {
                                 cu.getReferences().addAll(this.extractReferences(cu, service));
                             }
                             details.add(cu);
-                        } catch (Exception e) {
+                        } catch (EntException e) {
                             throw new RestServerError("Error extracting Component details", e);
                         }
                     });
@@ -79,7 +79,7 @@ public class ComponentService implements IComponentService {
                 return properties;
             }).collect(Collectors.toList());
         } catch (Exception e) {
-            throw new EntRuntimeException("Error extracting references", e);
+            throw new RestServerError("Error extracting references", e);
         }
     }
 
