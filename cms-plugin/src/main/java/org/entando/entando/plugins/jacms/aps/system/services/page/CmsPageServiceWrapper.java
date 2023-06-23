@@ -70,6 +70,11 @@ public class CmsPageServiceWrapper implements ContentServiceUtilizer<PageDto> {
     public String getObjectType() {
         return "";
     }
+
+    @Override
+    public void deleteComponent(String componentCode) {
+        // nothing to do
+    }
     
     @Override
     public Integer getComponentUsage(String componentCode) {

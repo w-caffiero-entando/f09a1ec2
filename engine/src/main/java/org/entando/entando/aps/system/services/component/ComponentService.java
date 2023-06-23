@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.ComponentDeleteResponse.Status;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
@@ -40,7 +41,7 @@ public class ComponentService implements IComponentService {
     @Override
     public List<ComponentUsageDetails> extractComponentUsageDetails(List<Map<String, String>> components) {
         List<ComponentUsageDetails> details = new ArrayList<>();
-        log.debug("request for components '{}'", components);
+        log.debug("request details for components '{}'", components);
         components.stream().forEach(m -> {
             String type = m.get(ComponentValidator.TYPE_FIELD);
             String code = m.get(ComponentValidator.CODE_FIELD);
@@ -65,9 +66,7 @@ public class ComponentService implements IComponentService {
     
     private List<Map<String, Object>> extractReferences(ComponentUsageDetails usage, IComponentUsageService service) {
         try {
-            RestListRequest listRequest = new RestListRequest();
-            listRequest.setPageSize(0); // get all elements - no pagination
-            PagedMetadata<ComponentUsageEntity> result = service.getComponentUsageDetails(usage.getCode(), listRequest);
+            PagedMetadata<ComponentUsageEntity> result = this.extractUsageDetails(usage.getCode(), service);
             log.debug("Type '{}', Object code '{}' - extracted {} references", usage.getType(), usage.getCode(), result.getTotalItems());
             usage.setUsage(result.getTotalItems());
             return result.getBody().stream().map(cue -> {
@@ -82,5 +81,70 @@ public class ComponentService implements IComponentService {
             throw new RestServerError("Error extracting references", e);
         }
     }
+    
+    private PagedMetadata<ComponentUsageEntity> extractUsageDetails(String componentCode, IComponentUsageService service) {
+        RestListRequest listRequest = new RestListRequest();
+        listRequest.setPageSize(0); // get all elements - no pagination
+        return service.getComponentUsageDetails(componentCode, listRequest);
 
+    }
+    
+    @Override
+    public ComponentDeleteResponse deleteInternalComponents(List<Map<String, String>> components) {
+        ComponentDeleteResponse response = new ComponentDeleteResponse();
+        log.debug("request deletion of components '{}'", components);
+        try {
+            response.setStatus(Status.SUCCESS);
+            components.stream().forEach(m -> {
+                String type = m.get(ComponentValidator.TYPE_FIELD);
+                String code = m.get(ComponentValidator.CODE_FIELD);
+                log.debug("Type '{}', Object code '{}'", type, code);
+                services.stream()
+                        .filter(s -> s.getObjectType().equalsIgnoreCase(type)).findFirst()
+                        .ifPresent(service -> {
+                            Map<String, Object> properties = new HashMap<>();
+                            properties.put(REFERENCE_TYPE_PROPERTY, type);
+                            properties.put(REFERENCE_CODE_PROPERTY, code);
+                            try {
+                                service.getComponentDto(code).ifPresentOrElse(dto -> {
+                                    PagedMetadata<ComponentUsageEntity> result = this.extractUsageDetails(code, service);
+                                    if (this.checkReferences(components, result.getBody())) {
+                                        service.deleteComponent(code);
+                                        properties.put(STATUS_PROPERTY, Status.SUCCESS.name());
+                                    } else {
+                                        response.setStatus(Status.PARTIAL_SUCCESS);
+                                        properties.put(STATUS_PROPERTY, Status.FAILURE.name());
+                                    }
+                                }, () -> {
+                                    response.setStatus(Status.PARTIAL_SUCCESS);
+                                    properties.put(STATUS_PROPERTY, Status.FAILURE.name());
+                                });
+                            } catch (EntException e) {
+                                throw new RestServerError("Error extracting Component details", e);
+                            }
+                            response.getComponents().add(properties);
+                        });
+            });
+        } catch (Exception e) {
+            throw new RestServerError("Error deleting components", e);
+        }
+        return response;
+    }
+    
+    private boolean checkReferences(List<Map<String, String>> componentsToDelete, List<ComponentUsageEntity> extractedReferences) {
+        for (ComponentUsageEntity ref : extractedReferences) {
+            String type = ref.getExtraProperties().get(REFERENCE_TYPE_PROPERTY).toString();
+            String code = ref.getExtraProperties().get(REFERENCE_CODE_PROPERTY).toString();
+            Optional<Map<String, String>> existingReference = componentsToDelete.stream().filter(ctd -> {
+                String ctdType = ctd.get(ComponentValidator.TYPE_FIELD);
+                String ctdCode = ctd.get(ComponentValidator.CODE_FIELD);
+                return ctdType.equals(type) && ctdCode.equals(code);
+            }).findFirst();
+            if (!existingReference.isPresent()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
 }

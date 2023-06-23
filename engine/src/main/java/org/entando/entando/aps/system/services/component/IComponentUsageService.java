@@ -22,6 +22,8 @@ public interface IComponentUsageService extends IComponentExistsService {
 
     Integer getComponentUsage(String componentCode);
 
+    void deleteComponent(String componentCode);
+
     PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest);
     
 }

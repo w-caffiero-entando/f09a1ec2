@@ -136,6 +136,11 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
     }
 
     @Override
+    public void deleteComponent(String componentCode) {
+        this.delete(Long.valueOf(componentCode));
+    }
+
+    @Override
     public ContentModelDto create(ContentModelDto entity) {
         try {
             ContentModel contentModel = this.createContentModel(entity);

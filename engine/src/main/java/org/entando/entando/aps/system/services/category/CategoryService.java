@@ -113,6 +113,11 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
     }
 
     @Override
+    public void deleteComponent(String componentCode) {
+        this.deleteCategory(componentCode);
+    }
+
+    @Override
     public String getManagerName() {
         return ((IManager) this.getCategoryManager()).getName();
     }

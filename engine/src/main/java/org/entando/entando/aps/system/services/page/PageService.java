@@ -872,6 +872,12 @@ public class PageService implements IComponentExistsService, IPageService,
         }
         return pagedMetadataMapper.getPagedResult(restListRequest, componentUsageEntityList);
     }
+
+    @Override
+    public void deleteComponent(String componentCode) {
+        this.updatePageStatus(componentCode, STATUS_DRAFT);
+        this.removePage(componentCode);
+    }
     
     @Override
     public String getObjectType() {

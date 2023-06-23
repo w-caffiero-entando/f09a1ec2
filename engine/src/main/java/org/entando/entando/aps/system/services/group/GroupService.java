@@ -353,4 +353,9 @@ public class GroupService implements IGroupService, ApplicationContextAware {
         return TYPE_GROUP;
     }
 
+    @Override
+    public void deleteComponent(String componentCode) {
+        this.removeGroup(componentCode);
+    }
+
 }

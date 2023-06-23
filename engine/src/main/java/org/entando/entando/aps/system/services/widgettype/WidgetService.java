@@ -364,6 +364,11 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
         totalReferenced.addAll(draftReferenced);
         return pagedMetadataMapper.getPagedResult(restListRequest, totalReferenced);
     }
+
+    @Override
+    public void deleteComponent(String componentCode) {
+        this.removeWidget(componentCode);
+    }
     
     @Override
     public String getObjectType() {

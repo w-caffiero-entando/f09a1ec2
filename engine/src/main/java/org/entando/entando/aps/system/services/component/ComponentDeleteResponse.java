@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-Present Entando S.r.l. (http://www.entando.com) All rights reserved.
+ * Copyright 2023-Present Entando Inc. (http://www.entando.com) All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -13,19 +13,31 @@
  */
 package org.entando.entando.aps.system.services.component;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface IComponentService {
+@Getter@Setter
+public class ComponentDeleteResponse implements Serializable {
     
-    public static final String REFERENCE_TYPE_PROPERTY = "type";
-    public static final String REFERENCE_CODE_PROPERTY = "code";
-    public static final String REFERENCE_ONLINE_PROPERTY = "online";
+    private Status status;
     
-    public static final String STATUS_PROPERTY = "status";
+    private transient List<Map<String, Object>> components = new ArrayList<>();
+    
+    public enum Status {
+        SUCCESS("success"),
+        PARTIAL_SUCCESS("partialSuccess"),
+        FAILURE("failure"),
+        ERROR("error");
 
-    public List<ComponentUsageDetails> extractComponentUsageDetails(List<Map<String, String>> components);
+        public final String label;
 
-    public ComponentDeleteResponse deleteInternalComponents(List<Map<String, String>> components);
+        private Status(String label) {
+            this.label = label;
+        }
+    }
     
 }
