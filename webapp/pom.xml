@@ -69,7 +69,7 @@
         <node.version>v14.20.0</node.version>
         <!-- mfe communication via mediator object-->
         <mediator.object.url>https://unpkg.com/@entando/mfecommunication@1.0.11/dist/entando-mfecommunication.umd.cjs</mediator.object.url>
-        <mediator.object.md5>9dd1fae38d4d6cae110e92dd2e488fb4</mediator.object.md5>
+        <mediator.object.md5>a79735afe94b5090d44eb97d26561afe</mediator.object.md5>
         <mediator.object.username/>
         <mediator.object.password/>
     </properties>
@@ -1102,6 +1102,7 @@
                     <username>${mediator.object.username}</username>
                     <password>${mediator.object.password}</password>
                     <unpack>false</unpack>
+                    <skipCache>true</skipCache>
                     <outputDirectory>${project.build.directory}/entando-de-app/resources/static/js</outputDirectory>
                     <outputFileName>entando-mfecommunication.umd.cjs</outputFileName>
                 </configuration>
