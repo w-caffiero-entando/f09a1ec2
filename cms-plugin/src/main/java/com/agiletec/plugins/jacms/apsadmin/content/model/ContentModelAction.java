@@ -219,7 +219,7 @@ public class ContentModelAction extends BaseAction implements IContentModelActio
     }
 
     private void setFormValues(ContentModel model) {
-        this.setModelId(new Integer(String.valueOf(model.getId())));
+        this.setModelId(model.getId());
         this.setDescription(model.getDescription());
         this.setContentType(model.getContentType());
         this.setContentShape(model.getContentShape());
@@ -304,10 +304,10 @@ public class ContentModelAction extends BaseAction implements IContentModelActio
         this.strutsAction = strutsAction;
     }
 
-    public Integer getModelId() {
+    public Long getModelId() {
         return modelId;
     }
-    public void setModelId(Integer modelId) {
+    public void setModelId(Long modelId) {
         this.modelId = modelId;
     }
 
@@ -389,7 +389,7 @@ public class ContentModelAction extends BaseAction implements IContentModelActio
     }
 
     private int strutsAction;
-    private Integer modelId;
+    private Long modelId;
     private String contentType;
     private String description;
     private String contentShape;
