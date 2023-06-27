@@ -15,6 +15,7 @@
         <!--JS inclusions-->
         <script nonce="<wp:cspNonce />" src="<wp:resourceURL ignoreTenant="true" />administration/js/jquery-3.4.1.min.js"></script>
         <script nonce="<wp:cspNonce />" src="<wp:resourceURL ignoreTenant="true" />administration/bootstrap/js/bootstrap.min.js"></script>
+        <script nonce="<wp:cspNonce />" src="<wp:resourceURL />static/js/entando-mfecommunication.umd.cjs"></script>
     </head>
 
     <c:set var="appBuilderIntegrationEnabled" ><wp:info key="systemParam" paramName="appBuilderIntegrationEnabled" /></c:set>
