@@ -47,9 +47,10 @@ The general log level is controlled by the variable `ROOT_LOG_LEVEL`, that in te
 || 	ENTANDO_APP_USE_TLS	| | protocol for the redirect to keycloak login |
 ||	ENTANDO_APP_ENGINE_EXTERNAL_PORT | | to force the port to use |			
 |Redis server | REDIS_ACTIVE | true, [false] | to activate Redis cache management |
-||	REDIS_ADDRESS |URL|	Redis host address||
+||	REDIS_ADDRESS |URL [redis://localhost:6379]|	Redis host address||
 || REDIS_ADDRESSES | | for HA, insert the comma separated list of nodes |
-|| REDIS_SESSION_ACTIVE	| true, false |	enable storing of HTTP sessions in the Redis cluster, REDIS_ACTIVE has to be "true" too.
+|| REDIS_MASTER_NAME | [mymaster] | To specify the name of the master node |
+|| REDIS_SESSION_ACTIVE	| true, [false] |	enable storing of HTTP sessions in the Redis cluster, REDIS_ACTIVE has to be "true" too.
 || REDIS_PASSWORD  |  |  | 	
 || REDIS_USE_SENTINEL_EVENTS | [true], false | when Redis is active and Redis addresses is set, use Sentinel Monitoring
 || REDIS_IO_THREAD_POOL_SIZE | Integer, [8]	| to mitigate errors caused by missing front-end cache refresh		
@@ -65,4 +66,4 @@ The general log level is controlled by the variable `ROOT_LOG_LEVEL`, that in te
 || ENTANDO_BUNDLE_CLI_ETC | ${ENTANDO_BUNDLE_CLI_ETC}/hub/credentials | Credentials/parameters saved within JSON files under this path for ent bundle add hub command			
 || ENTANDO_APP_ENGINE_HEALTH_CHECK_TYPE | db.migration.strategy | [auto], skip, disabled, generate_sql | Liquibase strategy 			
 || LOG_CONFIG_FILE_PATH | | to use the logback composable feature | 			
-|| ENTANDO_DOCKER_REGISTRY_OVERRIDE |  | for v1 bundles, to propagate to CM for plugins | 
+|| ENTANDO_DOCKER_REGISTRY_OVERRIDE |  | Deprecated-for v1 bundles, to propagate to CM for plugins | 
