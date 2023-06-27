@@ -5,11 +5,22 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
            http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
     
-    <changeSet id="20230623000000_jacms_contentmodels_change_id_type" author="entando" context="production">
+    <changeSet id="20230623000000_jacms_contentmodels_change_id_type_not_derby" author="entando" dbms="!derby" context="production">
         <modifyDataType
                 columnName="modelid"
                 newDataType="bigint"
                 tableName="contentmodels"/>
+    </changeSet>
+
+    <changeSet id="20230623000000_jacms_contentmodels_change_id_type_derby" author="entando" dbms="derby" context="production">
+        <sql>
+            ALTER TABLE contentmodels ADD COLUMN new_modelid BIGINT;
+            UPDATE contentmodels SET new_modelid=modelid;
+            ALTER TABLE contentmodels ALTER COLUMN new_modelid NOT NULL;
+            ALTER TABLE contentmodels DROP COLUMN modelid;
+            RENAME COLUMN contentmodels.new_modelid TO modelid;
+            ALTER TABLE contentmodels.modelid ADD PRIMARY KEY (modelid);
+        </sql>
     </changeSet>
 
 </databaseChangeLog>
