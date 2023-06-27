@@ -21,6 +21,7 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResour
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInstance;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.util.IImageDimensionReader;
 import java.util.Optional;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.plugins.jacms.web.resource.model.AssetDto;
 import org.entando.entando.plugins.jacms.web.resource.model.ImageAssetDto;

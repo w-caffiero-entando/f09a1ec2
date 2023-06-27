@@ -57,7 +57,7 @@ public class ComponentController {
     }
     
     @RestAccessControl(permission = Permission.SUPERUSER)
-    @DeleteMapping(value = "/all-internals/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/allInternals/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SimpleRestResponse<ComponentDeleteResponse>> deleteInternalComponents(
             @RequestBody List<Map<String, String>> components, BindingResult bindingResult) {
         validator.validate(components, bindingResult);

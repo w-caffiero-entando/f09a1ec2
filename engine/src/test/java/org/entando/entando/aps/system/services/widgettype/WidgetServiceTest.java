@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -79,6 +80,7 @@ import org.springframework.util.FileSystemUtils;
 
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
+import java.util.ArrayList;
 import java.util.Optional;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
@@ -413,7 +415,14 @@ class WidgetServiceTest {
         PagedMetadata<ComponentUsageEntity> usageDetails = widgetService.getComponentUsageDetails(WidgetMockHelper.WIDGET_1_CODE, new PageSearchRequest(WidgetMockHelper.WIDGET_1_CODE));
         WidgetAssertionHelper.assertUsageDetails(usageDetails);
     }
-
+    
+    @Test
+    void shouldDeleteComponent() throws EntException {
+        when(widgetManager.getWidgetType("test")).thenReturn(Mockito.mock(WidgetType.class));
+        when(this.guiFragmentManager.getGuiFragmentCodesByWidgetType("test")).thenReturn(new ArrayList<>());
+        this.widgetService.deleteComponent("test");
+        verify(widgetManager, times(1)).deleteWidgetType("test");
+    }
 
     @Test
     void getWidgetUsageDetailsWithPagination() throws Exception {

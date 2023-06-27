@@ -23,21 +23,13 @@ import lombok.Setter;
 @Getter@Setter
 public class ComponentDeleteResponse implements Serializable {
     
-    private Status status;
+    public static final String STATUS_SUCCESS = "success";
+    public static final String STATUS_PARTIAL_SUCCESS = "partialSuccess";
+    public static final String STATUS_FAILURE = "failure";
+    public static final String STATUS_ERROR = "error";
+    
+    private String status;
     
     private transient List<Map<String, Object>> components = new ArrayList<>();
-    
-    public enum Status {
-        SUCCESS("success"),
-        PARTIAL_SUCCESS("partialSuccess"),
-        FAILURE("failure"),
-        ERROR("error");
-
-        public final String label;
-
-        private Status(String label) {
-            this.label = label;
-        }
-    }
     
 }

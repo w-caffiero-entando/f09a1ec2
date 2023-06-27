@@ -19,9 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.util.ApsProperties;
@@ -45,6 +47,7 @@ import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.group.model.GroupDto;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.guifragment.model.GuiFragmentRequestBody;
 import org.entando.entando.web.page.model.PageSearchRequest;
 import org.junit.jupiter.api.Assertions;
@@ -271,6 +274,15 @@ class GuiFragmentServiceTest {
         Assertions.assertEquals(expectedUsageEntityList.size(), usageDetails.getTotalItems());
         IntStream.range(0, usageDetails.getBody().size())
                 .forEach(i -> ComponentUsageEntityAssertionHelper.assertComponentUsageEntity(expectedUsageEntityList.get(i), usageDetails.getBody().get(i)));
+    }
+    
+    @Test
+    void shouldDeleteComponent() throws EntException {
+        GuiFragment mock = Mockito.mock(GuiFragment.class);
+        when(guiFragmentManager.getGuiFragment("test")).thenReturn(mock);
+        when(this.dtoBuilder.convert(any(GuiFragment.class))).thenReturn(Mockito.mock(GuiFragmentDto.class));
+        this.guiFragmentService.deleteComponent("test");
+        verify(guiFragmentManager, times(1)).deleteGuiFragment("test");
     }
     
 }

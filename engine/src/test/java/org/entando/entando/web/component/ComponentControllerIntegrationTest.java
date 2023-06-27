@@ -14,6 +14,7 @@
 package org.entando.entando.web.component;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,7 +37,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
     private ObjectMapper mapper = new ObjectMapper();
     
     @Test
-    void validateRequestWithMissingFields() throws Exception {
+    void validateRequestWithMissingFieldsOnUsageApi() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String accessToken = mockOAuthInterceptor(user);
         List<Map<String, String>> request = List.of(
@@ -45,6 +46,27 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
         String payload = mapper.writeValueAsString(request);
         ResultActions result = mockMvc.perform(
                 post("/components/usageDetails")
+                        .content(payload)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken));
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.payload", Matchers.hasSize(0)))
+                .andExpect(jsonPath("$.metaData", Matchers.hasSize(0)))
+                .andExpect(jsonPath("$.errors", Matchers.hasSize(2)))
+                .andExpect(jsonPath("$.errors[0].code", is("1")))
+                .andExpect(jsonPath("$.errors[1].code", is("1")));
+    }
+    
+    @Test
+    void validateRequestWithMissingFieldsOnDeleteApi() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        List<Map<String, String>> request = List.of(
+                Map.of("type", "category", "test", "wrong"), 
+                Map.of("types", "pageModel", "code", "service"));
+        String payload = mapper.writeValueAsString(request);
+        ResultActions result = mockMvc.perform(
+                delete("/components/allInternals/delete")
                         .content(payload)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));

@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.aps.system.services.component.ComponentDeleteResponse.Status;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
@@ -86,7 +85,6 @@ public class ComponentService implements IComponentService {
         RestListRequest listRequest = new RestListRequest();
         listRequest.setPageSize(0); // get all elements - no pagination
         return service.getComponentUsageDetails(componentCode, listRequest);
-
     }
     
     @Override
@@ -94,13 +92,13 @@ public class ComponentService implements IComponentService {
         ComponentDeleteResponse response = new ComponentDeleteResponse();
         log.debug("request deletion of components '{}'", components);
         try {
-            response.setStatus(Status.SUCCESS);
+            response.setStatus(ComponentDeleteResponse.STATUS_SUCCESS);
             components.stream().forEach(m -> {
                 String type = m.get(ComponentValidator.TYPE_FIELD);
                 String code = m.get(ComponentValidator.CODE_FIELD);
                 log.debug("Type '{}', Object code '{}'", type, code);
                 services.stream()
-                        .filter(s -> s.getObjectType().equalsIgnoreCase(type)).findFirst()
+                        .filter(s -> type.equalsIgnoreCase(s.getObjectType())).findFirst()
                         .ifPresent(service -> {
                             Map<String, Object> properties = new HashMap<>();
                             properties.put(REFERENCE_TYPE_PROPERTY, type);
@@ -110,14 +108,14 @@ public class ComponentService implements IComponentService {
                                     PagedMetadata<ComponentUsageEntity> result = this.extractUsageDetails(code, service);
                                     if (this.checkReferences(components, result.getBody())) {
                                         service.deleteComponent(code);
-                                        properties.put(STATUS_PROPERTY, Status.SUCCESS.name());
+                                        properties.put(STATUS_PROPERTY, ComponentDeleteResponse.STATUS_SUCCESS);
                                     } else {
-                                        response.setStatus(Status.PARTIAL_SUCCESS);
-                                        properties.put(STATUS_PROPERTY, Status.FAILURE.name());
+                                        response.setStatus(ComponentDeleteResponse.STATUS_PARTIAL_SUCCESS);
+                                        properties.put(STATUS_PROPERTY, ComponentDeleteResponse.STATUS_FAILURE);
                                     }
                                 }, () -> {
-                                    response.setStatus(Status.PARTIAL_SUCCESS);
-                                    properties.put(STATUS_PROPERTY, Status.FAILURE.name());
+                                    response.setStatus(ComponentDeleteResponse.STATUS_PARTIAL_SUCCESS);
+                                    properties.put(STATUS_PROPERTY, ComponentDeleteResponse.STATUS_FAILURE);
                                 });
                             } catch (EntException e) {
                                 throw new RestServerError("Error extracting Component details", e);
@@ -133,12 +131,10 @@ public class ComponentService implements IComponentService {
     
     private boolean checkReferences(List<Map<String, String>> componentsToDelete, List<ComponentUsageEntity> extractedReferences) {
         for (ComponentUsageEntity ref : extractedReferences) {
-            String type = ref.getExtraProperties().get(REFERENCE_TYPE_PROPERTY).toString();
-            String code = ref.getExtraProperties().get(REFERENCE_CODE_PROPERTY).toString();
             Optional<Map<String, String>> existingReference = componentsToDelete.stream().filter(ctd -> {
                 String ctdType = ctd.get(ComponentValidator.TYPE_FIELD);
                 String ctdCode = ctd.get(ComponentValidator.CODE_FIELD);
-                return ctdType.equals(type) && ctdCode.equals(code);
+                return ctdType.equals(ref.getType()) && ctdCode.equals(ref.getCode());
             }).findFirst();
             if (!existingReference.isPresent()) {
                 return false;

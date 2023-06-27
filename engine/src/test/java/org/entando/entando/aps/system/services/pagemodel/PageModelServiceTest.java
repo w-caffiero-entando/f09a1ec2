@@ -51,6 +51,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.junit.jupiter.api.Assertions;
+
 @ExtendWith(MockitoExtension.class)
 class PageModelServiceTest {
 
@@ -226,7 +229,15 @@ class PageModelServiceTest {
 
         verify(pageModelManager, times(1)).updatePageModel(any());
     }
-
+    
+    @Test
+    void shouldFindComponentDto() {
+        when(pageModelManager.getPageModel("test")).thenReturn(Mockito.mock(PageModel.class));
+        Optional<IComponentDto> dto = this.pageModelService.getComponentDto("test");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof PageModelDto);
+        Assertions.assertEquals(ComponentUsageEntity.TYPE_PAGE_TEMPLATE, dto.get().getType());
+    }
 
     private PagedMetadata<PageModelDto> resultPagedMetadata() {
         RestListRequest request = new RestListRequest();
