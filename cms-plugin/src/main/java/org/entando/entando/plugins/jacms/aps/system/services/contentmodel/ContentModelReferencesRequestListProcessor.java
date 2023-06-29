@@ -41,7 +41,7 @@ public class ContentModelReferencesRequestListProcessor extends RequestListProce
 
     @Override
     protected Function<Filter, Predicate<ContentModelReference>> getPredicates() {
-        return (filter) -> {
+        return filter -> {
             switch (filter.getAttribute()) {
                 case KEY_PAGE_CODE:
                     return c -> FilterUtils.filterString(filter, c.getPageCode());
@@ -59,14 +59,15 @@ public class ContentModelReferencesRequestListProcessor extends RequestListProce
     protected Function<String, Comparator<ContentModelReference>> getComparators() {
         return sort -> {
             switch (sort) {
-                case KEY_PAGE_CODE:
-                default:
-                    return (a, b) -> StringUtils.compare(a.getPageCode(), b.getPageCode());
                 case KEY_ONLINE:
                     return (a, b) -> Boolean.compare(a.isOnline(), b.isOnline());
                 case KEY_WIDGED_POSITION:
                     return Comparator.comparingInt(ContentModelReference::getWidgetPosition);
+                case KEY_PAGE_CODE:
+                default:
+                    return (a, b) -> StringUtils.compare(a.getPageCode(), b.getPageCode());
             }
         };
     }
+    
 }

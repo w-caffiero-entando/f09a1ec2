@@ -11,8 +11,9 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.plugins.jacms.aps.system.services;
+package org.entando.entando.plugins.jacms.aps.system.services.contentmodel;
 
+import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
 import com.agiletec.aps.system.common.entity.model.SmallEntityType;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
@@ -23,36 +24,41 @@ import com.agiletec.plugins.jacms.aps.system.services.contentmodel.dictionary.Co
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentModelDto;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentModelReference;
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.IEntityModelDictionary;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.ComponentUsage;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.DtoBuilder;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelReferencesRequestListProcessor;
-import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelRequestListProcessor;
+import org.entando.entando.plugins.jacms.aps.system.services.content.ContentTypeServiceUtilizer;
 import org.entando.entando.plugins.jacms.aps.system.services.security.VelocityNonceInjector;
 import org.entando.entando.plugins.jacms.web.contentmodel.model.ContentModelReferenceDTO;
 import org.entando.entando.plugins.jacms.web.contentmodel.validator.ContentModelValidator;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsage;
-import org.entando.entando.web.component.ComponentUsageEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 
 @Service
-public class ContentModelServiceImpl implements ContentModelService {
+public class ContentModelServiceImpl implements ContentModelService, ContentTypeServiceUtilizer<ContentModelDto> {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
+    
+    public static final String TYPE_CONTENT_TEMPLATE = ComponentUsageEntity.TYPE_CONTENT_TEMPLATE;
+    private static final String CONTENT_MODEL_LABEL = "contentModel";
+    
+    private static final String MESSAGE_NO_CONTENT_MODEL_FOUND = "no contentModel found with id {}";
+    private static final String MESSAGE_ERROR_SAVING_CONTENT_MODEL = "Error saving a content model";
 
     private final IContentManager contentManager;
     private final IContentModelManager contentModelManager;
@@ -101,8 +107,8 @@ public class ContentModelServiceImpl implements ContentModelService {
     public ContentModelDto getContentModel(Long modelId) {
         ContentModel contentModel = this.contentModelManager.getContentModel(modelId);
         if (null == contentModel) {
-            logger.warn("no contentModel found with id {}", modelId);
-            throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, "contentModel",
+            logger.warn(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
+            throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, CONTENT_MODEL_LABEL,
                     String.valueOf(modelId));
         }
         return this.dtoBuilder.convert(contentModel);
@@ -117,7 +123,14 @@ public class ContentModelServiceImpl implements ContentModelService {
         }
         return Optional.ofNullable(dto);
     }
-
+    
+    @Override
+    public Optional<IComponentDto> getComponentDto(String code) {
+        return Optional.ofNullable(this.contentModelManager.getContentModel(Long.valueOf(code)))
+                .map(this.dtoBuilder::convert);
+    }
+    
+    @Override
     public boolean exists(Long modelId) {
         return this.contentModelManager.getContentModel(modelId) != null;
     }
@@ -133,8 +146,8 @@ public class ContentModelServiceImpl implements ContentModelService {
             this.contentModelManager.addContentModel(contentModel);
             return this.dtoBuilder.convert(contentModel);
         } catch (EntException e) {
-            logger.error("Error saving a content model", e);
-            throw new RestServerError("Error saving a content model", e);
+            logger.error(MESSAGE_ERROR_SAVING_CONTENT_MODEL, e);
+            throw new RestServerError(MESSAGE_ERROR_SAVING_CONTENT_MODEL, e);
         }
     }
 
@@ -145,9 +158,9 @@ public class ContentModelServiceImpl implements ContentModelService {
 
             ContentModel contentModel = this.contentModelManager.getContentModel(entity.getId());
             if (null == contentModel) {
-                logger.warn("no contentModel found with id {}", modelId);
+                logger.warn(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
                 throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND,
-                        "contentModel", String.valueOf(modelId));
+                        CONTENT_MODEL_LABEL, String.valueOf(modelId));
             }
 
             BeanPropertyBindingResult validationResult = this.validateForUpdate(entity, contentModel);
@@ -159,8 +172,8 @@ public class ContentModelServiceImpl implements ContentModelService {
             this.contentModelManager.updateContentModel(contentModel);
             return this.dtoBuilder.convert(contentModel);
         } catch (EntException e) {
-            logger.error("Error saving a content model", e);
-            throw new RestServerError("Error saving a content model", e);
+            logger.error(MESSAGE_ERROR_SAVING_CONTENT_MODEL, e);
+            throw new RestServerError(MESSAGE_ERROR_SAVING_CONTENT_MODEL, e);
         }
     }
 
@@ -169,7 +182,7 @@ public class ContentModelServiceImpl implements ContentModelService {
         try {
             ContentModel contentModel = this.contentModelManager.getContentModel(modelId);
             if (null == contentModel) {
-                logger.info("contentModel {} does not exists", modelId);
+                logger.info(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
                 return;
             }
             BeanPropertyBindingResult validationResult = this.validateForDelete(contentModel);
@@ -219,16 +232,19 @@ public class ContentModelServiceImpl implements ContentModelService {
         componentUsage.setUsage(usage);
         return componentUsage;
     }
-
+    
+    @Override
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
+        return this.getComponentUsageDetails(Long.parseLong(componentCode), restListRequest);
+    }
+    
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(Long modelId, RestListRequest restListRequest) {
-
         final List<ContentModelReference> contentModelReferences = contentModelManager
                 .getContentModelReferences(modelId, false);
-
         final List<ComponentUsageEntity> componentUsageDetails = contentModelReferences.stream()
-                .map(f -> createToComponentUsageEntity(f.getPageCode(), getStatusString(f.isOnline()),
-                        ComponentUsageEntity.TYPE_PAGE)).collect(Collectors.toList());
+                .map(f -> createToComponentUsageEntity(f.getPageCode(), Optional.of(getStatusString(f.isOnline())),
+                        ComponentUsageEntity.TYPE_PAGE, Optional.of(f.isOnline()))).collect(Collectors.toList());
 
         final List<SmallEntityType> defaultContentTemplateUsedList = this.contentManager.getSmallEntityTypes().stream()
                 .filter(
@@ -244,8 +260,8 @@ public class ContentModelServiceImpl implements ContentModelService {
                 ).collect(Collectors.toList());
 
         final List<ComponentUsageEntity> contentTemplateUsageDetails = defaultContentTemplateUsedList.stream()
-                .map(f -> createToComponentUsageEntity(f.getCode(), "",
-                        "contentType")).collect(Collectors.toList());
+                .map(f -> createToComponentUsageEntity(f.getCode(), Optional.empty(),
+                        ComponentUsageEntity.TYPE_CONTENT_TYPE, Optional.empty())).collect(Collectors.toList());
 
         componentUsageDetails.addAll(contentTemplateUsageDetails);
 
@@ -269,11 +285,12 @@ public class ContentModelServiceImpl implements ContentModelService {
         return "offline";
     }
 
-    private ComponentUsageEntity createToComponentUsageEntity(String code, String status, String type) {
+    private ComponentUsageEntity createToComponentUsageEntity(String code, Optional<String> status, String type, Optional<Boolean> online) {
         ComponentUsageEntity componentUsage = new ComponentUsageEntity();
         componentUsage.setCode(code);
-        componentUsage.setStatus(status);
+        status.ifPresent(componentUsage::setStatus);
         componentUsage.setType(type);
+        online.ifPresent(b -> componentUsage.getExtraProperties().put(ComponentUsageEntity.ONLINE_PROPERTY, b));
         return componentUsage;
     }
 
@@ -282,8 +299,8 @@ public class ContentModelServiceImpl implements ContentModelService {
             RestListRequest requestList) {
         ContentModel contentModel = this.contentModelManager.getContentModel(modelId);
         if (null == contentModel) {
-            logger.debug("contentModel {} does not exists", modelId);
-            throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, "contentModel",
+            logger.debug(MESSAGE_NO_CONTENT_MODEL_FOUND, modelId);
+            throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_NOT_FOUND, CONTENT_MODEL_LABEL,
                     String.valueOf(modelId));
         }
 
@@ -323,7 +340,7 @@ public class ContentModelServiceImpl implements ContentModelService {
         }
         IApsEntity prototype = this.contentManager.getEntityPrototype(typeCode);
         if (null == prototype) {
-            logger.warn("no contentModel found with id {}", typeCode);
+            logger.warn(MESSAGE_NO_CONTENT_MODEL_FOUND, typeCode);
             throw new ResourceNotFoundException(ContentModelValidator.ERRCODE_CONTENTMODEL_TYPECODE_NOT_FOUND,
                     "contentType", typeCode);
         }
@@ -345,14 +362,14 @@ public class ContentModelServiceImpl implements ContentModelService {
     }
 
     protected BeanPropertyBindingResult validateForAdd(ContentModel contentModel) {
-        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, "contentModel");
+        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, CONTENT_MODEL_LABEL);
         validateIdIsUnique(contentModel, errors);
         validateContentType(contentModel.getContentType(), errors);
         return errors;
     }
 
     protected BeanPropertyBindingResult validateForDelete(ContentModel contentModel) {
-        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, "contentModel");
+        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, CONTENT_MODEL_LABEL);
         List<ContentModelReference> references = this.contentModelManager
                 .getContentModelReferences(contentModel.getId(), false);
         if (!references.isEmpty()) {
@@ -370,21 +387,17 @@ public class ContentModelServiceImpl implements ContentModelService {
                             return (defaultModelUsed || listModelUsed);
                         }
                 ).collect(Collectors.toList());
-
-        if (defaultContentTemplateUsedList.size() > 0) {
-            ArrayList<String> defList = new ArrayList<>();
-            defaultContentTemplateUsedList.forEach(f -> defList.add(f.getCode()));
-            final String defListString = String.join(", ", defList);
-            ArrayList<String> args = new ArrayList<>();
-            args.add(defListString);
-            errors.reject(ContentModelValidator.ERRCODE_CONTENTMODEL_METADATA_REFERENCES, args.toArray(),
+        final String defListString = defaultContentTemplateUsedList.stream()
+                .map(SmallEntityType::getCode).collect(Collectors.joining(", "));
+        if (StringUtils.isNotEmpty(defListString)) {
+            errors.reject(ContentModelValidator.ERRCODE_CONTENTMODEL_METADATA_REFERENCES, defListString.split(""),
                     "contentmodel.defaultMetadata.references");
         }
         return errors;
     }
 
     protected BeanPropertyBindingResult validateForUpdate(ContentModelDto request, ContentModel contentModel) {
-        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, "contentModel");
+        BeanPropertyBindingResult errors = new BeanPropertyBindingResult(contentModel, CONTENT_MODEL_LABEL);
         this.validateContentType(request.getContentType(), errors);
         return errors;
     }
@@ -413,4 +426,26 @@ public class ContentModelServiceImpl implements ContentModelService {
                     "contentmodel.contentType.notFound");
         }
     }
+
+    @Override
+    public String getManagerName() {
+        return ((IManager) this.contentModelManager).getName();
+    }
+
+    @Override
+    public List<ContentModelDto> getContentTypeUtilizer(String contentTypeCode) {
+        List<ContentModel> models = this.contentModelManager.getModelsForContentType(contentTypeCode);
+        return this.dtoBuilder.convert(models);
+    }
+
+    @Override
+    public String getObjectType() {
+        return TYPE_CONTENT_TEMPLATE;
+    }
+
+    @Override
+    public Integer getComponentUsage(String componentCode) {
+        return this.getComponentUsageDetails(componentCode, new RestListRequest()).getTotalItems();
+    }
+    
 }

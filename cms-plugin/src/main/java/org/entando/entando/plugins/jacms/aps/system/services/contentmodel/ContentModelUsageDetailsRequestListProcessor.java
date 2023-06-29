@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.plugins.jacms.aps.system.services;
+package org.entando.entando.plugins.jacms.aps.system.services.contentmodel;
 
 import java.util.Comparator;
 import java.util.List;
@@ -19,11 +19,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.RequestListProcessor;
 import org.entando.entando.aps.util.FilterUtils;
 import org.entando.entando.web.common.model.Filter;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
 
 public class ContentModelUsageDetailsRequestListProcessor extends RequestListProcessor<ComponentUsageEntity> {
 
@@ -41,7 +41,7 @@ public class ContentModelUsageDetailsRequestListProcessor extends RequestListPro
 
     @Override
     protected Function<Filter, Predicate<ComponentUsageEntity>> getPredicates() {
-        return (filter) -> {
+        return filter -> {
             switch (filter.getAttribute()) {
                 case KEY_TYPE:
                     return c -> FilterUtils.filterString(filter, c.getType());
@@ -59,14 +59,15 @@ public class ContentModelUsageDetailsRequestListProcessor extends RequestListPro
     protected Function<String, Comparator<ComponentUsageEntity>> getComparators() {
         return sort -> {
             switch (sort) {
-                case KEY_CODE:
-                default:
-                    return (a, b) -> StringUtils.compare(a.getCode(), b.getCode());
                 case KEY_STATUS:
                     return (a, b) -> StringUtils.compare(a.getStatus(), b.getStatus());
                 case KEY_TYPE:
                     return (a, b) -> StringUtils.compare(a.getType(), b.getType());
+                case KEY_CODE:
+                default:
+                    return (a, b) -> StringUtils.compare(a.getCode(), b.getCode());
             }
         };
     }
+    
 }

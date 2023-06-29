@@ -17,18 +17,21 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.util.ApsProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 /**
  *
  * @author paddeo
  */
-public class PageDto {
+public class PageDto implements IComponentDto {
 
     private static final String DEFAULT_CHARSET = "utf8";
     private static final String DEFAULT_CONTENT_TYPE= "text/html";
@@ -105,7 +108,26 @@ public class PageDto {
         }
         this.setFullPath(page.getPath(pageManager));
     }
+    
+    @Override
+    public ComponentUsageEntity buildUsageEntity() {
+        ComponentUsageEntity cue = new ComponentUsageEntity(this.getType(), this);
+        cue.setStatus(this.getStatus());
+        return cue;
+    }
 
+    @Override
+    public Map<String, Object> getExtraProperties() {
+        return Map.of(ComponentUsageEntity.ONLINE_PROPERTY, this.isOnlineInstance());
+    }
+    
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_PAGE;
+    }
+    
+    @Override
     public String getCode() {
         return code;
     }
@@ -113,7 +135,7 @@ public class PageDto {
     public void setCode(String code) {
         this.code = code;
     }
-
+    
     public String getStatus() {
         return status;
     }

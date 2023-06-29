@@ -14,8 +14,10 @@
 package org.entando.entando.aps.system.services.page;
 
 import java.util.List;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 
-public interface PageServiceUtilizer<T> {
+public interface PageServiceUtilizer<T extends IComponentDto> extends IComponentUsageService {
 
     public String getManagerName();
 

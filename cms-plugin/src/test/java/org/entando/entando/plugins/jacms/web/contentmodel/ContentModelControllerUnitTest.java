@@ -25,7 +25,7 @@ import java.util.Properties;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.plugins.jacms.aps.system.services.ContentModelService;
+import org.entando.entando.plugins.jacms.aps.system.services.contentmodel.ContentModelService;
 import org.entando.entando.plugins.jacms.apsadmin.tags.CmsAdminPagerTag;
 import org.entando.entando.plugins.jacms.web.contentmodel.model.ContentModelReferenceDTO;
 import org.entando.entando.plugins.jacms.web.contentmodel.validator.ContentModelReferencesValidator;
@@ -34,7 +34,7 @@ import org.entando.entando.plugins.jacms.web.contentmodel.validator.ContentModel
 import org.entando.entando.web.AbstractControllerTest;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

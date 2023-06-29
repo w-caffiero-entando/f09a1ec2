@@ -26,19 +26,22 @@ import com.agiletec.aps.util.ApsProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Iterables;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javax.servlet.ServletContext;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.group.GroupServiceUtilizer;
 import org.entando.entando.aps.system.services.guifragment.GuiFragment;
 import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
-import org.entando.entando.aps.system.services.page.IPageService;
 import org.entando.entando.aps.system.services.security.NonceInjector;
 import org.entando.entando.aps.system.services.widgettype.model.WidgetDetails;
 import org.entando.entando.aps.system.services.widgettype.model.WidgetDto;
@@ -50,7 +53,7 @@ import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.widget.model.WidgetRequest;
 import org.entando.entando.web.widget.validator.WidgetValidator;
 import org.springframework.stereotype.Service;
@@ -61,6 +64,8 @@ import org.springframework.web.context.ServletContextAware;
 public class WidgetService implements IWidgetService, GroupServiceUtilizer<WidgetDto>, ServletContextAware {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(WidgetService.class);
+    
+    public static final String TYPE_WIDGET = "widget";
 
     private IWidgetTypeManager widgetManager;
 
@@ -73,7 +78,7 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
     private IGroupManager groupManager;
 
     private IDtoBuilder<WidgetType, WidgetDto> dtoBuilder;
-
+    
     private ServletContext srvCtx;
     
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -122,11 +127,11 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
     protected IDtoBuilder<WidgetType, WidgetDto> getDtoBuilder() {
         return dtoBuilder;
     }
-
+    
     public void setDtoBuilder(IDtoBuilder<WidgetType, WidgetDto> dtoBuilder) {
         this.dtoBuilder = dtoBuilder;
     }
-
+    
     public PagedMetadataMapper getPagedMetadataMapper() {
         return pagedMetadataMapper;
     }
@@ -166,6 +171,12 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
             logger.error("Failed to fetch gui fragment for widget type code ", e);
         }
         return widgetDto;
+    }
+    
+    @Override
+    public Optional<IComponentDto> getComponentDto(String code) {
+        return Optional.ofNullable(this.getWidgetManager().getWidgetType(code))
+                .map(f -> this.getDtoBuilder().convert(f));
     }
 
     @Override
@@ -213,7 +224,7 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
             widgetType.setCode(widgetRequest.getCode());
             this.processWidgetType(widgetType, widgetRequest);
             WidgetType oldWidgetType = this.getWidgetManager().getWidgetType(widgetType.getCode());
-            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(widgetType, "widget");
+            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(widgetType, TYPE_WIDGET);
             if (null != oldWidgetType) {
                 bindingResult.reject(WidgetValidator.ERRCODE_WIDGET_ALREADY_EXISTS, new String[]{widgetType.getCode()}, "widgettype.exists");
                 throw new ValidationGenericException(bindingResult);
@@ -239,12 +250,12 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
     public WidgetDto updateWidget(String widgetCode, WidgetRequest widgetUpdateRequest) {
         WidgetType type = this.getWidgetManager().getWidgetType(widgetCode);
         if (type == null) {
-            throw new ResourceNotFoundException(WidgetValidator.ERRCODE_WIDGET_DOES_NOT_EXISTS, "widget", widgetCode);
+            throw new ResourceNotFoundException(WidgetValidator.ERRCODE_WIDGET_DOES_NOT_EXISTS, TYPE_WIDGET, widgetCode);
         }
         WidgetDto widgetDto;
         try {
             if (null == this.getGroupManager().getGroup(widgetUpdateRequest.getGroup())) {
-                BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(type, "widget");
+                BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(type, TYPE_WIDGET);
                 bindingResult.reject(WidgetValidator.ERRCODE_WIDGET_GROUP_INVALID,
                         new String[]{widgetUpdateRequest.getGroup()}, "widgettype.group.invalid");
                 throw new ValidationGenericException(bindingResult);
@@ -257,7 +268,7 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
                     && !type.isLogic()
                     && !(WidgetType.existsJsp(this.srvCtx, widgetCode, type.getPluginCode())
             || (guiFragment != null && !(StringUtils.isBlank(guiFragment.getDefaultGui()))))) {
-                BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(type, "widget");
+                BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(type, TYPE_WIDGET);
                 bindingResult.reject(WidgetValidator.ERRCODE_NOT_BLANK, new String[]{type.getCode()},
                         "widgettype.customUi.notBlank");
                 throw new ValidationGenericException(bindingResult);
@@ -320,7 +331,7 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
     public List<WidgetDto> getGroupUtilizer(String groupCode) {
         try {
             List<WidgetType> list = ((GroupUtilizer<WidgetType>) this.getWidgetManager()).getGroupUtilizers(groupCode);
-            return this.getDtoBuilder().convert(list);
+            return Optional.ofNullable(list).map(l -> this.getDtoBuilder().convert(l)).orElse(new ArrayList<>());
         } catch (EntException ex) {
             logger.error("Error loading WidgetType references for group {}", groupCode, ex);
             throw new RestServerError("Error loading WidgetType references for group", ex);
@@ -335,21 +346,29 @@ public class WidgetService implements IWidgetService, GroupServiceUtilizer<Widge
             return 0;
         }
     }
-
-
+    
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
         WidgetInfoDto widgetInfoDto = this.getWidgetInfo(componentCode);
+        BiFunction<String, Boolean, ComponentUsageEntity> buildCompUsageEntityFunction = (code, online) -> {
+            ComponentUsageEntity cue = new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE, code);
+            cue.getExtraProperties().put(ComponentUsageEntity.ONLINE_PROPERTY, online);
+            return cue;
+        };
         List<ComponentUsageEntity> totalReferenced = widgetInfoDto.getPublishedUtilizers().stream()
-                .map(widgetDetail -> new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE, widgetDetail.getPageCode(), IPageService.STATUS_ONLINE))
+                .map(widgetDetail -> buildCompUsageEntityFunction.apply(widgetDetail.getPageCode(), Boolean.TRUE))
                 .collect(Collectors.toList());
         List<ComponentUsageEntity> draftReferenced = widgetInfoDto.getDraftUtilizers().stream()
-                .map(widgetDetail -> new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE, widgetDetail.getPageCode(), IPageService.STATUS_DRAFT))
+                .map(widgetDetail -> buildCompUsageEntityFunction.apply(widgetDetail.getPageCode(), Boolean.FALSE))
                 .collect(Collectors.toList());
         totalReferenced.addAll(draftReferenced);
         return pagedMetadataMapper.getPagedResult(restListRequest, totalReferenced);
     }
-
+    
+    @Override
+    public String getObjectType() {
+        return TYPE_WIDGET;
+    }
 
     protected String extractUniqueGuiFragmentCode(String widgetTypeCode) throws EntException {
         String uniqueCode = widgetTypeCode;

@@ -23,6 +23,7 @@ import com.agiletec.aps.system.common.entity.model.attribute.NumberAttribute;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.DateConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.user.IUserService;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 
@@ -37,7 +40,7 @@ import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
  *
  * @author paddeo
  */
-public class UserDto {
+public class UserDto implements IComponentDto {
 
     private String username;
     private String registration;
@@ -75,6 +78,18 @@ public class UserDto {
             this.profileAttributes = convertUserProfileAttributes(userProfile);
             profileType = new ProfileTypeDto(userProfile.getTypeCode(), userProfile.getTypeDescription());
         }
+    }
+
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_USER;
+    }
+    
+    @JsonIgnore
+    @Override
+    public String getCode() {
+        return this.getUsername();
     }
 
     public String getUsername() {
@@ -219,4 +234,5 @@ public class UserDto {
         }
         return null;
     }
+    
 }

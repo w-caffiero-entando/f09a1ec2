@@ -13,7 +13,7 @@
  */
 package org.entando.entando.aps.system.services.analysis.component_existence;
 
-import org.entando.entando.aps.system.services.IComponentExistsService;
+import org.entando.entando.aps.system.services.component.IComponentExistsService;
 import org.entando.entando.ent.exception.EntRuntimeException;
 
 import java.util.HashMap;

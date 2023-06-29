@@ -53,7 +53,9 @@ import com.agiletec.plugins.jacms.aps.system.services.contentmodel.IContentModel
 import com.agiletec.plugins.jacms.aps.system.services.contentmodel.model.ContentTypeDto;
 import com.agiletec.plugins.jacms.aps.system.services.dispenser.ContentRenderizationInfo;
 import com.agiletec.plugins.jacms.aps.system.services.dispenser.IContentDispenser;
+import com.agiletec.plugins.jacms.aps.system.services.resource.ResourceServiceUtilizer;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
+import com.agiletec.plugins.jacms.aps.system.services.resource.ResourceUtilizer;
 import com.agiletec.plugins.jacms.aps.system.services.searchengine.ICmsSearchEngineManager;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -81,7 +83,7 @@ import org.entando.entando.aps.system.services.page.PageServiceUtilizer;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.entando.entando.plugins.jacms.aps.system.services.ContentTypeService;
+import org.entando.entando.plugins.jacms.aps.system.services.page.CmsPageServiceWrapper;
 import org.entando.entando.plugins.jacms.aps.system.services.content.model.ContentsStatusDto;
 import org.entando.entando.plugins.jacms.aps.system.services.resource.ResourcesService;
 import org.entando.entando.plugins.jacms.web.content.ContentController;
@@ -99,15 +101,21 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentExistsService;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 
 public class ContentService extends AbstractEntityService<Content, ContentDto>
         implements IContentService,
         GroupServiceUtilizer<ContentDto>, CategoryServiceUtilizer<ContentDto>,
-        PageServiceUtilizer<ContentDto>, ContentServiceUtilizer<ContentDto>,
+        PageServiceUtilizer<ContentDto>, ContentServiceUtilizer<ContentDto>, 
+        ResourceServiceUtilizer<ContentDto>, 
+        IComponentExistsService, IComponentUsageService, 
         ApplicationContextAware {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
-
+    
     private ICategoryManager categoryManager;
     private IContentManager contentManager;
     private IContentModelManager contentModelManager;
@@ -119,6 +127,9 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     @Autowired
     private ResourcesService resourcesService;
+
+    @Autowired
+    private CmsPageServiceWrapper cmsPageServiceWrapper;
 
     @Autowired
     private ContentTypeService contentTypeService;
@@ -356,6 +367,17 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
         }
     }
 
+    @Override
+    public List<ContentDto> getResourceUtilizer(String resourceId) {
+        try {
+            List<String> contentIds = ((ResourceUtilizer) this.getContentManager()).getResourceUtilizers(resourceId);
+            return this.buildDtoList(contentIds);
+        } catch (EntException ex) {
+            logger.error("Error loading content references for resource {}", resourceId, ex);
+            throw new RestServerError("Error loading content references for resource", ex);
+        }
+    }
+
     private List<ContentDto> buildDtoList(List<String> contentIds) {
         List<ContentDto> dtoList = new ArrayList<>();
         if (null != contentIds) {
@@ -451,7 +473,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
     }
 
     private List<ContentDto> toContentDto(RestContentListRequest request, UserDetails user, List<String> contentIds) {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(request, "content");
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(request, ComponentUsageEntity.TYPE_CONTENT);
         boolean full = isModeFull(request.getMode());
         return contentIds.stream()
                 .map(contentId -> full ? buildFullContentDto(user, bindingResult, contentId,
@@ -597,7 +619,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
     @Override
     public ContentDto getContent(String code, String modelId, String status, String langCode, boolean resolveLink,
             UserDetails user) {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(code, "content");
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(code, ComponentUsageEntity.TYPE_CONTENT);
         boolean online = isStatusOnline(status);
         this.checkContentAuthorization(user, code, online, false, bindingResult);
         ContentDto dto = buildFullContentDto(user, bindingResult, code, online, modelId, langCode, resolveLink);
@@ -699,10 +721,10 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
         try {
             Content content = this.getContentManager().loadContent(code, false);
             if (null == content) {
-                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, "content", code);
+                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, ComponentUsageEntity.TYPE_CONTENT, code);
             }
             Content publicContent = this.getContentManager().loadContent(code, true);
-            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(code, "content");
+            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(code, ComponentUsageEntity.TYPE_CONTENT);
             if (null != publicContent) {
                 bindingResult.reject(ContentController.ERRCODE_DELETE_PUBLIC_PAGE,
                         new String[]{code}, "plugins.jacms.content.status.published");
@@ -727,10 +749,10 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
         try {
             Content content = this.getContentManager().loadContent(code, false);
             if (bindingResult == null) {
-                bindingResult = new BeanPropertyBindingResult(code, "content");
+                bindingResult = new BeanPropertyBindingResult(code, ComponentUsageEntity.TYPE_CONTENT);
             }
             if (null == content) {
-                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, "content", code);
+                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, ComponentUsageEntity.TYPE_CONTENT, code);
             }
             if (status.equals(STATUS_DRAFT) && null == this.getContentManager().loadContent(code, true)) {
                 return this.getDtoBuilder().convert(content);
@@ -770,7 +792,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     @Override
     public List<ContentDto> updateContentsStatus(List<String> codes, String status, UserDetails user) {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(codes, "content");
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(codes, ComponentUsageEntity.TYPE_CONTENT);
         List<ContentDto> result = codes.stream()
                 .map(code -> {
                     try {
@@ -818,7 +840,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
             Content content = this.getContentManager().loadContent(code, false);
             if (null == content) {
                 logger.warn("no content found with code {}", code);
-                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, "content", code);
+                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, ComponentUsageEntity.TYPE_CONTENT, code);
             }
             ContentServiceUtilizer<?> utilizer = this.getContentServiceUtilizer(managerName);
             if (null == utilizer) {
@@ -844,6 +866,35 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
                 .filter(service -> service.getManagerName().equals(managerName))
                 .findFirst().orElse(null);
         return defName;
+    }
+
+    @Override
+    public String getObjectType() {
+        return ComponentUsageEntity.TYPE_CONTENT;
+    }
+
+    @Override
+    public Integer getComponentUsage(String componentCode) {
+        RestListRequest request = new RestListRequest();
+        request.setPageSize(-1); // get all elements
+        PagedMetadata<ComponentUsageEntity> entities = this.getComponentUsageDetails(componentCode, request);
+        return entities.getTotalItems();
+    }
+
+    @Override
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
+        List<ComponentUsageEntity> components = new ArrayList<>();
+        Map<String, ? extends ContentServiceUtilizer> beans = this.applicationContext.getBeansOfType(ContentServiceUtilizer.class);
+        for (var utilizer : beans.values()) {
+            List<IComponentDto> objects = utilizer.getContentUtilizer(componentCode);
+            List<ComponentUsageEntity> utilizerForService = objects.stream()
+                    .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
+            components.addAll(utilizerForService);
+        }
+        List<ComponentUsageEntity> sublist = restListRequest.getSublist(components);
+        PagedMetadata<ComponentUsageEntity> usageEntries = new PagedMetadata<>(restListRequest, components.size());
+        usageEntries.setBody(sublist);
+        return usageEntries;
     }
 
     @Override
@@ -926,7 +977,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
             PublicContentAuthorizationInfo pcai
                     = (publicVersion) ? this.getContentAuthorizationHelper().getAuthorizationInfo(contentId) : null;
             if (publicVersion && null == pcai) {
-                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, "content", contentId);
+                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, ComponentUsageEntity.TYPE_CONTENT, contentId);
             }
             List<String> userGroupCodes = new ArrayList<>();
             List<Group> groups = (null != userDetails) ? this.getAuthorizationManager().getUserGroups(userDetails)
@@ -936,7 +987,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
             if (!(publicVersion && !edit && null != pcai && pcai.isUserAllowed(userGroupCodes))
                     && !this.getContentAuthorizationHelper().isAuthToEdit(userDetails, contentId, publicVersion)) {
                 BindingResult bindingResult
-                        = (null == mainBindingResult) ? new BeanPropertyBindingResult(contentId, "content")
+                        = (null == mainBindingResult) ? new BeanPropertyBindingResult(contentId, ComponentUsageEntity.TYPE_CONTENT)
                                 : mainBindingResult;
                 bindingResult.reject(ContentController.ERRCODE_UNAUTHORIZED_CONTENT, new String[]{contentId},
                         "plugins.jacms.content.unauthorized.access");
@@ -954,7 +1005,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
         try {
             if (null == getContentManager().loadContent(code, false)) {
                 logger.error("Content not found: " + code);
-                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, "content", code);
+                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, ComponentUsageEntity.TYPE_CONTENT, code);
             }
         } catch (EntException ex) {
             throw new RestServerError("plugins.jacms.content.contentManager.error.read", null);
@@ -963,6 +1014,12 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     public boolean exists(String code, boolean online) throws EntException {
         return (null != getContentManager().loadContent(code, online));
+    }
+
+    @Override
+    public Optional<IComponentDto> getComponentDto(String code) throws EntException {
+        return Optional.ofNullable(this.getContentManager().loadContent(code, false))
+                .map(c -> this.getDtoBuilder().convert(c));
     }
 
     @Override

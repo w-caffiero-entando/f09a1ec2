@@ -15,15 +15,21 @@ package org.entando.entando.plugins.jacms.aps.system.services.page;
 
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.ContentUtilizer;
 import java.util.List;
+import java.util.Optional;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.plugins.jacms.aps.system.services.content.ContentServiceUtilizer;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.web.common.model.PagedMetadata;
+import org.entando.entando.web.common.model.RestListRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -36,6 +42,9 @@ public class CmsPageServiceWrapper implements ContentServiceUtilizer<PageDto> {
 
     @Autowired
     private IDtoBuilder<IPage, PageDto> dtoBuilder;
+
+    @Autowired
+    private IPageManager pageManager;
 
     @Autowired
     @Qualifier(JacmsSystemConstants.PAGE_MANAGER_WRAPPER)
@@ -55,6 +64,34 @@ public class CmsPageServiceWrapper implements ContentServiceUtilizer<PageDto> {
             logger.error("Error loading page references for content {}", contentId, ex);
             throw new RestServerError("Error loading page references for content", ex);
         }
+    }
+    
+    @Override
+    public String getObjectType() {
+        return "";
+    }
+    
+    @Override
+    public Integer getComponentUsage(String componentCode) {
+        return 0;
+    }
+    
+    @Override
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
+        PagedMetadata<ComponentUsageEntity> pm = new PagedMetadata<>(restListRequest, 0);
+        pm.setBody(List.of());
+        return pm;
+    }
+
+    @Override
+    public Optional<IComponentDto> getComponentDto(String code) {
+        return Optional.ofNullable(this.pageManager.getDraftPage(code))
+                .map(c -> this.getDtoBuilder().convert(c));
+    }
+    
+    @Override
+    public boolean exists(String code) throws EntException {
+        return (null != this.pageManager.getDraftPage(code));
     }
 
     protected IDtoBuilder<IPage, PageDto> getDtoBuilder() {

@@ -28,8 +28,8 @@ import org.entando.entando.aps.system.services.guifragment.model.GuiFragmentDtoS
 import org.entando.entando.web.common.annotation.RestAccessControl;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.*;
-import org.entando.entando.web.component.ComponentUsage;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsage;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.guifragment.model.GuiFragmentRequestBody;
 import org.entando.entando.web.guifragment.model.GuiFragmentUpdateRequest;
 import org.entando.entando.web.guifragment.validator.GuiFragmentValidator;

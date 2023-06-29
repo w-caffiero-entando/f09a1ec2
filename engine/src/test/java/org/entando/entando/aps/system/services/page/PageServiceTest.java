@@ -39,7 +39,6 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.tuple.Pair;
-import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.assertionhelper.PageAssertionHelper;
 import org.entando.entando.aps.system.services.mockhelper.PageMockHelper;
@@ -48,7 +47,7 @@ import org.entando.entando.aps.system.services.page.model.PageSearchDto;
 import org.entando.entando.web.common.assembler.PageSearchMapper;
 import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.model.PagedMetadata;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.page.model.PageRequest;
 import org.entando.entando.web.page.model.PageSearchRequest;
 import org.junit.jupiter.api.Assertions;
@@ -87,12 +86,15 @@ class PageServiceTest {
     private PageSearchMapper pageSearchMapper;
     @Mock
     private PagedMetadataMapper pagedMetadataMapper;
-
-    @InjectMocks
+    
     private PageService pageService;
 
     @BeforeEach
     public void setUp() {
+        pageService = new PageService(pageManager, pageModelManager, groupManager, 
+                null, null, null, 
+                dtoBuilder, pageTokenManager, pageSearchMapper, pagedMetadataMapper, null, null);
+        pageService.setApplicationContext(this.applicationContext);
         Mockito.lenient().when(groupManager.getGroup("free")).thenReturn(new Group());
         Mockito.lenient().when(groupManager.getGroup("admin")).thenReturn(new Group());
     }
@@ -402,6 +404,14 @@ class PageServiceTest {
     private void mockPagedMetadata(Page page, PageDto pageDto, String[] utilizers, int currPage, int lastPage, int pageSize, int totalSize) {
 
         try {
+            pageDto.getChildren().stream().forEach(childCode -> {
+                IPage mockChild = Mockito.mock(IPage.class);
+                Mockito.lenient().when(mockChild.getCode()).thenReturn(childCode);
+                Mockito.lenient().when(mockChild.isOnline()).thenReturn(true);
+                when(pageManager.getDraftPage(childCode)).thenReturn(mockChild);
+                when(pageManager.getOnlinePage(childCode)).thenReturn(Mockito.mock(IPage.class));
+                when(pageTokenManager.encrypt(childCode)).thenReturn(PageMockHelper.TOKEN);
+            });
             when(pageManager.getDraftPage(page.getCode())).thenReturn(page);
             when(pageTokenManager.encrypt(page.getCode())).thenReturn(PageMockHelper.TOKEN);
             Mockito.lenient().when(dtoBuilder.convert(any(IPage.class))).thenReturn(pageDto);

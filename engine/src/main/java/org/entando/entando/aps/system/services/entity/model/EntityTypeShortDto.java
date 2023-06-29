@@ -44,7 +44,7 @@ public class EntityTypeShortDto {
         this.setCode(entityType.getTypeCode());
         this.setName(entityType.getTypeDescription());
     }
-
+    
     public String getCode() {
         return code;
     }

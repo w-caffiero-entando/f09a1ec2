@@ -24,9 +24,12 @@ import com.agiletec.aps.util.ApsProperties;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.label.model.LabelDto;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
@@ -37,30 +40,23 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.validation.BeanPropertyBindingResult;
 
+@RequiredArgsConstructor
 public class LabelService implements ILabelService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
     private static final String BINDING_RESULT_LABEL_NAME = "labelGroup";
 
-    private II18nManager i18nManager;
-    private ILangManager langManager;
+    private final II18nManager i18nManager;
+    private final ILangManager langManager;
     private LabelDtoBuilder dtoBuilder = new LabelDtoBuilder();
 
     protected II18nManager getI18nManager() {
         return i18nManager;
     }
 
-    public void setI18nManager(II18nManager i18nManager) {
-        this.i18nManager = i18nManager;
-    }
-
     protected ILangManager getLangManager() {
         return langManager;
-    }
-
-    public void setLangManager(ILangManager langManager) {
-        this.langManager = langManager;
     }
 
     protected LabelDtoBuilder getDtoBuilder() {
@@ -92,6 +88,12 @@ public class LabelService implements ILabelService {
             logger.error("error in get label group with code {}", code, t);
             throw new RestServerError("error in get label group", t);
         }
+    }
+    
+    @Override
+    public Optional<IComponentDto> getComponentDto(String code) throws EntException {
+        return Optional.ofNullable(this.getI18nManager().getLabelGroup(code))
+                .map(g -> this.getDtoBuilder().convert(code, g));
     }
 
     @Override
@@ -152,8 +154,7 @@ public class LabelService implements ILabelService {
             throw new RestServerError("error in add label group", e);
         }
     }
-
-
+    
     @Override
     public void removeLabelGroup(String code) {
         try {
@@ -300,4 +301,22 @@ public class LabelService implements ILabelService {
     private ResourceNotFoundException mkLabelNotFoundException(String code) {
         return new ResourceNotFoundException(LabelValidator.ERRCODE_LABELGROUP_NOT_FOUND, "label", code);
     }
+
+    @Override
+    public String getObjectType() {
+        return ComponentUsageEntity.TYPE_LABEL;
+    }
+
+    @Override
+    public Integer getComponentUsage(String componentCode) {
+        return 0;
+    }
+
+    @Override
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
+        PagedMetadata<ComponentUsageEntity> pm = new PagedMetadata<>(restListRequest, 0);
+        pm.setBody(List.of());
+        return pm;
+    }
+    
 }

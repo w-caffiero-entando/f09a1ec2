@@ -3,9 +3,12 @@ package org.entando.entando.aps.system.services.language;
 import java.util.List;
 
 import com.agiletec.aps.system.services.lang.Lang;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
-public class LanguageDto {
+public class LanguageDto implements IComponentDto {
 
     private String code;
     private String description;
@@ -32,6 +35,12 @@ public class LanguageDto {
         this.setDefaultLang(src.getCode().equals(defaultCode));
     }
 
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_LABEL;
+    }
+    
     public String getCode() {
         return code;
     }

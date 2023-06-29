@@ -59,10 +59,9 @@
 
     <!-- === SERVICES === -->
 
-    <bean id="GroupService" class="org.entando.entando.aps.system.services.group.GroupService" >
-        <property name="dtoBuilder" ref="GroupDtoBuilder" />
-        <property name="groupManager" ref="GroupManager" />
-    </bean>
+    <bean id="ComponentService" class="org.entando.entando.aps.system.services.component.ComponentService" />
+
+    <bean id="GroupService" class="org.entando.entando.aps.system.services.group.GroupService" />
 
     <bean id="AuthorizationService" class="com.agiletec.aps.system.services.authorization.AuthorizationService" >
         <property name="userManager" ref="UserManager" />
@@ -79,13 +78,7 @@
         <constructor-arg index="1" ref="AuthorizationManager" />
     </bean>
 
-    <bean id="PageService" primary="true" class="org.entando.entando.aps.system.services.page.PageService" >
-        <property name="dtoBuilder" ref="PageDtoBuilder" />
-        <property name="pageManager" ref="PageManager" />
-        <property name="pageModelManager" ref="PageModelManager" />
-        <property name="widgetValidatorFactory" ref="WidgetValidatorFactory" />
-        <property name="widgetProcessorFactory" ref="WidgetProcessorFactory" />
-    </bean>
+    <bean id="PageService" primary="true" class="org.entando.entando.aps.system.services.page.PageService" />
 
     <bean id="WidgetService" class="org.entando.entando.aps.system.services.widgettype.WidgetService" >
         <property name="dtoBuilder" ref="WidgetDtoBuilder" />
@@ -118,10 +111,7 @@
         <property name="langManager" ref="LangManager" />
     </bean>
 
-    <bean id="LabelService" class="org.entando.entando.aps.system.services.label.LabelService" >
-        <property name="langManager" ref="LangManager" />
-        <property name="i18nManager" ref="I18nManager" />
-    </bean>
+    <bean id="LabelService" class="org.entando.entando.aps.system.services.label.LabelService" />
 
     <bean id="UserProfileTypeService" class="org.entando.entando.aps.system.services.userprofile.UserProfileTypeService" />
 
@@ -129,10 +119,7 @@
 
     <bean id="UserSettingsService" class="org.entando.entando.aps.system.services.usersettings.UserSettingsService" />
 
-    <bean id="CategoryService" class="org.entando.entando.aps.system.services.category.CategoryService" >
-        <property name="categoryManager" ref="CategoryManager" />
-        <property name="categoryValidator" ref="CategoryValidator" />
-    </bean>
+    <bean id="CategoryService" class="org.entando.entando.aps.system.services.category.CategoryService" />
 
     <bean id="UserService" class="org.entando.entando.aps.system.services.user.UserService" >
         <property name="authorizationManager" ref="AuthorizationManager" />

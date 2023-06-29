@@ -15,15 +15,18 @@ package com.agiletec.plugins.jacms.aps.system.services.contentmodel.model;
 
 import com.agiletec.aps.system.common.entity.model.attribute.AttributeRole;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.Content;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.*;
 import org.entando.entando.aps.system.services.entity.model.EntityTypeFullDto;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 @Validated
 @ApiModel("ContentType")
-public class ContentTypeDto extends EntityTypeFullDto {
+public class ContentTypeDto extends EntityTypeFullDto implements IComponentDto {
 
     private String defaultContentModel;
 
@@ -46,6 +49,12 @@ public class ContentTypeDto extends EntityTypeFullDto {
     public ContentTypeDto code(String code) {
         this.setCode(code);
         return this;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_CONTENT;
     }
 
     @ApiModelProperty

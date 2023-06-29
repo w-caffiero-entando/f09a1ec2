@@ -18,8 +18,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.*;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
-public class PageModelDto {
+public class PageModelDto implements IComponentDto {
 
     public static final int NO_MAIN_FRAME = -1;
 
@@ -53,6 +55,13 @@ public class PageModelDto {
         this.references = other.references;
     }
 
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_PAGE_TEMPLATE;
+    }
+    
+    @Override
     public String getCode() {
         return code;
     }

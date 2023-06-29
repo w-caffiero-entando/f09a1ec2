@@ -25,21 +25,38 @@ import com.agiletec.aps.system.services.group.GroupUtilizer;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.AbstractResource;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceDto;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.DtoBuilder;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.category.CategoryServiceUtilizer;
 import org.entando.entando.aps.system.services.group.GroupServiceUtilizer;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.web.common.model.PagedMetadata;
+import org.entando.entando.web.common.model.RestListRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ResourceService implements IResourceService,
-        GroupServiceUtilizer<ResourceDto>, CategoryServiceUtilizer<ResourceDto> {
+        GroupServiceUtilizer<ResourceDto>, CategoryServiceUtilizer<ResourceDto>, IComponentUsageService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
+    
+    public static final String TYPE_ASSET = ComponentUsageEntity.TYPE_ASSET;
 
     private IResourceManager resourceManager;
     private IDtoBuilder<ResourceInterface, ResourceDto> dtoBuilder;
+    private List<? extends ResourceServiceUtilizer> resourceServiceUtilizers = new ArrayList<>();
+    
+    @Autowired
+    public ResourceService(IResourceManager resourceManager, List<? extends ResourceServiceUtilizer> resourceServiceUtilizers) {
+        this.resourceManager = resourceManager;
+        this.resourceServiceUtilizers = resourceServiceUtilizers;
+    }
 
     public IResourceManager getResourceManager() {
         return resourceManager;
@@ -110,6 +127,45 @@ public class ResourceService implements IResourceService,
             });
         }
         return dtoList;
+    }
+
+    @Override
+    public Optional<IComponentDto> getComponentDto(String code) throws EntException {
+        return Optional.ofNullable(this.resourceManager.loadResource(code))
+                .map(c -> this.getDtoBuilder().convert(c));
+    }
+
+    @Override
+    public boolean exists(String code) throws EntException {
+        return resourceManager.exists(null, code);
+    }
+
+    @Override
+    public String getObjectType() {
+        return TYPE_ASSET;
+    }
+
+    @Override
+    public Integer getComponentUsage(String componentCode) {
+        RestListRequest request = new RestListRequest();
+        request.setPageSize(-1); // get all elements
+        PagedMetadata<ComponentUsageEntity> entities = this.getComponentUsageDetails(componentCode, request);
+        return entities.getTotalItems();
+    }
+
+    @Override
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
+        List<ComponentUsageEntity> components = new ArrayList<>();
+        for (var utilizer : this.resourceServiceUtilizers) {
+            List<IComponentDto> objects = utilizer.getResourceUtilizer(componentCode);
+            List<ComponentUsageEntity> utilizerForService = objects.stream()
+                    .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
+            components.addAll(utilizerForService);
+        }
+        List<ComponentUsageEntity> sublist = restListRequest.getSublist(components);
+        PagedMetadata<ComponentUsageEntity> usageEntries = new PagedMetadata<>(restListRequest, components.size());
+        usageEntries.setBody(sublist);
+        return usageEntries;
     }
 
 }

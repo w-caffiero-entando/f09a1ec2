@@ -63,7 +63,7 @@ import org.entando.entando.web.common.model.Filter;
 import org.entando.entando.web.common.model.FilterOperator;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.page.model.PageSearchRequest;
 import org.entando.entando.web.widget.model.WidgetRequest;
 import org.junit.jupiter.api.Assertions;
@@ -79,6 +79,9 @@ import org.springframework.util.FileSystemUtils;
 
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
+import java.util.Optional;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
 
 @ExtendWith(MockitoExtension.class)
 class WidgetServiceTest {
@@ -125,7 +128,6 @@ class WidgetServiceTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-
         Mockito.lenient().when(pageManager.getOnlineWidgetUtilizers(WIDGET_1_CODE)).thenReturn(ImmutableList.of(new Page()));
         Mockito.lenient().when(pageManager.getDraftWidgetUtilizers(WIDGET_1_CODE)).thenReturn(ImmutableList.of(new Page()));
 
@@ -391,20 +393,24 @@ class WidgetServiceTest {
 
     @Test
     void getWidgetUsageForNonExistingCodeShouldReturnZero() {
-
         int componentUsage = widgetService.getComponentUsage("non_existing");
         assertEquals(0, componentUsage);
     }
-
-
+    
+    @Test
+    void shouldFindComponentDto() {
+        WidgetType type = Mockito.mock(WidgetType.class);
+        when(type.getCode()).thenReturn("test");
+        when(widgetManager.getWidgetType("test")).thenReturn(type);
+        Optional<IComponentDto> dto = this.widgetService.getComponentDto("test");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof WidgetDto);
+    }
 
     @Test
     void getWidgetUsageDetails() throws Exception {
-
         this.mockPagedMetadata(Arrays.asList(PageMockHelper.PAGE_CODE), 1, 1, 100, 2);
-
         PagedMetadata<ComponentUsageEntity> usageDetails = widgetService.getComponentUsageDetails(WidgetMockHelper.WIDGET_1_CODE, new PageSearchRequest(WidgetMockHelper.WIDGET_1_CODE));
-
         WidgetAssertionHelper.assertUsageDetails(usageDetails);
     }
 

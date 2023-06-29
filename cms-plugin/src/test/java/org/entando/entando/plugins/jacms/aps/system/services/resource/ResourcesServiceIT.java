@@ -1,3 +1,16 @@
+/*
+ * Copyright 2021-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.plugins.jacms.aps.system.services.resource;
 
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
@@ -26,11 +39,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-/*
-@ActiveProfiles("test")
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
-@RunWith(SpringJUnit4ClassRunner.class)
-*/
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
     "classpath*:spring/testpropertyPlaceholder.xml",
@@ -42,7 +50,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
     "classpath*:spring/web/**.xml"
 })
 @WebAppConfiguration(value = "")
-class ResourcesServiceUnitTest {
+class ResourcesServiceIT {
 
     @Autowired
     private MessageSource messageSource;

@@ -16,19 +16,22 @@ package org.entando.entando.aps.system.services.category.model;
 import com.agiletec.aps.system.services.category.Category;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.util.ApsProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * @author E.Santoboni
  */
-public class CategoryDto {
+public class CategoryDto implements IComponentDto {
 
     @NotBlank(message = "category.code.notBlank")
     private String code;
@@ -61,6 +64,13 @@ public class CategoryDto {
                 ifPresent(values -> Arrays.asList(values).forEach((child) -> this.children.add(child)));
     }
 
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_CATEGORY;
+    }
+    
+    @Override
     public String getCode() {
         return code;
     }

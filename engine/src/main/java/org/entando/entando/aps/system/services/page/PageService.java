@@ -16,7 +16,6 @@ package org.entando.entando.aps.system.services.page;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
-import com.agiletec.aps.system.common.tree.ITreeNode;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.GroupUtilizer;
 import com.agiletec.aps.system.services.group.IGroupManager;
@@ -44,12 +43,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
-import org.entando.entando.aps.system.services.IComponentExistsService;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.component.IComponentExistsService;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.group.GroupServiceUtilizer;
 import org.entando.entando.aps.system.services.jsonpatch.JsonPatchService;
@@ -75,7 +77,7 @@ import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.page.model.PageCloneRequest;
 import org.entando.entando.web.page.model.PagePositionRequest;
 import org.entando.entando.web.page.model.PageRequest;
@@ -84,7 +86,6 @@ import org.entando.entando.web.page.model.WidgetConfigurationRequest;
 import org.entando.entando.web.page.validator.PageValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.Nullable;
@@ -95,10 +96,13 @@ import org.springframework.validation.DataBinder;
 /**
  * @author paddeo
  */
+@RequiredArgsConstructor
 public class PageService implements IComponentExistsService, IPageService,
         GroupServiceUtilizer<PageDto>, PageModelServiceUtilizer<PageDto>, ApplicationContextAware {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
+    
+    public static final String TYPE_PAGE = ComponentUsageEntity.TYPE_PAGE;
 
     public static final String ERRCODE_PAGE_NOT_FOUND = "1";
     public static final String ERRCODE_PAGEMODEL_NOT_FOUND = "1";
@@ -110,97 +114,60 @@ public class PageService implements IComponentExistsService, IPageService,
     public static final String ERRCODE_STATUS_INVALID = "3";
     public static final String ERRCODE_PAGE_REFERENCES = "5";
 
-    @Autowired
-    private IPageManager pageManager;
+    private final IPageManager pageManager;
 
-    @Autowired
-    private IPageModelManager pageModelManager;
+    private final IPageModelManager pageModelManager;
 
-    @Autowired
-    private IGroupManager groupManager;
+    private final IGroupManager groupManager;
 
-    @Autowired
-    private IWidgetTypeManager widgetTypeManager;
+    private final IWidgetTypeManager widgetTypeManager;
 
-    @Autowired
-    private WidgetValidatorFactory widgetValidatorFactory;
+    private final WidgetValidatorFactory widgetValidatorFactory;
 
-    @Autowired
-    private WidgetProcessorFactory widgetProcessorFactory;
+    private final WidgetProcessorFactory widgetProcessorFactory;
 
-    @Autowired
-    private IDtoBuilder<IPage, PageDto> dtoBuilder;
+    private final IDtoBuilder<IPage, PageDto> dtoBuilder;
 
     private JsonPatchService<PageDto> jsonPatchService = new JsonPatchService<>(PageDto.class);
 
     private ApplicationContext applicationContext;
 
-    @Autowired
-    private IPageTokenManager pageTokenManager;
+    private final IPageTokenManager pageTokenManager;
 
-    @Autowired
-    private PageSearchMapper pageSearchMapper;
+    private final PageSearchMapper pageSearchMapper;
 
-    @Autowired
-    private PagedMetadataMapper pagedMetadataMapper;
+    private final PagedMetadataMapper pagedMetadataMapper;
 
-    @Autowired
-    private IPageAuthorizationService pageAuthorizationService;
+    private final IPageAuthorizationService pageAuthorizationService;
+    
+    private final List<? extends PageServiceUtilizer> pageServiceUtilizers;
 
     protected IPageManager getPageManager() {
         return pageManager;
-    }
-
-    public void setPageManager(IPageManager pageManager) {
-        this.pageManager = pageManager;
     }
 
     protected IPageModelManager getPageModelManager() {
         return pageModelManager;
     }
 
-    public void setPageModelManager(IPageModelManager pageModelManager) {
-        this.pageModelManager = pageModelManager;
-    }
-
     public IGroupManager getGroupManager() {
         return groupManager;
-    }
-
-    public void setGroupManager(IGroupManager groupManager) {
-        this.groupManager = groupManager;
     }
 
     protected IDtoBuilder<IPage, PageDto> getDtoBuilder() {
         return dtoBuilder;
     }
 
-    public void setDtoBuilder(IDtoBuilder<IPage, PageDto> dtoBuilder) {
-        this.dtoBuilder = dtoBuilder;
-    }
-
     protected WidgetValidatorFactory getWidgetValidatorFactory() {
         return widgetValidatorFactory;
-    }
-
-    public void setWidgetValidatorFactory(WidgetValidatorFactory widgetValidatorFactory) {
-        this.widgetValidatorFactory = widgetValidatorFactory;
     }
 
     protected WidgetProcessorFactory getWidgetProcessorFactory() {
         return widgetProcessorFactory;
     }
 
-    public void setWidgetProcessorFactory(WidgetProcessorFactory widgetProcessorFactory) {
-        this.widgetProcessorFactory = widgetProcessorFactory;
-    }
-
     protected IWidgetTypeManager getWidgetTypeManager() {
         return widgetTypeManager;
-    }
-
-    public void setWidgetTypeManager(IWidgetTypeManager widgetTypeManager) {
-        this.widgetTypeManager = widgetTypeManager;
     }
 
     @Override
@@ -210,10 +177,6 @@ public class PageService implements IComponentExistsService, IPageService,
 
     public IPageTokenManager getPageTokenManager() {
         return pageTokenManager;
-    }
-
-    public void setPageTokenManager(IPageTokenManager pageTokenManager) {
-        this.pageTokenManager = pageTokenManager;
     }
 
     @Override
@@ -288,6 +251,12 @@ public class PageService implements IComponentExistsService, IPageService,
             logger.error("Error encoding token page", e);
             throw new RestServerError("error encoding token page", e);
         }
+    }
+
+    @Override
+    public Optional<IComponentDto> getComponentDto(String code) {
+        return Optional.ofNullable(this.loadPage(code, IPageService.STATUS_DRAFT))
+                .map(c -> this.getDtoBuilder().convert(c));
     }
 
     public boolean exists(String pageCode, String status) {
@@ -872,23 +841,41 @@ public class PageService implements IComponentExistsService, IPageService,
             return 0;
         }
     }
-
-
+    
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String pageCode, RestListRequest restListRequest) {
-
         PageDto pageDto = this.getPage(pageCode, IPageService.STATUS_DRAFT);
-        List<PageDto> childrenPageDtoList = this.getPages(pageCode);
-
-        List<ComponentUsageEntity> componentUsageEntityList = childrenPageDtoList.stream()
-                .map(childPageDto -> new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE, childPageDto.getCode(), childPageDto.getStatus()))
-                .collect(Collectors.toList());
-
+        List<ComponentUsageEntity> componentUsageEntityList = new ArrayList<>();
         if (pageDto.getStatus().equals(IPageService.STATUS_ONLINE)) {
-            componentUsageEntityList.add(new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE, pageDto.getCode(), pageDto.getStatus()));
+            ComponentUsageEntity cue = pageDto.buildUsageEntity();
+            cue.getExtraProperties().put(ComponentUsageEntity.ONLINE_PROPERTY, true);
+            componentUsageEntityList.add(cue);
         }
-
+        BiFunction<String, Boolean, ComponentUsageEntity> buildEntityFromPage = (draftPageCode, online) -> {
+            PageDto dto = this.getPage(draftPageCode, (online.booleanValue() ? IPageService.STATUS_ONLINE : IPageService.STATUS_DRAFT));
+            return dto.buildUsageEntity();
+        };
+        pageDto.getChildren().forEach(c -> {
+            IPage draftChild = this.getPageManager().getDraftPage(c);
+            componentUsageEntityList.add(buildEntityFromPage.apply(draftChild.getCode(), Boolean.FALSE));
+            if (draftChild.isOnline()) {
+                componentUsageEntityList.add(buildEntityFromPage.apply(draftChild.getCode(), Boolean.TRUE));
+            }
+        });
+        if (null != this.pageServiceUtilizers) {
+            for (var utilizer : this.pageServiceUtilizers) {
+                List<IComponentDto> objects = utilizer.getPageUtilizer(pageCode);
+                List<ComponentUsageEntity> utilizerForService = objects.stream()
+                        .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
+                componentUsageEntityList.addAll(utilizerForService);
+            }
+        }
         return pagedMetadataMapper.getPagedResult(restListRequest, componentUsageEntityList);
+    }
+    
+    @Override
+    public String getObjectType() {
+        return TYPE_PAGE;
     }
 
     private PagedMetadata<PageDto> getPagedResult(PageSearchRequest request, List<PageDto> pages) {

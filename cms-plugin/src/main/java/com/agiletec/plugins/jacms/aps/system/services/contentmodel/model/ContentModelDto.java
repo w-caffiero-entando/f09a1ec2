@@ -1,5 +1,6 @@
 package com.agiletec.plugins.jacms.aps.system.services.contentmodel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,11 +8,13 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ApiModel("ContentModel")
-public class ContentModelDto {
+public class ContentModelDto implements IComponentDto {
 
     @Min(value = 0)
     @Max(value = 2147483647)
@@ -36,6 +39,18 @@ public class ContentModelDto {
     
     @JsonProperty("stylesheet")
     private String stylesheet;
+
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_CONTENT_TEMPLATE;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getCode() {
+        return String.valueOf(this.getId());
+    }
 
     public Long getId() {
         return id;
@@ -76,4 +91,5 @@ public class ContentModelDto {
     public void setStylesheet(String stylesheet) {
         this.stylesheet = stylesheet;
     }
+    
 }

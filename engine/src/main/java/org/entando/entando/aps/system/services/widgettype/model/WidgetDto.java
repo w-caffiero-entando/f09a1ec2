@@ -14,14 +14,17 @@
 package org.entando.entando.aps.system.services.widgettype.model;
 
 import com.agiletec.aps.util.ApsProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
-public class WidgetDto {
+public class WidgetDto implements IComponentDto {
 
     public static final String USER_TYPOLOGY_CODE = "user";
     public static final String CUSTOM_TYPOLOGY_CODE = "custom";
@@ -124,6 +127,13 @@ public class WidgetDto {
         return dtoFieldName;
     }
 
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_WIDGET;
+    }
+    
+    @Override
     public String getCode() {
         return code;
     }

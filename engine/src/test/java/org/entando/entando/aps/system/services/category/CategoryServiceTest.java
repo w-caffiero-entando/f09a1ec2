@@ -13,6 +13,8 @@
  */
 package org.entando.entando.aps.system.services.category;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.agiletec.aps.system.services.category.Category;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
@@ -24,7 +26,6 @@ import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -32,6 +33,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.web.common.model.PagedMetadata;
+import org.entando.entando.web.common.model.RestListRequest;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,12 +59,12 @@ class CategoryServiceTest {
     private IDtoBuilder<Category, CategoryDto> dtoBuilder;
     @Mock
     private CategoryValidator categoryValidator;
-
+    
     @BeforeEach
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+    void init() {
+        categoryService = new CategoryService(categoryManager, categoryValidator, null, null);
     }
-
+    
     @Test
     void getTreeWithInvalidParent() {
         when(categoryManager.getCategory(ArgumentMatchers.anyString())).thenReturn(null);
@@ -97,4 +105,27 @@ class CategoryServiceTest {
             this.categoryService.addCategory(expectedDto);
         });
     }
+    
+    @Test
+    void shouldFindComponentDto() {
+        when(categoryManager.getCategory("test")).thenReturn(Mockito.mock(Category.class));
+        Optional<IComponentDto> dto = this.categoryService.getComponentDto("test");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof CategoryDto);
+    }
+    
+    @Test
+    void shouldFindUtilizers() {
+        CategoryServiceUtilizer utilizer1 = Mockito.mock(CategoryServiceUtilizer.class);
+        List<IComponentDto> components1 = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            IComponentDto dto = Mockito.mock(IComponentDto.class);
+            components1.add(dto);
+        }
+        when(utilizer1.getCategoryUtilizer(Mockito.anyString())).thenReturn(components1);
+        this.categoryService = new CategoryService(categoryManager, categoryValidator, null, List.of(utilizer1));
+        PagedMetadata<ComponentUsageEntity> result = categoryService.getComponentUsageDetails("test", new RestListRequest());
+        Assertions.assertEquals(7, result.getBody().size());
+    }
+    
 }

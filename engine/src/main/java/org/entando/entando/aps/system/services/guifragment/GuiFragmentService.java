@@ -27,7 +27,7 @@ import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
-import org.entando.entando.web.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.guifragment.model.GuiFragmentRequestBody;
 import org.entando.entando.web.guifragment.validator.GuiFragmentValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +35,15 @@ import org.springframework.validation.BeanPropertyBindingResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
 public class GuiFragmentService implements IGuiFragmentService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
+    
+    public static final String TYPE_FRAGMENT = "fragment";
 
     @Autowired
     private IGuiFragmentManager guiFragmentManager;
@@ -102,11 +106,18 @@ public class GuiFragmentService implements IGuiFragmentService {
         }
         if (null == fragment) {
             logger.warn("no fragment found with code {}", code);
-            throw new ResourceNotFoundException(GuiFragmentValidator.ERRCODE_FRAGMENT_DOES_NOT_EXISTS, "fragment", code);
+            throw new ResourceNotFoundException(GuiFragmentValidator.ERRCODE_FRAGMENT_DOES_NOT_EXISTS, TYPE_FRAGMENT, code);
         }
         return this.getDtoBuilder().convert(fragment);
     }
+    
+    @Override
+    public Optional<IComponentDto> getComponentDto(String code) throws EntException {
+        return Optional.ofNullable(this.getGuiFragmentManager().getGuiFragment(code))
+                .map(f -> this.getDtoBuilder().convert(f));
+    }
 
+    @Override
     public boolean exists(String code) throws EntException {
         return this.getGuiFragmentManager().getGuiFragment(code) != null;
     }
@@ -129,7 +140,7 @@ public class GuiFragmentService implements IGuiFragmentService {
         try {
             GuiFragment fragment = this.getGuiFragmentManager().getGuiFragment(code);
             if (null == fragment) {
-                throw new ResourceNotFoundException(GuiFragmentValidator.ERRCODE_FRAGMENT_DOES_NOT_EXISTS, "fragment", code);
+                throw new ResourceNotFoundException(GuiFragmentValidator.ERRCODE_FRAGMENT_DOES_NOT_EXISTS, TYPE_FRAGMENT, code);
             }
             fragment.setGui(NonceInjector.process(guiFragmentRequest.getGuiCode()));
             this.getGuiFragmentManager().updateGuiFragment(fragment);
@@ -179,7 +190,7 @@ public class GuiFragmentService implements IGuiFragmentService {
     }
 
     protected BeanPropertyBindingResult checkFragmentForDelete(GuiFragment fragment, GuiFragmentDto dto) {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(fragment, "fragment");
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(fragment, TYPE_FRAGMENT);
         if (null == fragment) {
             return bindingResult;
         }
@@ -235,4 +246,10 @@ public class GuiFragmentService implements IGuiFragmentService {
 
         return pagedMetadataMapper.getPagedResult(restListRequest, componentUsageEntityList);
     }
+
+    @Override
+    public String getObjectType() {
+        return TYPE_FRAGMENT;
+    }
+    
 }

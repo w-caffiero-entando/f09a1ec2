@@ -13,9 +13,12 @@
  */
 package org.entando.entando.aps.system.services.label.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Map;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 
-public class LabelDto {
+public class LabelDto implements IComponentDto {
 
     private String key;
     private Map<String, String> titles;
@@ -27,6 +30,18 @@ public class LabelDto {
     public LabelDto(final String key, final Map<String, String> titles) {
         this.key = key;
         this.titles = titles;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getType() {
+        return ComponentUsageEntity.TYPE_LABEL;
+    }
+    
+    @Override
+    @JsonIgnore
+    public String getCode() {
+        return this.getKey();
     }
 
     public String getKey() {

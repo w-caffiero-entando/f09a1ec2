@@ -8,8 +8,10 @@ import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
+import java.util.Optional;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.language.utils.LanguageRequestListProcessor;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
@@ -83,14 +85,19 @@ public class LanguageService implements ILanguageService {
             throw new RestServerError("error in getting language " + code, ex);
         }
     }
+    
+    @Override
+    public Optional<IComponentDto> getComponentDto(String code) throws EntException {
+        Optional<LanguageDto> dtoOp = this.getLangManager().getAssignableLangs().stream()
+                .filter(lang -> lang.getCode().equals(code))
+                .map(lang -> getLanguageDtoBuilder().convert(lang))
+                .filter(LanguageDto::isActive).findFirst();
+        return dtoOp.map(IComponentDto.class::cast);
+    }
 
     @Override
     public boolean exists(String code) throws EntException {
-        return this.getLangManager().getAssignableLangs().stream()
-                .filter(lang -> lang.getCode().equals(code))
-                .map(lang -> getLanguageDtoBuilder().convert(lang))
-                .filter(LanguageDto::isActive)
-                .findFirst().orElse(null) != null;
+        return this.getComponentDto(code).isPresent();
     }
 
     @Override
