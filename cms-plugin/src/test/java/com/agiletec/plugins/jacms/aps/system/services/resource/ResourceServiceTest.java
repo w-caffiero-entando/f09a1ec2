@@ -23,7 +23,9 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceDto
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
@@ -61,7 +63,30 @@ class ResourceServiceTest {
         assertThat(dto).isNotEmpty();
         Assertions.assertTrue(dto.get() instanceof ResourceDto);
     }
-    
+
+    @Test
+    void shouldDeleteNotExistingComponent() throws Exception {
+        Mockito.when(this.resourceManager.loadResource("test")).thenReturn(null);
+        this.resourceService.deleteComponent("test");
+        Mockito.verify(resourceManager, Mockito.times(0)).deleteResource(Mockito.any());
+    }
+
+    @Test
+    void shouldDeleteExistingComponent() throws Exception {
+        Mockito.when(this.resourceManager.loadResource("test")).thenReturn(Mockito.mock(ResourceInterface.class));
+        this.resourceService.deleteComponent("test");
+        Mockito.verify(resourceManager, Mockito.times(1)).deleteResource(Mockito.any());
+    }
+
+    @Test
+    void shouldFailDeletingComponent() throws Exception {
+        Assertions.assertThrows(RestServerError.class, () -> {
+            when(this.resourceManager.loadResource("test")).thenThrow(EntException.class);
+            this.resourceService.deleteComponent("test");
+        });
+        Mockito.verify(resourceManager, Mockito.times(0)).deleteResource(Mockito.any());
+    }
+
     @Test
     void shouldFindUtilizers() {
         ResourceServiceUtilizer utilizer = Mockito.mock(ResourceServiceUtilizer.class);
