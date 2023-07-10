@@ -1034,7 +1034,9 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
     @Override
     public void deleteComponent(String componentCode) {
         this.updateContentStatus(componentCode, STATUS_DRAFT, null);
+        logger.debug("Updated component '{}' with status DRAFT", componentCode);
         this.deleteContent(componentCode);
+        logger.debug("Deleted component '{}'", componentCode);
     }
 
     @Override

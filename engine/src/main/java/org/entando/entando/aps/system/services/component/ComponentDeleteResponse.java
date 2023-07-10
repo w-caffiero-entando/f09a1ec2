@@ -17,11 +17,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter@Setter
-public class ComponentDeleteResponse implements Serializable {
+@Data
+public class ComponentDeleteResponse {
     
     public static final String STATUS_SUCCESS = "success";
     public static final String STATUS_PARTIAL_SUCCESS = "partialSuccess";
@@ -30,6 +34,16 @@ public class ComponentDeleteResponse implements Serializable {
     
     private String status;
     
-    private transient List<Map<String, Object>> components = new ArrayList<>();
-    
+    private transient List<ComponentDeleteResponseRow> components = new ArrayList<>();
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ComponentDeleteResponseRow {
+
+        private String type;
+        private String code;
+        private String status;
+    }
 }

@@ -151,9 +151,10 @@ public class ResourceService implements IResourceService,
             ResourceInterface resource = this.getResourceManager().loadResource(componentCode);
             if (null != resource) {
                 this.resourceManager.deleteResource(resource);
+            }else{
+                logger.debug("Error in loading resource related to component code '{}'.", componentCode);
             }
         } catch (EntException ex) {
-            logger.error("Error deleting resource {}", componentCode, ex);
             throw new RestServerError("Error deleting resource", ex);
         }
     }

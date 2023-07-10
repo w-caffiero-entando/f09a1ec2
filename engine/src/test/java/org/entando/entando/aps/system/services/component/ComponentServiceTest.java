@@ -99,7 +99,7 @@ class ComponentServiceTest {
         ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
         Assertions.assertEquals(ComponentDeleteResponse.STATUS_PARTIAL_SUCCESS, response.getStatus());
         Assertions.assertEquals(1, response.getComponents().size());
-        Assertions.assertEquals(ComponentDeleteResponse.STATUS_FAILURE, response.getComponents().get(0).get("status"));
+        Assertions.assertEquals(ComponentDeleteResponse.STATUS_FAILURE, response.getComponents().get(0).getStatus());
         Mockito.verify(mockService, Mockito.times(0)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
     }
     
@@ -117,7 +117,7 @@ class ComponentServiceTest {
         ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
         Assertions.assertEquals(ComponentDeleteResponse.STATUS_SUCCESS, response.getStatus());
         Assertions.assertEquals(1, response.getComponents().size());
-        Assertions.assertEquals(ComponentDeleteResponse.STATUS_SUCCESS, response.getComponents().get(0).get("status"));
+        Assertions.assertEquals(ComponentDeleteResponse.STATUS_SUCCESS, response.getComponents().get(0).getStatus());
     }
     
     @Test
@@ -134,7 +134,7 @@ class ComponentServiceTest {
         ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
         Assertions.assertEquals(ComponentDeleteResponse.STATUS_PARTIAL_SUCCESS, response.getStatus());
         Assertions.assertEquals(1, response.getComponents().size());
-        Assertions.assertEquals(ComponentDeleteResponse.STATUS_FAILURE, response.getComponents().get(0).get("status"));
+        Assertions.assertEquals(ComponentDeleteResponse.STATUS_FAILURE, response.getComponents().get(0).getStatus());
     }
     
 }

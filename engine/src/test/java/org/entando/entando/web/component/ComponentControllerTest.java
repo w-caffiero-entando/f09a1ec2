@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import org.entando.entando.aps.system.services.component.ComponentDeleteResponse;
+import org.entando.entando.aps.system.services.component.ComponentDeleteResponse.ComponentDeleteResponseRow;
 import org.entando.entando.aps.system.services.component.ComponentService;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.web.AbstractControllerTest;
@@ -94,7 +95,11 @@ class ComponentControllerTest extends AbstractControllerTest {
         String accessToken = mockOAuthInterceptor(user);
         ComponentDeleteResponse serviceResponse = new ComponentDeleteResponse();
         serviceResponse.setStatus(ComponentDeleteResponse.STATUS_SUCCESS);
-        Map<String, Object> singleResult = Map.of("type", "customType", "code", "internalCode", "status", ComponentDeleteResponse.STATUS_SUCCESS);
+        ComponentDeleteResponseRow singleResult = ComponentDeleteResponseRow.builder()
+                .type("customType")
+                .code("internalCode")
+                .status(ComponentDeleteResponse.STATUS_SUCCESS)
+                .build();
         serviceResponse.getComponents().add(singleResult);
         List<Map<String, String>> request = List.of(
                 Map.of("type", "customType", "code", "internalCode"));
