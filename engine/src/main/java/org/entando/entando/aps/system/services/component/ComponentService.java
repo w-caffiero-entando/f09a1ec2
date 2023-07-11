@@ -154,9 +154,9 @@ public class ComponentService implements IComponentService {
                                                 .map(c -> delete(c, type, service))
                                                 .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
                                                         .status(ComponentDeleteResponse.STATUS_ERROR).build());
-                                    } catch (Throwable th) {
+                                    } catch (Exception e) {
                                         log.warn("Generic error when deleting element with code: '{}', type: '{}'",
-                                                code, type, th);
+                                                code, type, e);
                                         responseRow = ComponentDeleteResponseRow.builder().code(code).type(type)
                                                 .status(ComponentDeleteResponse.STATUS_ERROR).build();
 
