@@ -13,10 +13,13 @@
  */
 package org.entando.entando.web.component;
 
+import org.entando.entando.aps.system.services.component.ComponentDeleteRequestRow;
 import org.entando.entando.aps.system.services.component.ComponentUsageDetails;
 import com.agiletec.aps.system.services.role.Permission;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.entando.entando.aps.system.services.component.ComponentDeleteResponse;
 import org.entando.entando.web.common.annotation.RestAccessControl;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
@@ -55,7 +58,7 @@ public class ComponentController {
         List<ComponentUsageDetails> details = this.service.extractComponentUsageDetails(components);
         return new ResponseEntity<>(new SimpleRestResponse<>(details), HttpStatus.OK);
     }
-    
+
     @RestAccessControl(permission = Permission.SUPERUSER)
     @DeleteMapping(value = "/allInternals/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SimpleRestResponse<ComponentDeleteResponse>> deleteInternalComponents(
@@ -64,8 +67,15 @@ public class ComponentController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        ComponentDeleteResponse response = this.service.deleteInternalComponents(components);
+        // the input is mapped into DTO only at service level in order to not change the above validation logic
+        List<ComponentDeleteRequestRow> componentsToDelete = components.stream().map(entry ->
+                ComponentDeleteRequestRow.builder()
+                        .code(entry.get(ComponentValidator.CODE_FIELD))
+                        .type(entry.get(ComponentValidator.TYPE_FIELD))
+                        .build()
+        ).collect(Collectors.toList());
+        ComponentDeleteResponse response = this.service.deleteInternalComponents(componentsToDelete);
         return new ResponseEntity<>(new SimpleRestResponse<>(response), HttpStatus.OK);
     }
-    
+
 }

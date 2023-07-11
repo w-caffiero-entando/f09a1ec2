@@ -25,6 +25,8 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+
+import org.entando.entando.aps.system.services.component.ComponentDeleteRequestRow;
 import org.entando.entando.aps.system.services.component.ComponentDeleteResponse;
 import org.entando.entando.aps.system.services.component.ComponentDeleteResponse.ComponentDeleteResponseRow;
 import org.entando.entando.aps.system.services.component.ComponentService;
@@ -57,6 +59,8 @@ class ComponentControllerTest extends AbstractControllerTest {
 
     @InjectMocks
     private ComponentController controller;
+
+    public static final String STATUS_SUCCESS = "success";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -94,15 +98,16 @@ class ComponentControllerTest extends AbstractControllerTest {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String accessToken = mockOAuthInterceptor(user);
         ComponentDeleteResponse serviceResponse = new ComponentDeleteResponse();
-        serviceResponse.setStatus(ComponentDeleteResponse.STATUS_SUCCESS);
+        serviceResponse.setStatus(STATUS_SUCCESS);
         ComponentDeleteResponseRow singleResult = ComponentDeleteResponseRow.builder()
                 .type("customType")
                 .code("internalCode")
-                .status(ComponentDeleteResponse.STATUS_SUCCESS)
+                .status(STATUS_SUCCESS)
                 .build();
         serviceResponse.getComponents().add(singleResult);
-        List<Map<String, String>> request = List.of(
-                Map.of("type", "customType", "code", "internalCode"));
+
+        List<ComponentDeleteRequestRow> request = List.of(
+                ComponentDeleteRequestRow.builder().type("customType").code("internalCode").build());
         when(componentService.deleteInternalComponents(request)).thenReturn(serviceResponse);
         String payload = new ObjectMapper().writeValueAsString(request);
         ResultActions result = mockMvc.perform(

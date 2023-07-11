@@ -876,7 +876,10 @@ public class PageService implements IComponentExistsService, IPageService,
     @Override
     public void deleteComponent(String componentCode) {
         this.updatePageStatus(componentCode, STATUS_DRAFT);
+        logger.debug("Updated component '{}' with status DRAFT", componentCode);
         this.removePage(componentCode);
+        logger.debug("Deleted component '{}'", componentCode);
+
     }
     
     @Override

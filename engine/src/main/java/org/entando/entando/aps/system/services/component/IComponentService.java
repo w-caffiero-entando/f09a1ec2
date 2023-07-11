@@ -26,6 +26,6 @@ public interface IComponentService {
 
     public List<ComponentUsageDetails> extractComponentUsageDetails(List<Map<String, String>> components);
 
-    public ComponentDeleteResponse deleteInternalComponents(List<Map<String, String>> components);
+    public ComponentDeleteResponse deleteInternalComponents(List<ComponentDeleteRequestRow> components);
     
 }

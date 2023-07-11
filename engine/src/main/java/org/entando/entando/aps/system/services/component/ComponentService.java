@@ -133,48 +133,64 @@ public class ComponentService implements IComponentService {
 //    }
 
     @Override
-    public ComponentDeleteResponse deleteInternalComponents(List<Map<String, String>> components) {
+    public ComponentDeleteResponse deleteInternalComponents(List<ComponentDeleteRequestRow> components) {
         ComponentDeleteResponse response = new ComponentDeleteResponse();
         log.debug("request deletion of components '{}'", components);
         try {
             ComponentDeletionStep componentDeletionStep = new ComponentDeletionStep(false);
             response.setStatus(ComponentDeleteResponse.STATUS_SUCCESS);
-            components.forEach(m -> {
-                String type = m.get(ComponentValidator.TYPE_FIELD);
-                String code = m.get(ComponentValidator.CODE_FIELD);
+            components.forEach(componentDeleteRequestRow -> {
+                String type = componentDeleteRequestRow.getType();
+                String code = componentDeleteRequestRow.getCode();
                 log.debug("Type '{}', Object code '{}'", type, code);
                 services.stream()
                         .filter(s -> type.equalsIgnoreCase(s.getObjectType())).findFirst()
-                        .ifPresent(service -> {
-                            ComponentDeleteResponseRow responseRow = null;
-                            try {
-                                responseRow = service.getComponentDto(code)
-                                        .map(c -> this.extractUsageDetails(code, service))
-                                        .map(usage -> check(components, code, usage))
-                                        .map(usage -> delete(code, type, service))
-                                        .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
-                                                .status(ComponentDeleteResponse.STATUS_ERROR).build());
-                            } catch (EntException e) {
-                                responseRow = ComponentDeleteResponseRow.builder().code(code).type(type)
-                                        .status(ComponentDeleteResponse.STATUS_ERROR).build();
+                        .ifPresentOrElse(service -> {
+                                    ComponentDeleteResponseRow responseRow = null;
+                                    try {
+                                        responseRow = service.getComponentDto(code)
+                                                .map(c -> this.extractUsageDetails(code, service))
+                                                .map(usage -> check(components, code, usage))
+                                                .map(c -> delete(c, type, service))
+                                                .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
+                                                        .status(ComponentDeleteResponse.STATUS_ERROR).build());
+                                    } catch (Throwable th) {
+                                        log.warn("Generic error when deleting element with code: '{}', type: '{}'",
+                                                code, type, th);
+                                        responseRow = ComponentDeleteResponseRow.builder().code(code).type(type)
+                                                .status(ComponentDeleteResponse.STATUS_ERROR).build();
 
-                            }
+                                    }
 
-                            if (responseRow.getStatus().equals("error")) {
-                                response.setStatus(
-                                        computeOverallStatus(componentDeletionStep.isSuccessful()));
-                            } else {
-                                componentDeletionStep.setSuccessful(true);
-                            }
-
-                            response.getComponents().add(responseRow);
-                        });
+                                    if (responseRow.getStatus().equals(ComponentDeleteResponse.STATUS_ERROR)) {
+                                        response.setStatus(
+                                                computeOverallStatus(componentDeletionStep.isSuccessful()));
+                                    } else {
+                                        componentDeletionStep.setSuccessful(true);
+                                        if(!response.getStatus().equals(ComponentDeleteResponse.STATUS_SUCCESS)){
+                                            response.setStatus(computeOverallStatus(componentDeletionStep.isSuccessful()));
+                                        }
+                                    }
+                                    response.getComponents().add(responseRow);
+                                    log.debug("Added the following entry to components deletion result list '{}'", responseRow);
+                                },
+                                () -> {
+                                    log.warn("No service found for type '{}'. Default to error state for code '{}'",
+                                            type, code);
+                                    ComponentDeleteResponseRow responseRow = ComponentDeleteResponseRow.builder()
+                                            .code(code)
+                                            .type(type)
+                                            .status(ComponentDeleteResponse.STATUS_ERROR)
+                                            .build();
+                                    response.setStatus(computeOverallStatus(componentDeletionStep.isSuccessful()));
+                                    response.getComponents().add(responseRow);
+                                });
             });
         } catch (Exception e) {
+            log.error("Unexpected error in deleting components '{}'", components, e);
             throw new RestServerError("Error deleting components", e);
         }
 
-        // compute if total failure
 
         return response;
     }
@@ -184,18 +200,17 @@ public class ComponentService implements IComponentService {
             // If at least one deletion is successful, then we have a partial success status
             return ComponentDeleteResponse.STATUS_PARTIAL_SUCCESS;
         }
-
         return ComponentDeleteResponse.STATUS_FAILURE;
     }
 
-    private String check(List<Map<String, String>> components, String code,
+    private String check(List<ComponentDeleteRequestRow> components, String code,
             PagedMetadata<ComponentUsageEntity> result) {
         try {
             if (this.checkReferences(components, result.getBody())) {
                 return code;
             }
         } catch (Exception ex) {
-            log.error("Error in checking references");
+            log.warn("Error in checking references");
         }
         return null;
     }
@@ -205,12 +220,12 @@ public class ComponentService implements IComponentService {
             service.deleteComponent(code);
             return ComponentDeleteResponseRow.builder().code(code).type(type).status(ComponentDeleteResponse.STATUS_SUCCESS).build();
         } catch(Exception ex) {
-            log.error("Error in deleting component '{}'", code);
+            log.warn("Error in deleting component '{}'", code);
+            return null;
         }
-        return null;
     }
     
-    private boolean checkReferences(List<Map<String, String>> componentsToDelete, List<ComponentUsageEntity> extractedReferences) {
+    private boolean checkReferences(List<ComponentDeleteRequestRow> componentsToDelete, List<ComponentUsageEntity> extractedReferences) {
 //        for (ComponentUsageEntity ref : extractedReferences) {
 //            Optional<Map<String, String>> existingReference = componentsToDelete.stream().filter(ctd -> {
 //                String ctdType = ctd.get(ComponentValidator.TYPE_FIELD);
@@ -225,8 +240,8 @@ public class ComponentService implements IComponentService {
 
         Map<String, String> refs = componentsToDelete.stream()
                 .collect(Collectors.toMap(
-                        cu -> cu.get(ComponentValidator.TYPE_FIELD) + cu.get(ComponentValidator.CODE_FIELD),
-                        cu -> cu.get(ComponentValidator.TYPE_FIELD) + cu.get(ComponentValidator.CODE_FIELD)));
+                        cu -> cu.getType() + cu.getCode(),
+                        cu -> cu.getType() + cu.getCode()));
         return extractedReferences.stream().anyMatch(
                 ctd -> refs.containsKey(ctd.getType() + ctd.getCode()));
 
