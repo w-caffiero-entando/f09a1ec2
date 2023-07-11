@@ -13,16 +13,13 @@
  */
 package org.entando.entando.aps.system.services.component;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class ComponentDeleteResponse {
@@ -30,8 +27,7 @@ public class ComponentDeleteResponse {
     public static final String STATUS_SUCCESS = "success";
     public static final String STATUS_PARTIAL_SUCCESS = "partialSuccess";
     public static final String STATUS_FAILURE = "failure";
-    public static final String STATUS_ERROR = "error";
-    
+
     private String status;
     
     private transient List<ComponentDeleteResponseRow> components = new ArrayList<>();

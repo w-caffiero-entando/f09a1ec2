@@ -47,7 +47,6 @@ class ComponentServiceTest {
     public static final String STATUS_SUCCESS = "success";
     public static final String STATUS_PARTIAL_SUCCESS = "partialSuccess";
     public static final String STATUS_FAILURE = "failure";
-    public static final String STATUS_ERROR = "error";
 
     @BeforeEach
     void init() {
@@ -92,7 +91,7 @@ class ComponentServiceTest {
         ComponentDeleteResponse componentDeleteResponse = componentService.deleteInternalComponents(request);
         // --THEN
         Assertions.assertEquals(STATUS_FAILURE, componentDeleteResponse.getStatus());
-        Assertions.assertEquals(STATUS_ERROR, componentDeleteResponse.getComponents()
+        Assertions.assertEquals(STATUS_FAILURE, componentDeleteResponse.getComponents()
                 .get(0).getStatus());
     }
     
@@ -110,7 +109,7 @@ class ComponentServiceTest {
         // --THEN
         Assertions.assertEquals(STATUS_FAILURE, response.getStatus());
         Assertions.assertEquals(2, response.getComponents().size());
-        Assertions.assertEquals(STATUS_ERROR, response.getComponents().get(0).getStatus());
+        Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(0).getStatus());
         Mockito.verify(mockService, Mockito.times(0)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
     }
     @Test
@@ -137,7 +136,7 @@ class ComponentServiceTest {
         Assertions.assertEquals(STATUS_PARTIAL_SUCCESS, response.getStatus());
         Assertions.assertEquals(2, response.getComponents().size());
         Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(0).getStatus());
-        Assertions.assertEquals(STATUS_ERROR, response.getComponents().get(1).getStatus());
+        Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(1).getStatus());
         Mockito.verify(mockService, Mockito.times(1)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
     }
 
@@ -199,7 +198,7 @@ class ComponentServiceTest {
         // --THEN
         Assertions.assertEquals(STATUS_PARTIAL_SUCCESS, response.getStatus());
         Assertions.assertEquals(2, response.getComponents().size());
-        Assertions.assertEquals(STATUS_ERROR, response.getComponents().get(0).getStatus());
+        Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(0).getStatus());
         Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(1).getStatus());
     }
     

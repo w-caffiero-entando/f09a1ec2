@@ -66,7 +66,7 @@ class ComponentControllerIntegrationTest extends AbstractControllerIntegrationTe
                 Map.of("types", "pageModel", "code", "service"));
         String payload = mapper.writeValueAsString(request);
         ResultActions result = mockMvc.perform(
-                delete("/components/allInternals/delete")
+                delete("/components/allInternals")
                         .content(payload)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));

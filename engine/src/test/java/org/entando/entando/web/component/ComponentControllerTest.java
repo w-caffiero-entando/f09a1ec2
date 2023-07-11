@@ -111,7 +111,7 @@ class ComponentControllerTest extends AbstractControllerTest {
         when(componentService.deleteInternalComponents(request)).thenReturn(serviceResponse);
         String payload = new ObjectMapper().writeValueAsString(request);
         ResultActions result = mockMvc.perform(
-                delete("/components/allInternals/delete")
+                delete("/components/allInternals")
                         .content(payload)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken)
