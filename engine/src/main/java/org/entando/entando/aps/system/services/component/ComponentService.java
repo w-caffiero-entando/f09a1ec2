@@ -117,15 +117,14 @@ public class ComponentService implements IComponentService {
 
                                     }
 
-                                    if (responseRow.getStatus().equals(ComponentDeleteResponse.STATUS_FAILURE)) {
-                                        response.setStatus(
-                                                computeOverallStatus(componentDeletionStep.isSuccessful()));
-                                    } else {
+                                    if (responseRow.getStatus().equals(ComponentDeleteResponse.STATUS_SUCCESS)) {
                                         componentDeletionStep.setSuccessful(true);
-                                        if(!response.getStatus().equals(ComponentDeleteResponse.STATUS_SUCCESS)){
-                                            response.setStatus(computeOverallStatus(componentDeletionStep.isSuccessful()));
-                                        }
                                     }
+
+                                    response.setStatus(
+                                            computeOverallStatus(componentDeletionStep.isSuccessful(),
+                                                    responseRow.getStatus(),
+                                                    response.getStatus()));
                                     response.getComponents().add(responseRow);
                                     log.debug("Added the following entry to components deletion result list '{}'", responseRow);
                                 },
@@ -137,12 +136,14 @@ public class ComponentService implements IComponentService {
                                             .type(type)
                                             .status(ComponentDeleteResponse.STATUS_FAILURE)
                                             .build();
-                                    response.setStatus(computeOverallStatus(componentDeletionStep.isSuccessful()));
+                                    response.setStatus(computeOverallStatus(componentDeletionStep.isSuccessful(),
+                                            responseRow.getStatus(),
+                                            response.getStatus()));
                                     response.getComponents().add(responseRow);
                                 });
             });
         } catch (Exception e) {
-            log.error("Unexpected error in deleting components '{}'", components, e);
+            log.error("Unexpected error in deleting components '{}'", components);
             throw new RestServerError("Error deleting components", e);
         }
 
@@ -150,12 +151,15 @@ public class ComponentService implements IComponentService {
         return response;
     }
 
-    private static String computeOverallStatus(boolean atLeastOneSuccess) {
-        if (atLeastOneSuccess) {
-            // If at least one deletion is successful, then we have a partial success status
-            return ComponentDeleteResponse.STATUS_PARTIAL_SUCCESS;
+    private static String computeOverallStatus(boolean atLeastOneSuccess, String currentStatus, String globalStatus) {
+        if (ComponentDeleteResponse.STATUS_SUCCESS.equals(currentStatus)
+                && ComponentDeleteResponse.STATUS_SUCCESS.equals(globalStatus)) {
+            return ComponentDeleteResponse.STATUS_SUCCESS;
+
+        } else if (ComponentDeleteResponse.STATUS_FAILURE.equals(currentStatus) && !atLeastOneSuccess) {
+            return ComponentDeleteResponse.STATUS_FAILURE;
         }
-        return ComponentDeleteResponse.STATUS_FAILURE;
+        return ComponentDeleteResponse.STATUS_PARTIAL_SUCCESS;
     }
 
     private String check(List<ComponentDeleteRequestRow> components, String code,
