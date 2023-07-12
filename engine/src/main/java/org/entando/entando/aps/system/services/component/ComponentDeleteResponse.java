@@ -30,7 +30,7 @@ public class ComponentDeleteResponse {
 
     private String status;
     
-    private transient List<ComponentDeleteResponseRow> components = new ArrayList<>();
+    private List<ComponentDeleteResponseRow> components = new ArrayList<>();
 
     @Data
     @NoArgsConstructor

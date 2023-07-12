@@ -121,7 +121,7 @@ class ComponentServiceTest {
         // let's prepare the first service that permits the deletion of the component related to the first entry of
         // the request list
         Mockito.when(mockService.getObjectType()).thenReturn("type");
-        Mockito.when(mockService.getComponentDto(Mockito.eq("service"))).thenReturn(Optional.of(Mockito.mock(IComponentDto.class)));
+        Mockito.when(mockService.getComponentDto("service")).thenReturn(Optional.of(Mockito.mock(IComponentDto.class)));
         ComponentUsageEntity reference = new ComponentUsageEntity("type", "service");
         PagedMetadata<ComponentUsageEntity> pm = new PagedMetadata<>(new RestListRequest(), 1);
         pm.setBody(List.of(reference));
@@ -129,7 +129,7 @@ class ComponentServiceTest {
         // second service that returns an empty result when try to fetch the component DTO. The empty value will cause
         // an error on component deletion that will result in a response that will keep track of the attempt
         Mockito.when(otherMockService.getObjectType()).thenReturn("otherType");
-        Mockito.when(otherMockService.getComponentDto(Mockito.eq("internalReference"))).thenReturn(Optional.empty());
+        Mockito.when(otherMockService.getComponentDto("internalReference")).thenReturn(Optional.empty());
         // --WHEN
         ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
         // --THEN
@@ -157,7 +157,7 @@ class ComponentServiceTest {
         // let's prepare the second service that permits the deletion of the component related to the second entry of
         // the request list
         Mockito.when(otherMockService.getObjectType()).thenReturn("otherType");
-        Mockito.when(otherMockService.getComponentDto(Mockito.eq("internalReference"))).thenReturn(Optional.of(Mockito.mock(IComponentDto.class)));
+        Mockito.when(otherMockService.getComponentDto("internalReference")).thenReturn(Optional.of(Mockito.mock(IComponentDto.class)));
         ComponentUsageEntity referenceOt = new ComponentUsageEntity("otherType", "internalReference");
         PagedMetadata<ComponentUsageEntity> pmOt = new PagedMetadata<>(new RestListRequest(), 1);
         pmOt.setBody(List.of(referenceOt));
@@ -188,7 +188,7 @@ class ComponentServiceTest {
         // let's prepare the second service that permits the deletion of the component related to the second entry of
         // the request list
         Mockito.when(otherMockService.getObjectType()).thenReturn("otherType");
-        Mockito.when(otherMockService.getComponentDto(Mockito.eq("internalReference"))).thenReturn(Optional.of(Mockito.mock(IComponentDto.class)));
+        Mockito.when(otherMockService.getComponentDto("internalReference")).thenReturn(Optional.of(Mockito.mock(IComponentDto.class)));
         ComponentUsageEntity referenceOt = new ComponentUsageEntity("otherType", "internalReference");
         PagedMetadata<ComponentUsageEntity> pmOt = new PagedMetadata<>(new RestListRequest(), 1);
         pmOt.setBody(List.of(referenceOt));
