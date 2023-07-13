@@ -165,7 +165,7 @@ public class ComponentService implements IComponentService {
     private String check(List<ComponentDeleteRequestRow> components, String code,
             PagedMetadata<ComponentUsageEntity> result) {
         try {
-            if (this.checkReferences(components, result.getBody())) {
+            if (result.getBody().isEmpty() || this.checkReferences(components, result.getBody())) {
                 return code;
             }
         } catch (Exception ex) {
