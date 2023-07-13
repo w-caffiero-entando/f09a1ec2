@@ -15,13 +15,19 @@ package org.entando.entando.aps.system.services.storage;
 
 import com.agiletec.aps.util.FileTextReader;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.DtoBuilder;
 import org.entando.entando.aps.system.services.IDtoBuilder;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
+import org.entando.entando.web.common.model.PagedMetadata;
+import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.web.filebrowser.model.FileBrowserFileRequest;
 import org.entando.entando.web.filebrowser.model.FileBrowserRequest;
 import org.entando.entando.web.filebrowser.validator.FileBrowserValidator;
@@ -45,9 +51,11 @@ import org.springframework.validation.BeanPropertyBindingResult;
 /**
  * @author E.Santoboni
  */
-public class FileBrowserService implements IFileBrowserService {
+public class FileBrowserService implements IFileBrowserService, IComponentUsageService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
+
+    public static final String TYPE_DIRECTORY = "directory";
 
     private IStorageManager storageManager;
 
@@ -257,4 +265,26 @@ public class FileBrowserService implements IFileBrowserService {
         this.storageManager = storageManager;
     }
 
+    @Override
+    public String getObjectType() {
+        return TYPE_DIRECTORY;
+    }
+
+    @Override
+    public Integer getComponentUsage(String componentCode) {
+        return 0;
+    }
+
+    @Override
+    public void deleteComponent(String componentCode) {
+        logger.debug("deleting folder with code:'{}' and protected:'{}'", componentCode, false);
+        deleteDirectory(componentCode, false);
+    }
+
+    @Override
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
+        PagedMetadata<ComponentUsageEntity> result = new PagedMetadata<>(new RestListRequest(), 0);
+        result.setBody(Collections.emptyList());
+        return result;
+    }
 }
