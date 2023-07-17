@@ -15,7 +15,6 @@ package org.entando.entando.aps.system.services.storage;
 
 import com.agiletec.aps.util.FileTextReader;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Collections;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
@@ -211,10 +210,6 @@ public class FileBrowserService implements IFileBrowserService, IComponentUsageS
     public boolean isDirectory(String currentPath, Boolean protectedFolder)  {
         return this.getStorageManager().isDirectory(currentPath, protectedFolder);
     }
-
-    public boolean exists(String currentPath, Boolean protectedFolder) throws EntException {
-        return this.getStorageManager().exists(currentPath, protectedFolder);
-    }
     
     @Override
     public Optional<IComponentDto> getComponentDto(String path) throws EntException {
@@ -287,4 +282,5 @@ public class FileBrowserService implements IFileBrowserService, IComponentUsageS
         result.setBody(Collections.emptyList());
         return result;
     }
+    
 }

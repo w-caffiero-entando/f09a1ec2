@@ -337,6 +337,20 @@ class ContentModelServiceImplTest {
     }
 
     @Test
+    void shouldNotDeletingComponent() throws Exception {
+        when(this.contentModelManager.getContentModel(Mockito.anyLong())).thenReturn(null);
+        this.contentModelService.deleteComponent(String.valueOf(34));
+        Mockito.verify(contentModelManager, Mockito.times(0)).removeContentModel(Mockito.any(ContentModel.class));
+    }
+
+    @Test
+    void shouldFailDeletingComponent() throws Exception {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            this.contentModelService.deleteComponent("test");
+        });
+    }
+
+    @Test
     void getContentModelUsageForNonExistingCodeShouldReturnZero() {
         int componentUsage = contentModelService.getComponentUsage(5000L).getUsage();
         assertEquals(0, componentUsage);
