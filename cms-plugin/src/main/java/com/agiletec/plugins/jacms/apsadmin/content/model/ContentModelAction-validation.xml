@@ -10,7 +10,7 @@
 		</field-validator>
 		<field-validator type="long" short-circuit="true">
 			<param name="min">1</param>
-			<param name="min">9999999999</param>
+			<param name="max">9999999999</param>
 			<message key="error.contentModel.modelId.wrongValue" />
 		</field-validator>
 	</field>
