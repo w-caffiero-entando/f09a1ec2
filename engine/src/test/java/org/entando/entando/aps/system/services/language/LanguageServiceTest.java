@@ -181,7 +181,7 @@ class LanguageServiceTest {
 
     @Test
     void shouldReturnCorrectObjectType(){
-        Assertions.assertEquals(ComponentUsageEntity.TYPE_LANGUAGE, languageService.getObjectType());
+        Assertions.assertEquals("language", languageService.getObjectType());
     }
     @Test
     void shouldPreventDeleteDefaultLanguage(){
