@@ -16,7 +16,10 @@ package org.entando.entando.aps.system.services.language;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
+import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.web.common.model.Filter;
 import org.entando.entando.web.common.model.FilterOperator;
 import org.entando.entando.web.common.model.PagedMetadata;
@@ -47,7 +50,7 @@ class LanguageServiceTest {
     public void setUp() throws Exception {
         languageService.setUpDto();
         Mockito.lenient().when(langManager.getLangs()).thenReturn(ImmutableList.of(getEn()));
-        when(langManager.getAssignableLangs()).thenReturn(ImmutableList.of(getEn(), getIt()));
+        Mockito.lenient().when(langManager.getAssignableLangs()).thenReturn(ImmutableList.of(getEn(), getIt()));
         Mockito.lenient().when(langManager.getDefaultLang()).thenReturn(getEn());
     }
 
@@ -174,6 +177,29 @@ class LanguageServiceTest {
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             languageService.disableLang("xx");
         });
+    }
+
+    @Test
+    void shouldReturnCorrectObjectType(){
+        Assertions.assertEquals(ComponentUsageEntity.TYPE_LANGUAGE, languageService.getObjectType());
+    }
+    @Test
+    void shouldPreventDeleteDefaultLanguage(){
+      when(langManager.getLang("en")).thenReturn(getEn());
+      Assertions.assertThrows(RestServerError.class, ()-> languageService.deleteComponent("en"));
+      Assertions.assertThrows(RestServerError.class, ()-> languageService.getComponentUsage("en"));
+    }
+
+    @Test
+    void shouldConsentDeleteAlternativeLanguage(){
+        when(langManager.getLang("it")).thenReturn(getIt());
+        Assertions.assertDoesNotThrow(()-> languageService.deleteComponent("it"));
+        Assertions.assertDoesNotThrow(()-> languageService.getComponentUsage("it"));
+    }
+    @Test
+    void shouldReturnEmptyListOnComponentUsageDetails(){
+        PagedMetadata<ComponentUsageEntity> pm = languageService.getComponentUsageDetails("en", new RestListRequest());
+        Assertions.assertTrue(pm.getBody().isEmpty());
     }
 
     private Lang getEn() {

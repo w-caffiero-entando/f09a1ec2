@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.aps.system.services.component.IComponentUsageService;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
@@ -23,7 +25,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BeanPropertyBindingResult;
 
-public class LanguageService implements ILanguageService {
+public class LanguageService implements ILanguageService, IComponentUsageService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
 
@@ -118,7 +120,7 @@ public class LanguageService implements ILanguageService {
             }
             //idempotent
             Lang lang = this.getLangManager().getLang(code);
-            if (null != this.getLangManager().getLang(code)) {
+            if (null != lang) {
                 BeanPropertyBindingResult validations = this.validateDisable(lang);
                 if (validations.hasErrors()) {
                     throw new ValidationConflictException(validations);
@@ -158,4 +160,34 @@ public class LanguageService implements ILanguageService {
 
     }
 
+    @Override
+    public String getObjectType() {
+        return ComponentUsageEntity.TYPE_LANGUAGE;
+    }
+
+    @Override
+    public Integer getComponentUsage(String componentCode) {
+        Lang lang = this.getLangManager().getLang(componentCode);
+        if (null != lang && lang.isDefault()) {
+            throw new RestServerError("You cannot try to delete the default language");
+        }
+        return 0;
+    }
+
+    @Override
+    public void deleteComponent(String componentCode) {
+        Lang lang = this.getLangManager().getLang(componentCode);
+        if (null != lang && lang.isDefault()) {
+            throw new RestServerError("You cannot try to delete the default language");
+        }
+        this.disableLang(componentCode);
+    }
+
+    @Override
+    public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode,
+            RestListRequest restListRequest) {
+        PagedMetadata<ComponentUsageEntity> pm = new PagedMetadata<>(restListRequest, 0);
+        pm.setBody(List.of());
+        return pm;
+    }
 }

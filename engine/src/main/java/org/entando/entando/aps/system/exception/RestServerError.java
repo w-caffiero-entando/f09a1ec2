@@ -17,6 +17,10 @@ public class RestServerError extends RuntimeException {
 
     private Exception exception;
 
+    public RestServerError(String message) {
+        super(message);
+    }
+
     public RestServerError(String message, Exception ex) {
         super(message);
         this.exception = ex;
