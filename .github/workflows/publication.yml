@@ -37,12 +37,6 @@ jobs:
   publication:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        platform: 
-          - linux/amd64
-          - linux/arm64
-
     steps:
 
       - name: Checkout
@@ -146,7 +140,7 @@ jobs:
           labels: ${{ steps.meta-eap.outputs.labels }}
           platforms: ${{ env.DOCKER_EAP-WILDFLY_IMAGE_ARCHITECTURE }}
 
-      - name: Build and push tomcat Docker image
+      - name: Build tomcat Docker image for amd64
         uses: docker/build-push-action@v4
         with:
           context: ${{ env.DOCKER_IMAGE_CONTEXT }}
@@ -154,10 +148,19 @@ jobs:
           push: false
           tags: ${{ steps.meta-tomcat.outputs.tags }}
           labels: ${{ steps.meta-tomcat.outputs.labels }}
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64
+
+      - name: Build tomcat Docker image for arm64
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ env.DOCKER_IMAGE_CONTEXT }}
+          file: ${{ env.DOCKER_TOMCAT_IMAGE_FILE }}
+          push: false
+          tags: ${{ steps.meta-tomcat.outputs.tags }}
+          labels: ${{ steps.meta-tomcat.outputs.labels }}
+          platforms: linux/arm64
 
       - name: Push multi-platform tomcat Docker image
-        if: startsWith(matrix.platform, 'linux/amd64')
         uses: docker/build-push-action@v4
         with:
           context: ${{ env.DOCKER_IMAGE_CONTEXT }}
