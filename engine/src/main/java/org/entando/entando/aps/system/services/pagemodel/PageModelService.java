@@ -221,6 +221,11 @@ public class PageModelService implements IPageModelService, ApplicationContextAw
     }
 
     @Override
+    public void deleteComponent(String componentCode) {
+        this.removePageModel(componentCode);
+    }
+
+    @Override
     public String getObjectType() {
         return TYPE_PAGE_MODEL;
     }

@@ -21,7 +21,11 @@ public interface IComponentService {
     public static final String REFERENCE_TYPE_PROPERTY = "type";
     public static final String REFERENCE_CODE_PROPERTY = "code";
     public static final String REFERENCE_ONLINE_PROPERTY = "online";
+    
+    public static final String STATUS_PROPERTY = "status";
 
     public List<ComponentUsageDetails> extractComponentUsageDetails(List<Map<String, String>> components);
+
+    public ComponentDeleteResponse deleteInternalComponents(List<ComponentDeleteRequestRow> components);
     
 }

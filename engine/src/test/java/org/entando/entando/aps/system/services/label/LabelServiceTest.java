@@ -4,6 +4,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -24,7 +25,10 @@ import java.util.Map;
 import java.util.Optional;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.component.IComponentDto;
+import org.entando.entando.aps.system.services.guifragment.GuiFragment;
+import org.entando.entando.aps.system.services.guifragment.model.GuiFragmentDto;
 import org.entando.entando.aps.system.services.label.model.LabelDto;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
 import org.entando.entando.web.common.model.Filter;
@@ -315,6 +319,14 @@ class LabelServiceTest {
         Assertions.assertTrue(dto.get() instanceof LabelDto);
         Assertions.assertEquals("test", dto.get().getCode());
         Assertions.assertEquals("test", ((LabelDto) dto.get()).getKey());
+        Assertions.assertEquals(ComponentUsageEntity.TYPE_LABEL, dto.get().getType());
+    }
+    
+    @Test
+    void shouldDeleteComponent() throws EntException {
+        when(i18nManager.getLabelGroup("test")).thenReturn(Mockito.mock(ApsProperties.class));
+        this.labelService.deleteComponent("test");
+        verify(i18nManager, times(1)).deleteLabelGroup("test");
     }
 
 }

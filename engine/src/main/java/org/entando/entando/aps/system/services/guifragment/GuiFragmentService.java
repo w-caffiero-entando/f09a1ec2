@@ -251,5 +251,10 @@ public class GuiFragmentService implements IGuiFragmentService {
     public String getObjectType() {
         return TYPE_FRAGMENT;
     }
+
+    @Override
+    public void deleteComponent(String componentCode) {
+        this.removeGuiFragment(componentCode);
+    }
     
 }

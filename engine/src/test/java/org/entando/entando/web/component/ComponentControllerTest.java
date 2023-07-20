@@ -16,6 +16,7 @@ package org.entando.entando.web.component;
 import static org.hamcrest.CoreMatchers.is;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,6 +25,10 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+
+import org.entando.entando.aps.system.services.component.ComponentDeleteRequestRow;
+import org.entando.entando.aps.system.services.component.ComponentDeleteResponse;
+import org.entando.entando.aps.system.services.component.ComponentDeleteResponse.ComponentDeleteResponseRow;
 import org.entando.entando.aps.system.services.component.ComponentService;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.web.AbstractControllerTest;
@@ -55,6 +60,8 @@ class ComponentControllerTest extends AbstractControllerTest {
     @InjectMocks
     private ComponentController controller;
 
+    public static final String STATUS_SUCCESS = "success";
+
     @BeforeEach
     void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -66,7 +73,7 @@ class ComponentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void invokeServiceWithServerError() throws Exception {
+    void invokeUsageDetailsWithServerError() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String accessToken = mockOAuthInterceptor(user);
         when(componentService.extractComponentUsageDetails(Mockito.any())).thenThrow(new EntRuntimeException("Error extracting Component details"));
@@ -84,6 +91,40 @@ class ComponentControllerTest extends AbstractControllerTest {
                 .andExpect(jsonPath("$.errors", Matchers.hasSize(1)))
                 .andExpect(jsonPath("$.errors[0].code", is(RestErrorCodes.INTERNAL_ERROR)));
         Mockito.verify(componentService, Mockito.times(1)).extractComponentUsageDetails(Mockito.any());
+    }
+
+    @Test
+    void invokationOfDeleteComponentShouldReturnRightResponse() throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
+        String accessToken = mockOAuthInterceptor(user);
+        ComponentDeleteResponse serviceResponse = new ComponentDeleteResponse();
+        serviceResponse.setStatus(STATUS_SUCCESS);
+        ComponentDeleteResponseRow singleResult = ComponentDeleteResponseRow.builder()
+                .type("customType")
+                .code("internalCode")
+                .status(STATUS_SUCCESS)
+                .build();
+        serviceResponse.getComponents().add(singleResult);
+
+        List<ComponentDeleteRequestRow> request = List.of(
+                ComponentDeleteRequestRow.builder().type("customType").code("internalCode").build());
+        when(componentService.deleteInternalComponents(request)).thenReturn(serviceResponse);
+        String payload = new ObjectMapper().writeValueAsString(request);
+        ResultActions result = mockMvc.perform(
+                delete("/components/allInternals")
+                        .content(payload)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken)
+        );
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.size()", is(3)));
+        result.andExpect(jsonPath("$.metaData.size()", is(0)));
+        result.andExpect(jsonPath("$.errors.size()", is(0)));
+        result.andExpect(jsonPath("$.payload.size()", is(2)));
+        result.andExpect(jsonPath("$.payload.status", is("success")));
+        result.andExpect(jsonPath("$.payload.components[0].type", is("customType")));
+        result.andExpect(jsonPath("$.payload.components[0].code", is("internalCode")));
+        result.andExpect(jsonPath("$.payload.components[0].status", is("success")));
     }
     
 }

@@ -16,9 +16,11 @@ package org.entando.entando.aps.system.services.storage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.aps.system.services.component.IComponentDto;
-import org.entando.entando.aps.system.services.label.model.LabelDto;
 import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
+import org.entando.entando.web.common.model.PagedMetadata;
+import org.entando.entando.web.common.model.RestListRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +45,18 @@ class FileBrowserServiceTest {
         Optional<IComponentDto> dto = this.fileBrowserService.getComponentDto("/path/myFile");
         assertThat(dto).isNotEmpty();
         Assertions.assertTrue(dto.get() instanceof BasicFileAttributeViewDto);
+    }
+    
+    @Test
+    void shouldDeleteComponents() throws Exception {
+        this.fileBrowserService.deleteComponent("/path");
+        Mockito.verify(storageManager, Mockito.times(1)).deleteDirectory("/path", false);
+    }
+    
+    @Test
+    void shouldFindEmptyUtilizers() {
+        PagedMetadata<ComponentUsageEntity> result = this.fileBrowserService.getComponentUsageDetails("/path/file.txt", new RestListRequest());
+        Assertions.assertEquals(0, result.getBody().size());
     }
     
 }

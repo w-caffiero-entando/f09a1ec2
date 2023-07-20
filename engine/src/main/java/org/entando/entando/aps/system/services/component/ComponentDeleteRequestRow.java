@@ -13,17 +13,18 @@
  */
 package org.entando.entando.aps.system.services.component;
 
-import org.entando.entando.web.common.model.PagedMetadata;
-import org.entando.entando.web.common.model.RestListRequest;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public interface IComponentUsageService extends IComponentExistsService {
-    
-    String getObjectType();
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ComponentDeleteRequestRow {
 
-    Integer getComponentUsage(String componentCode);
+    private String type;
+    private String code;
 
-    void deleteComponent(String componentCode);
-
-    PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest);
-    
 }

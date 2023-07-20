@@ -146,6 +146,20 @@ public class ResourceService implements IResourceService,
     }
 
     @Override
+    public void deleteComponent(String componentCode) {
+        try {
+            ResourceInterface resource = this.getResourceManager().loadResource(componentCode);
+            if (null != resource) {
+                this.resourceManager.deleteResource(resource);
+            }else{
+                logger.debug("Error in loading resource related to component code '{}'.", componentCode);
+            }
+        } catch (EntException ex) {
+            throw new RestServerError("Error deleting resource", ex);
+        }
+    }
+
+    @Override
     public Integer getComponentUsage(String componentCode) {
         RestListRequest request = new RestListRequest();
         request.setPageSize(-1); // get all elements

@@ -175,6 +175,11 @@ public class ContentTypeService extends AbstractEntityTypeService<Content, Conte
     }
 
     @Override
+    public void deleteComponent(String componentCode) {
+        this.delete(componentCode);
+    }
+
+    @Override
     public Integer getComponentUsage(String componentCode) {
         return contentService.countContentsByType(componentCode);
     }

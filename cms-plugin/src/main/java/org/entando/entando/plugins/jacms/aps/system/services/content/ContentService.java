@@ -714,10 +714,14 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
         request.setRestriction(ContentRestriction.getRestrictionValue(request.getMainGroup()));
         return super.updateEntity(JacmsSystemConstants.CONTENT_MANAGER, request, bindingResult);
     }
-
+    
     @Override
     public void deleteContent(String code, UserDetails user) {
         this.checkContentAuthorization(user, code, false, true, null);
+        this.deleteContent(code);
+    }
+    
+    private void deleteContent(String code) {
         try {
             Content content = this.getContentManager().loadContent(code, false);
             if (null == content) {
@@ -1025,6 +1029,14 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
     @Override
     public boolean exists(String code) throws EntException {
         return exists(code, true) || exists(code, false);
+    }
+
+    @Override
+    public void deleteComponent(String componentCode) {
+        this.updateContentStatus(componentCode, STATUS_DRAFT, null);
+        logger.debug("Updated component '{}' with status DRAFT", componentCode);
+        this.deleteContent(componentCode);
+        logger.debug("Deleted component '{}'", componentCode);
     }
 
     @Override

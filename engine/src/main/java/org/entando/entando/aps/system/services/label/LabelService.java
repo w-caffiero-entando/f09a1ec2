@@ -318,5 +318,10 @@ public class LabelService implements ILabelService {
         pm.setBody(List.of());
         return pm;
     }
+
+    @Override
+    public void deleteComponent(String componentCode) {
+        this.removeLabelGroup(componentCode);
+    }
     
 }

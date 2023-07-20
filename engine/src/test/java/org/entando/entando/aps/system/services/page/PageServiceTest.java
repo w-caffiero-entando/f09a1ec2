@@ -17,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.agiletec.aps.system.services.group.Group;
@@ -48,13 +50,13 @@ import org.entando.entando.web.common.assembler.PageSearchMapper;
 import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.page.model.PageRequest;
 import org.entando.entando.web.page.model.PageSearchRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -326,7 +328,13 @@ class PageServiceTest {
 
         PageAssertionHelper.assertUsageDetails(pageUsageDetails, new String[0], 0, 1, pageDto.getStatus());
     }
-
+    
+    @Test
+    void shouldDeleteComponent() throws EntException {
+        when(pageManager.getDraftPage("test")).thenReturn(Mockito.mock(IPage.class));
+        this.pageService.deleteComponent("test");
+        verify(pageManager, times(1)).deletePage("test");
+    }
 
     /**
      * contains generic code to test a single paged page usage details

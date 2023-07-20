@@ -112,6 +112,16 @@ class CategoryServiceTest {
         Optional<IComponentDto> dto = this.categoryService.getComponentDto("test");
         assertThat(dto).isNotEmpty();
         Assertions.assertTrue(dto.get() instanceof CategoryDto);
+        Assertions.assertEquals(ComponentUsageEntity.TYPE_CATEGORY, dto.get().getType());
+    }
+    
+    @Test
+    void shouldDeleteComponent() throws EntException {
+        Category mock = Mockito.mock(Category.class);
+        when(mock.getChildrenCodes()).thenReturn(new String[0]);
+        when(categoryManager.getCategory("test")).thenReturn(mock);
+        this.categoryService.deleteComponent("test");
+        verify(categoryManager, times(1)).deleteCategory("test");
     }
     
     @Test

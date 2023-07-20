@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.component.ComponentUsage;
@@ -133,6 +134,15 @@ public class ContentModelServiceImpl implements ContentModelService, ContentType
     @Override
     public boolean exists(Long modelId) {
         return this.contentModelManager.getContentModel(modelId) != null;
+    }
+
+    @Override
+    public void deleteComponent(String componentCode) {
+        if (!NumberUtils.isCreatable(componentCode)) {
+            throw new IllegalArgumentException(
+                    String.format("Error in delete component. The component code '%s' is not valid", componentCode));
+        }
+        this.delete(Long.valueOf(componentCode));
     }
 
     @Override
