@@ -83,11 +83,10 @@
         </div>
     </div>
 
-
-    <div class="form-group<s:property value="controlGroupErrorClassVar" />">
-        <s:set var="modelIdFieldErrorsVar" value="%{fieldErrors['modelId']}" />
-        <s:set var="modelIdHasFieldErrorVar" value="#modelIdFieldErrorsVar!= null && !#modelIdFieldErrorsVar.isEmpty()" />
-        <s:set var="controlGroupErrorClassVar" value="%{#modelIdHasFieldErrorVar ? ' has-error' : ''}" />
+    <s:set var="modelIdFieldErrorsVar" value="%{fieldErrors['modelId']}" />
+    <s:set var="modelIdHasFieldErrorVar" value="#modelIdFieldErrorsVar!= null && !#modelIdFieldErrorsVar.isEmpty()" />
+    <s:set var="controlGroupModelIdErrorClassVar" value="%{#modelIdHasFieldErrorVar ? ' has-error' : ''}" />
+    <div class="form-group<s:property value="controlGroupModelIdErrorClassVar" />">
 
         <label class="col-sm-2 control-label" for="modelId">
             <s:text name="contentModel.code" /> <i class="fa fa-asterisk required-icon"></i>
@@ -108,12 +107,13 @@
             </s:if>
         </div>
     </div>
+
+    <s:set var="descriptionFieldErrorsVar" value="%{fieldErrors['description']}" />
+    <s:set var="descriptionHasFieldErrors"
+           value="#descriptionFieldErrorsVar!= null && !#descriptionFieldErrorsVar.isEmpty()" />
+    <s:set var="controlGroupErrorClassVar"
+           value="%{#descriptionHasFieldErrors ? ' has-error' : ''}" />
     <div class="form-group<s:property value="controlGroupErrorClassVar" />">
-        <s:set var="descriptionFieldErrorsVar" value="%{fieldErrors['description']}" />
-        <s:set var="descriptionHasFieldErrors"
-               value="#descriptionFieldErrorsVar!= null && !#descriptionFieldErrorsVar.isEmpty()" />
-        <s:set var="controlGroupErrorClassVar"
-               value="%{#descriptionHasFieldErrors ? ' has-error' : ''}" />
         <label class="col-sm-2 control-label" for="description">
             <s:text name="label.description" /> <i class="fa fa-asterisk required-icon"></i>
             <a role="button" tabindex="0" data-toggle="popover" data-trigger="focus" data-html="true" title=""

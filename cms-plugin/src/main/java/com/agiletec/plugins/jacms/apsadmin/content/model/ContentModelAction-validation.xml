@@ -8,8 +8,9 @@
 		<field-validator type="required" short-circuit="true">
 			<message key="requiredstring"/>
 		</field-validator>
-		<field-validator type="int" short-circuit="true">
+		<field-validator type="long" short-circuit="true">
 			<param name="min">1</param>
+			<param name="max">9999999999</param>
 			<message key="error.contentModel.modelId.wrongValue" />
 		</field-validator>
 	</field>

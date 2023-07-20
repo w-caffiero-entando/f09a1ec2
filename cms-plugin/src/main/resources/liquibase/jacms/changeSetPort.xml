@@ -19,4 +19,6 @@
 
     <include file="port/20230224000000_jacms_social_tag_roles.xml" relativeToChangelogFile="true" />
 
+    <include file="port/20230623000000_jacms_contentmodels_change_id_type.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>
