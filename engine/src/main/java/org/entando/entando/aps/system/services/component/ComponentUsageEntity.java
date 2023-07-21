@@ -26,7 +26,7 @@ public class ComponentUsageEntity implements Serializable {
     public static final String TYPE_CATEGORY = "category";
     public static final String TYPE_WIDGET = "widget";
     public static final String TYPE_FRAGMENT = "fragment";
-    public static final String TYPE_PAGE_TEMPLATE = "pageTemplate";
+    public static final String TYPE_PAGE_TEMPLATE = "pageModel";
     public static final String TYPE_LABEL = "label";
     public static final String TYPE_LANGUAGE = "language";
     public static final String TYPE_CONTENT = "content";

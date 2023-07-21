@@ -52,7 +52,7 @@ public class PageModelService implements IPageModelService, ApplicationContextAw
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
     
-    public static final String TYPE_PAGE_MODEL = "pageModel";
+    public static final String TYPE_PAGE_MODEL = ComponentUsageEntity.TYPE_PAGE_TEMPLATE;
 
     private final IPageModelManager pageModelManager;
 
