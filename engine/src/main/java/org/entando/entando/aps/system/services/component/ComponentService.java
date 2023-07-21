@@ -102,12 +102,17 @@ public class ComponentService implements IComponentService {
                     .ifPresentOrElse(service -> {
                         ComponentDeleteResponseRow responseRow = null;
                         try {
-                            responseRow = service.getComponentDto(code)
-                                    .map(c -> this.extractUsageDetails(code, service))
-                                    .map(usage -> check(components, code, usage))
-                                    .map(c -> delete(c, type, service))
-                                    .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
-                                    .status(ComponentDeleteResponse.STATUS_FAILURE).build());
+                            Optional<IComponentDto> dto = service.getComponentDto(code);
+                            if (dto.isPresent()) {
+                                responseRow = dto.map(c -> this.extractUsageDetails(code, service))
+                                        .map(usage -> check(components, code, usage))
+                                        .map(c -> delete(c, type, service))
+                                        .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
+                                                .status(ComponentDeleteResponse.STATUS_FAILURE).build());
+                            } else {
+                                responseRow = ComponentDeleteResponseRow.builder().code(code).type(type)
+                                        .status(ComponentDeleteResponse.STATUS_SUCCESS).build();
+                            }
                         } catch (Exception e) {
                             log.warn("Generic error when deleting element with code: '{}', type: '{}'",
                                     code, type, e);

@@ -96,7 +96,24 @@ class ComponentServiceTest {
     }
     
     @Test
-    void deleteNonExistingComponent() throws EntException {
+    void deleteNonExistingComponentWithSuccess() throws EntException {
+        // --GIVEN
+        List<ComponentDeleteRequestRow> request = List.of(
+                ComponentDeleteRequestRow.builder().type("type").code("service").build());
+        Mockito.when(mockService.getObjectType()).thenReturn("type");
+
+        Mockito.when(mockService.getComponentDto(Mockito.anyString())).thenReturn(Optional.empty());
+        // --WHEN
+        ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
+        // --THEN
+        Assertions.assertEquals(STATUS_SUCCESS, response.getStatus());
+        Assertions.assertEquals(1, response.getComponents().size());
+        Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(0).getStatus());
+        Mockito.verify(mockService, Mockito.times(0)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
+    }
+    
+    @Test
+    void deleteNonExistingComponentWithPartialSuccess() throws EntException {
         // --GIVEN
         List<ComponentDeleteRequestRow> request = List.of(
                 ComponentDeleteRequestRow.builder().type("type").code("service").build(),
@@ -107,9 +124,10 @@ class ComponentServiceTest {
         // --WHEN
         ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
         // --THEN
-        Assertions.assertEquals(STATUS_FAILURE, response.getStatus());
+        Assertions.assertEquals(STATUS_PARTIAL_SUCCESS, response.getStatus());
         Assertions.assertEquals(2, response.getComponents().size());
-        Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(0).getStatus());
+        Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(0).getStatus());
+        Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(1).getStatus());
         Mockito.verify(mockService, Mockito.times(0)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
     }
     @Test
@@ -133,10 +151,10 @@ class ComponentServiceTest {
         // --WHEN
         ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
         // --THEN
-        Assertions.assertEquals(STATUS_PARTIAL_SUCCESS, response.getStatus());
+        Assertions.assertEquals(STATUS_SUCCESS, response.getStatus());
         Assertions.assertEquals(2, response.getComponents().size());
         Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(0).getStatus());
-        Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(1).getStatus());
+        Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(1).getStatus());
         Mockito.verify(mockService, Mockito.times(1)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
     }
 
