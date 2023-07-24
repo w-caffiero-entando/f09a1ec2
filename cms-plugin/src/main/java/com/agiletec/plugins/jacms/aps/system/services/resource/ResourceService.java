@@ -46,6 +46,8 @@ public class ResourceService implements IResourceService,
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
     
+    public static final String CORRELATION_CODE_PARAMETER = "cc";
+    
     public static final String TYPE_ASSET = ComponentUsageEntity.TYPE_ASSET;
 
     private IResourceManager resourceManager;
@@ -131,13 +133,13 @@ public class ResourceService implements IResourceService,
 
     @Override
     public Optional<IComponentDto> getComponentDto(String code) throws EntException {
-        return Optional.ofNullable(this.resourceManager.loadResource(code))
+        return Optional.ofNullable(this.resourceManager.loadResource(code, this.extractCorrelationCodeByCode(code)))
                 .map(c -> this.getDtoBuilder().convert(c));
     }
 
     @Override
     public boolean exists(String code) throws EntException {
-        return resourceManager.exists(null, code);
+        return resourceManager.exists(code, this.extractCorrelationCodeByCode(code));
     }
 
     @Override
@@ -148,7 +150,8 @@ public class ResourceService implements IResourceService,
     @Override
     public void deleteComponent(String componentCode) {
         try {
-            ResourceInterface resource = this.getResourceManager().loadResource(componentCode);
+            String cc = this.extractCorrelationCodeByCode(componentCode);
+            ResourceInterface resource = this.getResourceManager().loadResource(componentCode, cc);
             if (null != resource) {
                 this.resourceManager.deleteResource(resource);
             }else{
@@ -170,8 +173,9 @@ public class ResourceService implements IResourceService,
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
         List<ComponentUsageEntity> components = new ArrayList<>();
+        String resourceCode = Optional.ofNullable(this.extractCorrelationCodeByCode(componentCode)).orElse(componentCode);
         for (var utilizer : this.resourceServiceUtilizers) {
-            List<IComponentDto> objects = utilizer.getResourceUtilizer(componentCode);
+            List<IComponentDto> objects = utilizer.getResourceUtilizer(resourceCode);
             List<ComponentUsageEntity> utilizerForService = objects.stream()
                     .map(o -> o.buildUsageEntity()).collect(Collectors.toList());
             components.addAll(utilizerForService);
@@ -180,6 +184,10 @@ public class ResourceService implements IResourceService,
         PagedMetadata<ComponentUsageEntity> usageEntries = new PagedMetadata<>(restListRequest, components.size());
         usageEntries.setBody(sublist);
         return usageEntries;
+    }
+    
+    private String extractCorrelationCodeByCode(String code) {
+        return (code.startsWith(CORRELATION_CODE_PARAMETER + "=")) ? code.split("=")[1] : null;
     }
 
 }
