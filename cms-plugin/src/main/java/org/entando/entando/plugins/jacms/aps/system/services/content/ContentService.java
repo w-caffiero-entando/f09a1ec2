@@ -745,11 +745,11 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     @Override
     public ContentDto updateContentStatus(String code, String status, UserDetails user) {
-        return updateContentStatus(code, status, user, null);
+        return updateContentStatus(code, status, user, null, false);
     }
 
-    private ContentDto updateContentStatus(String code, String status, UserDetails user,
-            BeanPropertyBindingResult bindingResult) {
+    private ContentDto updateContentStatus(String code, String status, 
+            UserDetails user, BeanPropertyBindingResult bindingResult, boolean forceUnpublish) {
         try {
             Content content = this.getContentManager().loadContent(code, false);
             if (bindingResult == null) {
@@ -766,7 +766,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
                 //need to check referenced objects
                 this.getContentManager().insertOnLineContent(content);
                 newContent = this.getContentManager().loadContent(code, true);
-            } else if (status.equals(STATUS_DRAFT)) {
+            } else if (status.equals(STATUS_DRAFT) && !forceUnpublish) {
                 Map<String, ContentServiceUtilizer> beans = applicationContext
                         .getBeansOfType(ContentServiceUtilizer.class);
                 if (null != beans) {
@@ -800,7 +800,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
         List<ContentDto> result = codes.stream()
                 .map(code -> {
                     try {
-                        return updateContentStatus(code, status, user, bindingResult);
+                        return updateContentStatus(code, status, user, bindingResult, false);
                     } catch (Exception e) {
                         logger.error("Error in updating content(code: {}) status {}", code, e);
                         return null;
@@ -1033,7 +1033,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     @Override
     public void deleteComponent(String componentCode) {
-        this.updateContentStatus(componentCode, STATUS_DRAFT, null);
+        this.updateContentStatus(componentCode, STATUS_DRAFT, null, null, true);
         logger.debug("Updated component '{}' with status DRAFT", componentCode);
         this.deleteContent(componentCode);
         logger.debug("Deleted component '{}'", componentCode);
