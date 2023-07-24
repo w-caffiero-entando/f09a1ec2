@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -218,6 +219,38 @@ class ComponentServiceTest {
         Assertions.assertEquals(2, response.getComponents().size());
         Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(0).getStatus());
         Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(1).getStatus());
+    }
+    
+    @Test
+    void invocationOfDeleteComponentShouldExecutedInRightOrder() throws Exception {
+        List<ComponentDeleteRequestRow> request = List.of(
+                ComponentDeleteRequestRow.builder().type(ComponentUsageEntity.TYPE_WIDGET).code("widgetCode").build(),
+                ComponentDeleteRequestRow.builder().type(ComponentUsageEntity.TYPE_CONTENT_TEMPLATE).code("contentTemplateCode").build(),
+                ComponentDeleteRequestRow.builder().type(ComponentUsageEntity.TYPE_GROUP).code("groupCode").build(),
+                ComponentDeleteRequestRow.builder().type(ComponentUsageEntity.TYPE_FRAGMENT).code("fragmentCode").build());
+        IComponentUsageService mockWidgetService = Mockito.mock(IComponentUsageService.class);
+        Mockito.when(mockWidgetService.getObjectType()).thenReturn(ComponentUsageEntity.TYPE_WIDGET);
+        IComponentUsageService mockContentTemplateService = Mockito.mock(IComponentUsageService.class);
+        Mockito.when(mockContentTemplateService.getObjectType()).thenReturn(ComponentUsageEntity.TYPE_CONTENT_TEMPLATE);
+        IComponentUsageService mockGroupService = Mockito.mock(IComponentUsageService.class);
+        Mockito.when(mockGroupService.getObjectType()).thenReturn(ComponentUsageEntity.TYPE_GROUP);
+        IComponentUsageService mockFragmentService = Mockito.mock(IComponentUsageService.class);
+        Mockito.when(mockFragmentService.getObjectType()).thenReturn(ComponentUsageEntity.TYPE_FRAGMENT);
+        List<IComponentUsageService> extServices = new ArrayList<>();
+        extServices.add(mockWidgetService);
+        extServices.add(mockContentTemplateService);
+        extServices.add(mockGroupService);
+        extServices.add(mockFragmentService);
+        this.componentService = new ComponentService(extServices);
+        InOrder inOrder = Mockito.inOrder(
+                mockContentTemplateService, mockFragmentService, mockWidgetService, mockGroupService);
+        
+        this.componentService.deleteInternalComponents(request);
+        
+        inOrder.verify(mockContentTemplateService).getComponentDto("contentTemplateCode");
+        inOrder.verify(mockFragmentService).getComponentDto("fragmentCode");
+        inOrder.verify(mockWidgetService).getComponentDto("widgetCode");
+        inOrder.verify(mockGroupService).getComponentDto("groupCode");
     }
     
 }

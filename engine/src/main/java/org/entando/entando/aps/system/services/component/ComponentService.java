@@ -89,11 +89,13 @@ public class ComponentService implements IComponentService {
 
     @Override
     public ComponentDeleteResponse deleteInternalComponents(List<ComponentDeleteRequestRow> components) {
+        List<ComponentDeleteRequestRow> sortedComponents = new ArrayList<>(components);
         ComponentDeleteResponse response = new ComponentDeleteResponse();
-        log.debug("request deletion of components '{}'", components);
+        log.debug("request deletion of components '{}'", sortedComponents);
+        Collections.sort(sortedComponents, new ComponentDeleteRequestRowComparator());
         ComponentDeletionStep componentDeletionStep = new ComponentDeletionStep(false);
         response.setStatus(ComponentDeleteResponse.STATUS_SUCCESS);
-        components.forEach(componentDeleteRequestRow -> {
+        sortedComponents.forEach(componentDeleteRequestRow -> {
             String type = componentDeleteRequestRow.getType();
             String code = componentDeleteRequestRow.getCode();
             log.debug("Type '{}', Object code '{}'", type, code);
@@ -105,7 +107,7 @@ public class ComponentService implements IComponentService {
                             Optional<IComponentDto> dto = service.getComponentDto(code);
                             if (dto.isPresent()) {
                                 responseRow = dto.map(c -> this.extractUsageDetails(code, service))
-                                        .map(usage -> check(components, code, usage))
+                                        .map(usage -> check(sortedComponents, code, usage))
                                         .map(c -> delete(c, type, service))
                                         .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
                                                 .status(ComponentDeleteResponse.STATUS_FAILURE).build());
@@ -194,4 +196,30 @@ public class ComponentService implements IComponentService {
     static class ComponentDeletionStep {
         private boolean successful;
     }
+    
+    public static class ComponentDeleteRequestRowComparator implements Comparator<ComponentDeleteRequestRow> {
+        
+        private static final List<String> DELETION_ORDER = List.of(
+            ComponentUsageEntity.TYPE_CONTENT,
+            ComponentUsageEntity.TYPE_PAGE,
+            ComponentUsageEntity.TYPE_PAGE_TEMPLATE,
+            ComponentUsageEntity.TYPE_ASSET,
+            ComponentUsageEntity.TYPE_CONTENT_TEMPLATE,
+            ComponentUsageEntity.TYPE_CONTENT_TYPE,
+            ComponentUsageEntity.TYPE_FRAGMENT,
+            ComponentUsageEntity.TYPE_WIDGET,
+            ComponentUsageEntity.TYPE_LABEL,
+            ComponentUsageEntity.TYPE_LANGUAGE,
+            ComponentUsageEntity.TYPE_GROUP,
+            ComponentUsageEntity.TYPE_CATEGORY,
+            ComponentUsageEntity.TYPE_DIRECTORY);
+        
+        @Override
+        public int compare(ComponentDeleteRequestRow i1, ComponentDeleteRequestRow i2) {
+            Integer type1 = DELETION_ORDER.indexOf(i1.getType());
+            Integer type2 = DELETION_ORDER.indexOf(i2.getType());
+            return type1.compareTo(type2);
+        }
+    }
+    
 }

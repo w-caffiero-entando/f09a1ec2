@@ -35,6 +35,7 @@ public class ComponentUsageEntity implements Serializable {
     public static final String TYPE_ASSET = "asset";
     public static final String TYPE_GROUP = "group";
     public static final String TYPE_USER = "user";
+    public static final String TYPE_DIRECTORY = "directory";
     
     public static final String ONLINE_PROPERTY = "online";
     
