@@ -58,7 +58,7 @@ public class PageModelDto implements IComponentDto {
     @JsonIgnore
     @Override
     public String getType() {
-        return ComponentUsageEntity.TYPE_PAGE_TEMPLATE;
+        return ComponentUsageEntity.TYPE_PAGE_MODEL;
     }
     
     @Override

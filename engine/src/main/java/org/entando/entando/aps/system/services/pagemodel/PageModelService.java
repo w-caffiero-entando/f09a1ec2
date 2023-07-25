@@ -52,8 +52,6 @@ public class PageModelService implements IPageModelService, ApplicationContextAw
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(getClass());
     
-    public static final String TYPE_PAGE_MODEL = ComponentUsageEntity.TYPE_PAGE_TEMPLATE;
-
     private final IPageModelManager pageModelManager;
 
     private final IWidgetTypeManager widgetTypeManager;
@@ -105,7 +103,7 @@ public class PageModelService implements IPageModelService, ApplicationContextAw
         PageModel pageModel = this.pageModelManager.getPageModel(code);
         if (null == pageModel) {
             logger.warn("no pageModel found with code {}", code);
-            throw new ResourceNotFoundException(PageModelValidator.ERRCODE_PAGEMODEL_NOT_FOUND, TYPE_PAGE_MODEL, code);
+            throw new ResourceNotFoundException(PageModelValidator.ERRCODE_PAGEMODEL_NOT_FOUND, ComponentUsageEntity.TYPE_PAGE_MODEL, code);
         }
         PageModelDto dto = this.dtoBuilder.convert(pageModel);
         dto.setReferences(this.getReferencesInfo(pageModel));
@@ -185,7 +183,7 @@ public class PageModelService implements IPageModelService, ApplicationContextAw
         PageModel pageModel = this.pageModelManager.getPageModel(pageModelCode);
         if (null == pageModel) {
             logger.warn("no pageModel found with code {}", pageModelCode);
-            throw new ResourceNotFoundException(PageModelValidator.ERRCODE_PAGEMODEL_NOT_FOUND, TYPE_PAGE_MODEL, pageModelCode);
+            throw new ResourceNotFoundException(PageModelValidator.ERRCODE_PAGEMODEL_NOT_FOUND, ComponentUsageEntity.TYPE_PAGE_MODEL, pageModelCode);
         }
         PageModelServiceUtilizer<?> utilizer = this.getPageModelServiceUtilizer(managerName);
         if (null == utilizer) {
@@ -227,7 +225,7 @@ public class PageModelService implements IPageModelService, ApplicationContextAw
 
     @Override
     public String getObjectType() {
-        return TYPE_PAGE_MODEL;
+        return ComponentUsageEntity.TYPE_PAGE_MODEL;
     }
 
     protected PageModel createPageModel(PageModelRequest pageModelRequest) {
@@ -288,7 +286,7 @@ public class PageModelService implements IPageModelService, ApplicationContextAw
     }
 
     protected BeanPropertyBindingResult validateAdd(PageModelRequest pageModelRequest) {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(pageModelRequest, TYPE_PAGE_MODEL);
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(pageModelRequest, ComponentUsageEntity.TYPE_PAGE_MODEL);
         PageModel pageModel = pageModelManager.getPageModel(pageModelRequest.getCode());
         if (null != pageModel) {
             bindingResult.reject(PageModelValidator.ERRCODE_CODE_EXISTS, new String[]{pageModelRequest.getCode()}, "pageModel.code.exists");
@@ -299,17 +297,17 @@ public class PageModelService implements IPageModelService, ApplicationContextAw
     }
 
     protected BeanPropertyBindingResult validateEdit(PageModelRequest pageModelRequest) {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(pageModelRequest, TYPE_PAGE_MODEL);
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(pageModelRequest, ComponentUsageEntity.TYPE_PAGE_MODEL);
         PageModel pageModel = this.pageModelManager.getPageModel(pageModelRequest.getCode());
         if (null == pageModel) {
-            throw new ResourceNotFoundException(PageModelValidator.ERRCODE_PAGEMODEL_NOT_FOUND, TYPE_PAGE_MODEL, pageModelRequest.getCode());
+            throw new ResourceNotFoundException(PageModelValidator.ERRCODE_PAGEMODEL_NOT_FOUND, ComponentUsageEntity.TYPE_PAGE_MODEL, pageModelRequest.getCode());
         }
         this.validateDefaultWidgets(pageModelRequest, bindingResult);
         return bindingResult;
     }
 
     protected BeanPropertyBindingResult validateDelete(PageModel pageModel) throws EntException {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(pageModel, TYPE_PAGE_MODEL);
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(pageModel, ComponentUsageEntity.TYPE_PAGE_MODEL);
         Map<String, List<Object>> references = this.getReferencingObjects(pageModel);
         if (references.size() > 0) {
             bindingResult.reject(PageModelValidator.ERRCODE_PAGEMODEL_REFERENCES, new Object[]{pageModel.getCode(), references}, "pageModel.cannot.delete.references");

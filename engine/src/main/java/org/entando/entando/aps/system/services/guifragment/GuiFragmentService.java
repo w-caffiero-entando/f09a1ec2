@@ -239,7 +239,7 @@ public class GuiFragmentService implements IGuiFragmentService {
         if (null != fragmentDto.getPageModels()) {
 
             List<ComponentUsageEntity> pageModelList = fragmentDto.getPageModels().stream()
-                    .map(pageModelRef -> new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE_TEMPLATE, pageModelRef.getCode()))
+                    .map(pageModelRef -> new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE_MODEL, pageModelRef.getCode()))
                     .collect(Collectors.toList());
             componentUsageEntityList.addAll(pageModelList);
         }
