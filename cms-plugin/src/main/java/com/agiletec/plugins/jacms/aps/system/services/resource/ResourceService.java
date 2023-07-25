@@ -39,17 +39,15 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
+import org.entando.entando.plugins.jacms.web.resource.ResourcesController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.entando.entando.web.common.model.RestNamedId;
 
 public class ResourceService implements IResourceService,
         GroupServiceUtilizer<ResourceDto>, CategoryServiceUtilizer<ResourceDto>, IComponentUsageService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
     
-    public static final String CORRELATION_CODE_PARAMETER = "cc";
-    
-    public static final String TYPE_ASSET = ComponentUsageEntity.TYPE_ASSET;
-
     private IResourceManager resourceManager;
     private IDtoBuilder<ResourceInterface, ResourceDto> dtoBuilder;
     private List<? extends ResourceServiceUtilizer> resourceServiceUtilizers = new ArrayList<>();
@@ -133,24 +131,24 @@ public class ResourceService implements IResourceService,
 
     @Override
     public Optional<IComponentDto> getComponentDto(String code) throws EntException {
-        return Optional.ofNullable(this.resourceManager.loadResource(code, this.extractCorrelationCodeByCode(code)))
+        return Optional.ofNullable(this.resourceManager.loadResource(code, this.extractCorrelationCodeByCode(code).orElse(null)))
                 .map(c -> this.getDtoBuilder().convert(c));
     }
 
     @Override
     public boolean exists(String code) throws EntException {
-        return resourceManager.exists(code, this.extractCorrelationCodeByCode(code));
+        return resourceManager.exists(code, this.extractCorrelationCodeByCode(code).orElse(null));
     }
 
     @Override
     public String getObjectType() {
-        return TYPE_ASSET;
+        return ComponentUsageEntity.TYPE_ASSET;
     }
 
     @Override
     public void deleteComponent(String componentCode) {
         try {
-            String cc = this.extractCorrelationCodeByCode(componentCode);
+            String cc = this.extractCorrelationCodeByCode(componentCode).orElse(null);
             ResourceInterface resource = this.getResourceManager().loadResource(componentCode, cc);
             if (null != resource) {
                 this.resourceManager.deleteResource(resource);
@@ -173,7 +171,7 @@ public class ResourceService implements IResourceService,
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
         List<ComponentUsageEntity> components = new ArrayList<>();
-        String resourceCode = Optional.ofNullable(this.extractCorrelationCodeByCode(componentCode)).orElse(componentCode);
+        String resourceCode = this.extractCorrelationCodeByCode(componentCode).orElse(componentCode);
         for (var utilizer : this.resourceServiceUtilizers) {
             List<IComponentDto> objects = utilizer.getResourceUtilizer(resourceCode);
             List<ComponentUsageEntity> utilizerForService = objects.stream()
@@ -186,8 +184,8 @@ public class ResourceService implements IResourceService,
         return usageEntries;
     }
     
-    private String extractCorrelationCodeByCode(String code) {
-        return (code.startsWith(CORRELATION_CODE_PARAMETER + "=")) ? code.split("=")[1] : null;
+    private Optional<String> extractCorrelationCodeByCode(String code) {
+        return new RestNamedId(code).getValidValue(ResourcesController.ID_NAME_OF_CORRELATION_CODE);
     }
 
 }
