@@ -62,13 +62,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
@@ -745,19 +745,18 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     @Override
     public ContentDto updateContentStatus(String code, String status, UserDetails user) {
-        return updateContentStatus(code, status, user, null);
+        return updateContentStatus(code, status, user, null, false);
     }
 
-    private ContentDto updateContentStatus(String code, String status, UserDetails user,
-            BeanPropertyBindingResult bindingResult) {
+    private ContentDto updateContentStatus(String code, String status, 
+            UserDetails user, BeanPropertyBindingResult bindingResult, boolean forceUnpublish) {
         try {
-            Content content = this.getContentManager().loadContent(code, false);
+            this.checkContentExists(code);
             if (bindingResult == null) {
                 bindingResult = new BeanPropertyBindingResult(code, ComponentUsageEntity.TYPE_CONTENT);
             }
-            if (null == content) {
-                throw new ResourceNotFoundException(ERRCODE_CONTENT_NOT_FOUND, ComponentUsageEntity.TYPE_CONTENT, code);
-            }
+            this.checkContentAuthorization(user, code, false, true, bindingResult);
+            Content content = this.getContentManager().loadContent(code, false);
             if (status.equals(STATUS_DRAFT) && null == this.getContentManager().loadContent(code, true)) {
                 return this.getDtoBuilder().convert(content);
             }
@@ -769,12 +768,10 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
             } else if (status.equals(STATUS_DRAFT)) {
                 Map<String, ContentServiceUtilizer> beans = applicationContext
                         .getBeansOfType(ContentServiceUtilizer.class);
-                if (null != beans) {
-                    Iterator<ContentServiceUtilizer> iter = beans.values().iterator();
-                    while (iter.hasNext()) {
-                        ContentServiceUtilizer serviceUtilizer = iter.next();
+                if (!forceUnpublish) {
+                    for (var serviceUtilizer : beans.values()) {
                         List utilizer = serviceUtilizer.getContentUtilizer(code);
-                        if (null != utilizer && utilizer.size() > 0) {
+                        if (!CollectionUtils.isEmpty(utilizer)) {
                             bindingResult
                                     .reject(ContentController.ERRCODE_REFERENCED_ONLINE_CONTENT, new String[]{code},
                                             "plugins.jacms.content.status.invalid.online.ref");
@@ -800,7 +797,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
         List<ContentDto> result = codes.stream()
                 .map(code -> {
                     try {
-                        return updateContentStatus(code, status, user, bindingResult);
+                        return updateContentStatus(code, status, user, bindingResult, false);
                     } catch (Exception e) {
                         logger.error("Error in updating content(code: {}) status {}", code, e);
                         return null;
@@ -1033,7 +1030,7 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     @Override
     public void deleteComponent(String componentCode) {
-        this.updateContentStatus(componentCode, STATUS_DRAFT, null);
+        this.updateContentStatus(componentCode, STATUS_DRAFT, null, null, true);
         logger.debug("Updated component '{}' with status DRAFT", componentCode);
         this.deleteContent(componentCode);
         logger.debug("Deleted component '{}'", componentCode);

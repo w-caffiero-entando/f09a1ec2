@@ -550,4 +550,13 @@ class ContentServiceTest {
         Assertions.assertEquals(result.getBody().size(), usage);
     }
     
+    @Test
+    void shouldDeleteComponent() throws Exception {
+        when(this.contentManager.loadContent("ART123", false)).thenReturn(Mockito.mock(Content.class));
+        when(this.contentManager.loadContent("ART123", true)).thenReturn(Mockito.mock(Content.class)).thenReturn(null);
+        when(this.contentAuthorizationHelper.isAuthToEdit(Mockito.any(), Mockito.anyString(), Mockito.eq(false))).thenReturn(true);
+        this.contentService.deleteComponent("ART123");
+        Mockito.verify(contentManager, Mockito.times(1)).removeOnLineContent(Mockito.any(Content.class));
+    }
+    
 }
