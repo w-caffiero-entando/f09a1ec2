@@ -58,22 +58,33 @@ class ResourceServiceTest {
         ResourceInterface resource = Mockito.mock(ImageResource.class);
         Mockito.when(resource.getType()).thenReturn("Image");
         Mockito.when(resource.getDefaultInstance()).thenReturn(Mockito.mock(ResourceInstance.class));
-        Mockito.when(this.resourceManager.loadResource("id")).thenReturn(resource);
+        Mockito.when(this.resourceManager.loadResource("id", null)).thenReturn(resource);
         Optional<IComponentDto> dto = this.resourceService.getComponentDto("id");
         assertThat(dto).isNotEmpty();
         Assertions.assertTrue(dto.get() instanceof ResourceDto);
     }
 
     @Test
+    void shouldFindComponentDtoByCorrelationCode() throws Exception {
+        ResourceInterface resource = Mockito.mock(ImageResource.class);
+        Mockito.when(resource.getType()).thenReturn("Image");
+        Mockito.when(resource.getDefaultInstance()).thenReturn(Mockito.mock(ResourceInstance.class));
+        Mockito.when(this.resourceManager.loadResource(Mockito.anyString(), Mockito.eq("correlationCode"))).thenReturn(resource);
+        Optional<IComponentDto> dto = this.resourceService.getComponentDto("cc=correlationCode");
+        assertThat(dto).isNotEmpty();
+        Assertions.assertTrue(dto.get() instanceof ResourceDto);
+    }
+
+    @Test
     void shouldDeleteNotExistingComponent() throws Exception {
-        Mockito.when(this.resourceManager.loadResource("test")).thenReturn(null);
+        Mockito.when(this.resourceManager.loadResource("test", null)).thenReturn(null);
         this.resourceService.deleteComponent("test");
         Mockito.verify(resourceManager, Mockito.times(0)).deleteResource(Mockito.any());
     }
 
     @Test
     void shouldDeleteExistingComponent() throws Exception {
-        Mockito.when(this.resourceManager.loadResource("test")).thenReturn(Mockito.mock(ResourceInterface.class));
+        Mockito.when(this.resourceManager.loadResource("test", null)).thenReturn(Mockito.mock(ResourceInterface.class));
         this.resourceService.deleteComponent("test");
         Mockito.verify(resourceManager, Mockito.times(1)).deleteResource(Mockito.any());
     }
@@ -81,7 +92,7 @@ class ResourceServiceTest {
     @Test
     void shouldFailDeletingComponent() throws Exception {
         Assertions.assertThrows(RestServerError.class, () -> {
-            when(this.resourceManager.loadResource("test")).thenThrow(EntException.class);
+            when(this.resourceManager.loadResource("test", null)).thenThrow(EntException.class);
             this.resourceService.deleteComponent("test");
         });
         Mockito.verify(resourceManager, Mockito.times(0)).deleteResource(Mockito.any());
