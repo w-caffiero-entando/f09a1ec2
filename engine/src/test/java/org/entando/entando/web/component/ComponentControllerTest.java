@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import org.entando.entando.aps.system.services.component.ComponentDeleteRequestR
 import org.entando.entando.aps.system.services.component.ComponentDeleteResponse;
 import org.entando.entando.aps.system.services.component.ComponentDeleteResponse.ComponentDeleteResponseRow;
 import org.entando.entando.aps.system.services.component.ComponentService;
+import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.web.AbstractControllerTest;
 import org.entando.entando.web.common.RestErrorCodes;
@@ -94,7 +96,7 @@ class ComponentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void invokationOfDeleteComponentShouldReturnRightResponse() throws Exception {
+    void invocationOfDeleteComponentShouldReturnRightResponse() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
         String accessToken = mockOAuthInterceptor(user);
         ComponentDeleteResponse serviceResponse = new ComponentDeleteResponse();
@@ -105,7 +107,6 @@ class ComponentControllerTest extends AbstractControllerTest {
                 .status(STATUS_SUCCESS)
                 .build();
         serviceResponse.getComponents().add(singleResult);
-
         List<ComponentDeleteRequestRow> request = List.of(
                 ComponentDeleteRequestRow.builder().type("customType").code("internalCode").build());
         when(componentService.deleteInternalComponents(request)).thenReturn(serviceResponse);

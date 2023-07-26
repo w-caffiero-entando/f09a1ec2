@@ -26,7 +26,7 @@ public class ComponentUsageEntity implements Serializable {
     public static final String TYPE_CATEGORY = "category";
     public static final String TYPE_WIDGET = "widget";
     public static final String TYPE_FRAGMENT = "fragment";
-    public static final String TYPE_PAGE_TEMPLATE = "pageTemplate";
+    public static final String TYPE_PAGE_MODEL = "pageModel"; // changed from "pageTemplate" to "pageModel" due component manager issue
     public static final String TYPE_LABEL = "label";
     public static final String TYPE_LANGUAGE = "language";
     public static final String TYPE_CONTENT = "content";
@@ -35,6 +35,7 @@ public class ComponentUsageEntity implements Serializable {
     public static final String TYPE_ASSET = "asset";
     public static final String TYPE_GROUP = "group";
     public static final String TYPE_USER = "user";
+    public static final String TYPE_DIRECTORY = "directory";
     
     public static final String ONLINE_PROPERTY = "online";
     

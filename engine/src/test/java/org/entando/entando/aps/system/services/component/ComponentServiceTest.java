@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -96,7 +97,24 @@ class ComponentServiceTest {
     }
     
     @Test
-    void deleteNonExistingComponent() throws EntException {
+    void deleteNonExistingComponentWithSuccess() throws EntException {
+        // --GIVEN
+        List<ComponentDeleteRequestRow> request = List.of(
+                ComponentDeleteRequestRow.builder().type("type").code("service").build());
+        Mockito.when(mockService.getObjectType()).thenReturn("type");
+
+        Mockito.when(mockService.getComponentDto(Mockito.anyString())).thenReturn(Optional.empty());
+        // --WHEN
+        ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
+        // --THEN
+        Assertions.assertEquals(STATUS_SUCCESS, response.getStatus());
+        Assertions.assertEquals(1, response.getComponents().size());
+        Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(0).getStatus());
+        Mockito.verify(mockService, Mockito.times(0)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
+    }
+    
+    @Test
+    void deleteNonExistingComponentWithPartialSuccess() throws EntException {
         // --GIVEN
         List<ComponentDeleteRequestRow> request = List.of(
                 ComponentDeleteRequestRow.builder().type("type").code("service").build(),
@@ -107,9 +125,10 @@ class ComponentServiceTest {
         // --WHEN
         ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
         // --THEN
-        Assertions.assertEquals(STATUS_FAILURE, response.getStatus());
+        Assertions.assertEquals(STATUS_PARTIAL_SUCCESS, response.getStatus());
         Assertions.assertEquals(2, response.getComponents().size());
-        Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(0).getStatus());
+        Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(0).getStatus());
+        Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(1).getStatus());
         Mockito.verify(mockService, Mockito.times(0)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
     }
     @Test
@@ -133,10 +152,10 @@ class ComponentServiceTest {
         // --WHEN
         ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
         // --THEN
-        Assertions.assertEquals(STATUS_PARTIAL_SUCCESS, response.getStatus());
+        Assertions.assertEquals(STATUS_SUCCESS, response.getStatus());
         Assertions.assertEquals(2, response.getComponents().size());
         Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(0).getStatus());
-        Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(1).getStatus());
+        Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(1).getStatus());
         Mockito.verify(mockService, Mockito.times(1)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
     }
 
@@ -200,6 +219,38 @@ class ComponentServiceTest {
         Assertions.assertEquals(2, response.getComponents().size());
         Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(0).getStatus());
         Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(1).getStatus());
+    }
+    
+    @Test
+    void invocationOfDeleteComponentShouldExecutedInRightOrder() throws Exception {
+        List<ComponentDeleteRequestRow> request = List.of(
+                ComponentDeleteRequestRow.builder().type(ComponentUsageEntity.TYPE_WIDGET).code("widgetCode").build(),
+                ComponentDeleteRequestRow.builder().type(ComponentUsageEntity.TYPE_CONTENT_TEMPLATE).code("contentTemplateCode").build(),
+                ComponentDeleteRequestRow.builder().type(ComponentUsageEntity.TYPE_GROUP).code("groupCode").build(),
+                ComponentDeleteRequestRow.builder().type(ComponentUsageEntity.TYPE_FRAGMENT).code("fragmentCode").build());
+        IComponentUsageService mockWidgetService = Mockito.mock(IComponentUsageService.class);
+        Mockito.when(mockWidgetService.getObjectType()).thenReturn(ComponentUsageEntity.TYPE_WIDGET);
+        IComponentUsageService mockContentTemplateService = Mockito.mock(IComponentUsageService.class);
+        Mockito.when(mockContentTemplateService.getObjectType()).thenReturn(ComponentUsageEntity.TYPE_CONTENT_TEMPLATE);
+        IComponentUsageService mockGroupService = Mockito.mock(IComponentUsageService.class);
+        Mockito.when(mockGroupService.getObjectType()).thenReturn(ComponentUsageEntity.TYPE_GROUP);
+        IComponentUsageService mockFragmentService = Mockito.mock(IComponentUsageService.class);
+        Mockito.when(mockFragmentService.getObjectType()).thenReturn(ComponentUsageEntity.TYPE_FRAGMENT);
+        List<IComponentUsageService> extServices = new ArrayList<>();
+        extServices.add(mockWidgetService);
+        extServices.add(mockContentTemplateService);
+        extServices.add(mockGroupService);
+        extServices.add(mockFragmentService);
+        this.componentService = new ComponentService(extServices);
+        InOrder inOrder = Mockito.inOrder(
+                mockContentTemplateService, mockFragmentService, mockWidgetService, mockGroupService);
+        
+        this.componentService.deleteInternalComponents(request);
+        
+        inOrder.verify(mockContentTemplateService).getComponentDto("contentTemplateCode");
+        inOrder.verify(mockFragmentService).getComponentDto("fragmentCode");
+        inOrder.verify(mockWidgetService).getComponentDto("widgetCode");
+        inOrder.verify(mockGroupService).getComponentDto("groupCode");
     }
     
 }

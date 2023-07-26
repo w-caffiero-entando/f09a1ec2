@@ -23,7 +23,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.util.ApsProperties;
@@ -265,8 +264,8 @@ class GuiFragmentServiceTest {
         List<ComponentUsageEntity> expectedUsageEntityList = new ArrayList<>(Arrays.asList(
                 new ComponentUsageEntity(ComponentUsageEntity.TYPE_FRAGMENT, FragmentMockHelper.FRAGMENT_REF_1_CODE),
                 new ComponentUsageEntity(ComponentUsageEntity.TYPE_FRAGMENT, FragmentMockHelper.FRAGMENT_REF_2_CODE),
-                new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE_TEMPLATE, PageMockHelper.PAGE_MODEL_REF_CODE_1),
-                new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE_TEMPLATE, PageMockHelper.PAGE_MODEL_REF_CODE_2)));
+                new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE_MODEL, PageMockHelper.PAGE_MODEL_REF_CODE_1),
+                new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE_MODEL, PageMockHelper.PAGE_MODEL_REF_CODE_2)));
         if (!nullWidgetRef) {
             expectedUsageEntityList.add(new ComponentUsageEntity(ComponentUsageEntity.TYPE_WIDGET, WidgetMockHelper.WIDGET_1_CODE));
         }

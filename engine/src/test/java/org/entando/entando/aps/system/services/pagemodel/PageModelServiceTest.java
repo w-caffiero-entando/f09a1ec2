@@ -236,7 +236,7 @@ class PageModelServiceTest {
         Optional<IComponentDto> dto = this.pageModelService.getComponentDto("test");
         assertThat(dto).isNotEmpty();
         Assertions.assertTrue(dto.get() instanceof PageModelDto);
-        Assertions.assertEquals(ComponentUsageEntity.TYPE_PAGE_TEMPLATE, dto.get().getType());
+        Assertions.assertEquals(ComponentUsageEntity.TYPE_PAGE_MODEL, dto.get().getType());
     }
 
     private PagedMetadata<PageModelDto> resultPagedMetadata() {

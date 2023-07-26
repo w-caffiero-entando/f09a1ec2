@@ -29,14 +29,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class ComponentService implements IComponentService {
-    
+
     private final List<IComponentUsageService> services;
-    
+
     @Autowired
     public ComponentService(List<IComponentUsageService> services) {
         this.services = services;
     }
-    
+
     @Override
     public List<ComponentUsageDetails> extractComponentUsageDetails(List<Map<String, String>> components) {
         List<ComponentUsageDetails> details = new ArrayList<>();
@@ -62,7 +62,7 @@ public class ComponentService implements IComponentService {
         });
         return details;
     }
-    
+
     private List<Map<String, Object>> extractReferences(ComponentUsageDetails usage, IComponentUsageService service) {
         try {
             PagedMetadata<ComponentUsageEntity> result = this.extractUsageDetails(usage.getCode(), service);
@@ -80,7 +80,7 @@ public class ComponentService implements IComponentService {
             throw new RestServerError("Error extracting references", e);
         }
     }
-    
+
     private PagedMetadata<ComponentUsageEntity> extractUsageDetails(String componentCode, IComponentUsageService service) {
         RestListRequest listRequest = new RestListRequest();
         listRequest.setPageSize(0); // get all elements - no pagination
@@ -89,11 +89,13 @@ public class ComponentService implements IComponentService {
 
     @Override
     public ComponentDeleteResponse deleteInternalComponents(List<ComponentDeleteRequestRow> components) {
+        List<ComponentDeleteRequestRow> sortedComponents = new ArrayList<>(components);
         ComponentDeleteResponse response = new ComponentDeleteResponse();
-        log.debug("request deletion of components '{}'", components);
+        log.debug("request deletion of components '{}'", sortedComponents);
+        Collections.sort(sortedComponents, new ComponentDeleteRequestRow.ComponentDeleteRequestRowComparator());
         ComponentDeletionStep componentDeletionStep = new ComponentDeletionStep(false);
         response.setStatus(ComponentDeleteResponse.STATUS_SUCCESS);
-        components.forEach(componentDeleteRequestRow -> {
+        sortedComponents.forEach(componentDeleteRequestRow -> {
             String type = componentDeleteRequestRow.getType();
             String code = componentDeleteRequestRow.getCode();
             log.debug("Type '{}', Object code '{}'", type, code);
@@ -103,11 +105,9 @@ public class ComponentService implements IComponentService {
                         ComponentDeleteResponseRow responseRow = null;
                         try {
                             responseRow = service.getComponentDto(code)
-                                    .map(c -> this.extractUsageDetails(code, service))
-                                    .map(usage -> check(components, code, usage))
-                                    .map(c -> delete(c, type, service))
+                                    .map(d -> deleteComponentAndBuildResponse(d, sortedComponents, code, type, service))
                                     .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
-                                    .status(ComponentDeleteResponse.STATUS_FAILURE).build());
+                                    .status(ComponentDeleteResponse.STATUS_SUCCESS).build());
                         } catch (Exception e) {
                             log.warn("Generic error when deleting element with code: '{}', type: '{}'",
                                     code, type, e);
@@ -140,6 +140,15 @@ public class ComponentService implements IComponentService {
                             });
         });
         return response;
+    }
+
+    private ComponentDeleteResponseRow deleteComponentAndBuildResponse(IComponentDto dto,
+            List<ComponentDeleteRequestRow> sortedComponents, String code, String type, IComponentUsageService service) {
+        return Optional.of(dto).map(c -> this.extractUsageDetails(code, service))
+                .map(usage -> check(sortedComponents, code, usage))
+                .map(c -> delete(c, type, service))
+                .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
+                .status(ComponentDeleteResponse.STATUS_FAILURE).build());
     }
 
     private static String computeOverallStatus(boolean atLeastOneSuccess, String currentStatus, String globalStatus) {
@@ -189,4 +198,5 @@ public class ComponentService implements IComponentService {
     static class ComponentDeletionStep {
         private boolean successful;
     }
+
 }

@@ -54,8 +54,6 @@ public class FileBrowserService implements IFileBrowserService, IComponentUsageS
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
 
-    public static final String TYPE_DIRECTORY = "directory";
-
     private IStorageManager storageManager;
 
     protected IDtoBuilder<BasicFileAttributeView, BasicFileAttributeViewDto> getFileAttributeViewDtoDtoBuilder() {
@@ -262,7 +260,7 @@ public class FileBrowserService implements IFileBrowserService, IComponentUsageS
 
     @Override
     public String getObjectType() {
-        return TYPE_DIRECTORY;
+        return ComponentUsageEntity.TYPE_DIRECTORY;
     }
 
     @Override
