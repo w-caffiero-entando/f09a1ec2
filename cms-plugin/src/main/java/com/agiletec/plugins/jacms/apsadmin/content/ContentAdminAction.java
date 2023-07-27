@@ -13,7 +13,6 @@
  */
 package com.agiletec.plugins.jacms.apsadmin.content;
 
-import com.agiletec.aps.system.services.baseconfig.SystemParamsUtils;
 import com.agiletec.apsadmin.admin.BaseAdminAction;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -32,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -110,7 +110,14 @@ public class ContentAdminAction extends BaseAdminAction {
         }
         return SUCCESS;
     }
-
+    
+    @Override
+    public void extractExtraParameters() {
+        super.extractExtraParameters();
+        String aspectRatioToSet = (CollectionUtils.isEmpty(this.getRatio())) ? "" : String.join(";", this.getRatio());
+        this.getSystemParams().put(JacmsSystemConstants.CONFIG_PARAM_ASPECT_RATIO, aspectRatioToSet);
+    }
+    
     public String addMetadata() {
         Map<String, List<String>> newMappings = this.buildMapping();
         if (!StringUtils.isBlank(this.getMetadataKey()) && !newMappings.containsKey(this.getMetadataKey().trim())) {
@@ -313,18 +320,7 @@ public class ContentAdminAction extends BaseAdminAction {
     public void setResourceManager(IResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
-
-    @Override
-    protected void initLocalMap() throws Throwable {
-        String xmlParams = this.getConfigParameter();
-        Map<String, String> systemParams = SystemParamsUtils.getParams(xmlParams);
-        this.setSystemParams(systemParams);
-        if (this.getRatio() != null && !this.getRatio().isEmpty()) {
-            this.setAspectRatio(String.join(";", this.getRatio()));
-        }
-        this.getSystemParams().put(JacmsSystemConstants.CONFIG_PARAM_ASPECT_RATIO, this.getAspectRatio());
-    }
-
+    
     private void validateAspectRatioList() {
         Optional.ofNullable(this.getRatio()).ifPresent(list -> list.forEach(elem -> {
             Pattern p = Pattern.compile(ASPECT_RATIO_PATTERN);
