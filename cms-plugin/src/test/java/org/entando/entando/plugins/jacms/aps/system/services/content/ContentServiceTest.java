@@ -551,12 +551,24 @@ class ContentServiceTest {
     }
     
     @Test
-    void shouldDeleteComponent() throws Exception {
+    void shouldForceDeleteComponent() throws Exception {
         when(this.contentManager.loadContent("ART123", false)).thenReturn(Mockito.mock(Content.class));
         when(this.contentManager.loadContent("ART123", true)).thenReturn(Mockito.mock(Content.class)).thenReturn(null);
-        when(this.contentAuthorizationHelper.isAuthToEdit(Mockito.any(), Mockito.anyString(), Mockito.eq(false))).thenReturn(true);
         this.contentService.deleteComponent("ART123");
         Mockito.verify(contentManager, Mockito.times(1)).removeOnLineContent(Mockito.any(Content.class));
+        Mockito.verifyNoInteractions(contentAuthorizationHelper);
+        Mockito.verify(contentManager, Mockito.times(1)).deleteContent(Mockito.any(Content.class));
+    }
+    
+    @Test
+    void shouldDeleteContent() throws Exception {
+        UserDetails user = Mockito.mock(UserDetails.class);
+        when(this.contentManager.loadContent("ART456", false)).thenReturn(Mockito.mock(Content.class));
+        when(this.contentAuthorizationHelper.isAuthToEdit(Mockito.any(), Mockito.anyString(), Mockito.eq(false))).thenReturn(true);
+        when(this.authorizationManager.getUserGroups(user)).thenReturn(new ArrayList<>());
+        this.contentService.deleteContent("ART456", user);
+        Mockito.verify(contentManager, Mockito.times(0)).removeOnLineContent(Mockito.any(Content.class));
+        Mockito.verify(contentManager, Mockito.times(1)).deleteContent(Mockito.any(Content.class));
     }
     
 }

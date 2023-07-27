@@ -745,30 +745,24 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
 
     @Override
     public ContentDto updateContentStatus(String code, String status, UserDetails user) {
-        return updateContentStatus(code, status, user, null, false);
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(code, ComponentUsageEntity.TYPE_CONTENT);
+        return updateContentStatus(code, status, user, bindingResult, false);
     }
 
     private ContentDto updateContentStatus(String code, String status, 
             UserDetails user, BeanPropertyBindingResult bindingResult, boolean forceUnpublish) {
         try {
             this.checkContentExists(code);
-            if (bindingResult == null) {
-                bindingResult = new BeanPropertyBindingResult(code, ComponentUsageEntity.TYPE_CONTENT);
-            }
-            this.checkContentAuthorization(user, code, false, true, bindingResult);
             Content content = this.getContentManager().loadContent(code, false);
-            if (status.equals(STATUS_DRAFT) && null == this.getContentManager().loadContent(code, true)) {
-                return this.getDtoBuilder().convert(content);
-            }
             Content newContent = null;
-            if (status.equals(STATUS_ONLINE)) {
-                //need to check referenced objects
-                this.getContentManager().insertOnLineContent(content);
-                newContent = this.getContentManager().loadContent(code, true);
-            } else if (status.equals(STATUS_DRAFT)) {
-                Map<String, ContentServiceUtilizer> beans = applicationContext
-                        .getBeansOfType(ContentServiceUtilizer.class);
-                if (!forceUnpublish) {
+            if (status.equals(STATUS_DRAFT)) {
+                if (null == this.getContentManager().loadContent(code, true)) {
+                    return this.getDtoBuilder().convert(content);
+                }
+                if (!(forceUnpublish)) {
+                    this.checkContentAuthorization(user, code, false, true, bindingResult);
+                    Map<String, ContentServiceUtilizer> beans = applicationContext
+                            .getBeansOfType(ContentServiceUtilizer.class);
                     for (var serviceUtilizer : beans.values()) {
                         List utilizer = serviceUtilizer.getContentUtilizer(code);
                         if (!CollectionUtils.isEmpty(utilizer)) {
@@ -781,6 +775,10 @@ public class ContentService extends AbstractEntityService<Content, ContentDto>
                 }
                 this.getContentManager().removeOnLineContent(content);
                 newContent = this.getContentManager().loadContent(code, false);
+            } else if (status.equals(STATUS_ONLINE)) {
+                this.checkContentAuthorization(user, code, false, false, bindingResult);
+                this.getContentManager().insertOnLineContent(content);
+                newContent = this.getContentManager().loadContent(code, true);
             }
             return this.getDtoBuilder().convert(newContent);
         } catch (ValidationGenericException | ResourceNotFoundException e) {
