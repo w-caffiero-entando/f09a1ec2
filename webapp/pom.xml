@@ -68,8 +68,8 @@
         <npm.version>6.14.17</npm.version>
         <node.version>v14.20.0</node.version>
         <!-- mfe communication via mediator object-->
-        <mediator.object.url>https://unpkg.com/@entando/mfecommunication@1.0.11/dist/entando-mfecommunication.umd.cjs</mediator.object.url>
-        <mediator.object.md5>a79735afe94b5090d44eb97d26561afe</mediator.object.md5>
+        <mediator.object.url>https://unpkg.com/@entando/mfecommunication@1.0.12/dist/entando-mfecommunication.umd.cjs</mediator.object.url>
+        <mediator.object.md5>1f3c944dae1ce92d0bd3c5f736b0f4c0</mediator.object.md5>
         <mediator.object.username/>
         <mediator.object.password/>
     </properties>
