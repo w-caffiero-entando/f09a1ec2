@@ -36,10 +36,13 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import org.entando.entando.aps.system.services.component.ComponentDeleteRequestRow;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
+import org.entando.entando.ent.exception.EntRuntimeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -136,6 +139,63 @@ class CategoryServiceTest {
         this.categoryService = new CategoryService(categoryManager, categoryValidator, null, List.of(utilizer1));
         PagedMetadata<ComponentUsageEntity> result = categoryService.getComponentUsageDetails("test", new RestListRequest());
         Assertions.assertEquals(7, result.getBody().size());
+    }
+    
+    @Test
+    void shouldSortComponentDeleteRequestRow() {
+        Category parent = Mockito.mock(Category.class);
+        Category child1 = Mockito.mock(Category.class);
+        Category child2 = Mockito.mock(Category.class);
+        Category childOfChild1 = Mockito.mock(Category.class);
+        when(this.categoryManager.getCategory("parent")).thenReturn(parent);
+        when(this.categoryManager.getCategory("child1")).thenReturn(child1);
+        when(this.categoryManager.getCategory("child2")).thenReturn(child2);
+        when(this.categoryManager.getCategory("childOfChild1")).thenReturn(childOfChild1);
+        
+        Mockito.lenient().when(parent.isChildOf("child1", categoryManager)).thenReturn(false);
+        Mockito.lenient().when(parent.isChildOf("child2", categoryManager)).thenReturn(false);
+        Mockito.lenient().when(parent.isChildOf("childOfChild1", categoryManager)).thenReturn(false);
+
+        Mockito.lenient().when(child1.isChildOf("parent", categoryManager)).thenReturn(true);
+        Mockito.lenient().when(child1.isChildOf("child2", categoryManager)).thenReturn(false);
+        Mockito.lenient().when(child1.isChildOf("childOfChild1", categoryManager)).thenReturn(false);
+
+        Mockito.lenient().when(child2.isChildOf("parent", categoryManager)).thenReturn(true);
+        Mockito.lenient().when(child2.isChildOf("child1", categoryManager)).thenReturn(false);
+        Mockito.lenient().when(child2.isChildOf("childOfChild1", categoryManager)).thenReturn(false);
+
+        Mockito.lenient().when(childOfChild1.isChildOf("parent", categoryManager)).thenReturn(true);
+        Mockito.lenient().when(childOfChild1.isChildOf("child1", categoryManager)).thenReturn(true);
+        Mockito.lenient().when(childOfChild1.isChildOf("child2", categoryManager)).thenReturn(false);
+        
+        List<ComponentDeleteRequestRow> group = new ArrayList<>(List.of(
+                ComponentDeleteRequestRow.builder().code("child1").type("category").build(),
+                ComponentDeleteRequestRow.builder().code("parent").type("category").build(),
+                ComponentDeleteRequestRow.builder().code("childOfChild1").type("category").build(),
+                ComponentDeleteRequestRow.builder().code("child2").type("category").build())
+        );
+        
+        this.categoryService.sortComponentDeleteRequestRowGroup(group);
+        
+        List<String> orderedCode = group.stream().map(g -> g.getCode()).collect(Collectors.toList());
+        
+        Assertions.assertTrue(orderedCode.indexOf("parent") > orderedCode.indexOf("child1"));
+        Assertions.assertTrue(orderedCode.indexOf("parent") > orderedCode.indexOf("child2"));
+        Assertions.assertTrue(orderedCode.indexOf("parent") > orderedCode.indexOf("childOfChild1"));
+        Assertions.assertTrue(orderedCode.indexOf("child1") > orderedCode.indexOf("childOfChild1"));
+    }
+    
+    @Test
+    void shouldSortComponentDeleteRequestRowWithWrongType() {
+        List<ComponentDeleteRequestRow> group = new ArrayList<>(List.of(
+                ComponentDeleteRequestRow.builder().code("child1").type("page").build(),
+                ComponentDeleteRequestRow.builder().code("parent").type("category").build(),
+                ComponentDeleteRequestRow.builder().code("childOfChild1").type("content").build(),
+                ComponentDeleteRequestRow.builder().code("child2").type("category").build())
+        );
+        Assertions.assertThrows(EntRuntimeException.class, () -> {
+            this.categoryService.sortComponentDeleteRequestRowGroup(group);
+        });
     }
     
 }

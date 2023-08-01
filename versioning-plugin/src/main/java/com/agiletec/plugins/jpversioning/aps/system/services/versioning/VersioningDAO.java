@@ -34,6 +34,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.common.AbstractDAO;
+import org.entando.entando.ent.exception.EntRuntimeException;
 
 /**
  * @author E.Santoboni
@@ -109,7 +110,7 @@ public class VersioningDAO extends AbstractDAO implements IVersioningDAO {
         ResultSet res = null;
         try {
             conn = this.getConnection();
-            stat = conn.prepareStatement(SELECT_VERSION_BY_VERSIONID);
+            stat = conn.prepareStatement(SELECT_VERSION_BY_VERSIONID);    //NOSONAR
             stat.setLong(1, id);
             res = stat.executeQuery();
             if (res.next()) {
@@ -120,6 +121,31 @@ public class VersioningDAO extends AbstractDAO implements IVersioningDAO {
             throw new RuntimeException("Error loading version", t);
         } finally {
             closeDaoResources(res, stat, conn);
+        }
+        return contentVersion;
+    }
+
+    @Override
+    public ContentVersion getVersion(String contentId, String version) {
+        Connection conn = null;
+        PreparedStatement stat = null;
+        ContentVersion contentVersion = null;
+        ResultSet res = null;
+        try {
+            conn = this.getConnection();
+            stat = conn.prepareStatement(SELECT_VERSION_BY_CONTENT_ID_AND_VERSION);    //NOSONAR
+            stat.setString(1, contentId);
+            stat.setString(2, version);
+            res = stat.executeQuery();
+            if (res.next()) {
+                contentVersion = this.prepareContentVersionFromResultSet(res);
+            }
+        } catch (Throwable t) {
+            String message = String.format("Error content loading version by id '%s' and version '%s'", contentId, version);
+            _logger.error(message, t);
+            throw new EntRuntimeException(message, t);
+        } finally {
+            this.closeDaoResources(res, stat, conn);
         }
         return contentVersion;
     }
@@ -291,9 +317,15 @@ public class VersioningDAO extends AbstractDAO implements IVersioningDAO {
     private final String APPEND_LAST_VERSIONS_TAIL
             = "( SELECT MAX(id) AS id FROM jpversioning_versionedcontents GROUP BY contentid ) ";
 
-    private final String SELECT_VERSION_BY_VERSIONID
+    private static final String SELECT_VERSION
             = "SELECT id, contentid, contenttype, descr, status, contentxml, versiondate, versioncode, "
-            + "onlineversion, approved, username FROM jpversioning_versionedcontents WHERE id = ? ";
+            + "onlineversion, approved, username FROM jpversioning_versionedcontents ";
+
+    private static final String SELECT_VERSION_BY_VERSIONID
+            = SELECT_VERSION + " WHERE id = ? ";
+
+    private static final String SELECT_VERSION_BY_CONTENT_ID_AND_VERSION
+            = SELECT_VERSION + " WHERE contentid = ? AND versioncode = ? ";
 
     private final String SELECT_VERSION_RECORDS_ORDER_BLOCK = " ORDER BY versiondate DESC, id DESC ";
 

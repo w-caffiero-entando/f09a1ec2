@@ -15,13 +15,17 @@ package org.entando.entando.aps.system.services.category;
 
 import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
+import com.agiletec.aps.system.common.tree.ITreeNode;
+import com.agiletec.aps.system.common.tree.ITreeNodeManager;
 import com.agiletec.aps.system.services.category.Category;
 import com.agiletec.aps.system.services.category.CategoryUtilizer;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
@@ -29,6 +33,7 @@ import org.entando.entando.aps.system.services.DtoBuilder;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.IDtoBuilder;
 import org.entando.entando.aps.system.services.category.model.CategoryDto;
+import org.entando.entando.aps.system.services.component.ComponentDeleteRequestRow;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.category.validator.CategoryValidator;
 import org.entando.entando.web.common.exceptions.ValidationConflictException;
@@ -178,6 +183,13 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
             throw new RestServerError("error extracting category " + categoryCode, e);
         }
         return dto;
+    }
+
+    @Override
+    public void sortComponentDeleteRequestRowGroup(List<ComponentDeleteRequestRow> group) {
+        BiFunction<String, ITreeNodeManager, ITreeNode> treeNodeAccessor = 
+                (categoryCode, treeNodeManager) -> ((ICategoryManager) treeNodeManager).getCategory(categoryCode);
+        Collections.sort(group, new ComponentDeleteRequestRow.TreeNodeComponentDeleteRequestRowComparator(this.getObjectType(), this.categoryManager, treeNodeAccessor));
     }
 
     @Override
