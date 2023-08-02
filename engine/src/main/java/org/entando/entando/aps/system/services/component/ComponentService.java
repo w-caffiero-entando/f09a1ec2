@@ -102,7 +102,7 @@ public class ComponentService implements IComponentService {
             log.debug("Type '{}', groups '{}'", type, componentGroup);
             services.stream()
                     .filter(s -> type.equalsIgnoreCase(s.getObjectType())).findFirst()
-                    .ifPresentOrElse(service -> {
+                    .ifPresent(service -> {
                         service.sortComponentDeleteRequestRowGroup(componentGroup);
                         componentGroup.stream().forEach(cdrr -> {
                             String code = cdrr.getCode();
@@ -128,19 +128,7 @@ public class ComponentService implements IComponentService {
                             response.getComponents().add(responseRow);
                             log.debug("Added the following entry to components deletion result list '{}'", responseRow);
                         });
-                    },
-                            () -> {
-                                log.warn("No service found for type '{}'", type);
-                                ComponentDeleteResponseRow responseRow = ComponentDeleteResponseRow.builder()
-                                        .type(type)
-                                        .status(ComponentDeleteResponse.STATUS_FAILURE)
-                                        .build();
-                                response.setStatus(computeOverallStatus(componentDeletionStep.isSuccessful(),
-                                        responseRow.getStatus(),
-                                        response.getStatus()));
-                                response.getComponents().add(responseRow);
-                            });
-
+                    });
         });
         return response;
     }
@@ -158,7 +146,6 @@ public class ComponentService implements IComponentService {
         if (ComponentDeleteResponse.STATUS_SUCCESS.equals(currentStatus)
                 && ComponentDeleteResponse.STATUS_SUCCESS.equals(globalStatus)) {
             return ComponentDeleteResponse.STATUS_SUCCESS;
-
         } else if (ComponentDeleteResponse.STATUS_FAILURE.equals(currentStatus) && !atLeastOneSuccess) {
             return ComponentDeleteResponse.STATUS_FAILURE;
         }

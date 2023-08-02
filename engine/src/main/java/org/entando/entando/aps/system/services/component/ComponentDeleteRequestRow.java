@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.entando.entando.ent.exception.EntRuntimeException;
+import org.springframework.util.CollectionUtils;
 
 @Data
 @NoArgsConstructor
@@ -51,9 +52,12 @@ public class ComponentDeleteRequestRow {
                 ComponentUsageEntity.TYPE_DIRECTORY);
 
         @Override
-        public int compare(List<ComponentDeleteRequestRow> i1, List<ComponentDeleteRequestRow> i2) {
-            Integer type1 = DELETION_ORDER.indexOf(i1.get(0).getType());
-            Integer type2 = DELETION_ORDER.indexOf(i2.get(0).getType());
+        public int compare(List<ComponentDeleteRequestRow> l1, List<ComponentDeleteRequestRow> l2) {
+            if (CollectionUtils.isEmpty(l1) || CollectionUtils.isEmpty(l2)) {
+                throw new EntRuntimeException("Components groups haven't to be empty or null");
+            }
+            Integer type1 = DELETION_ORDER.indexOf(l1.get(0).getType());
+            Integer type2 = DELETION_ORDER.indexOf(l2.get(0).getType());
             return type1.compareTo(type2);
         }
     }

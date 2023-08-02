@@ -114,14 +114,17 @@ class ComponentServiceTest {
     }
     
     @Test
-    void deleteNonExistingComponentWithPartialSuccess() throws EntException {
+    void deleteWrongComponentWithPartialSuccess() throws EntException {
         // --GIVEN
         List<ComponentDeleteRequestRow> request = List.of(
                 ComponentDeleteRequestRow.builder().type("type").code("service").build(),
-                ComponentDeleteRequestRow.builder().type("otherType").code("internalReference").build());
+                ComponentDeleteRequestRow.builder().type("type").code("wrong_component").build());
         Mockito.when(mockService.getObjectType()).thenReturn("type");
-
-        Mockito.when(mockService.getComponentDto(Mockito.anyString())).thenReturn(Optional.empty());
+        Mockito.when(mockService.getComponentDto(Mockito.anyString())).thenReturn(Optional.of(Mockito.mock(IComponentDto.class)));
+        PagedMetadata<ComponentUsageEntity> pm = new PagedMetadata<>(new RestListRequest(), 0);
+        pm.setBody(List.of());
+        Mockito.when(mockService.getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class))).thenReturn(pm);
+        Mockito.lenient().doThrow(new EntRuntimeException("error")).when(mockService).deleteComponent("wrong_component");
         // --WHEN
         ComponentDeleteResponse response = this.componentService.deleteInternalComponents(request);
         // --THEN
@@ -129,7 +132,7 @@ class ComponentServiceTest {
         Assertions.assertEquals(2, response.getComponents().size());
         Assertions.assertEquals(STATUS_SUCCESS, response.getComponents().get(0).getStatus());
         Assertions.assertEquals(STATUS_FAILURE, response.getComponents().get(1).getStatus());
-        Mockito.verify(mockService, Mockito.times(0)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
+        Mockito.verify(mockService, Mockito.times(2)).getComponentUsageDetails(Mockito.anyString(), Mockito.any(RestListRequest.class));
     }
     @Test
     void deleteExistingAndNonExistingComponents() throws EntException {

@@ -893,27 +893,6 @@ public class PageService implements IComponentExistsService, IPageService,
         return TYPE_PAGE;
     }
 
-    /*
-    private PagedMetadata<PageDto> getPagedResult(PageSearchRequest request, List<PageDto> pages) {
-        BeanComparator comparator = new BeanComparator(request.getSort());
-        if (request.getDirection().equals(FieldSearchFilter.DESC_ORDER)) {
-            Collections.sort(pages, comparator.reversed());
-        } else {
-            Collections.sort(pages, comparator);
-        }
-        PageSearchDto result = new PageSearchDto(request, pages);
-        result.imposeLimits();
-        return result;
-    }
-    
-    private PagedMetadata<PageDto> getPagedResult(RestListRequest request, List<PageDto> pages) {
-        PageSearchRequest pageSearchReq = new PageSearchRequest();
-        BeanUtils.copyProperties(request, pageSearchReq);
-
-        return getPagedResult(pageSearchReq, pages);
-    }
-    */
-
     protected Map<String, Boolean> getReferencesInfo(IPage page) {
         Map<String, Boolean> references = new HashMap<>();
         try {
