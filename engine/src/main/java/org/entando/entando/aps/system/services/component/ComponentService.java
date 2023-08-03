@@ -103,7 +103,13 @@ public class ComponentService implements IComponentService {
             services.stream()
                     .filter(s -> type.equalsIgnoreCase(s.getObjectType())).findFirst()
                     .ifPresent(service -> {
+                        log.error("component group elements to delete before sort {}",
+                                componentGroup.stream().map(ComponentDeleteRequestRow::toString)
+                                        .collect(Collectors.joining()));
                         service.sortComponentDeleteRequestRowGroup(componentGroup);
+                        log.error("component group elements to delete after sort {}",
+                                componentGroup.stream().map(ComponentDeleteRequestRow::toString)
+                                        .collect(Collectors.joining()));
                         componentGroup.stream().forEach(cdrr -> {
                             String code = cdrr.getCode();
                             ComponentDeleteResponseRow responseRow = null;
