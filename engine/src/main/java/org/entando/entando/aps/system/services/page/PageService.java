@@ -382,8 +382,8 @@ public class PageService implements IComponentExistsService, IPageService,
                 for (String childCode : childCodes) {
                     IPage publicChild = this.getPageManager().getOnlinePage(childCode);
                     if (null != publicChild) {
-                        logger.debug(String.format("Error in delete page with pageCode: '%s' and status: '%s'. "
-                                + "ChildCode: '%s' is online", pageCode, status, childCode));
+                        logger.debug("Error in delete page with pageCode: '{}' and status: '{}'. "
+                                + "ChildCode: '{}' is online", pageCode, status, childCode);
                         bindingResult.reject(PageValidator.ERRCODE_PAGE_WITH_PUBLIC_CHILD,
                                 new String[]{pageCode}, "page.status.publicChild");
                         throw new ValidationGenericException(bindingResult);
