@@ -13,9 +13,10 @@
  */
 package org.entando.entando.aps.system.services.page;
 
-import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
+import com.agiletec.aps.system.common.tree.ITreeNode;
+import com.agiletec.aps.system.common.tree.ITreeNodeManager;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.GroupUtilizer;
 import com.agiletec.aps.system.services.group.IGroupManager;
@@ -46,19 +47,18 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.component.IComponentExistsService;
 import org.entando.entando.aps.system.services.IDtoBuilder;
+import org.entando.entando.aps.system.services.component.ComponentDeleteRequestRow;
 import org.entando.entando.aps.system.services.group.GroupServiceUtilizer;
 import org.entando.entando.aps.system.services.jsonpatch.JsonPatchService;
 import org.entando.entando.aps.system.services.page.model.PageConfigurationDto;
 import org.entando.entando.aps.system.services.page.model.PageDto;
 import org.entando.entando.aps.system.services.page.model.PageDtoBuilder;
-import org.entando.entando.aps.system.services.page.model.PageSearchDto;
 import org.entando.entando.aps.system.services.page.model.PagesStatusDto;
 import org.entando.entando.aps.system.services.page.model.WidgetConfigurationDto;
 import org.entando.entando.aps.system.services.pagemodel.PageModelServiceUtilizer;
@@ -84,7 +84,6 @@ import org.entando.entando.web.page.model.PageRequest;
 import org.entando.entando.web.page.model.PageSearchRequest;
 import org.entando.entando.web.page.model.WidgetConfigurationRequest;
 import org.entando.entando.web.page.validator.PageValidator;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -251,6 +250,13 @@ public class PageService implements IComponentExistsService, IPageService,
             logger.error("Error encoding token page", e);
             throw new RestServerError("error encoding token page", e);
         }
+    }
+
+    @Override
+    public void sortComponentDeleteRequestRowGroup(List<ComponentDeleteRequestRow> group) {
+        BiFunction<String, ITreeNodeManager, ITreeNode> treeNodeAccessor = 
+                (pageCode, treeNodeManager) -> ((IPageManager) treeNodeManager).getDraftPage(pageCode);
+        Collections.sort(group, new ComponentDeleteRequestRow.TreeNodeComponentDeleteRequestRowComparator(this.getObjectType(), this.pageManager, treeNodeAccessor));
     }
 
     @Override
@@ -886,26 +892,6 @@ public class PageService implements IComponentExistsService, IPageService,
     public String getObjectType() {
         return TYPE_PAGE;
     }
-
-    private PagedMetadata<PageDto> getPagedResult(PageSearchRequest request, List<PageDto> pages) {
-        BeanComparator comparator = new BeanComparator(request.getSort());
-        if (request.getDirection().equals(FieldSearchFilter.DESC_ORDER)) {
-            Collections.sort(pages, comparator.reversed());
-        } else {
-            Collections.sort(pages, comparator);
-        }
-        PageSearchDto result = new PageSearchDto(request, pages);
-        result.imposeLimits();
-        return result;
-    }
-
-    private PagedMetadata<PageDto> getPagedResult(RestListRequest request, List<PageDto> pages) {
-        PageSearchRequest pageSearchReq = new PageSearchRequest();
-        BeanUtils.copyProperties(request, pageSearchReq);
-
-        return getPagedResult(pageSearchReq, pages);
-    }
-
 
     protected Map<String, Boolean> getReferencesInfo(IPage page) {
         Map<String, Boolean> references = new HashMap<>();

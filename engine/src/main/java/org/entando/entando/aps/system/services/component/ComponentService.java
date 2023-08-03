@@ -92,52 +92,43 @@ public class ComponentService implements IComponentService {
         List<ComponentDeleteRequestRow> sortedComponents = new ArrayList<>(components);
         ComponentDeleteResponse response = new ComponentDeleteResponse();
         log.debug("request deletion of components '{}'", sortedComponents);
-        Collections.sort(sortedComponents, new ComponentDeleteRequestRow.ComponentDeleteRequestRowComparator());
         ComponentDeletionStep componentDeletionStep = new ComponentDeletionStep(false);
         response.setStatus(ComponentDeleteResponse.STATUS_SUCCESS);
-        sortedComponents.forEach(componentDeleteRequestRow -> {
-            String type = componentDeleteRequestRow.getType();
-            String code = componentDeleteRequestRow.getCode();
-            log.debug("Type '{}', Object code '{}'", type, code);
+        List<List<ComponentDeleteRequestRow>> componentGroups = new ArrayList<>(components.stream()
+                .collect(Collectors.groupingBy(ComponentDeleteRequestRow::getType)).values());
+        Collections.sort(componentGroups, new ComponentDeleteRequestRow.ComponentDeleteRequestRowGroupComparator());
+        componentGroups.stream().forEach(componentGroup -> {
+            String type = componentGroup.get(0).getType();
+            log.debug("Type '{}', groups '{}'", type, componentGroup);
             services.stream()
                     .filter(s -> type.equalsIgnoreCase(s.getObjectType())).findFirst()
-                    .ifPresentOrElse(service -> {
-                        ComponentDeleteResponseRow responseRow = null;
-                        try {
-                            responseRow = service.getComponentDto(code)
-                                    .map(d -> deleteComponentAndBuildResponse(d, sortedComponents, code, type, service))
-                                    .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
-                                    .status(ComponentDeleteResponse.STATUS_SUCCESS).build());
-                        } catch (Exception e) {
-                            log.warn("Generic error when deleting element with code: '{}', type: '{}'",
-                                    code, type, e);
-                            responseRow = ComponentDeleteResponseRow.builder().code(code).type(type)
-                                    .status(ComponentDeleteResponse.STATUS_FAILURE).build();
-
-                        }
-                        if (responseRow.getStatus().equals(ComponentDeleteResponse.STATUS_SUCCESS)) {
-                            componentDeletionStep.setSuccessful(true);
-                        }
-                        response.setStatus(
-                                computeOverallStatus(componentDeletionStep.isSuccessful(),
-                                        responseRow.getStatus(),
-                                        response.getStatus()));
-                        response.getComponents().add(responseRow);
-                        log.debug("Added the following entry to components deletion result list '{}'", responseRow);
-                    },
-                            () -> {
-                                log.warn("No service found for type '{}'. Default to error state for code '{}'",
-                                        type, code);
-                                ComponentDeleteResponseRow responseRow = ComponentDeleteResponseRow.builder()
-                                        .code(code)
-                                        .type(type)
-                                        .status(ComponentDeleteResponse.STATUS_FAILURE)
-                                        .build();
-                                response.setStatus(computeOverallStatus(componentDeletionStep.isSuccessful(),
-                                        responseRow.getStatus(),
-                                        response.getStatus()));
-                                response.getComponents().add(responseRow);
-                            });
+                    .ifPresent(service -> {
+                        service.sortComponentDeleteRequestRowGroup(componentGroup);
+                        componentGroup.stream().forEach(cdrr -> {
+                            String code = cdrr.getCode();
+                            ComponentDeleteResponseRow responseRow = null;
+                            try {
+                                responseRow = service.getComponentDto(code)
+                                        .map(d -> deleteComponentAndBuildResponse(d, sortedComponents, code, type, service))
+                                        .orElseGet(() -> ComponentDeleteResponseRow.builder().code(code).type(type)
+                                        .status(ComponentDeleteResponse.STATUS_SUCCESS).build());
+                            } catch (Exception e) {
+                                log.warn("Generic error when deleting element with code: '{}', type: '{}'",
+                                        code, type, e);
+                                responseRow = ComponentDeleteResponseRow.builder().code(code).type(type)
+                                        .status(ComponentDeleteResponse.STATUS_FAILURE).build();
+                            }
+                            if (responseRow.getStatus().equals(ComponentDeleteResponse.STATUS_SUCCESS)) {
+                                componentDeletionStep.setSuccessful(true);
+                            }
+                            response.setStatus(
+                                    computeOverallStatus(componentDeletionStep.isSuccessful(),
+                                            responseRow.getStatus(),
+                                            response.getStatus()));
+                            response.getComponents().add(responseRow);
+                            log.debug("Added the following entry to components deletion result list '{}'", responseRow);
+                        });
+                    });
         });
         return response;
     }
@@ -155,7 +146,6 @@ public class ComponentService implements IComponentService {
         if (ComponentDeleteResponse.STATUS_SUCCESS.equals(currentStatus)
                 && ComponentDeleteResponse.STATUS_SUCCESS.equals(globalStatus)) {
             return ComponentDeleteResponse.STATUS_SUCCESS;
-
         } else if (ComponentDeleteResponse.STATUS_FAILURE.equals(currentStatus) && !atLeastOneSuccess) {
             return ComponentDeleteResponse.STATUS_FAILURE;
         }
@@ -198,5 +188,5 @@ public class ComponentService implements IComponentService {
     static class ComponentDeletionStep {
         private boolean successful;
     }
-
+    
 }

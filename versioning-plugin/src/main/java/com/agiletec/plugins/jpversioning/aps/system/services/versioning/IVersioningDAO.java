@@ -34,6 +34,8 @@ public interface IVersioningDAO {
 	public List<Long> getLastVersions(String contentType, String descr);
 
 	public ContentVersion getVersion(long id);
+    
+    public ContentVersion getVersion(String contentId, String version);
 	
 	public ContentVersion getLastVersion(String contentId);
 	

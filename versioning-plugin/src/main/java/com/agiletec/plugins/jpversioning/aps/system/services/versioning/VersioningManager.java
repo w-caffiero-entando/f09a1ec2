@@ -21,16 +21,13 @@
  */
 package com.agiletec.plugins.jpversioning.aps.system.services.versioning;
 
-import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.io.StringReader;
 import java.util.List;
 
-import java.util.Optional;
 import javax.xml.parsers.SAXParser;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.system.services.tenants.RefreshableBeanTenantAware;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -192,7 +189,11 @@ public class VersioningManager extends AbstractService implements IVersioningMan
                         int onlineVersionsToDelete = versionRecord.getOnlineVersion() - 1;
                         this.deleteWorkVersions(versionRecord.getContentId(), onlineVersionsToDelete);
                     }
-                    this.getVersioningDAO().addContentVersion(versionRecord);
+                    if (null == this.getVersioningDAO().getVersion(contentId, versionRecord.getVersion())) {
+                        this.getVersioningDAO().addContentVersion(versionRecord);
+                    } else {
+                        logger.warn("ContentId '{}' -  version '{}' already exists", contentId, versionRecord.getVersion());
+                    }
                 }
             }
         } catch (Exception e) {

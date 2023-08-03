@@ -13,6 +13,7 @@
  */
 package org.entando.entando.aps.system.services.component;
 
+import java.util.List;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.web.common.model.RestListRequest;
 
@@ -25,5 +26,9 @@ public interface IComponentUsageService extends IComponentExistsService {
     void deleteComponent(String componentCode);
 
     PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest);
+    
+    default void sortComponentDeleteRequestRowGroup(List<ComponentDeleteRequestRow> group) {
+        // nothing to do
+    }
     
 }
