@@ -472,55 +472,42 @@ class PageServiceTest {
     
     @Test
     void shouldSortComponentDeleteRequestRow() {
+        IPage root = Mockito.mock(IPage.class);
         IPage parent = Mockito.mock(IPage.class);
         IPage child1 = Mockito.mock(IPage.class);
         IPage child2 = Mockito.mock(IPage.class);
         IPage childOfChild1 = Mockito.mock(IPage.class);
+        IPage child3 = Mockito.mock(IPage.class);
         IPage parent2 = Mockito.mock(IPage.class);
         IPage childParent2 = Mockito.mock(IPage.class);
-        when(this.pageManager.getDraftPage("parent")).thenReturn(parent);
-        when(this.pageManager.getDraftPage("child1")).thenReturn(child1);
-        when(this.pageManager.getDraftPage("child2")).thenReturn(child2);
-        when(this.pageManager.getDraftPage("childOfChild1")).thenReturn(childOfChild1);
-        when(this.pageManager.getDraftPage("parent2")).thenReturn(parent2);
-        when(this.pageManager.getDraftPage("childParent2")).thenReturn(childParent2);
-        when(this.pageManager.getDraftPage("wrong_code")).thenReturn(null);
         
-        Mockito.lenient().when(parent.isChildOf("child1", pageManager)).thenReturn(false);
-        Mockito.lenient().when(parent.isChildOf("child2", pageManager)).thenReturn(false);
-        Mockito.lenient().when(parent.isChildOf("childOfChild1", pageManager)).thenReturn(false);
-        Mockito.lenient().when(parent.isChildOf("parent2", pageManager)).thenReturn(false);
-        Mockito.lenient().when(parent.isChildOf("childParent2", pageManager)).thenReturn(false);
-
-        Mockito.lenient().when(child1.isChildOf("parent", pageManager)).thenReturn(true);
-        Mockito.lenient().when(child1.isChildOf("child2", pageManager)).thenReturn(false);
-        Mockito.lenient().when(child1.isChildOf("childOfChild1", pageManager)).thenReturn(false);
-        Mockito.lenient().when(child1.isChildOf("parent2", pageManager)).thenReturn(false);
-        Mockito.lenient().when(child1.isChildOf("childParent2", pageManager)).thenReturn(false);
-
-        Mockito.lenient().when(child2.isChildOf("parent", pageManager)).thenReturn(true);
-        Mockito.lenient().when(child2.isChildOf("child1", pageManager)).thenReturn(false);
-        Mockito.lenient().when(child2.isChildOf("childOfChild1", pageManager)).thenReturn(false);
-        Mockito.lenient().when(child2.isChildOf("parent2", pageManager)).thenReturn(false);
-        Mockito.lenient().when(child2.isChildOf("childParent2", pageManager)).thenReturn(false);
-
-        Mockito.lenient().when(childOfChild1.isChildOf("parent", pageManager)).thenReturn(true);
-        Mockito.lenient().when(childOfChild1.isChildOf("child1", pageManager)).thenReturn(true);
-        Mockito.lenient().when(childOfChild1.isChildOf("child2", pageManager)).thenReturn(false);
-        Mockito.lenient().when(childOfChild1.isChildOf("parent2", pageManager)).thenReturn(false);
-        Mockito.lenient().when(childOfChild1.isChildOf("childParent2", pageManager)).thenReturn(false);
-
-        Mockito.lenient().when(parent2.isChildOf("parent", pageManager)).thenReturn(false);
-        Mockito.lenient().when(parent2.isChildOf("child1", pageManager)).thenReturn(false);
-        Mockito.lenient().when(parent2.isChildOf("child2", pageManager)).thenReturn(false);
-        Mockito.lenient().when(parent2.isChildOf("childOfChild1", pageManager)).thenReturn(false);
-        Mockito.lenient().when(parent2.isChildOf("childParent2", pageManager)).thenReturn(false);
-
-        Mockito.lenient().when(childParent2.isChildOf("parent", pageManager)).thenReturn(false);
-        Mockito.lenient().when(childParent2.isChildOf("child1", pageManager)).thenReturn(false);
-        Mockito.lenient().when(childParent2.isChildOf("child2", pageManager)).thenReturn(false);
-        Mockito.lenient().when(childParent2.isChildOf("childOfChild1", pageManager)).thenReturn(false);
-        Mockito.lenient().when(childParent2.isChildOf("parent2", pageManager)).thenReturn(true);
+        Mockito.lenient().when(this.pageManager.getDraftRoot()).thenReturn(root);
+        Mockito.lenient().when(this.pageManager.getDraftPage("root")).thenReturn(root);
+        Mockito.lenient().when(this.pageManager.getDraftPage("parent")).thenReturn(parent);
+        Mockito.lenient().when(this.pageManager.getDraftPage("child1")).thenReturn(child1);
+        Mockito.lenient().when(this.pageManager.getDraftPage("child2")).thenReturn(child2);
+        Mockito.lenient().when(this.pageManager.getDraftPage("child3")).thenReturn(child3);
+        Mockito.lenient().when(this.pageManager.getDraftPage("childOfChild1")).thenReturn(childOfChild1);
+        Mockito.lenient().when(this.pageManager.getDraftPage("parent2")).thenReturn(parent2);
+        Mockito.lenient().when(this.pageManager.getDraftPage("childParent2")).thenReturn(childParent2);
+        
+        Mockito.lenient().when(root.getCode()).thenReturn("root");
+        Mockito.lenient().when(parent.getCode()).thenReturn("parent");
+        Mockito.lenient().when(child1.getCode()).thenReturn("child1");
+        Mockito.lenient().when(child2.getCode()).thenReturn("child2");
+        Mockito.lenient().when(child3.getCode()).thenReturn("child3");
+        Mockito.lenient().when(childOfChild1.getCode()).thenReturn("childOfChild1");
+        Mockito.lenient().when(parent2.getCode()).thenReturn("parent2");
+        Mockito.lenient().when(childParent2.getCode()).thenReturn("childParent2");
+        
+        Mockito.lenient().when(root.getChildrenCodes()).thenReturn(new String[]{"parent","parent2"});
+        Mockito.lenient().when(parent.getChildrenCodes()).thenReturn(new String[]{"child1", "child2", "child3"});
+        Mockito.lenient().when(child1.getChildrenCodes()).thenReturn(new String[]{"childOfChild1"});
+        Mockito.lenient().when(child2.getChildrenCodes()).thenReturn(new String[0]);
+        Mockito.lenient().when(child3.getChildrenCodes()).thenReturn(new String[0]);
+        Mockito.lenient().when(childOfChild1.getChildrenCodes()).thenReturn(new String[0]);
+        Mockito.lenient().when(parent2.getChildrenCodes()).thenReturn(new String[]{"childParent2"});
+        Mockito.lenient().when(childParent2.getChildrenCodes()).thenReturn(new String[0]);
         
         List<ComponentDeleteRequestRow> group = new ArrayList(List.of(
                 ComponentDeleteRequestRow.builder().code("parent2").type("page").build(),

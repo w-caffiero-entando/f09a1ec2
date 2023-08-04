@@ -15,8 +15,6 @@ package org.entando.entando.aps.system.services.page;
 
 import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
-import com.agiletec.aps.system.common.tree.ITreeNode;
-import com.agiletec.aps.system.common.tree.ITreeNodeManager;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.group.GroupUtilizer;
 import com.agiletec.aps.system.services.group.IGroupManager;
@@ -254,9 +252,10 @@ public class PageService implements IComponentExistsService, IPageService,
 
     @Override
     public void sortComponentDeleteRequestRowGroup(List<ComponentDeleteRequestRow> group) {
-        BiFunction<String, ITreeNodeManager, ITreeNode> treeNodeAccessor = 
-                (pageCode, treeNodeManager) -> ((IPageManager) treeNodeManager).getDraftPage(pageCode);
-        Collections.sort(group, new ComponentDeleteRequestRow.TreeNodeComponentDeleteRequestRowComparator(this.getObjectType(), this.pageManager, treeNodeAccessor));
+        PageTreeNodeHelper helper = new PageTreeNodeHelper(this.getPageManager(), this.pageAuthorizationService, null);
+        List<IPage> pages = helper.getAllNodes();
+        List<String> orderedPageCodes = pages.stream().map(p -> p.getCode()).collect(Collectors.toList());
+        Collections.sort(group, new ComponentDeleteRequestRow.TreeNodeComponentDeleteRequestRowComparator(this.getObjectType(), orderedPageCodes));
     }
 
     @Override

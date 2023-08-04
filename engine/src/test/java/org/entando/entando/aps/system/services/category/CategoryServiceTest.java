@@ -66,6 +66,7 @@ class CategoryServiceTest {
     @BeforeEach
     void init() {
         categoryService = new CategoryService(categoryManager, categoryValidator, null, null);
+        this.buildMockTree();
     }
     
     @Test
@@ -143,31 +144,6 @@ class CategoryServiceTest {
     
     @Test
     void shouldSortComponentDeleteRequestRow() {
-        Category parent = Mockito.mock(Category.class);
-        Category child1 = Mockito.mock(Category.class);
-        Category child2 = Mockito.mock(Category.class);
-        Category childOfChild1 = Mockito.mock(Category.class);
-        when(this.categoryManager.getCategory("parent")).thenReturn(parent);
-        when(this.categoryManager.getCategory("child1")).thenReturn(child1);
-        when(this.categoryManager.getCategory("child2")).thenReturn(child2);
-        when(this.categoryManager.getCategory("childOfChild1")).thenReturn(childOfChild1);
-        
-        Mockito.lenient().when(parent.isChildOf("child1", categoryManager)).thenReturn(false);
-        Mockito.lenient().when(parent.isChildOf("child2", categoryManager)).thenReturn(false);
-        Mockito.lenient().when(parent.isChildOf("childOfChild1", categoryManager)).thenReturn(false);
-
-        Mockito.lenient().when(child1.isChildOf("parent", categoryManager)).thenReturn(true);
-        Mockito.lenient().when(child1.isChildOf("child2", categoryManager)).thenReturn(false);
-        Mockito.lenient().when(child1.isChildOf("childOfChild1", categoryManager)).thenReturn(false);
-
-        Mockito.lenient().when(child2.isChildOf("parent", categoryManager)).thenReturn(true);
-        Mockito.lenient().when(child2.isChildOf("child1", categoryManager)).thenReturn(false);
-        Mockito.lenient().when(child2.isChildOf("childOfChild1", categoryManager)).thenReturn(false);
-
-        Mockito.lenient().when(childOfChild1.isChildOf("parent", categoryManager)).thenReturn(true);
-        Mockito.lenient().when(childOfChild1.isChildOf("child1", categoryManager)).thenReturn(true);
-        Mockito.lenient().when(childOfChild1.isChildOf("child2", categoryManager)).thenReturn(false);
-        
         List<ComponentDeleteRequestRow> group = new ArrayList<>(List.of(
                 ComponentDeleteRequestRow.builder().code("child1").type("category").build(),
                 ComponentDeleteRequestRow.builder().code("parent").type("category").build(),
@@ -196,6 +172,37 @@ class CategoryServiceTest {
         Assertions.assertThrows(EntRuntimeException.class, () -> {
             this.categoryService.sortComponentDeleteRequestRowGroup(group);
         });
+    }
+    
+    private void buildMockTree() {
+        Category root = Mockito.mock(Category.class);
+        Category parent = Mockito.mock(Category.class);
+        Category child1 = Mockito.mock(Category.class);
+        Category child2 = Mockito.mock(Category.class);
+        Category child3 = Mockito.mock(Category.class);
+        Category childOfChild1 = Mockito.mock(Category.class);
+        
+        Mockito.lenient().when(this.categoryManager.getRoot()).thenReturn(root);
+        Mockito.lenient().when(this.categoryManager.getCategory("root")).thenReturn(root);
+        Mockito.lenient().when(this.categoryManager.getCategory("parent")).thenReturn(parent);
+        Mockito.lenient().when(this.categoryManager.getCategory("child1")).thenReturn(child1);
+        Mockito.lenient().when(this.categoryManager.getCategory("child2")).thenReturn(child2);
+        Mockito.lenient().when(this.categoryManager.getCategory("child3")).thenReturn(child3);
+        Mockito.lenient().when(this.categoryManager.getCategory("childOfChild1")).thenReturn(childOfChild1);
+        
+        Mockito.lenient().when(root.getCode()).thenReturn("root");
+        Mockito.lenient().when(parent.getCode()).thenReturn("parent");
+        Mockito.lenient().when(child1.getCode()).thenReturn("child1");
+        Mockito.lenient().when(child2.getCode()).thenReturn("child2");
+        Mockito.lenient().when(child3.getCode()).thenReturn("child3");
+        Mockito.lenient().when(childOfChild1.getCode()).thenReturn("childOfChild1");
+        
+        Mockito.lenient().when(root.getChildrenCodes()).thenReturn(new String[]{"parent"});
+        Mockito.lenient().when(parent.getChildrenCodes()).thenReturn(new String[]{"child1", "child2", "child3"});
+        Mockito.lenient().when(child1.getChildrenCodes()).thenReturn(new String[]{"childOfChild1"});
+        Mockito.lenient().when(child2.getChildrenCodes()).thenReturn(new String[0]);
+        Mockito.lenient().when(child3.getChildrenCodes()).thenReturn(new String[0]);
+        Mockito.lenient().when(childOfChild1.getChildrenCodes()).thenReturn(new String[0]);
     }
     
 }

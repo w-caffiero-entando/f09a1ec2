@@ -13,11 +13,8 @@
  */
 package org.entando.entando.aps.system.services.component;
 
-import com.agiletec.aps.system.common.tree.ITreeNode;
-import com.agiletec.aps.system.common.tree.ITreeNodeManager;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiFunction;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -65,13 +62,11 @@ public class ComponentDeleteRequestRow {
     public static class TreeNodeComponentDeleteRequestRowComparator implements Comparator<ComponentDeleteRequestRow> {
         
         private final String type;
-        private final ITreeNodeManager treeNodeManager;
-        private final BiFunction<String, ITreeNodeManager, ITreeNode> treeNodeAccessor;
+        private final List<String> orderedCodes;
         
-        public TreeNodeComponentDeleteRequestRowComparator(String type, ITreeNodeManager treeNodeManager, BiFunction<String, ITreeNodeManager, ITreeNode> treeNodeAccessor) {
+        public TreeNodeComponentDeleteRequestRowComparator(String type, List<String> orderedCodes) {
             this.type = type;
-            this.treeNodeManager = treeNodeManager;
-            this.treeNodeAccessor = treeNodeAccessor;
+            this.orderedCodes = orderedCodes;
         }
         
         @Override
@@ -80,14 +75,9 @@ public class ComponentDeleteRequestRow {
                 String message = String.format("Comparison of wrong types : Type 1 '%s' - Type 2 '%s'", r1.getType(), r2.getType());
                 throw new EntRuntimeException(message);
             }
-            ITreeNode node1 = this.treeNodeAccessor.apply(r1.getCode(), this.treeNodeManager);
-            ITreeNode node2 = this.treeNodeAccessor.apply(r2.getCode(), this.treeNodeManager);
-            if (null == node1 || null == node2) {
-                return 0;
-            } else if (node2.isChildOf(r1.getCode(), this.treeNodeManager)) {
-                return 1;
-            }
-            return -1;
+            Integer code1 = orderedCodes.indexOf(r1.getCode());
+            Integer code2 = orderedCodes.indexOf(r2.getCode());
+            return code2.compareTo(code1); // reversed order
         }
         
     }
