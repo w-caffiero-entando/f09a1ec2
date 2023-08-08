@@ -15,8 +15,6 @@ package org.entando.entando.aps.system.services.category;
 
 import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
-import com.agiletec.aps.system.common.tree.ITreeNode;
-import com.agiletec.aps.system.common.tree.ITreeNodeManager;
 import com.agiletec.aps.system.services.category.Category;
 import com.agiletec.aps.system.services.category.CategoryUtilizer;
 import com.agiletec.aps.system.services.category.ICategoryManager;
@@ -25,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
@@ -187,9 +184,10 @@ public class CategoryService implements ICategoryService, CategoryServiceUtilize
 
     @Override
     public void sortComponentDeleteRequestRowGroup(List<ComponentDeleteRequestRow> group) {
-        BiFunction<String, ITreeNodeManager, ITreeNode> treeNodeAccessor = 
-                (categoryCode, treeNodeManager) -> ((ICategoryManager) treeNodeManager).getCategory(categoryCode);
-        Collections.sort(group, new ComponentDeleteRequestRow.TreeNodeComponentDeleteRequestRowComparator(this.getObjectType(), this.categoryManager, treeNodeAccessor));
+        CategoryTreeNodeHelper helper = new CategoryTreeNodeHelper(this.getCategoryManager());
+        List<Category> categories = helper.getAllNodes();
+        List<String> orderedCategoryCodes = categories.stream().map(p -> p.getCode()).collect(Collectors.toList());
+        Collections.sort(group, new ComponentDeleteRequestRow.TreeNodeComponentDeleteRequestRowComparator(this.getObjectType(), orderedCategoryCodes));
     }
 
     @Override
