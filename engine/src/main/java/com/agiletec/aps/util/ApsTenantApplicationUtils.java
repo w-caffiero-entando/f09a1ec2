@@ -13,9 +13,12 @@
  */
 package com.agiletec.aps.util;
 
+import static org.entando.entando.aps.system.services.tenants.ITenantManager.PRIMARY_CODE;
+
 import com.agiletec.aps.system.EntThreadLocal;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
 import org.entando.entando.aps.util.UrlUtils;
 import org.slf4j.Logger;
@@ -28,9 +31,29 @@ public final class ApsTenantApplicationUtils {
 	private ApsTenantApplicationUtils(){}
 
 	public static Optional<String> extractCurrentTenantCode(HttpServletRequest request) {
-		String domain = getDomainFromRequest(request);
-		ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, request);
-		return Optional.ofNullable(tenantManager.getTenantCodeByDomain(domain));
+		String tenantCode = fetchTenantCodeFromEntandoHeader(request);
+		if(StringUtils.isNotBlank(tenantCode)) {
+			if(StringUtils.equalsIgnoreCase(tenantCode, PRIMARY_CODE)) {
+				logger.debug("the tenantCode:'{}' contains primary code, return empty", tenantCode);
+				return Optional.empty();
+			} else {
+				logger.debug("the tenantCode:'{}' contains a NOT primary code, return it", tenantCode);
+				return Optional.of(tenantCode);
+			}
+		} else {
+			logger.debug("the custom header:'{}' is empty or blank, skip it", UrlUtils.ENTANDO_TENANT_CODE_CUSTOM_HEADER);
+			String domain = getDomainFromRequest(request);
+			ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, request);
+			String tenantCodeFromDomain = tenantManager.getTenantCodeByDomain(domain);
+			logger.debug("the tenantCodeFromDomain is:'{}', return it", tenantCodeFromDomain);
+			return Optional.ofNullable(tenantCodeFromDomain);
+		}
+	}
+
+	private static String fetchTenantCodeFromEntandoHeader(HttpServletRequest request) {
+		String tenantCode = UrlUtils.fetchTenantCode(request);
+		logger.debug("Retrieved from custom header:'{}' the tenantCode:'{}'", UrlUtils.ENTANDO_TENANT_CODE_CUSTOM_HEADER, tenantCode);
+		return tenantCode;
 	}
 
 	private static String getDomainFromRequest(HttpServletRequest request){

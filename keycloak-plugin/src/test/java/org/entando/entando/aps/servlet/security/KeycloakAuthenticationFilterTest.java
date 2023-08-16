@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.entando.entando.aps.system.services.tenants.ITenantManager;
+import org.entando.entando.aps.util.UrlUtils;
 import org.entando.entando.assertionHelper.KeycloakAuthenticationFilterAssertionHelper;
 import org.entando.entando.keycloak.services.KeycloakAuthorizationManager;
 import org.entando.entando.keycloak.services.KeycloakConfiguration;
@@ -83,6 +84,7 @@ class KeycloakAuthenticationFilterTest {
     @BeforeEach
     public void setUp() {
         Mockito.lenient().when(request.getSession()).thenReturn(session);
+        Mockito.lenient().when(request.getHeader(UrlUtils.ENTANDO_TENANT_CODE_CUSTOM_HEADER)).thenReturn(null);
         Mockito.lenient().when(request.getHeader(HttpHeaders.X_FORWARDED_HOST)).thenReturn(null);
         Mockito.lenient().when(request.getHeader(HttpHeaders.HOST)).thenReturn("dev.entando.org");
         Mockito.lenient().when(request.getServerName()).thenReturn("dev.entando.org");
