@@ -155,13 +155,17 @@ public class GuiFragmentService implements IGuiFragmentService {
 
     @Override
     public void removeGuiFragment(String guiFragmentCode) {
+        this.removeGuiFragment(guiFragmentCode, false);
+    }
+
+    private void removeGuiFragment(String guiFragmentCode, boolean forceDelete) {
         try {
             GuiFragment fragment = this.getGuiFragmentManager().getGuiFragment(guiFragmentCode);
             if (null == fragment) {
                 return;
             }
             GuiFragmentDto dto = this.getDtoBuilder().convert(fragment);
-            BeanPropertyBindingResult validationResult = this.checkFragmentForDelete(fragment, dto);
+            BeanPropertyBindingResult validationResult = this.checkFragmentForDelete(fragment, dto, forceDelete);
             if (validationResult.hasErrors()) {
                 throw new ValidationGenericException(validationResult);
             }
@@ -189,9 +193,9 @@ public class GuiFragmentService implements IGuiFragmentService {
         return fragment;
     }
 
-    protected BeanPropertyBindingResult checkFragmentForDelete(GuiFragment fragment, GuiFragmentDto dto) {
+    protected BeanPropertyBindingResult checkFragmentForDelete(GuiFragment fragment, GuiFragmentDto dto, boolean forceDelete) {
         BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(fragment, TYPE_FRAGMENT);
-        if (null == fragment) {
+        if (forceDelete || null == fragment) {
             return bindingResult;
         }
         if (!dto.getFragments().isEmpty() || !dto.getPageModels().isEmpty()) {
@@ -219,31 +223,23 @@ public class GuiFragmentService implements IGuiFragmentService {
 
     @Override
     public PagedMetadata<ComponentUsageEntity> getComponentUsageDetails(String componentCode, RestListRequest restListRequest) {
-
         List<ComponentUsageEntity> componentUsageEntityList = new ArrayList<>();
-
         GuiFragmentDto fragmentDto = this.getGuiFragment(componentCode);
-
         if (null != fragmentDto.getWidgetType()) {
             componentUsageEntityList.add(new ComponentUsageEntity(ComponentUsageEntity.TYPE_WIDGET, fragmentDto.getWidgetTypeCode()));
         }
-
         if (null != fragmentDto.getFragments()) {
-
             List<ComponentUsageEntity> fragmentList = fragmentDto.getFragments().stream()
                     .map(fragmentRef -> new ComponentUsageEntity(ComponentUsageEntity.TYPE_FRAGMENT, fragmentRef.getCode()))
                     .collect(Collectors.toList());
             componentUsageEntityList.addAll(fragmentList);
         }
-
         if (null != fragmentDto.getPageModels()) {
-
             List<ComponentUsageEntity> pageModelList = fragmentDto.getPageModels().stream()
                     .map(pageModelRef -> new ComponentUsageEntity(ComponentUsageEntity.TYPE_PAGE_MODEL, pageModelRef.getCode()))
                     .collect(Collectors.toList());
             componentUsageEntityList.addAll(pageModelList);
         }
-
         return pagedMetadataMapper.getPagedResult(restListRequest, componentUsageEntityList);
     }
 
@@ -254,7 +250,7 @@ public class GuiFragmentService implements IGuiFragmentService {
 
     @Override
     public void deleteComponent(String componentCode) {
-        this.removeGuiFragment(componentCode);
+        this.removeGuiFragment(componentCode, true);
     }
     
 }
