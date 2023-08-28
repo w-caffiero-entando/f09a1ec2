@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ * Copyright 2023-Present Entando Inc. (http://www.entando.com) All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,7 +14,6 @@
 package org.entando.entando.aps.system.services.guifragment;
 
 import com.agiletec.aps.BaseTestCase;
-import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.system.services.pagemodel.Frame;
 import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
@@ -61,6 +60,21 @@ class GuiFragmentServiceIntegrationTest extends BaseTestCase {
             Assertions.assertNull(this.pageModelManager.getPageModel(templateCode));
         }
     }
+    
+    @Test
+    void testDeleteFragment() throws Exception {
+        String fragmentCode = "fragment_code_test";
+        try {
+            GuiFragment fragment = this.createMockFragment(fragmentCode, "lorem ipsum", null);
+            this.guiFragmentManager.addGuiFragment(fragment);
+            Assertions.assertNotNull(this.guiFragmentManager.getGuiFragment(fragmentCode));
+            this.guiFragmentService.removeGuiFragment(fragmentCode);
+            Assertions.assertNull(this.guiFragmentManager.getGuiFragment(fragmentCode));
+        } catch (Exception e) {
+            this.guiFragmentManager.deleteGuiFragment(fragmentCode);
+            throw e;
+        }
+    }
 
     protected GuiFragment createMockFragment(String code, String gui, String widgetTypeCode) {
         GuiFragment fragment = new GuiFragment();
@@ -69,6 +83,7 @@ class GuiFragmentServiceIntegrationTest extends BaseTestCase {
         fragment.setWidgetTypeCode(widgetTypeCode);
         return fragment;
     }
+    
     private PageModel createMockPageModel(String code, String gui) {
         PageModel model = new PageModel();
         model.setCode(code);
