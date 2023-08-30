@@ -336,4 +336,20 @@ class UrlUtilsTest {
     }
 
 
+    @Test
+    void shouldFetchSTenantCodeFromCustomHeader() throws Exception {
+        // case1
+        when(requestMock.getHeader("X-ENTANDO-TENANTCODE")).thenReturn("tenant2");
+        Assertions.assertEquals("tenant2", UrlUtils.fetchTenantCode(requestMock));
+
+        // case2
+        Mockito.reset(requestMock);
+        when(requestMock.getHeader("X-ENTANDO-TENANTCODE")).thenReturn("primary");
+        Assertions.assertEquals("primary", UrlUtils.fetchTenantCode(requestMock));
+
+        // case3
+        Mockito.reset(requestMock);
+        Assertions.assertNull(UrlUtils.fetchTenantCode(requestMock));
+
+    }
 }

@@ -33,6 +33,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Slf4j
 public final class UrlUtils {
 
+    public static final String ENTANDO_TENANT_CODE_CUSTOM_HEADER = "X-ENTANDO-TENANTCODE";
     public static final String ENTANDO_APP_USE_TLS = "ENTANDO_APP_USE_TLS";
     public static final String ENTANDO_APP_ENGINE_EXTERNAL_PORT = "ENTANDO_APP_ENGINE_EXTERNAL_PORT";
     public static final String HTTP_SCHEME = "http";
@@ -64,6 +65,10 @@ public final class UrlUtils {
     public static String fetchServer(HttpServletRequest request){
         return getHostFromXHeader(request)
                 .orElseGet(() -> getHostFromHeader(request).orElse(request.getServerName()));
+    }
+
+    public static String fetchTenantCode(HttpServletRequest request){
+        return request.getHeader(ENTANDO_TENANT_CODE_CUSTOM_HEADER);
     }
 
     private static Optional<String> getHostFromXHeader(HttpServletRequest request){
