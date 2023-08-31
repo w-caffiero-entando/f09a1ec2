@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.component.IComponentDto;
 import org.entando.entando.aps.system.services.assertionhelper.ComponentUsageEntityAssertionHelper;
 import org.entando.entando.aps.system.services.guifragment.model.GuiFragmentDto;
@@ -45,7 +46,6 @@ import org.entando.entando.web.common.assembler.PagedMetadataMapper;
 import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.PagedMetadata;
 import org.entando.entando.aps.system.services.component.ComponentUsageEntity;
-import org.entando.entando.aps.system.services.group.model.GroupDto;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.guifragment.model.GuiFragmentRequestBody;
 import org.entando.entando.web.page.model.PageSearchRequest;
@@ -109,6 +109,30 @@ class GuiFragmentServiceTest {
         });
     }
 
+    @Test
+    void shouldGenerateErrorOnDeleteFragment() throws Throwable {
+        String fragmentCode = "fragment_code";
+        GuiFragmentDto dto = new GuiFragmentDto();
+        dto.setCode(fragmentCode);
+        dto.setCode("<p>Code of fragment</p>");
+        when(this.dtoBuilder.convert(any(GuiFragment.class))).thenReturn(dto);
+        GuiFragment fragment = new GuiFragment();
+        fragment.setCode(fragmentCode);
+        when(guiFragmentManager.getGuiFragment(fragmentCode)).thenReturn(fragment);
+        Mockito.doThrow(EntException.class).when(guiFragmentManager).deleteGuiFragment(fragmentCode);
+        Assertions.assertThrows(RestServerError.class, () -> {
+            this.guiFragmentService.removeGuiFragment(fragmentCode);
+        });
+    }
+
+    @Test
+    void shouldNotInvokeManagerDeletingNullFragment() throws Throwable {
+        String fragmentCode = "fragment_null";
+        this.guiFragmentService.removeGuiFragment(fragmentCode);
+        Mockito.verifyNoInteractions(this.dtoBuilder);
+        verify(this.guiFragmentManager, times(0)).deleteGuiFragment(fragmentCode);
+    }
+    
     @Test
     void shouldCreateFragment() throws Exception {
         GuiFragment fragment = FragmentMockHelper.mockGuiFragment();
