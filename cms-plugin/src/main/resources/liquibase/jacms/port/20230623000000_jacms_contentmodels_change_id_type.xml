@@ -19,7 +19,7 @@
             ALTER TABLE contentmodels ALTER COLUMN new_modelid NOT NULL;
             ALTER TABLE contentmodels DROP COLUMN modelid;
             RENAME COLUMN contentmodels.new_modelid TO modelid;
-            ALTER TABLE contentmodels.modelid ADD PRIMARY KEY (modelid);
+            ALTER TABLE contentmodels ADD PRIMARY KEY (modelid);
         </sql>
     </changeSet>
 
