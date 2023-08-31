@@ -59,7 +59,9 @@ public class ContentDAO extends AbstractEntityDAO implements IContentDAO {
 	private final String DELETE_CONTENT = "DELETE FROM contents WHERE contentid = ? ";
 
 	private final String DELETE_CONTENT_REL_RECORD = "DELETE FROM contentrelations WHERE contentid = ? ";
-
+    
+	private static final String DELETE_LINKED_CONTENT_RECORD = "DELETE FROM contentrelations WHERE refcontent = ? ";
+    
 	private static final String DELETE_CONTENT_REL_RECORD_NULL_GROUP = "DELETE FROM contentrelations WHERE contentid = ? and refgroup is null";
 
 	private final String DELETE_WORK_CONTENT_REL_RECORD = "DELETE FROM workcontentrelations WHERE contentid = ? ";
@@ -501,6 +503,7 @@ public class ContentDAO extends AbstractEntityDAO implements IContentDAO {
 	protected void executeRemoveOnLineContent(Content content, boolean updateDate, Connection conn) {
 		super.deleteRecordsByEntityId(content.getId(), DELETE_CONTENT_SEARCH_RECORD, conn);
 		super.deleteRecordsByEntityId(content.getId(), DELETE_CONTENT_REL_RECORD_NULL_GROUP, conn);
+		super.deleteRecordsByEntityId(content.getId(), DELETE_LINKED_CONTENT_RECORD, conn);
 		super.deleteRecordsByEntityId(content.getId(), DELETE_ATTRIBUTE_ROLE_RECORD, conn);
 		PreparedStatement stat = null;
 		try {
@@ -542,6 +545,7 @@ public class ContentDAO extends AbstractEntityDAO implements IContentDAO {
 		super.deleteRecordsByEntityId(entityId, DELETE_CONTENT_SEARCH_RECORD, conn);
 		super.deleteRecordsByEntityId(entityId, DELETE_CONTENT_REL_RECORD, conn);
 		super.deleteRecordsByEntityId(entityId, DELETE_ATTRIBUTE_ROLE_RECORD, conn);
+		super.deleteRecordsByEntityId(entityId, DELETE_LINKED_CONTENT_RECORD, conn);
 		super.deleteRecordsByEntityId(entityId, DELETE_WORK_CONTENT_REL_RECORD, conn);
 		super.executeDeleteEntity(entityId, conn);
 	}
