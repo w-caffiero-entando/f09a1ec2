@@ -17,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.IManager;
 import com.agiletec.aps.system.common.entity.ApsEntityManager;
+import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
@@ -37,6 +39,8 @@ import org.junit.jupiter.api.Test;
 class ContentAdminActionIntegrationTest extends AbstractBaseTestContentAction {
 
     private IResourceManager resourceManager;
+
+    private ConfigInterface configManager;
 
     @Test
     void testOpenIndexProspect() throws Throwable {
@@ -167,11 +171,10 @@ class ContentAdminActionIntegrationTest extends AbstractBaseTestContentAction {
         this.executeValidateNewMetadata(IResourceManager.TITLE_METADATA_KEY);
     }
 
-    //This test is commented out because its not cleaning up after itself and breaking ContentSettingIntegrationTest
-    //when running both locally if this one is ran before.
-    //@Test
+    @Test
     void testAddValidAspectRatio() throws Throwable {
         Map<String, List<String>> defaultMapping = this.resourceManager.getMetadataMapping();
+        String defaultXmlParameters = this.configManager.getConfigItem(SystemConstants.CONFIG_ITEM_PARAMS);
         try {
             this.initAction("/do/jacms/Content/Admin", "updateSystemParams");
             this.setUserOnSession("admin");
@@ -182,10 +185,22 @@ class ContentAdminActionIntegrationTest extends AbstractBaseTestContentAction {
             assertEquals(0, action.getFieldErrors().size());
             assertEquals("16:9;4:3", action.getAspectRatio());
             assertEquals(2, action.getRatio().size());
+            String config = this.configManager.getParam(JacmsSystemConstants.CONFIG_PARAM_ASPECT_RATIO);
+            assertEquals("16:9;4:3", config);
+            
+            this.initAction("/do/jacms/Content/Admin", "updateSystemParams");
+            this.setUserOnSession("admin");
+            this.addParameter("ratio", new String[0]);
+            result = this.executeAction();
+            assertEquals(BaseAction.SUCCESS, result);
+            assertEquals(0, action.getFieldErrors().size());
+            config = this.configManager.getParam(JacmsSystemConstants.CONFIG_PARAM_ASPECT_RATIO);
+            assertEquals("", config);
         } catch (Throwable e) {
             throw e;
         } finally {
             this.resourceManager.updateMetadataMapping(defaultMapping);
+            this.configManager.updateConfigItem(SystemConstants.CONFIG_ITEM_PARAMS, defaultXmlParameters);
         }
     }
 
@@ -276,7 +291,8 @@ class ContentAdminActionIntegrationTest extends AbstractBaseTestContentAction {
     @BeforeEach
     protected void init() throws Exception {
         try {
-            this.resourceManager = (IResourceManager) this.getService(JacmsSystemConstants.RESOURCE_MANAGER);
+            this.resourceManager = this.getApplicationContext().getBean(IResourceManager.class);
+            this.configManager = this.getApplicationContext().getBean(ConfigInterface.class);
         } catch (Throwable t) {
             throw new Exception(t);
         }

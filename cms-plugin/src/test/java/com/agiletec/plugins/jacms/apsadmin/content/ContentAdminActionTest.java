@@ -282,7 +282,7 @@ class ContentAdminActionTest {
     @Test
     void testAspectRatioFromParams() throws Throwable {
         when(configManager.getConfigItem(ArgumentMatchers.anyString())).thenReturn(ASPECT_RATIO_PARAMS);
-        action.initLocalMap();
+        action.configSystemParams();
         Assertions.assertEquals("16:9;2:3", action.getAspectRatio());
     }
 }
