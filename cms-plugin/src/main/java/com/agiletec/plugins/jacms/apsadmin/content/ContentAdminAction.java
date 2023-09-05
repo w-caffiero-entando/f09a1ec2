@@ -76,7 +76,7 @@ public class ContentAdminAction extends BaseAdminAction {
         if (!result.equals(SUCCESS)) {
             return result;
         }
-        this.setAspectRatio(this.getSystemParams().get(JacmsSystemConstants.CONFIG_PARAM_ASPECT_RATIO));
+        this.setAspectRatio(this.extractAspectRatio());
         this.setRatio(this.getAspectRatio() != null ? Arrays.asList(this.getAspectRatio().split(";")) : new ArrayList<>());
         try {
             this.setMapping(this.getResourceManager().getMetadataMapping());
@@ -285,9 +285,14 @@ public class ContentAdminAction extends BaseAdminAction {
 
     public String getAspectRatio() {
         if (aspectRatio == null) {
-            this.aspectRatio = this.getSystemParams().get(JacmsSystemConstants.CONFIG_PARAM_ASPECT_RATIO);
+            this.aspectRatio = this.extractAspectRatio();
         }
         return aspectRatio;
+    }
+    
+    private String extractAspectRatio() {
+        String aspectRatioParam = this.getSystemParams().get(JacmsSystemConstants.CONFIG_PARAM_ASPECT_RATIO);
+        return (StringUtils.isBlank(aspectRatioParam)) ? null : aspectRatioParam.trim();
     }
 
     public void setAspectRatio(String aspectRatio) {
