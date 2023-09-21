@@ -199,7 +199,7 @@ public class TableDataUtils {
             case Types.BIGINT:
                 Object bigintObject = res.getObject(resIndex);
                 if (null != bigintObject) {
-                    return (Integer) bigintObject;
+                    return bigintObject instanceof Long ? (Long) bigintObject : (Integer) bigintObject;
                 } else {
                     return null;
                 }
