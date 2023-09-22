@@ -47,7 +47,7 @@ import org.mockito.stubbing.OngoingStubbing;
 class TableDataUtilsTest {
 
     @Test
-	public void dumpTableShouldWorkWithLongForBigIntType() throws EntException, SQLException, IOException {
+	void dumpTableShouldWorkWithLongForBigIntType() throws EntException, SQLException, IOException {
 		// --GIVEN
 		DataSource mockedDataSource = Mockito.mock(DataSource.class, Answers.RETURNS_DEEP_STUBS);
 		when(mockedDataSource.getConnection().createStatement().executeQuery(anyString()).getMetaData().getColumnCount()).thenReturn(
@@ -74,7 +74,7 @@ class TableDataUtilsTest {
 		assertEquals("INSERT INTO fakeTable (columnname) VALUES (42);\n", out.toString());
 	}
     @Test
-	public void dumpTableShouldWorkWithNullForBigIntType() throws EntException, SQLException, IOException {
+	void dumpTableShouldWorkWithNullForBigIntType() throws EntException, SQLException, IOException {
 		// --GIVEN
 		DataSource mockedDataSource = Mockito.mock(DataSource.class, Answers.RETURNS_DEEP_STUBS);
 		when(mockedDataSource.getConnection().createStatement().executeQuery(anyString()).getMetaData().getColumnCount()).thenReturn(
