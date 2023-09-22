@@ -193,17 +193,9 @@ public class TableDataUtils {
     private static Object getColumnValue(ResultSet res, int columnIndex, int[] columnTypes) throws SQLException {
         int type = columnTypes[columnIndex];
         int resIndex = columnIndex + 1;
-        switch (type) {
-            //case Types.ARRAY:
-            //	return ....;
-            case Types.BIGINT:
-                Object bigintObject = res.getObject(resIndex);
-                if (null != bigintObject) {
-                    return (Integer) bigintObject;
-                } else {
-                    return null;
-                }
-            //case Types.BINARY:
+        switch (type) {//case Types.ARRAY:
+//	return ....;
+//case Types.BINARY:
             //	return ....;
             case Types.BIT:
                 return (int) res.getByte(resIndex);
