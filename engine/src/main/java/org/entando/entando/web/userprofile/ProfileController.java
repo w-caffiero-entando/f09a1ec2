@@ -23,8 +23,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import javax.imageio.ImageIO;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
@@ -84,7 +82,7 @@ public class ProfileController {
 
     public static final String PROTECTED_FOLDER = "protectedFolder";
 
-    private static final Object DEFAULT_AVATAR_PATH = "static/profile";
+    private static final String DEFAULT_AVATAR_PATH = "static/profile";
 
     public static final String PREV_PATH = "prevPath";
 
@@ -103,7 +101,7 @@ public class ProfileController {
     public IFileBrowserService getFileBrowserService() {
         return fileBrowserService;
     }
-    
+
     public void setProfileValidator(ProfileValidator profileValidator) {
         this.profileValidator = profileValidator;
     }
@@ -211,7 +209,7 @@ public class ProfileController {
         return new ResponseEntity<>(new SimpleRestResponse<>(response), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/userProfiles/avatar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> getFile(
             @RequestParam(value = FILE_NAME, required = false, defaultValue = "") String fileName) throws IOException {
 
@@ -245,7 +243,7 @@ public class ProfileController {
     }
 
 
-    @RequestMapping(value = "/userProfiles/avatar", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> addFile(
             @Valid @RequestBody ProfileAvatarRequest request,
             BindingResult bindingResult) {
@@ -253,7 +251,7 @@ public class ProfileController {
 
     }
 
-    @RequestMapping(value = "/userProfiles/avatar", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> updateFile(
             @Valid @RequestBody ProfileAvatarRequest request, BindingResult bindingResult) {
         return executeUpsert(request, bindingResult, this.getFileBrowserService()::updateFile);
@@ -281,7 +279,7 @@ public class ProfileController {
     private static FileBrowserFileRequest convertToFileBrowserFileRequest(ProfileAvatarRequest request) {
         FileBrowserFileRequest fileBrowserFileRequest = new FileBrowserFileRequest();
         fileBrowserFileRequest.setFilename(request.getFilename());
-        fileBrowserFileRequest.setPath(DEFAULT_AVATAR_PATH + "/" + request.getFilename());
+        fileBrowserFileRequest.setPath(Paths.get(DEFAULT_AVATAR_PATH, request.getFilename()).toString());
         fileBrowserFileRequest.setProtectedFolder(false);
         fileBrowserFileRequest.setBase64(request.getBase64());
         return fileBrowserFileRequest;
@@ -291,7 +289,7 @@ public class ProfileController {
             ProfileAvatarRequest request) {
         Map<String, Object> result = new HashMap<>();
         result.put(PROTECTED_FOLDER, false);
-        result.put("path", DEFAULT_AVATAR_PATH + "/" + request.getFilename());
+        result.put("path", Paths.get(DEFAULT_AVATAR_PATH, request.getFilename()).toString());
         result.put("filename", request.getFilename());
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(PREV_PATH, DEFAULT_AVATAR_PATH);
