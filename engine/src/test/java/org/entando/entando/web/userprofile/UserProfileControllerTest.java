@@ -14,6 +14,8 @@
 package org.entando.entando.web.userprofile;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,10 +26,12 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
+import org.entando.entando.aps.system.services.storage.IFileBrowserService;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileService;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.web.AbstractControllerTest;
+import org.entando.entando.web.userprofile.validator.ProfileAvatarValidator;
 import org.entando.entando.web.userprofile.validator.ProfileValidator;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -58,12 +63,17 @@ class UserProfileControllerTest extends AbstractControllerTest {
     @Mock
     private IUserProfileManager userProfileManager;
 
-    @InjectMocks
-    private ProfileController controller;
+    @Mock
+    private ProfileAvatarValidator profileAvatarValidator;
+
+    @Mock
+    private IFileBrowserService fileBrowserService;
 
     @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        ProfileController controller = new ProfileController(userProfileService, profileValidator,
+                profileAvatarValidator, userManager,
+                userProfileManager, fileBrowserService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .addInterceptors(entandoOauth2Interceptor)
                 .setMessageConverters(getMessageConverters())

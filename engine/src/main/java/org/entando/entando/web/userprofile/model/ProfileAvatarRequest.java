@@ -15,30 +15,17 @@ package org.entando.entando.web.userprofile.model;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import lombok.Data;
 
 /**
  * @author E.Santoboni
  */
+@Data
 public class ProfileAvatarRequest {
 
     @NotBlank(message = "fileBrowser.filename.notBlank")
     private String filename;
     @NotNull(message = "fileBrowser.base64.notBlank")
     private byte[] base64;
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public byte[] getBase64() {
-        return base64;
-    }
-
-    public void setBase64(byte[] base64) {
-        this.base64 = base64;
-    }
 
 }

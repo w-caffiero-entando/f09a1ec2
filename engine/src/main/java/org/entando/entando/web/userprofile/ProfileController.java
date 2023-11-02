@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import javax.imageio.ImageIO;
+import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
@@ -43,40 +45,41 @@ import org.entando.entando.web.filebrowser.model.FileBrowserFileRequest;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
 import org.entando.entando.web.userprofile.validator.ProfileAvatarValidator;
 import org.entando.entando.web.userprofile.validator.ProfileValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author E.Santoboni
  */
 @RestController
+@RequiredArgsConstructor
 public class ProfileController {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
 
-    @Autowired
-    private IUserProfileService userProfileService;
+    private final IUserProfileService userProfileService;
 
-    @Autowired
-    private ProfileValidator profileValidator;
+    private final ProfileValidator profileValidator;
 
-    @Autowired
-    private ProfileAvatarValidator profileAvatarValidator;
+    private final ProfileAvatarValidator profileAvatarValidator;
 
-    @Autowired
-    private IUserManager userManager;
+    private final IUserManager userManager;
 
-    @Autowired
-    private IUserProfileManager userProfileManager;
+    private final IUserProfileManager userProfileManager;
 
-    @Autowired
-    private IFileBrowserService fileBrowserService;
+    private final IFileBrowserService fileBrowserService;
 
     public static final String FILE_NAME = "fileName";
 
@@ -85,26 +88,6 @@ public class ProfileController {
     private static final String DEFAULT_AVATAR_PATH = "static/profile";
 
     public static final String PREV_PATH = "prevPath";
-
-    protected IUserProfileService getUserProfileService() {
-        return userProfileService;
-    }
-
-    public void setUserProfileService(IUserProfileService userProfileService) {
-        this.userProfileService = userProfileService;
-    }
-
-    public ProfileValidator getProfileValidator() {
-        return profileValidator;
-    }
-
-    public IFileBrowserService getFileBrowserService() {
-        return fileBrowserService;
-    }
-
-    public void setProfileValidator(ProfileValidator profileValidator) {
-        this.profileValidator = profileValidator;
-    }
 
     @RestAccessControl(permission = {Permission.MANAGE_USER_PROFILES, Permission.MANAGE_USERS})
     @RequestMapping(value = "/userProfiles/{username}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -125,7 +108,7 @@ public class ProfileController {
 
     private EntityDto getUserProfileEntityDto(final String username) {
         EntityDto dto;
-        if (!this.getProfileValidator().existProfile(username)) {
+        if (!profileValidator.existProfile(username)) {
             if (userExists(username)) {
                 // if the user exists but the profile doesn't, creates an empty profile
                 IUserProfile userProfile = createNewEmptyUserProfile(username);
@@ -134,7 +117,7 @@ public class ProfileController {
                 throw new ResourceNotFoundException(EntityValidator.ERRCODE_ENTITY_DOES_NOT_EXIST, "Profile", username);
             }
         } else {
-            dto = this.getUserProfileService().getUserProfile(username);
+            dto = userProfileService.getUserProfile(username);
         }
         return dto;
     }
@@ -166,11 +149,11 @@ public class ProfileController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        this.getProfileValidator().validate(bodyRequest, bindingResult);
+        profileValidator.validate(bodyRequest, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        EntityDto response = this.getUserProfileService().addUserProfile(bodyRequest, bindingResult);
+        EntityDto response = userProfileService.addUserProfile(bodyRequest, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
@@ -185,8 +168,8 @@ public class ProfileController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        this.getProfileValidator().validateBodyName(username, bodyRequest, bindingResult);
-        EntityDto response = this.getUserProfileService().updateUserProfile(bodyRequest, bindingResult);
+        profileValidator.validateBodyName(username, bodyRequest, bindingResult);
+        EntityDto response = userProfileService.updateUserProfile(bodyRequest, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
@@ -198,11 +181,11 @@ public class ProfileController {
     public ResponseEntity<SimpleRestResponse<EntityDto>> updateMyUserProfile(@RequestAttribute("user") UserDetails user,
                                                                          @Valid @RequestBody EntityDto bodyRequest, BindingResult bindingResult) {
         logger.debug("Update profile for the logged user {} -> {}", user.getUsername(), bodyRequest);
-        this.getProfileValidator().validateBodyName(user.getUsername(), bodyRequest, bindingResult);
+        profileValidator.validateBodyName(user.getUsername(), bodyRequest, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        EntityDto response = this.getUserProfileService().updateUserProfile(bodyRequest, bindingResult);
+        EntityDto response = userProfileService.updateUserProfile(bodyRequest, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
@@ -215,7 +198,7 @@ public class ProfileController {
 
         // set fixed params
         boolean protectedFolder = false;
-        String currentPath = DEFAULT_AVATAR_PATH + "/" + fileName;
+        String currentPath =  Paths.get(DEFAULT_AVATAR_PATH, fileName).toString();
         // validate fileName using java NIO2 api (to avoid for instance \0)
         Paths.get(currentPath);
         // validate fileName to check if contains path to avoid directory listing
@@ -223,7 +206,7 @@ public class ProfileController {
             throw new IllegalArgumentException("The requested file name is not valid");
         }
         // get file from volume or else throw exception
-        byte[] base64 = this.getFileBrowserService().getFileStream(currentPath, protectedFolder);
+        byte[] base64 = fileBrowserService.getFileStream(currentPath, protectedFolder);
         // check if the desired file is an image, otherwise throw exception
         if (ImageIO.read(new ByteArrayInputStream(base64)) == null) {
             throw new IllegalArgumentException("The requested file is not an image");
@@ -247,14 +230,14 @@ public class ProfileController {
     public ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> addFile(
             @Valid @RequestBody ProfileAvatarRequest request,
             BindingResult bindingResult) {
-        return executeUpsert(request, bindingResult, this.getFileBrowserService()::addFile);
+        return executeUpsert(request, bindingResult, fileBrowserService::addFile);
 
     }
 
     @PutMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> updateFile(
             @Valid @RequestBody ProfileAvatarRequest request, BindingResult bindingResult) {
-        return executeUpsert(request, bindingResult, this.getFileBrowserService()::updateFile);
+        return executeUpsert(request, bindingResult, fileBrowserService::updateFile);
     }
 
     private ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> executeUpsert(
