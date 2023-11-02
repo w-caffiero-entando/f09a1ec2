@@ -43,15 +43,14 @@ public class ProfileAvatarValidator implements Validator {
         ProfileAvatarRequest request = (ProfileAvatarRequest) target;
         String filename = request.getFilename();
         if (filename.contains("/")) {
-            errors.rejectValue("path", ERRCODE_INVALID_FILE_NAME, new String[]{filename},
+            errors.rejectValue("filename", ERRCODE_INVALID_FILE_NAME, new String[]{filename},
                     "fileBrowser.filename.invalidFilename");
             return;
         }
 
         try {
             if (ImageIO.read(new ByteArrayInputStream(request.getBase64())) == null) {
-                errors.rejectValue("path", ERRCODE_INVALID_FILE_TYPE, "fileBrowser.file.invalidType");
-                throw new IllegalArgumentException("The requested file is not an image");
+                errors.rejectValue("base64", ERRCODE_INVALID_FILE_TYPE, "fileBrowser.file.invalidType");
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);

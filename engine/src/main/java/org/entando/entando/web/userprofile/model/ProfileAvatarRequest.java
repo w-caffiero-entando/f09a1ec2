@@ -15,12 +15,18 @@ package org.entando.entando.web.userprofile.model;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author E.Santoboni
  */
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class ProfileAvatarRequest {
 
     @NotBlank(message = "fileBrowser.filename.notBlank")
