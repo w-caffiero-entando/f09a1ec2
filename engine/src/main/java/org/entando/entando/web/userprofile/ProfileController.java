@@ -91,7 +91,8 @@ public class ProfileController {
 
     @RestAccessControl(permission = {Permission.MANAGE_USER_PROFILES, Permission.MANAGE_USERS})
     @RequestMapping(value = "/userProfiles/{username}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SimpleRestResponse<EntityDto>> getUserProfile(@PathVariable String username) throws JsonProcessingException {
+    public ResponseEntity<SimpleRestResponse<EntityDto>> getUserProfile(@PathVariable String username)
+            throws JsonProcessingException {
         logger.debug("Requested profile -> {}", username);
         final EntityDto dto = getUserProfileEntityDto(username);
         logger.debug("Main Response -> {}", dto);
@@ -144,7 +145,8 @@ public class ProfileController {
 
     @RestAccessControl(permission = Permission.MANAGE_USER_PROFILES)
     @RequestMapping(value = "/userProfiles", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SimpleRestResponse<EntityDto>> addUserProfile(@Valid @RequestBody EntityDto bodyRequest, BindingResult bindingResult) {
+    public ResponseEntity<SimpleRestResponse<EntityDto>> addUserProfile(@Valid @RequestBody EntityDto bodyRequest,
+            BindingResult bindingResult) {
         logger.debug("Add new user profile -> {}", bodyRequest);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
@@ -179,7 +181,7 @@ public class ProfileController {
     @PutMapping(value = "/myUserProfile", produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.ENTER_BACKEND)
     public ResponseEntity<SimpleRestResponse<EntityDto>> updateMyUserProfile(@RequestAttribute("user") UserDetails user,
-                                                                         @Valid @RequestBody EntityDto bodyRequest, BindingResult bindingResult) {
+            @Valid @RequestBody EntityDto bodyRequest, BindingResult bindingResult) {
         logger.debug("Update profile for the logged user {} -> {}", user.getUsername(), bodyRequest);
         profileValidator.validateBodyName(user.getUsername(), bodyRequest, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -198,7 +200,7 @@ public class ProfileController {
 
         // set fixed params
         boolean protectedFolder = false;
-        String currentPath =  Paths.get(DEFAULT_AVATAR_PATH, fileName).toString();
+        String currentPath = Paths.get(DEFAULT_AVATAR_PATH, fileName).toString();
         // validate fileName using java NIO2 api (to avoid for instance \0)
         Paths.get(currentPath);
         // validate fileName to check if contains path to avoid directory listing
@@ -254,7 +256,7 @@ public class ProfileController {
         // prepare a FileBrowserFileRequest to use the api already available in the system
         FileBrowserFileRequest fileBrowserFileRequest = convertToFileBrowserFileRequest(request);
         // add the file to the volume
-        upsertFunction.accept(fileBrowserFileRequest,bindingResult);
+        upsertFunction.accept(fileBrowserFileRequest, bindingResult);
         // prepare and return a consistent response
         return this.composeAvatarUpsertResponse(request);
     }
