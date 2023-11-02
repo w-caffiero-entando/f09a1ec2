@@ -13,9 +13,8 @@
  */
 package org.entando.entando.web.userprofile.model;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import org.entando.entando.web.filebrowser.model.FileBrowserRequest;
-import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * @author E.Santoboni
