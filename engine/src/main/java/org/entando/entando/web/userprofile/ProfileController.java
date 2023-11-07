@@ -16,21 +16,17 @@ package org.entando.entando.web.userprofile;
 import com.agiletec.aps.system.services.role.Permission;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import javax.imageio.ImageIO;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
-import org.entando.entando.aps.system.services.storage.IFileBrowserService;
+import org.entando.entando.aps.system.services.userprofile.IAvatarService;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileService;
+import org.entando.entando.aps.system.services.userprofile.model.AvatarDto;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -40,8 +36,8 @@ import org.entando.entando.web.common.exceptions.ValidationGenericException;
 import org.entando.entando.web.common.model.RestResponse;
 import org.entando.entando.web.common.model.SimpleRestResponse;
 import org.entando.entando.web.entity.validator.EntityValidator;
-import org.entando.entando.web.filebrowser.model.FileBrowserFileRequest;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
+import org.entando.entando.web.userprofile.model.ProfileAvatarResponse;
 import org.entando.entando.web.userprofile.validator.ProfileAvatarValidator;
 import org.entando.entando.web.userprofile.validator.ProfileValidator;
 import org.springframework.http.HttpStatus;
@@ -56,7 +52,6 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -78,13 +73,10 @@ public class ProfileController {
 
     private final IUserProfileManager userProfileManager;
 
-    private final IFileBrowserService fileBrowserService;
-
-    public static final String FILE_NAME = "fileName";
+    private final IAvatarService avatarService;
 
     public static final String PROTECTED_FOLDER = "protectedFolder";
 
-    private static final String DEFAULT_AVATAR_PATH = "static/profile";
 
     public static final String PREV_PATH = "prevPath";
 
@@ -194,86 +186,41 @@ public class ProfileController {
 
     @GetMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> getAvatar(
-            @RequestParam(value = FILE_NAME, required = false, defaultValue = "") String fileName) throws IOException {
-
-        // set fixed params
-        boolean protectedFolder = false;
-        String currentPath = Paths.get(DEFAULT_AVATAR_PATH, fileName).toString();
-        // validate fileName to check if contains path to avoid directory listing
-        if (fileName.contains("/")) {
-            logger.error("Directory listing attempt in an avatar GET request");
-            throw new IllegalArgumentException("The requested file name is not valid");
-        }
-        // get file from volume or else throw exception
-        byte[] base64 = fileBrowserService.getFileStream(currentPath, protectedFolder);
-        // check if the desired file is an image, otherwise throw exception
-        if (ImageIO.read(new ByteArrayInputStream(base64)) == null) {
-            logger.error("Attempt to request a file that is not an image in an avatar GET request");
-            throw new IllegalArgumentException("The requested file is not an image");
-        }
-
-        // prepare output
+            @RequestAttribute("user") UserDetails userDetails) {
+        // request user profile picture
+        AvatarDto avatarData = avatarService.getAvatarData(userDetails);
+        // fill output
         Map<String, Object> result = new HashMap<>();
-        result.put(PROTECTED_FOLDER, protectedFolder);
+        result.put(PROTECTED_FOLDER, avatarData.isProtectedFolder());
         result.put("isDirectory", false);
-        result.put("path", currentPath);
-        result.put("filename", fileName);
-        result.put("base64", base64);
+        result.put("path", avatarData.getCurrentPath());
+        result.put("filename", avatarData.getFilename());
+        result.put("base64", avatarData.getBase64());
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put(PREV_PATH, DEFAULT_AVATAR_PATH);
+        metadata.put(PREV_PATH, avatarData.getPrevPath());
         return new ResponseEntity<>(new RestResponse<>(result, metadata), HttpStatus.OK);
     }
 
 
     @PostMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> addAvatar(
+    public ResponseEntity<SimpleRestResponse<ProfileAvatarResponse>> addAvatar(
             @Valid @RequestBody ProfileAvatarRequest request,
+            @RequestAttribute("user") UserDetails user,
             BindingResult bindingResult) {
-        return executeUpsert(request, bindingResult, fileBrowserService::addFile);
-    }
 
-    @PutMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> updateAvatar(
-            @Valid @RequestBody ProfileAvatarRequest request, BindingResult bindingResult) {
-        return executeUpsert(request, bindingResult, fileBrowserService::updateFile);
-    }
-
-    private ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> executeUpsert(
-            ProfileAvatarRequest request, BindingResult bindingResult,
-            BiConsumer<FileBrowserFileRequest, BindingResult> upsertFunction) {
-        if (bindingResult.hasErrors()) {
-            throw new ValidationGenericException(bindingResult);
-        }
         // validate input dto to check for consistency of input
         profileAvatarValidator.validate(request, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        // prepare a FileBrowserFileRequest to use the api already available in the system
-        FileBrowserFileRequest fileBrowserFileRequest = convertToFileBrowserFileRequest(request);
-        // add the file to the volume
-        upsertFunction.accept(fileBrowserFileRequest, bindingResult);
-        // prepare and return a consistent response
-        return composeAvatarUpsertResponse(request);
-    }
+        // update the profile picture saving the received image in the file system, eventually deleting the previous
+        // existing image
+        String pictureFileName = avatarService.updateAvatar(request, user, bindingResult);
 
-    private static FileBrowserFileRequest convertToFileBrowserFileRequest(ProfileAvatarRequest request) {
-        FileBrowserFileRequest fileBrowserFileRequest = new FileBrowserFileRequest();
-        fileBrowserFileRequest.setFilename(request.getFilename());
-        fileBrowserFileRequest.setPath(Paths.get(DEFAULT_AVATAR_PATH, request.getFilename()).toString());
-        fileBrowserFileRequest.setProtectedFolder(false);
-        fileBrowserFileRequest.setBase64(request.getBase64());
-        return fileBrowserFileRequest;
-    }
-
-    private ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> composeAvatarUpsertResponse(
-            ProfileAvatarRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        result.put(PROTECTED_FOLDER, false);
-        result.put("path", Paths.get(DEFAULT_AVATAR_PATH, request.getFilename()).toString());
-        result.put("filename", request.getFilename());
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(PREV_PATH, DEFAULT_AVATAR_PATH);
-        return new ResponseEntity<>(new RestResponse<>(result, metadata), HttpStatus.OK);
+        if (bindingResult.hasErrors()) {
+            throw new ValidationGenericException(bindingResult);
+        }
+        return new ResponseEntity<>(new SimpleRestResponse<>(new ProfileAvatarResponse(pictureFileName)),
+                HttpStatus.OK);
     }
 }
