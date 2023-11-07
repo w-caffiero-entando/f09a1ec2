@@ -17,6 +17,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import javax.imageio.ImageIO;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.web.filebrowser.model.FileBrowserFileRequest;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
 import org.springframework.lang.NonNull;
@@ -41,15 +43,16 @@ public class ProfileAvatarValidator implements Validator {
     @Override
     public void validate(@NonNull Object target, @NonNull Errors errors) {
         ProfileAvatarRequest request = (ProfileAvatarRequest) target;
-        String filename = request.getFilename();
-        if (filename.contains("/")) {
-            errors.rejectValue("filename", ERRCODE_INVALID_FILE_NAME, new String[]{filename},
+
+        String fileName = request.getFileName();
+        if (StringUtils.isEmpty(FilenameUtils.getExtension(fileName))) {
+            errors.rejectValue("fileName", ERRCODE_INVALID_FILE_NAME, new String[]{fileName},
                     "fileBrowser.filename.invalidFilename");
             return;
         }
 
-        try {
-            if (ImageIO.read(new ByteArrayInputStream(request.getBase64())) == null) {
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(request.getBase64())) {
+            if (ImageIO.read(byteArrayInputStream) == null) {
                 errors.rejectValue("base64", ERRCODE_INVALID_FILE_TYPE, "fileBrowser.file.invalidType");
             }
         } catch (IOException e) {

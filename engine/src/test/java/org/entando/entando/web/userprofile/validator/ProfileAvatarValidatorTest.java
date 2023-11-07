@@ -22,14 +22,14 @@ class ProfileAvatarValidatorTest {
 
 
     @Test
-    void shouldNotValidateFileNamesThatContainsSlash() throws IOException {
-        ProfileAvatarRequest request = new ProfileAvatarRequest("not/valid/filename.png",
+    void shouldNotValidateFileNamesMissingExtensions() throws IOException {
+        ProfileAvatarRequest request = new ProfileAvatarRequest("missing_extension_filename",
                 IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()));
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(request, "profileAvatarRequest");
         new ProfileAvatarValidator().validate(request, errors);
         assertEquals(1, errors.getErrorCount());
         assertEquals("fileBrowser.filename.invalidFilename", errors.getAllErrors().get(0).getDefaultMessage());
-        assertEquals("not/valid/filename.png", ((FieldError) errors.getAllErrors().get(0)).getRejectedValue());
+        assertEquals("missing_extension_filename", ((FieldError) errors.getAllErrors().get(0)).getRejectedValue());
     }
 
     @Test
@@ -47,7 +47,7 @@ class ProfileAvatarValidatorTest {
 
     @Test
     void shouldThrowUncheckedIOExceptionIfImageReadingFails() throws IOException {
-        ProfileAvatarRequest request = new ProfileAvatarRequest("valid_filename.png",
+        ProfileAvatarRequest request = new ProfileAvatarRequest("image.png",
                 IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()));
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(request, "profileAvatarRequest");
         try (MockedStatic<ImageIO> mockStatic = Mockito.mockStatic(ImageIO.class)) {
