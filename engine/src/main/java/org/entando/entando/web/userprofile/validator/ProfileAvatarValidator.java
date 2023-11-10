@@ -19,7 +19,6 @@ import java.io.UncheckedIOException;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.web.filebrowser.model.FileBrowserFileRequest;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,7 @@ public class ProfileAvatarValidator implements Validator {
 
     @Override
     public boolean supports(@NonNull Class<?> paramClass) {
-        return (FileBrowserFileRequest.class.equals(paramClass));
+        return (ProfileAvatarRequest.class.equals(paramClass));
     }
 
     @Override
