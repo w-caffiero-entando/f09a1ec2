@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.services.entity.model.EntityAttributeDto;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
@@ -36,7 +37,10 @@ public class AvatarService implements IAvatarService {
                         userDetails.getUsername()));
         // set default params
         boolean protectedFolder = false;
-        String fileName = (String) profilePictureAttribute.getValue();
+        String fileName = Optional.ofNullable((String) profilePictureAttribute.getValue())
+                .filter(StringUtils::isNotEmpty)
+                .orElseThrow(() -> new ResourceNotFoundException(EntityValidator.ERRCODE_ENTITY_DOES_NOT_EXIST, "image",
+                        userDetails.getUsername()));
         // all profiles pictures are saved in the same location at DEFAULT_AVATAR_PATH
         // This is why each profile picture is named with the same name as the owner user
         String currentPath = Paths.get(DEFAULT_AVATAR_PATH, fileName).toString();

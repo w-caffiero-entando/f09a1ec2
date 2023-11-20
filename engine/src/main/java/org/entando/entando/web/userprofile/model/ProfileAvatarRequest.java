@@ -14,7 +14,7 @@
 package org.entando.entando.web.userprofile.model;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +31,6 @@ public class ProfileAvatarRequest {
 
     @NotBlank(message = "avatar.filename.notBlank")
     private String fileName;
-    @NotNull(message = "fileBrowser.base64.notBlank")
+    @NotEmpty(message = "fileBrowser.base64.notBlank")
     private byte[] base64;
 }

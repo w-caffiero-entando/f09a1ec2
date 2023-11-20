@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
 import java.util.List;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
@@ -16,7 +15,6 @@ import org.entando.entando.aps.system.services.entity.model.EntityDto;
 import org.entando.entando.aps.system.services.storage.IFileBrowserService;
 import org.entando.entando.aps.system.services.userprofile.model.AvatarDto;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,6 +59,19 @@ class AvatarServiceTest {
     void shouldGetAvatarDataThrowResourceNotFoundExceptionIfNoImageIsPresent() {
         when(userProfileService.getUserProfile(any())).thenReturn(new EntityDto());
         assertThrows(ResourceNotFoundException.class, () -> avatarService.getAvatarData(mock(UserDetails.class)));
+    }
+
+    @Test
+    void shouldGetAvatarDataThrowResourceNotFoundExceptionIfImageInProfileAttributeIsEmpty() {
+        EntityDto entityDto = new EntityDto();
+        EntityAttributeDto entityAttributeDto = new EntityAttributeDto();
+        entityAttributeDto.setCode("profilepicture");
+        entityAttributeDto.setValue("");
+        entityDto.setAttributes(List.of(entityAttributeDto));
+        when(userProfileService.getUserProfile(any())).thenReturn(entityDto);
+
+        assertThrows(ResourceNotFoundException.class, () -> avatarService.getAvatarData(mock(UserDetails.class)));
+
     }
 
     @Test

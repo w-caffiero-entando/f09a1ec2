@@ -191,7 +191,7 @@ class UserProfileControllerTest extends AbstractControllerTest {
         };
         doAnswer(ans).when(profileAvatarValidator).validate(any(), any());
         ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest("fileName_without_extension",
-                new byte[0]);
+                new byte[1]);
 
         ResultActions result = mockMvc.perform(
                 post("/userProfiles/avatar")
@@ -204,7 +204,7 @@ class UserProfileControllerTest extends AbstractControllerTest {
     @Test
     void shouldPostAvatarReturn200OnRightInput() throws Exception {
         String accessToken = this.createAccessToken();
-        ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest("myFile.png", new byte[0]);
+        ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest("myFile.png", new byte[1]);
         when(avatarService.updateAvatar(any(), any(), any())).thenReturn("jack_bauer.png");
 
         ResultActions result = mockMvc.perform(
@@ -228,7 +228,7 @@ class UserProfileControllerTest extends AbstractControllerTest {
         };
         doAnswer(ans).when(avatarService).updateAvatar(any(), any(), any());
         ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest("image.png",
-                new byte[0]);
+                new byte[1]);
 
         ResultActions result = mockMvc.perform(
                 post("/userProfiles/avatar")
@@ -239,19 +239,59 @@ class UserProfileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldPostAvatarReturn400OnWrongRequest() throws Exception {
+    void shouldPostAvatarReturn400OnAndCodeNotBlankIfFileNameIsNotPresent() throws Exception {
         String accessToken = this.createAccessToken();
-        String request = "{\n"
-                + "    \"fileNam\": \"image.png\",\n"
-                + "    \"base64\": \"\"\n"
-                + "}";
+        String request = "{\"fileNam\":\"image.png\",\"base64\":\"AA==\"}";
 
         ResultActions result = mockMvc.perform(
                 post("/userProfiles/avatar")
                         .content(request)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(status().isBadRequest());
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].code").value("NotBlank"));
+    }
+
+    @Test
+    void shouldPostAvatarReturn400OnAndCodeNotBlankIfFileNameIsEmpty() throws Exception {
+        String accessToken = this.createAccessToken();
+        String request = "{\"fileName\":\"\",\"base64\":\"AA==\"}";
+
+        ResultActions result = mockMvc.perform(
+                post("/userProfiles/avatar")
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken));
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].code").value("NotBlank"));
+    }
+
+    @Test
+    void shouldPostAvatarReturn400OnAndCodeNotEmptyIfBase64IsNotPresent() throws Exception {
+        String accessToken = this.createAccessToken();
+        String request = "{\"fileName\":\"image.png\",\"base6\":\"AA==\"}";
+
+        ResultActions result = mockMvc.perform(
+                post("/userProfiles/avatar")
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken));
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].code").value("NotEmpty"));
+    }
+
+    @Test
+    void shouldPostAvatarReturn400OnAndCodeNotEmptyIfBase64IsEmpty() throws Exception {
+        String accessToken = this.createAccessToken();
+        String request = "{\"fileName\":\"image.png\",\"base64\":\"\"}";
+
+        ResultActions result = mockMvc.perform(
+                post("/userProfiles/avatar")
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + accessToken));
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].code").value("NotEmpty"));
     }
 
     private ResultActions performGetUserProfiles(String username) throws Exception {
