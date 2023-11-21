@@ -14,6 +14,8 @@ import org.entando.entando.aps.system.services.entity.model.EntityAttributeDto;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
 import org.entando.entando.aps.system.services.storage.IFileBrowserService;
 import org.entando.entando.aps.system.services.userprofile.model.AvatarDto;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,13 +77,16 @@ class AvatarServiceTest {
     }
 
     @Test
-    void shouldUpdateAvatarDeletePreviousProfilePictureIfPresent() {
+    void shouldUpdateAvatarDeletePreviousProfilePictureIfPresent() throws EntException {
         EntityDto entityDto = new EntityDto();
         EntityAttributeDto entityAttributeDto = new EntityAttributeDto();
         entityAttributeDto.setCode("profilepicture");
         entityAttributeDto.setValue("prevImage.png");
         entityDto.setAttributes(List.of(entityAttributeDto));
         when(userProfileService.getUserProfile(any())).thenReturn(entityDto);
+
+        //pretend image exists on filesystem
+        when(fileBrowserService.exists(any())).thenReturn(true);
 
         avatarService.updateAvatar(mock(ProfileAvatarRequest.class), mock(UserDetails.class),
                 mock(BindingResult.class));
@@ -138,5 +143,103 @@ class AvatarServiceTest {
         ArgumentCaptor<EntityDto> captor = ArgumentCaptor.forClass(EntityDto.class);
         verify(userProfileService, Mockito.times(1)).updateUserProfile(captor.capture(), any());
         assertEquals("user1.png", captor.getValue().getAttributes().get(0).getValue());
+    }
+
+    @Test
+    void shouldDeleteAvatarFromFilesystemAndResetUserProfilePictureAttribute() throws EntException {
+        // set previous profile picture
+        EntityDto entityDto = new EntityDto();
+        EntityAttributeDto entityAttributeDto = new EntityAttributeDto();
+        entityAttributeDto.setCode("profilepicture");
+        entityAttributeDto.setValue("user1.png");
+        entityDto.setAttributes(List.of(entityAttributeDto));
+        when(userProfileService.getUserProfile(any())).thenReturn(entityDto);
+
+        // set user details to return desired username
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("user1");
+
+        //pretend image exists on filesystem
+        when(fileBrowserService.exists(any())).thenReturn(true);
+
+        avatarService.deleteAvatar(userDetails, mock(BindingResult.class));
+
+        ArgumentCaptor<EntityDto> captor = ArgumentCaptor.forClass(EntityDto.class);
+        verify(userProfileService, Mockito.times(1)).updateUserProfile(captor.capture(), any());
+        assertEquals("", captor.getValue().getAttributes().get(0).getValue());
+        verify(fileBrowserService, Mockito.times(1)).deleteFile(any(), any());
+    }
+
+
+    @Test
+    void shouldDeleteAvatarDoNothingAndRunSmoothlyIfUserImageIsNotSetInTheProfile() {
+        // set previous profile picture
+        EntityDto entityDto = new EntityDto();
+        EntityAttributeDto entityAttributeDto = new EntityAttributeDto();
+        entityAttributeDto.setCode("profilepicture");
+        entityAttributeDto.setValue("");
+        entityDto.setAttributes(List.of(entityAttributeDto));
+        when(userProfileService.getUserProfile(any())).thenReturn(entityDto);
+
+        // set user details to return desired username
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("user1");
+
+        avatarService.deleteAvatar(userDetails, mock(BindingResult.class));
+
+        ArgumentCaptor<EntityDto> captor = ArgumentCaptor.forClass(EntityDto.class);
+        verify(userProfileService, Mockito.times(1)).updateUserProfile(captor.capture(), any());
+        assertEquals("", captor.getValue().getAttributes().get(0).getValue());
+        verify(fileBrowserService, Mockito.times(0)).deleteFile(any(), any());
+    }
+
+
+    @Test
+    void shouldDeleteAvatarThrowExceptionIfProfilePictureCheckImageGoesInError() throws EntException {
+        // set previous profile picture
+        EntityDto entityDto = new EntityDto();
+        EntityAttributeDto entityAttributeDto = new EntityAttributeDto();
+        entityAttributeDto.setCode("profilepicture");
+        entityAttributeDto.setValue("user1.png");
+        entityDto.setAttributes(List.of(entityAttributeDto));
+        when(userProfileService.getUserProfile(any())).thenReturn(entityDto);
+
+        // set user details to return desired username
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("user1");
+
+        //pretend fileBrowserService.exists goes in error
+        when(fileBrowserService.exists(any())).thenThrow(EntException.class);
+
+        assertThrows(EntRuntimeException.class,
+                () -> avatarService.deleteAvatar(userDetails, mock(BindingResult.class)));
+    }
+
+    @Test
+    void shouldUpdateAvatarThrowExceptionIfProfilePictureCheckImageGoesInError() throws EntException {
+        // set previous profile picture
+        EntityDto entityDto = new EntityDto();
+        EntityAttributeDto entityAttributeDto = new EntityAttributeDto();
+        entityAttributeDto.setCode("profilepicture");
+        entityAttributeDto.setValue("user1.png");
+        entityDto.setAttributes(List.of(entityAttributeDto));
+        when(userProfileService.getUserProfile(any())).thenReturn(entityDto);
+
+        // set user details to return desired username
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("user1");
+
+        // set POST request DTO
+        ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest();
+        profileAvatarRequest.setFileName("image.png");
+        profileAvatarRequest.setBase64(new byte[0]);
+
+        //pretend fileBrowserService.exists goes in error
+        when(fileBrowserService.exists(any())).thenThrow(EntException.class);
+
+        assertThrows(EntRuntimeException.class,
+                () -> avatarService.updateAvatar(profileAvatarRequest, userDetails, mock(BindingResult.class)));
+
+
     }
 }

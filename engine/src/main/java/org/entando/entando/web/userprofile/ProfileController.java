@@ -44,6 +44,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.MapBindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -222,5 +224,15 @@ public class ProfileController {
         }
         return new ResponseEntity<>(new SimpleRestResponse<>(new ProfileAvatarResponse(pictureFileName)),
                 HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/userProfiles/avatar")
+    public ResponseEntity<Void> deleteAvatar(@RequestAttribute("user") UserDetails user) {
+
+        // delete the profile picture associated with the received user profile. If no Image is found, the method does
+        // nothing and returns ok anyway
+        avatarService.deleteAvatar(user, new MapBindingResult(new HashMap<>(), "user"));
+
+        return ResponseEntity.ok().build();
     }
 }

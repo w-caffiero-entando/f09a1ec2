@@ -16,6 +16,7 @@ package org.entando.entando.web.userprofile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -26,6 +27,7 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Stream;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
 import org.entando.entando.aps.system.services.userprofile.IAvatarService;
@@ -41,6 +43,9 @@ import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -238,10 +243,11 @@ class UserProfileControllerTest extends AbstractControllerTest {
         result.andExpect(status().isBadRequest());
     }
 
-    @Test
-    void shouldPostAvatarReturn400OnAndCodeNotBlankIfFileNameIsNotPresent() throws Exception {
+
+    @ParameterizedTest
+    @MethodSource("provideValuesFor400")
+    void shouldPostAvatarReturn400(String request, String expectedErrorCode) throws Exception {
         String accessToken = this.createAccessToken();
-        String request = "{\"fileNam\":\"image.png\",\"base64\":\"AA==\"}";
 
         ResultActions result = mockMvc.perform(
                 post("/userProfiles/avatar")
@@ -249,49 +255,30 @@ class UserProfileControllerTest extends AbstractControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].code").value("NotBlank"));
+                .andExpect(jsonPath("$.errors[0].code").value(expectedErrorCode));
     }
 
+
     @Test
-    void shouldPostAvatarReturn400OnAndCodeNotBlankIfFileNameIsEmpty() throws Exception {
+    void shouldDeleteAvatarReturn200() throws Exception {
         String accessToken = this.createAccessToken();
-        String request = "{\"fileName\":\"\",\"base64\":\"AA==\"}";
 
         ResultActions result = mockMvc.perform(
-                post("/userProfiles/avatar")
-                        .content(request)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                delete("/userProfiles/avatar")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].code").value("NotBlank"));
+        result.andExpect(status().isOk());
     }
 
-    @Test
-    void shouldPostAvatarReturn400OnAndCodeNotEmptyIfBase64IsNotPresent() throws Exception {
-        String accessToken = this.createAccessToken();
-        String request = "{\"fileName\":\"image.png\",\"base6\":\"AA==\"}";
 
-        ResultActions result = mockMvc.perform(
-                post("/userProfiles/avatar")
-                        .content(request)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].code").value("NotEmpty"));
-    }
-
-    @Test
-    void shouldPostAvatarReturn400OnAndCodeNotEmptyIfBase64IsEmpty() throws Exception {
-        String accessToken = this.createAccessToken();
-        String request = "{\"fileName\":\"image.png\",\"base64\":\"\"}";
-
-        ResultActions result = mockMvc.perform(
-                post("/userProfiles/avatar")
-                        .content(request)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].code").value("NotEmpty"));
+    private static Stream<Arguments> provideValuesFor400() {
+        return Stream.of(
+                Arguments.of("{\"fileNam\":\"image.png\",\"base64\":\"AA==\"}", "NotBlank"),
+                Arguments.of("{\"base64\":\"AA==\"}", "NotBlank"),
+                Arguments.of("{\"fileName\":\"\",\"base64\":\"AA==\"}", "NotBlank"),
+                Arguments.of("{\"fileName\":\"image.png\",\"base6\":\"AA==\"}", "NotEmpty"),
+                Arguments.of("{\"fileName\":\"image.png\"}", "NotEmpty"),
+                Arguments.of("{\"fileName\":\"image.png\",\"base64\":\"\"}", "NotEmpty")
+        );
     }
 
     private ResultActions performGetUserProfiles(String username) throws Exception {

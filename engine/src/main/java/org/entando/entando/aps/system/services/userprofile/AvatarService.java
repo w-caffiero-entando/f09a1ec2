@@ -11,6 +11,8 @@ import org.entando.entando.aps.system.services.entity.model.EntityAttributeDto;
 import org.entando.entando.aps.system.services.entity.model.EntityDto;
 import org.entando.entando.aps.system.services.storage.IFileBrowserService;
 import org.entando.entando.aps.system.services.userprofile.model.AvatarDto;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.web.entity.validator.EntityValidator;
 import org.entando.entando.web.filebrowser.model.FileBrowserFileRequest;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
@@ -70,6 +72,17 @@ public class AvatarService implements IAvatarService {
         return fileBrowserFileRequest.getFilename();
     }
 
+    @Override
+    public void deleteAvatar(UserDetails userDetails, BindingResult bindingResult) {
+        EntityDto userProfile = userProfileService.getUserProfile(userDetails.getUsername());
+        // remove previous image if present
+        deletePrevUserAvatarFromFileSystemIfPresent(userProfile);
+        // update profile picture attribute (if present) with an empty value
+        resetProfilePictureAttribute(userProfile);
+        // update user profile with the fresh data related to profile picture
+        userProfileService.updateUserProfile(userProfile, bindingResult);
+    }
+
     //------------------------ Utility methods ------------------------------------//
     private void updateUserProfilePictureAttribute(EntityDto userProfile,
             FileBrowserFileRequest fileBrowserFileRequest) {
@@ -103,12 +116,23 @@ public class AvatarService implements IAvatarService {
 
     private void deletePrevUserAvatarFromFileSystemIfPresent(EntityDto userProfile) {
         getProfilePictureAttribute(userProfile)
+                .filter(attribute -> StringUtils.isNotEmpty((String) attribute.getValue()))
                 .ifPresent(attribute -> {
                             String profilePicturePath = Paths.get(DEFAULT_AVATAR_PATH, (String) attribute.getValue())
                                     .toString();
-                            fileBrowserService.deleteFile(profilePicturePath, false);
+                            removePictureFromFilesystem(profilePicturePath);
                         }
                 );
+    }
+
+    private void removePictureFromFilesystem(String profilePicturePath) throws EntRuntimeException {
+        try {
+            if (fileBrowserService.exists(profilePicturePath)) {
+                fileBrowserService.deleteFile(profilePicturePath, false);
+            }
+        } catch (EntException e) {
+            throw new EntRuntimeException("Error in checking file existence on the filesystem", e);
+        }
     }
 
     private static FileBrowserFileRequest convertToFileBrowserFileRequest(ProfileAvatarRequest request,
@@ -131,5 +155,8 @@ public class AvatarService implements IAvatarService {
                         .findFirst());
     }
 
+    private void resetProfilePictureAttribute(EntityDto userProfile) {
+        getProfilePictureAttribute(userProfile).ifPresent(attributeDto -> attributeDto.setValue(""));
+    }
 
 }
