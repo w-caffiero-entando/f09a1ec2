@@ -11,4 +11,6 @@ public interface IAvatarService {
 
     String updateAvatar(ProfileAvatarRequest request, UserDetails userDetails,
             BindingResult bindingResult);
+
+    void deleteAvatar(UserDetails userDetails, BindingResult bindingResult);
 }
