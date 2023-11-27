@@ -1,4 +1,4 @@
-FROM registry.hub.docker.com/entando/entando-wildfly17-base:7.2.0
+FROM registry.hub.docker.com/entando/entando-wildfly17-base:7.4.0-ENG-5316-PR-28
 
 ARG VERSION
 
