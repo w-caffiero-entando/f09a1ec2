@@ -13,12 +13,9 @@
  */
 package com.agiletec.aps.system;
 
-import com.agiletec.aps.system.services.page.IPageManager;
-import com.agiletec.aps.system.services.user.IUserManager;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.entando.entando.aps.system.services.guifragment.IGuiFragmentManager;
 
 /**
  * Interfaccia con le principali costanti di sistema.
