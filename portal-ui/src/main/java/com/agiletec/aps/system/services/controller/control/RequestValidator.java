@@ -29,7 +29,6 @@ import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.PageUtils;
-import java.util.Optional;
 
 /**
  * Implementazione del un sottoservizio di controllo che verifica la validità
@@ -52,24 +51,9 @@ public class RequestValidator extends AbstractControlService {
     private static final Logger _logger = LoggerFactory.getLogger(RequestValidator.class);
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        _logger.debug("{} ready", this.getClass().getName());
-    }
-
-    /**
-	 * Esecuzione. Le operazioni sono descritte nella documentazione della
-	 * classe.
-     *
-	 * @param reqCtx Il contesto di richiesta
-	 * @param status Lo stato di uscita del servizio precedente
-     * @return Lo stato di uscita
-     */
-    @Override
     public int service(RequestContext reqCtx, int status) {
         _logger.debug("{} invoked", this.getClass().getName());
         int retStatus = ControllerManager.INVALID_STATUS;
-        // Se si è verificato un errore in un altro sottoservizio, termina
-        // subito
         if (status == ControllerManager.ERROR) {
             return status;
         }
