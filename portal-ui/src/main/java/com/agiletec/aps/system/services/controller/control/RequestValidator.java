@@ -29,6 +29,7 @@ import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.page.PageUtils;
+import java.util.Optional;
 
 /**
  * Implementazione del un sottoservizio di controllo che verifica la validità
@@ -72,21 +73,23 @@ public class RequestValidator extends AbstractControlService {
         if (status == ControllerManager.ERROR) {
             return status;
         }
-        try { // non devono essere rilanciate eccezioni
+        try {
             boolean ok = this.isRightPath(reqCtx);
-            if (ok) {
-                if (null == reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE)) {
-                    IPage page = this.getPageManager().getOnlinePage(this.getNotFoundPageCode());
-                    reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE, page);
-                }
-                if (null == reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE)
-                        || null == reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG)) {
-                    retStatus = this.redirect(this.getErrorPageCode(), reqCtx);
-                } else {
-                    retStatus = ControllerManager.CONTINUE;
-                }
-            } else {
+            Runnable addNotFoundPageParam = () -> {
+                IPage page = this.getPageManager().getOnlinePage(this.getNotFoundPageCode());
+                reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE, page);
+            };
+            if (!ok || null == reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG)) {
+                addNotFoundPageParam.run();
+                reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, this.getLangManager().getDefaultLang());
+            } else if (null == reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE)) {
+                addNotFoundPageParam.run();
+            }
+            if (null == reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE)
+                    || null == reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG)) {
                 retStatus = this.redirect(this.getErrorPageCode(), reqCtx);
+            } else {
+                retStatus = ControllerManager.CONTINUE;
             }
         } catch (Throwable t) {
             retStatus = ControllerManager.SYS_ERROR;
