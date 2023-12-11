@@ -117,6 +117,8 @@
 
     <bean id="UserProfileService" class="org.entando.entando.aps.system.services.userprofile.UserProfileService" />
 
+    <bean id="AvatarService" class="org.entando.entando.aps.system.services.userprofile.AvatarService" />
+
     <bean id="UserSettingsService" class="org.entando.entando.aps.system.services.usersettings.UserSettingsService" />
 
     <bean id="CategoryService" class="org.entando.entando.aps.system.services.category.CategoryService" />
