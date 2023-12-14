@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import com.agiletec.aps.system.services.category.ICategoryManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.plugins.jacms.aps.system.services.content.IContentManager;
+import com.agiletec.plugins.jacms.aps.system.services.content.event.PublicContentChangedEvent;
 import java.util.List;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
@@ -69,6 +70,19 @@ class SolrSearchEngineManagerTest {
     @AfterEach
     void tearDown() {
         mockedConstructionSolrClientBuilder.close();
+    }
+    
+    @Test
+    void shouldReleaseCacheWhenrefreshService() throws Throwable {
+        this.solrSearchEngineManager.refresh();
+        Mockito.verify(cacheWrapper, Mockito.times(1)).release();
+    }
+    
+    @Test
+    void shouldExecuteNotifyWithInternalError() {
+        PublicContentChangedEvent event = new PublicContentChangedEvent();
+        event.setContentId("ART123");
+        Assertions.assertDoesNotThrow(() -> this.solrSearchEngineManager.updateFromPublicContentChanged(event));
     }
 
     @Test

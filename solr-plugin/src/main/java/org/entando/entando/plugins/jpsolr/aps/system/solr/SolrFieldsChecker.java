@@ -103,7 +103,9 @@ public class SolrFieldsChecker {
     private void checkAttribute(AttributeInterface attribute, Lang lang) {
         attribute.setRenderingLang(lang.getCode());
         if (attribute instanceof IndexableAttributeInterface
-                || ((attribute instanceof DateAttribute || attribute instanceof NumberAttribute)
+                || ((attribute instanceof DateAttribute
+                || attribute instanceof NumberAttribute 
+                || attribute instanceof BooleanAttribute)
                 && attribute.isSearchable())) {
             String type;
             if (attribute instanceof DateAttribute) {
