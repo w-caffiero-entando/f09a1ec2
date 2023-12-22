@@ -27,5 +27,6 @@ import lombok.Setter;
 @Setter
 public class ProfileAvatarResponse {
 
-    private String fileName;
+    private String filename;
+    
 }

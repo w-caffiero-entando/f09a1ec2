@@ -123,7 +123,7 @@ class AvatarServiceTest {
         when(userProfileManager.getProfile(any())).thenReturn(profile);
         // set POST request DTO
         ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest();
-        profileAvatarRequest.setFileName("image.png");
+        profileAvatarRequest.setFilename("image.png");
         profileAvatarRequest.setBase64(new byte[0]);
         // set user details to return desired username
         UserDetails userDetails = mock(UserDetails.class);
@@ -144,7 +144,7 @@ class AvatarServiceTest {
         when(userProfileManager.getProfile(any())).thenReturn(profile);
         // set POST request DTO
         ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest();
-        profileAvatarRequest.setFileName("image.png");
+        profileAvatarRequest.setFilename("image.png");
         profileAvatarRequest.setBase64(new byte[0]);
         // set user details to return desired username
         UserDetails userDetails = mock(UserDetails.class);
@@ -229,7 +229,7 @@ class AvatarServiceTest {
 
         // set POST request DTO
         ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest();
-        profileAvatarRequest.setFileName("image.png");
+        profileAvatarRequest.setFilename("image.png");
         profileAvatarRequest.setBase64(new byte[0]);
 
         //pretend fileBrowserService.exists goes in error

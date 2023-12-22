@@ -163,7 +163,7 @@ public class AvatarService implements IAvatarService {
     private static FileBrowserFileRequest convertToFileBrowserFileRequest(ProfileAvatarRequest request,
             UserDetails userDetails) {
         FileBrowserFileRequest fileBrowserFileRequest = new FileBrowserFileRequest();
-        String imageExtension = FilenameUtils.getExtension(request.getFileName());
+        String imageExtension = FilenameUtils.getExtension(request.getFilename());
         String filename = String.format("%s.%s", userDetails.getUsername(), imageExtension);
         fileBrowserFileRequest.setFilename(filename);
         fileBrowserFileRequest.setPath(Paths.get(DEFAULT_AVATAR_PATH, filename).toString());
