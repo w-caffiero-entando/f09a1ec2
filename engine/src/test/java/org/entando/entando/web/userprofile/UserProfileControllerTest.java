@@ -190,7 +190,7 @@ class UserProfileControllerTest extends AbstractControllerTest {
 
         Answer<Void> ans = invocation -> {
             Object[] args = invocation.getArguments();
-            ((BindingResult) args[1]).rejectValue("fileName", "1", new String[]{"fileName_without_extension"},
+            ((BindingResult) args[1]).rejectValue("filename", "1", new String[]{"fileName_without_extension"},
                     "fileBrowser.filename.invalidFilename");
             return null;
         };
@@ -218,7 +218,7 @@ class UserProfileControllerTest extends AbstractControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + accessToken));
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.payload.fileName").value("jack_bauer.png"));
+                .andExpect(jsonPath("$.payload.filename").value("jack_bauer.png"));
     }
 
     @Test
@@ -272,12 +272,12 @@ class UserProfileControllerTest extends AbstractControllerTest {
 
     private static Stream<Arguments> provideValuesFor400() {
         return Stream.of(
-                Arguments.of("{\"fileNam\":\"image.png\",\"base64\":\"AA==\"}", "NotBlank"),
+                Arguments.of("{\"filenam\":\"image.png\",\"base64\":\"AA==\"}", "NotBlank"),
                 Arguments.of("{\"base64\":\"AA==\"}", "NotBlank"),
-                Arguments.of("{\"fileName\":\"\",\"base64\":\"AA==\"}", "NotBlank"),
-                Arguments.of("{\"fileName\":\"image.png\",\"base6\":\"AA==\"}", "NotEmpty"),
-                Arguments.of("{\"fileName\":\"image.png\"}", "NotEmpty"),
-                Arguments.of("{\"fileName\":\"image.png\",\"base64\":\"\"}", "NotEmpty")
+                Arguments.of("{\"filename\":\"\",\"base64\":\"AA==\"}", "NotBlank"),
+                Arguments.of("{\"filename\":\"image.png\",\"base6\":\"AA==\"}", "NotEmpty"),
+                Arguments.of("{\"filename\":\"image.png\"}", "NotEmpty"),
+                Arguments.of("{\"filename\":\"image.png\",\"base64\":\"\"}", "NotEmpty")
         );
     }
 

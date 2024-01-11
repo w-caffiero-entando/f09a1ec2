@@ -30,7 +30,7 @@ import lombok.Setter;
 public class ProfileAvatarRequest {
 
     @NotBlank(message = "avatar.filename.notBlank")
-    private String fileName;
+    private String filename;
     @NotEmpty(message = "fileBrowser.base64.notBlank")
     private byte[] base64;
 }

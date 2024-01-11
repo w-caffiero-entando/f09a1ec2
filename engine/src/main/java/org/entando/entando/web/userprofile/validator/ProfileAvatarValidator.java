@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ * Copyright 2023-Present Entando Inc. (http://www.entando.com) All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -25,9 +25,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-/**
- * @author eu
- */
 @Component
 public class ProfileAvatarValidator implements Validator {
 
@@ -43,9 +40,9 @@ public class ProfileAvatarValidator implements Validator {
     public void validate(@NonNull Object target, @NonNull Errors errors) {
         ProfileAvatarRequest request = (ProfileAvatarRequest) target;
 
-        String fileName = request.getFileName();
-        if (StringUtils.isEmpty(FilenameUtils.getExtension(fileName))) {
-            errors.rejectValue("fileName", ERRCODE_INVALID_FILE_NAME, new String[]{fileName},
+        String filename = request.getFilename();
+        if (StringUtils.isEmpty(FilenameUtils.getExtension(filename))) {
+            errors.rejectValue("filename", ERRCODE_INVALID_FILE_NAME, new String[]{filename},
                     "fileBrowser.filename.invalidFilename");
             return;
         }

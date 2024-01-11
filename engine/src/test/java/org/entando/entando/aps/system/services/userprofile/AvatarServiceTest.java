@@ -10,9 +10,11 @@ import static org.mockito.Mockito.when;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.entity.model.attribute.MonoTextAttribute;
 import com.agiletec.aps.system.services.user.UserDetails;
+import java.util.List;
 import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.storage.IFileBrowserService;
+import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
 import org.entando.entando.aps.system.services.userprofile.model.AvatarDto;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.aps.system.services.userprofile.model.UserProfile;
@@ -59,7 +61,7 @@ class AvatarServiceTest {
         when(userProfileManager.getProfile(any())).thenThrow(EntException.class);
         assertThrows(RestServerError.class, () -> avatarService.getAvatarData(mock(UserDetails.class)));
     }
-    
+
     @Test
     void shouldGetAvatarDataThrowResourceNotFoundExceptionIfNoImageIsPresent() throws EntException {
         when(userProfileManager.getProfile(any())).thenReturn(new UserProfile());
@@ -76,16 +78,13 @@ class AvatarServiceTest {
     @Test
     void shouldUpdateAvatarWithNullProfile() throws EntException {
         when(userProfileManager.getProfile("username")).thenReturn(null);
-        IUserProfile prototype = this.buildValidUserProfile(null, null);
-        when(userProfileManager.getDefaultProfileType()).thenReturn(prototype);
-        when(fileBrowserService.exists(any())).thenReturn(true);
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("username");
+        when(fileBrowserService.browseFolder(Mockito.anyString(), Mockito.eq(false))).thenReturn(List.of());
         avatarService.updateAvatar(mock(ProfileAvatarRequest.class), userDetails,
                 mock(BindingResult.class));
-        verify(fileBrowserService, Mockito.times(1)).deleteFile(any(), any());
-        verify(prototype, Mockito.times(1)).setId("username");
-        verify(userProfileManager, Mockito.times(1)).addProfile("username", prototype);
+        verify(fileBrowserService, Mockito.times(0)).deleteFile(any(), any());
+        verify(userProfileManager, Mockito.times(0)).addProfile(Mockito.eq("username"), Mockito.any(IUserProfile.class));
     }
 
     @Test
@@ -102,8 +101,18 @@ class AvatarServiceTest {
     @Test
     void shouldUpdateAvatarAddProfilePictureFromTheRequest() throws EntException {
         when(userProfileManager.getProfile(any())).thenReturn(new UserProfile());
-        avatarService.updateAvatar(mock(ProfileAvatarRequest.class), mock(UserDetails.class),
-                mock(BindingResult.class));
+        
+        BasicFileAttributeViewDto dtoDirectory = new BasicFileAttributeViewDto();
+        dtoDirectory.setDirectory(true);
+        dtoDirectory.setName("folder");
+        BasicFileAttributeViewDto dto = new BasicFileAttributeViewDto();
+        dto.setDirectory(false);
+        dto.setName("test_username.jpg");
+        when(fileBrowserService.browseFolder(Mockito.anyString(), Mockito.eq(false))).thenReturn(List.of(dtoDirectory, dto));
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("test_username");
+        
+        avatarService.updateAvatar(mock(ProfileAvatarRequest.class),userDetails, mock(BindingResult.class));
         verify(fileBrowserService, Mockito.times(1)).addFile(any(), any());
     }
 
@@ -114,7 +123,7 @@ class AvatarServiceTest {
         when(userProfileManager.getProfile(any())).thenReturn(profile);
         // set POST request DTO
         ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest();
-        profileAvatarRequest.setFileName("image.png");
+        profileAvatarRequest.setFilename("image.png");
         profileAvatarRequest.setBase64(new byte[0]);
         // set user details to return desired username
         UserDetails userDetails = mock(UserDetails.class);
@@ -135,7 +144,7 @@ class AvatarServiceTest {
         when(userProfileManager.getProfile(any())).thenReturn(profile);
         // set POST request DTO
         ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest();
-        profileAvatarRequest.setFileName("image.png");
+        profileAvatarRequest.setFilename("image.png");
         profileAvatarRequest.setBase64(new byte[0]);
         // set user details to return desired username
         UserDetails userDetails = mock(UserDetails.class);
@@ -220,7 +229,7 @@ class AvatarServiceTest {
 
         // set POST request DTO
         ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest();
-        profileAvatarRequest.setFileName("image.png");
+        profileAvatarRequest.setFilename("image.png");
         profileAvatarRequest.setBase64(new byte[0]);
 
         //pretend fileBrowserService.exists goes in error
