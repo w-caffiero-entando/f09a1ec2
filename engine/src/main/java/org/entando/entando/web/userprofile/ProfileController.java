@@ -227,12 +227,11 @@ public class ProfileController {
     }
 
     @DeleteMapping(path = "/userProfiles/avatar")
-    public ResponseEntity<Void> deleteAvatar(@RequestAttribute("user") UserDetails user) {
-
-        // delete the profile picture associated with the received user profile. If no Image is found, the method does
-        // nothing and returns ok anyway
+    public ResponseEntity<SimpleRestResponse> deleteAvatar(@RequestAttribute("user") UserDetails user) {
         avatarService.deleteAvatar(user, new MapBindingResult(new HashMap<>(), "user"));
-
-        return ResponseEntity.ok().build();
+        Map<String, String> payload = new HashMap<>();
+        payload.put("username", user.getUsername());
+        return new ResponseEntity<>(new SimpleRestResponse<>(payload), HttpStatus.OK);
     }
+    
 }

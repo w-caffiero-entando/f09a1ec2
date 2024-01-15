@@ -40,6 +40,7 @@ import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
 import org.entando.entando.web.userprofile.validator.ProfileAvatarValidator;
 import org.entando.entando.web.userprofile.validator.ProfileValidator;
 import org.entando.entando.web.utils.OAuth2TestUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -262,11 +263,13 @@ class UserProfileControllerTest extends AbstractControllerTest {
     @Test
     void shouldDeleteAvatarReturn200() throws Exception {
         String accessToken = this.createAccessToken();
-
         ResultActions result = mockMvc.perform(
                 delete("/userProfiles/avatar")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(status().isOk());
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.payload.username").value("jack_bauer"))
+                .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(0)))
+                .andExpect(jsonPath("$.metaData.size()", CoreMatchers.is(0)));
     }
 
 
