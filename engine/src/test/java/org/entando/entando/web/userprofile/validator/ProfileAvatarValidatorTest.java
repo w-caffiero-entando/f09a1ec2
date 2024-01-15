@@ -44,7 +44,7 @@ class ProfileAvatarValidatorTest {
     @Test
     void shouldNotValidateFileNamesMissingExtensions() throws IOException {
         ProfileAvatarRequest request = new ProfileAvatarRequest("missing_extension_filename",
-                IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()));
+                IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()), false);
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(request, "profileAvatarRequest");
         new ProfileAvatarValidator().validate(request, errors);
         assertEquals(1, errors.getErrorCount());
@@ -55,7 +55,7 @@ class ProfileAvatarValidatorTest {
     @Test
     void shouldNotValidateFilesOtherThanImages() {
         String notValidBase64Image = "bm90IGFuIGltYWdl";
-        ProfileAvatarRequest request = new ProfileAvatarRequest("valid_filename.txt", notValidBase64Image.getBytes());
+        ProfileAvatarRequest request = new ProfileAvatarRequest("valid_filename.txt", notValidBase64Image.getBytes(), false);
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(request, "profileAvatarRequest");
         new ProfileAvatarValidator().validate(request, errors);
         assertEquals(1, errors.getErrorCount());
@@ -68,7 +68,7 @@ class ProfileAvatarValidatorTest {
     @Test
     void shouldThrowUncheckedIOExceptionIfImageReadingFails() throws IOException {
         ProfileAvatarRequest request = new ProfileAvatarRequest("image.png",
-                IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()));
+                IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()), false);
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(request, "profileAvatarRequest");
         try (MockedStatic<ImageIO> mockStatic = Mockito.mockStatic(ImageIO.class)) {
             mockStatic.when(() -> ImageIO.read(any(InputStream.class))).thenThrow(IOException.class);
@@ -80,7 +80,7 @@ class ProfileAvatarValidatorTest {
     @Test
     void shouldValidateAcceptValidImageWithValidFileName() throws IOException {
         ProfileAvatarRequest request = new ProfileAvatarRequest("image.png",
-                IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()));
+                IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()), false);
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(request, "profileAvatarRequest");
         new ProfileAvatarValidator().validate(request, errors);
         assertTrue(errors.getAllErrors().isEmpty());

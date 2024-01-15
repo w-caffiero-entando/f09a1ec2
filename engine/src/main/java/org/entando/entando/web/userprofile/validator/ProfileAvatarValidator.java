@@ -19,6 +19,7 @@ import java.io.UncheckedIOException;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.web.common.RestErrorCodes;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -39,20 +40,27 @@ public class ProfileAvatarValidator implements Validator {
     @Override
     public void validate(@NonNull Object target, @NonNull Errors errors) {
         ProfileAvatarRequest request = (ProfileAvatarRequest) target;
-
         String filename = request.getFilename();
-        if (StringUtils.isEmpty(FilenameUtils.getExtension(filename))) {
+        if (StringUtils.isBlank(filename)) {
+            errors.rejectValue("filename", RestErrorCodes.NOT_BLANK, new String[]{},
+                    "avatar.filename.notBlank");
+        } else if (StringUtils.isEmpty(FilenameUtils.getExtension(filename))) {
             errors.rejectValue("filename", ERRCODE_INVALID_FILE_NAME, new String[]{filename},
                     "fileBrowser.filename.invalidFilename");
             return;
         }
-
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(request.getBase64())) {
-            if (ImageIO.read(byteArrayInputStream) == null) {
-                errors.rejectValue("base64", ERRCODE_INVALID_FILE_TYPE, "fileBrowser.file.invalidType");
+        byte[] base64 = request.getBase64();
+        if (null == base64) {
+            errors.rejectValue("base64", RestErrorCodes.NOT_EMPTY, new String[]{},
+                    "fileBrowser.base64.notBlank");
+        } else {
+            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(request.getBase64())) {
+                if (ImageIO.read(byteArrayInputStream) == null) {
+                    errors.rejectValue("base64", ERRCODE_INVALID_FILE_TYPE, "fileBrowser.file.invalidType");
+                }
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
         }
     }
 

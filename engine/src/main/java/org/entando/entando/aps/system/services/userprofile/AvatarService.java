@@ -1,13 +1,22 @@
+/*
+ * Copyright 2023-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.aps.system.services.userprofile;
 
-import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface;
-import com.agiletec.aps.system.common.entity.model.attribute.MonoTextAttribute;
 import com.agiletec.aps.system.services.user.UserDetails;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -16,10 +25,9 @@ import org.entando.entando.aps.system.exception.ResourceNotFoundException;
 import org.entando.entando.aps.system.exception.RestServerError;
 import org.entando.entando.aps.system.services.storage.IFileBrowserService;
 import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
+import org.entando.entando.aps.system.services.userpreferences.IUserPreferencesManager;
 import org.entando.entando.aps.system.services.userprofile.model.AvatarDto;
-import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
-import org.entando.entando.ent.exception.EntException;
-import org.entando.entando.ent.exception.EntRuntimeException;
+import org.entando.entando.aps.system.services.userprofile.model.AvatarDto.AvatarDtoBuilder;
 import org.entando.entando.web.entity.validator.EntityValidator;
 import org.entando.entando.web.filebrowser.model.FileBrowserFileRequest;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
@@ -28,10 +36,12 @@ import org.springframework.validation.BindingResult;
 @Slf4j
 @RequiredArgsConstructor
 public class AvatarService implements IAvatarService {
-
-    // Services
+    
+    private static final String GRAVATAR_AVATAR_OPTION = "GRAVATAR";
+    private static final String LOCAL_AVATAR_OPTION = "LOCAL_FILE";
+    
     private final IFileBrowserService fileBrowserService;
-    private final IUserProfileManager userProfileManager;
+    private final IUserPreferencesManager userPreferencesManager;
 
     // CONSTANTS
     private static final String DEFAULT_AVATAR_PATH = "static/profile";
@@ -39,7 +49,11 @@ public class AvatarService implements IAvatarService {
     @Override
     public AvatarDto getAvatarData(UserDetails userDetails) {
         try {
-            String fileName = this.getAvatarFilename(userDetails);
+            boolean isGravatarEnabled = this.userPreferencesManager.isUserGravatarEnabled(userDetails.getUsername());
+            if (isGravatarEnabled) {
+                return AvatarDto.builder().gravatar(true).build();
+            }
+            String fileName = this.getAvatarFilenameByUsername(userDetails.getUsername());
             if (StringUtils.isEmpty(fileName)) {
                 throw new ResourceNotFoundException(EntityValidator.ERRCODE_ENTITY_DOES_NOT_EXIST, "image",
                     userDetails.getUsername());
@@ -68,16 +82,13 @@ public class AvatarService implements IAvatarService {
     public String updateAvatar(ProfileAvatarRequest request, UserDetails userDetails, BindingResult bindingResult) {
         try {
             String username = userDetails.getUsername();
-            IUserProfile userProfile = userProfileManager.getProfile(username);
             // remove previous image if present
-            deletePrevUserAvatarFromFileSystemIfPresent(username, userProfile);
-            // add profile picture file
-            FileBrowserFileRequest fileBrowserFileRequest = addProfileImageToFileSystem(request, userDetails, bindingResult);
-            // update profile picture attribute or add a new one if no image was already set by user
-            if (getProfilePictureAttribute(userProfile).isPresent()) {
-                this.setProfilePictureAttribute(userProfile, fileBrowserFileRequest.getFilename());
-                userProfileManager.updateProfile(userProfile.getId(), userProfile);
+            deletePrevUserAvatarFromFileSystemIfPresent(username);
+            this.userPreferencesManager.updateUserGravatarPreference(userDetails.getUsername(), request.isUseGravatar());
+            if (request.isUseGravatar()) {
+                return null;
             }
+            FileBrowserFileRequest fileBrowserFileRequest = addProfileImageToFileSystem(request, userDetails, bindingResult);
             return fileBrowserFileRequest.getFilename();
         } catch (Exception e) {
             log.error("Error updating avatar", e);
@@ -89,15 +100,8 @@ public class AvatarService implements IAvatarService {
     public void deleteAvatar(UserDetails userDetails, BindingResult bindingResult) {
         try {
             String username = userDetails.getUsername();
-            IUserProfile userProfile = userProfileManager.getProfile(username);
-            // remove previous image if present
-            this.deletePrevUserAvatarFromFileSystemIfPresent(username, userProfile);
-            // update profile picture attribute (if present) with an empty value
-            if (getProfilePictureAttribute(userProfile).isPresent()) {
-                this.setProfilePictureAttribute(userProfile, null);
-                // update user profile with the fresh data related to profile picture
-                userProfileManager.updateProfile(userProfile.getId(), userProfile);
-            }
+            this.deletePrevUserAvatarFromFileSystemIfPresent(username);
+            this.userPreferencesManager.updateUserGravatarPreference(userDetails.getUsername(), false);
         } catch (Exception e) {
             log.error("Error deleting avatar", e);
             throw new RestServerError("Error deleting avatar", e);
@@ -115,28 +119,13 @@ public class AvatarService implements IAvatarService {
         return fileBrowserFileRequest;
     }
 
-    private void deletePrevUserAvatarFromFileSystemIfPresent(String username, IUserProfile userProfile) {
-        Consumer<String> deleteFile = filename -> {
-            if (null == filename) {
-                return;
-            }
-            String profilePicturePath = Paths.get(DEFAULT_AVATAR_PATH, filename).toString();
-            this.removePictureFromFilesystem(profilePicturePath);
-        };
-        this.getProfilePictureAttribute(userProfile)
-                .ifPresentOrElse(attribute -> deleteFile.accept((String) attribute.getValue()),
-                        () -> deleteFile.accept(this.getAvatarFilenameByUsername(username)));
-    }
-
-    private String getAvatarFilename(UserDetails userDetails) {
-        try {
-            IUserProfile userProfile = userProfileManager.getProfile(userDetails.getUsername());
-            return getProfilePictureAttribute(userProfile).map(pr -> (String)pr.getValue()).orElseGet(() ->
-                    this.getAvatarFilenameByUsername(userDetails.getUsername())
-            );
-        } catch (Exception e) {
-            throw new EntRuntimeException("Error extracting avatar " + userDetails.getUsername(), e);
+    private void deletePrevUserAvatarFromFileSystemIfPresent(String username) {
+        String filename = this.getAvatarFilenameByUsername(username);
+        if (null == filename) {
+            return;
         }
+        String profilePicturePath = Paths.get(DEFAULT_AVATAR_PATH, filename).toString();
+        fileBrowserService.deleteFile(profilePicturePath, false);
     }
 
     private String getAvatarFilenameByUsername(String username) {
@@ -150,16 +139,6 @@ public class AvatarService implements IAvatarService {
         return fileAvatar.orElse(null);
     }
 
-    private void removePictureFromFilesystem(String profilePicturePath) throws EntRuntimeException {
-        try {
-            if (fileBrowserService.exists(profilePicturePath)) {
-                fileBrowserService.deleteFile(profilePicturePath, false);
-            }
-        } catch (EntException e) {
-            throw new EntRuntimeException("Error in checking file existence on the filesystem", e);
-        }
-    }
-
     private static FileBrowserFileRequest convertToFileBrowserFileRequest(ProfileAvatarRequest request,
             UserDetails userDetails) {
         FileBrowserFileRequest fileBrowserFileRequest = new FileBrowserFileRequest();
@@ -170,17 +149,6 @@ public class AvatarService implements IAvatarService {
         fileBrowserFileRequest.setProtectedFolder(false);
         fileBrowserFileRequest.setBase64(request.getBase64());
         return fileBrowserFileRequest;
-    }
-
-    private Optional<AttributeInterface> getProfilePictureAttribute(IUserProfile userProfile) {
-        return Optional.ofNullable(userProfile).map(up -> up.getAttributeByRole(SystemConstants.USER_PROFILE_ATTRIBUTE_ROLE_PROFILE_PICTURE));
-    }
-
-    private void setProfilePictureAttribute(IUserProfile userProfile, String value) {
-        getProfilePictureAttribute(userProfile).ifPresent(attribute -> {
-            MonoTextAttribute textAtt = (MonoTextAttribute) attribute;
-            textAtt.setText(value);
-        });
     }
 
 }

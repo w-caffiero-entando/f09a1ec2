@@ -37,7 +37,6 @@ import org.entando.entando.web.common.model.RestResponse;
 import org.entando.entando.web.common.model.SimpleRestResponse;
 import org.entando.entando.web.entity.validator.EntityValidator;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
-import org.entando.entando.web.userprofile.model.ProfileAvatarResponse;
 import org.entando.entando.web.userprofile.validator.ProfileAvatarValidator;
 import org.entando.entando.web.userprofile.validator.ProfileValidator;
 import org.springframework.http.HttpStatus;
@@ -45,6 +44,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -173,7 +173,7 @@ public class ProfileController {
     @PutMapping(value = "/myUserProfile", produces = MediaType.APPLICATION_JSON_VALUE)
     @RestAccessControl(permission = Permission.ENTER_BACKEND)
     public ResponseEntity<SimpleRestResponse<EntityDto>> updateMyUserProfile(@RequestAttribute("user") UserDetails user,
-            @Valid @RequestBody EntityDto bodyRequest, BindingResult bindingResult) {
+            /*@Valid*/ @RequestBody EntityDto bodyRequest, BindingResult bindingResult) {
         logger.debug("Update profile for the logged user {} -> {}", user.getUsername(), bodyRequest);
         profileValidator.validateBodyName(user.getUsername(), bodyRequest, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -185,7 +185,7 @@ public class ProfileController {
         }
         return new ResponseEntity<>(new SimpleRestResponse<>(response), HttpStatus.OK);
     }
-
+    
     @GetMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestResponse<Map<String, Object>, Map<String, Object>>> getAvatar(
             @RequestAttribute("user") UserDetails userDetails) {
@@ -197,33 +197,28 @@ public class ProfileController {
         result.put("isDirectory", false);
         result.put("path", avatarData.getCurrentPath());
         result.put("filename", avatarData.getFilename());
+        result.put("useGravatar", avatarData.isGravatar());
         result.put("base64", avatarData.getBase64());
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(PREV_PATH, avatarData.getPrevPath());
         return new ResponseEntity<>(new RestResponse<>(result, metadata), HttpStatus.OK);
     }
 
-
     @PostMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SimpleRestResponse<ProfileAvatarResponse>> addAvatar(
+    public ResponseEntity<SimpleRestResponse<Map<String, String>>> addAvatar(
             @Valid @RequestBody ProfileAvatarRequest request,
             @RequestAttribute("user") UserDetails user,
             BindingResult bindingResult) {
-
         // validate input dto to check for consistency of input
         profileAvatarValidator.validate(request, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        // update the profile picture saving the received image in the file system, eventually deleting the previous
-        // existing image
         String pictureFileName = avatarService.updateAvatar(request, user, bindingResult);
-
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        return new ResponseEntity<>(new SimpleRestResponse<>(new ProfileAvatarResponse(pictureFileName)),
-                HttpStatus.OK);
+        return new ResponseEntity<>(new SimpleRestResponse<>(Map.of("filename", pictureFileName)), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/userProfiles/avatar")
@@ -233,6 +228,9 @@ public class ProfileController {
         // nothing and returns ok anyway
         avatarService.deleteAvatar(user, new MapBindingResult(new HashMap<>(), "user"));
 
+        // restituire lo usernane nel corpo
+        
         return ResponseEntity.ok().build();
     }
+    
 }
