@@ -222,7 +222,7 @@ public class ProfileController {
     }
 
     @DeleteMapping(path = "/userProfiles/avatar")
-    public ResponseEntity<SimpleRestResponse<Map<String, String>>> deleteAvatar(@RequestAttribute("user") UserDetails user) {
+    public ResponseEntity<SimpleRestResponse> deleteAvatar(@RequestAttribute("user") UserDetails user) {
         avatarService.deleteAvatar(user, new MapBindingResult(new HashMap<>(), "user"));
         Map<String, String> payload = new HashMap<>();
         payload.put("username", user.getUsername());
