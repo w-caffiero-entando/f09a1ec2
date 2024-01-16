@@ -25,7 +25,6 @@ import com.agiletec.aps.util.DateConverter;
 import com.agiletec.aps.util.FileTextReader;
 import org.entando.entando.aps.system.common.entity.model.attribute.EmailAttribute;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
-import org.entando.entando.aps.system.services.userprofile.IUserProfileService;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
@@ -47,13 +46,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
+import com.agiletec.aps.system.common.entity.model.attribute.MonoTextAttribute;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
+import org.entando.entando.aps.system.services.userpreferences.IUserPreferencesManager;
+import org.entando.entando.aps.system.services.userpreferences.UserPreferences;
+import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
+import org.springframework.core.io.ClassPathResource;
+
 class UserProfileControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     @Autowired
-    private IUserProfileService userProfileService;
+    private IUserProfileManager userProfileManager;
 
     @Autowired
-    private IUserProfileManager userProfileManager;
+    private IUserPreferencesManager userPreferencesManager;
 
     @Autowired
     private IUserManager userManager;
@@ -493,7 +501,77 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
             }
         }
     }
-
+    
+    @Test
+    void shouldPostFileAvatarReturn200OnRightInput() throws Exception {
+        UserPreferences userPreferences = this.userPreferencesManager.getUserPreferences("jack_bauer");
+        Assertions.assertNull(userPreferences);
+        try {
+            String accessToken = this.createAccessToken();
+            ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest("myFile.png",
+                    IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()), false);
+            ResultActions result = mockMvc.perform(
+                    post("/userProfiles/avatar")
+                            .content(new ObjectMapper().writeValueAsString(profileAvatarRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken));
+            result.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.filename").value("jack_bauer.png"));
+            userPreferences = this.userPreferencesManager.getUserPreferences("jack_bauer");
+            Assertions.assertNotNull(userPreferences);
+            Assertions.assertFalse(userPreferences.isGravatar());
+        } finally {
+            this.userPreferencesManager.deleteUserPreferences("jack_bauer");
+        }
+    }
+    
+    @Test
+    void shouldPostGravatarReturn200() throws Exception {
+        UserPreferences userPreferences = this.userPreferencesManager.getUserPreferences("jack_bauer");
+        Assertions.assertNull(userPreferences);
+        try {
+            IUserProfile profile = this.userProfileManager.getDefaultProfileType();
+            ITextAttribute emailAttribute = (ITextAttribute) profile.getAttributeByRole(SystemConstants.USER_PROFILE_ATTRIBUTE_ROLE_MAIL);
+            emailAttribute.setText("jack_bauer@jack_bauer.com", "it");
+            profile.setId("jack_bauer");
+            this.userProfileManager.addProfile("jack_bauer", profile);
+            String accessToken = this.createAccessToken();
+            ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest(null, null, true);
+            ResultActions result = mockMvc.perform(
+                    post("/userProfiles/avatar")
+                            .content(new ObjectMapper().writeValueAsString(profileAvatarRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken));
+            result.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.username").value("jack_bauer"));
+            userPreferences = this.userPreferencesManager.getUserPreferences("jack_bauer");
+            Assertions.assertNotNull(userPreferences);
+            Assertions.assertTrue(userPreferences.isGravatar());
+        } finally {
+            this.userPreferencesManager.deleteUserPreferences("jack_bauer");
+            this.userProfileManager.deleteProfile("jack_bauer");
+        }
+    }
+    
+    @Test
+    void shouldReturnErrorOnPostGravatarWithNullProfile() throws Exception {
+        try {
+            String accessToken = this.createAccessToken();
+            ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest(null, null, true);
+            ResultActions result = mockMvc.perform(
+                    post("/userProfiles/avatar")
+                            .content(new ObjectMapper().writeValueAsString(profileAvatarRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken));
+            result.andExpect(status().isBadRequest());
+            UserPreferences userPreferences = this.userPreferencesManager.getUserPreferences("jack_bauer");
+            Assertions.assertNull(userPreferences);
+        } finally {
+            this.userPreferencesManager.deleteUserPreferences("jack_bauer");
+            this.userProfileManager.deleteProfile("jack_bauer");
+        }
+    }
+    
     private String createAccessToken() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
                 .withAuthorization(Group.FREE_GROUP_NAME, "manageUserProfile", Permission.MANAGE_USER_PROFILES)
@@ -567,5 +645,11 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
         result.andDo(resultPrint()).andExpect(expected);
         return result;
     }
-
+    
+    
+    
+    
+    
+    
+    
 }

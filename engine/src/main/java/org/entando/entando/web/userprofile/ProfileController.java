@@ -79,7 +79,6 @@ public class ProfileController {
 
     public static final String PROTECTED_FOLDER = "protectedFolder";
 
-
     public static final String PREV_PATH = "prevPath";
 
     @RestAccessControl(permission = {Permission.MANAGE_USER_PROFILES, Permission.MANAGE_USERS})
@@ -206,11 +205,11 @@ public class ProfileController {
 
     @PostMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SimpleRestResponse<Map<String, String>>> addAvatar(
-            @Valid @RequestBody ProfileAvatarRequest request,
+            @Validated @RequestBody ProfileAvatarRequest request,
             @RequestAttribute("user") UserDetails user,
             BindingResult bindingResult) {
         // validate input dto to check for consistency of input
-        profileAvatarValidator.validate(request, bindingResult);
+        profileAvatarValidator.validate(request, user, bindingResult);
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
@@ -218,19 +217,16 @@ public class ProfileController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        return new ResponseEntity<>(new SimpleRestResponse<>(Map.of("filename", pictureFileName)), HttpStatus.OK);
+        Map<String, String> response = null != pictureFileName ? Map.of("filename", pictureFileName) : Map.of("username", user.getUsername());
+        return new ResponseEntity<>(new SimpleRestResponse<>(response), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/userProfiles/avatar")
-    public ResponseEntity<Void> deleteAvatar(@RequestAttribute("user") UserDetails user) {
-
-        // delete the profile picture associated with the received user profile. If no Image is found, the method does
-        // nothing and returns ok anyway
+    public ResponseEntity<SimpleRestResponse<Map<String, String>>> deleteAvatar(@RequestAttribute("user") UserDetails user) {
         avatarService.deleteAvatar(user, new MapBindingResult(new HashMap<>(), "user"));
-
-        // restituire lo usernane nel corpo
-        
-        return ResponseEntity.ok().build();
+        Map<String, String> payload = new HashMap<>();
+        payload.put("username", user.getUsername());
+        return new ResponseEntity<>(new SimpleRestResponse<>(payload), HttpStatus.OK);
     }
     
 }

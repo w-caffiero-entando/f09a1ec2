@@ -27,7 +27,6 @@ import org.entando.entando.aps.system.services.storage.IFileBrowserService;
 import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
 import org.entando.entando.aps.system.services.userpreferences.IUserPreferencesManager;
 import org.entando.entando.aps.system.services.userprofile.model.AvatarDto;
-import org.entando.entando.aps.system.services.userprofile.model.AvatarDto.AvatarDtoBuilder;
 import org.entando.entando.web.entity.validator.EntityValidator;
 import org.entando.entando.web.filebrowser.model.FileBrowserFileRequest;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
@@ -119,7 +118,7 @@ public class AvatarService implements IAvatarService {
         return fileBrowserFileRequest;
     }
 
-    private void deletePrevUserAvatarFromFileSystemIfPresent(String username) {
+    private void deletePrevUserAvatarFromFileSystemIfPresent(String username) throws Exception {
         String filename = this.getAvatarFilenameByUsername(username);
         if (null == filename) {
             return;
@@ -128,7 +127,10 @@ public class AvatarService implements IAvatarService {
         fileBrowserService.deleteFile(profilePicturePath, false);
     }
 
-    private String getAvatarFilenameByUsername(String username) {
+    private String getAvatarFilenameByUsername(String username) throws Exception {
+        if (!fileBrowserService.exists(DEFAULT_AVATAR_PATH)) {
+            return null;
+        }
         List<BasicFileAttributeViewDto> fileAttributes = fileBrowserService.browseFolder(DEFAULT_AVATAR_PATH, Boolean.FALSE);
         Optional<String> fileAvatar = fileAttributes.stream().filter(bfa -> !bfa.getDirectory())
                 .filter(bfa -> {

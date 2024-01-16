@@ -41,6 +41,7 @@ import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
 import org.entando.entando.web.userprofile.validator.ProfileAvatarValidator;
 import org.entando.entando.web.userprofile.validator.ProfileValidator;
 import org.entando.entando.web.utils.OAuth2TestUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,7 +74,6 @@ class UserProfileControllerTest extends AbstractControllerTest {
     @Mock
     private IUserProfileManager userProfileManager;
 
-    @Spy
     private ProfileAvatarValidator profileAvatarValidator;
 
     @Mock
@@ -81,6 +81,7 @@ class UserProfileControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     public void setUp() throws Exception {
+        profileAvatarValidator = new ProfileAvatarValidator(userProfileManager);
         ProfileController controller = new ProfileController(userProfileService, profileValidator,
                 profileAvatarValidator, userManager,
                 userProfileManager, avatarService);
@@ -190,17 +191,14 @@ class UserProfileControllerTest extends AbstractControllerTest {
     @Test
     void shouldPostAvatarReturn400OnIllegalInput() throws Exception {
         String accessToken = this.createAccessToken();
-
         Answer<Void> ans = invocation -> {
             Object[] args = invocation.getArguments();
             ((BindingResult) args[1]).rejectValue("filename", "1", new String[]{"fileName_without_extension"},
                     "fileBrowser.filename.invalidFilename");
             return null;
         };
-        doAnswer(ans).when(profileAvatarValidator).validate(any(), any());
         ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest("fileName_without_extension",
                 new byte[1], false);
-
         ResultActions result = mockMvc.perform(
                 post("/userProfiles/avatar")
                         .content(new ObjectMapper().writeValueAsString(profileAvatarRequest))
@@ -264,7 +262,10 @@ class UserProfileControllerTest extends AbstractControllerTest {
         ResultActions result = mockMvc.perform(
                 delete("/userProfiles/avatar")
                         .header("Authorization", "Bearer " + accessToken));
-        result.andExpect(status().isOk());
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.payload.username").value("jack_bauer"))
+                .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(0)))
+                .andExpect(jsonPath("$.metaData.size()", CoreMatchers.is(0)));
     }
     
     private static Stream<Arguments> provideValuesFor400() {

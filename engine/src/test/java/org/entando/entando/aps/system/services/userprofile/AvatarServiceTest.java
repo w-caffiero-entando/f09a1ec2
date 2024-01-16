@@ -60,6 +60,7 @@ class AvatarServiceTest {
         when(user.getUsername()).thenReturn("username_test");
         when(userPreferencesManager.isUserGravatarEnabled(user.getUsername())).thenReturn(false);
         BasicFileAttributeViewDto dto = this.createMockFileAttributeDto("username_test", "png");
+        when(fileBrowserService.exists("static/profile")).thenReturn(true);
         when(fileBrowserService.browseFolder("static/profile", false)).thenReturn(List.of(dto));
         when(fileBrowserService.getFileStream(any(), any())).thenReturn(new byte[0]);
         AvatarDto avatarData = avatarService.getAvatarData(user);
@@ -92,6 +93,7 @@ class AvatarServiceTest {
         dtoDirectory.setDirectory(true);
         dtoDirectory.setName("folder");
         BasicFileAttributeViewDto dto = this.createMockFileAttributeDto("test_username", "jpg");
+        when(fileBrowserService.exists("static/profile")).thenReturn(true);
         when(fileBrowserService.browseFolder(Mockito.anyString(), Mockito.eq(false))).thenReturn(List.of(dtoDirectory, dto));
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("test_username");
@@ -106,20 +108,19 @@ class AvatarServiceTest {
         ProfileAvatarRequest request = new ProfileAvatarRequest(null, null, true);
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("test_username_gravatar");
-        BasicFileAttributeViewDto dto = this.createMockFileAttributeDto("test_username_gravatar", "jpg");
-        when(fileBrowserService.browseFolder(Mockito.anyString(), Mockito.eq(false))).thenReturn(List.of(dto));
+        when(fileBrowserService.exists("static/profile")).thenReturn(false);
         avatarService.updateAvatar(request, userDetails, mock(BindingResult.class));
         verify(userPreferencesManager, Mockito.times(1)).updateUserGravatarPreference("test_username_gravatar", true);
-        verify(fileBrowserService, Mockito.times(1)).deleteFile(any(), any());
+        verify(fileBrowserService, Mockito.times(0)).deleteFile(any(), any());
         verify(fileBrowserService, Mockito.times(0)).addFile(any(), any());
     }
     
     @Test
     void shouldDeleteAvatar() throws EntException {
-        // set user details to return desired username
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("user1");
         BasicFileAttributeViewDto dto = this.createMockFileAttributeDto("user1", "png");
+        when(fileBrowserService.exists("static/profile")).thenReturn(true);
         when(fileBrowserService.browseFolder(Mockito.anyString(), Mockito.eq(false))).thenReturn(List.of(dto));
         avatarService.deleteAvatar(userDetails, mock(BindingResult.class));
         verify(fileBrowserService, Mockito.times(1)).deleteFile(any(), any());
@@ -132,6 +133,7 @@ class AvatarServiceTest {
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("user1");
         BasicFileAttributeViewDto dto = this.createMockFileAttributeDto("user1", "jpg");
+        when(fileBrowserService.exists("static/profile")).thenReturn(true);
         when(fileBrowserService.browseFolder(Mockito.anyString(), Mockito.eq(false))).thenReturn(List.of(dto));
         Mockito.doThrow(RuntimeException.class).when(fileBrowserService).deleteFile(Mockito.any(), Mockito.eq(false));
         assertThrows(RestServerError.class,

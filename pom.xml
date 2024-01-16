@@ -71,6 +71,7 @@
         <preDeploymentTestGroups/>
         <postDeploymentTestGroups/>
         <sonar.coverage.exclusions>**/*.js</sonar.coverage.exclusions>
+        <sonar.scanner.force-deprecated-java-version>true</sonar.scanner.force-deprecated-java-version>
         <!--test database default settings -->
         <test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</test.database.driver>
         <test.database.hostname>localhost</test.database.hostname>
