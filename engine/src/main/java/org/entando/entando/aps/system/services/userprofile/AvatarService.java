@@ -27,6 +27,7 @@ import org.entando.entando.aps.system.services.storage.IFileBrowserService;
 import org.entando.entando.aps.system.services.storage.model.BasicFileAttributeViewDto;
 import org.entando.entando.aps.system.services.userpreferences.IUserPreferencesManager;
 import org.entando.entando.aps.system.services.userprofile.model.AvatarDto;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.web.entity.validator.EntityValidator;
 import org.entando.entando.web.filebrowser.model.FileBrowserFileRequest;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
@@ -35,9 +36,6 @@ import org.springframework.validation.BindingResult;
 @Slf4j
 @RequiredArgsConstructor
 public class AvatarService implements IAvatarService {
-    
-    private static final String GRAVATAR_AVATAR_OPTION = "GRAVATAR";
-    private static final String LOCAL_AVATAR_OPTION = "LOCAL_FILE";
     
     private final IFileBrowserService fileBrowserService;
     private final IUserPreferencesManager userPreferencesManager;
@@ -118,7 +116,7 @@ public class AvatarService implements IAvatarService {
         return fileBrowserFileRequest;
     }
 
-    private void deletePrevUserAvatarFromFileSystemIfPresent(String username) throws Exception {
+    private void deletePrevUserAvatarFromFileSystemIfPresent(String username) throws EntException {
         String filename = this.getAvatarFilenameByUsername(username);
         if (null == filename) {
             return;
@@ -127,7 +125,7 @@ public class AvatarService implements IAvatarService {
         fileBrowserService.deleteFile(profilePicturePath, false);
     }
 
-    private String getAvatarFilenameByUsername(String username) throws Exception {
+    private String getAvatarFilenameByUsername(String username) throws EntException {
         if (!fileBrowserService.exists(DEFAULT_AVATAR_PATH)) {
             return null;
         }

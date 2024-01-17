@@ -47,12 +47,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
-import com.agiletec.aps.system.common.entity.model.attribute.MonoTextAttribute;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.entando.entando.aps.system.services.userpreferences.IUserPreferencesManager;
 import org.entando.entando.aps.system.services.userpreferences.UserPreferences;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
+import org.hamcrest.CoreMatchers;
 import org.springframework.core.io.ClassPathResource;
 
 class UserProfileControllerIntegrationTest extends AbstractControllerIntegrationTest {
@@ -526,7 +526,7 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
     }
     
     @Test
-    void shouldPostGravatarReturn200() throws Exception {
+    void shouldPostDeleteGravatarReturn200() throws Exception {
         UserPreferences userPreferences = this.userPreferencesManager.getUserPreferences("jack_bauer");
         Assertions.assertNull(userPreferences);
         try {
@@ -537,16 +537,34 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
             this.userProfileManager.addProfile("jack_bauer", profile);
             String accessToken = this.createAccessToken();
             ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest(null, null, true);
-            ResultActions result = mockMvc.perform(
+            ResultActions resultPost = mockMvc.perform(
                     post("/userProfiles/avatar")
                             .content(new ObjectMapper().writeValueAsString(profileAvatarRequest))
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + accessToken));
-            result.andExpect(status().isOk())
-                    .andExpect(jsonPath("$.payload.username").value("jack_bauer"));
+            resultPost.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.useGravatar").value(true));
             userPreferences = this.userPreferencesManager.getUserPreferences("jack_bauer");
             Assertions.assertNotNull(userPreferences);
             Assertions.assertTrue(userPreferences.isGravatar());
+            
+            ResultActions resultGet = mockMvc.perform(
+                    get("/userProfiles/avatar")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken));
+            resultGet.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.useGravatar").value("true"));
+            
+            ResultActions resultDelete = mockMvc.perform(
+                    delete("/userProfiles/avatar")
+                            .header("Authorization", "Bearer " + accessToken));
+            resultDelete.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.username").value("jack_bauer"))
+                    .andExpect(jsonPath("$.errors.size()", CoreMatchers.is(0)))
+                    .andExpect(jsonPath("$.metaData.size()", CoreMatchers.is(0)));
+            userPreferences = this.userPreferencesManager.getUserPreferences("jack_bauer");
+            Assertions.assertNotNull(userPreferences);
+            Assertions.assertFalse(userPreferences.isGravatar());
         } finally {
             this.userPreferencesManager.deleteUserPreferences("jack_bauer");
             this.userProfileManager.deleteProfile("jack_bauer");

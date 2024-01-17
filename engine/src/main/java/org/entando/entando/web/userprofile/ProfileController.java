@@ -204,7 +204,7 @@ public class ProfileController {
     }
 
     @PostMapping(path = "/userProfiles/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SimpleRestResponse<Map<String, String>>> addAvatar(
+    public ResponseEntity<SimpleRestResponse<Map<String, Object>>> addAvatar(
             @Validated @RequestBody ProfileAvatarRequest request,
             @RequestAttribute("user") UserDetails user,
             BindingResult bindingResult) {
@@ -217,12 +217,12 @@ public class ProfileController {
         if (bindingResult.hasErrors()) {
             throw new ValidationGenericException(bindingResult);
         }
-        Map<String, String> response = null != pictureFileName ? Map.of("filename", pictureFileName) : Map.of("username", user.getUsername());
+        Map<String, Object> response = null != pictureFileName ? Map.of("filename", pictureFileName) : Map.of("useGravatar", true);
         return new ResponseEntity<>(new SimpleRestResponse<>(response), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/userProfiles/avatar")
-    public ResponseEntity<SimpleRestResponse> deleteAvatar(@RequestAttribute("user") UserDetails user) {
+    public ResponseEntity<SimpleRestResponse<Map<String, String>>> deleteAvatar(@RequestAttribute("user") UserDetails user) {
         avatarService.deleteAvatar(user, new MapBindingResult(new HashMap<>(), "user"));
         Map<String, String> payload = new HashMap<>();
         payload.put("username", user.getUsername());
