@@ -13,24 +13,19 @@
  */
 package org.entando.entando.web.userprofile.model;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * @author E.Santoboni
- */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class ProfileAvatarRequest {
-
-    @NotBlank(message = "avatar.filename.notBlank")
+    
     private String filename;
-    @NotEmpty(message = "fileBrowser.base64.notBlank")
     private byte[] base64;
+    private boolean useGravatar;
+    
 }

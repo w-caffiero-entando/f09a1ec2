@@ -296,11 +296,6 @@ public final class SystemConstants {
 
     public static final String USER_PROFILE_ATTRIBUTE_DISABLING_CODE_ON_EDIT = "userprofile:onEdit";
 
-    /**
-     * The name of the role for attribute attribute that contains the profile picture file name
-     */
-    public static final String USER_PROFILE_ATTRIBUTE_ROLE_PROFILE_PICTURE = "userprofile:profilepicture";
-
     public static final String ENTANDO_THREAD_NAME_PREFIX = "EntandoThread_";
 
     public static final String API_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
