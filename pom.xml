@@ -154,7 +154,7 @@
         <vorbis-java-tika.version>0.8</vorbis-java-tika.version>
         <drewnoakes-metadata-extractor.version>2.18.0</drewnoakes-metadata-extractor.version>
         <commons-collections4.version>4.4</commons-collections4.version>
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
         <maven-resources-plugin.version>2.5</maven-resources-plugin.version>
