@@ -29,16 +29,20 @@ public final class CdsUrlUtils {
 
     private static final String CDS_PUBLIC_URL_TENANT_PARAM = "cdsPublicUrl";
     private static final String CDS_PRIVATE_URL_TENANT_PARAM = "cdsPrivateUrl";
+    private static final String CDS_PUBLIC_PATH_TENANT_PARAM = "cdsPublicPath";
     private static final String CDS_PATH_TENANT_PARAM = "cdsPath";
     private static final String URL_SEP = "/";
-    private static final String SECTION_PUBLIC = "/public";
-    private static final String SECTION_PRIVATE = "/protected";
+    private static final String DEFAULT_SECTION_PUBLIC = "";
+    private static final String DEFAULT_SECTION_PRIVATE = "/protected";
 
     private CdsUrlUtils(){
     }
 
-    public static String getInternalSection(boolean isProtectedResource) {
-        return (isProtectedResource) ? SECTION_PRIVATE : SECTION_PUBLIC;
+    public static String getInternalSection(boolean isProtectedResource, Optional<TenantConfig> config, CdsConfiguration configuration) {
+        if (isProtectedResource) {
+            return DEFAULT_SECTION_PRIVATE;
+        }
+        return config.map(c -> c.getProperty(CDS_PUBLIC_PATH_TENANT_PARAM).orElse(DEFAULT_SECTION_PUBLIC)).orElse(configuration.getCdsPublicPath());
     }
 
     public static URI buildCdsExternalPublicResourceUrl(Optional<TenantConfig> config, CdsConfiguration configuration, String ... paths){

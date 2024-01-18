@@ -15,7 +15,6 @@ package org.entando.entando.plugins.jpcds.aps.system.storage;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
 
 class CdsConfigurationTest {
 
