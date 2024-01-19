@@ -226,6 +226,7 @@ class CdsStorageManagerTest {
         final String baseUrl = "http://my-server/tenant1/cms-resources";
         Map<String,String> configMap = Map.of("cdsPublicUrl", baseUrl,
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
+                "cdsPublicPath","/custom-path",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
         Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
@@ -236,7 +237,7 @@ class CdsStorageManagerTest {
         ).isInstanceOf(EntRuntimeException.class).hasMessageStartingWith("Error validating path");
 
         String testFilePath = "/testfolder/test.txt";
-        URI testFile = URI.create( baseUrl + "/public" + testFilePath);
+        URI testFile = URI.create( baseUrl + "/custom-path" + testFilePath);
         Mockito.when(cdsRemoteCaller.getFile(eq(testFile),
                 any(),
                 eq(false))).thenReturn(null);
@@ -246,7 +247,7 @@ class CdsStorageManagerTest {
 
 
         String testFilePathBadGateway = "/testfolder/test-badgw.txt";
-        URI testFileBadGateway = URI.create( baseUrl + "/public" + testFilePathBadGateway);
+        URI testFileBadGateway = URI.create( baseUrl + "/custom-path" + testFilePathBadGateway);
         Mockito.when(cdsRemoteCaller.getFile(eq(testFileBadGateway),
                 any(),
                 eq(false))).thenThrow(new HttpClientErrorException(HttpStatus.BAD_GATEWAY));
@@ -257,7 +258,7 @@ class CdsStorageManagerTest {
 
 
         String testFilePathNotFound = "/testfolder/test-notfound.txt";
-        URI testFileNotFound = URI.create( baseUrl + "/public" + testFilePathNotFound);
+        URI testFileNotFound = URI.create( baseUrl + "/custom-path" + testFilePathNotFound);
         Mockito.when(cdsRemoteCaller.getFile(eq(testFileNotFound),
                 any(),
                 eq(false))).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
@@ -276,7 +277,7 @@ class CdsStorageManagerTest {
         TenantConfig tc = new TenantConfig(configMap);
         Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
 
-        Mockito.when(cdsRemoteCaller.getFile(eq(URI.create("http://my-server/tenant1/cms-resources/public/test-folder/test.txt")),
+        Mockito.when(cdsRemoteCaller.getFile(eq(URI.create("http://my-server/tenant1/cms-resources/test-folder/test.txt")),
                 any(),
                 eq(false))).thenReturn(Optional.ofNullable(new ByteArrayInputStream("text random".getBytes(StandardCharsets.UTF_8))));
 
@@ -292,15 +293,14 @@ class CdsStorageManagerTest {
         is = cdsStorageManager.getStream(testFilePath,true);
         Assertions.assertThat(new BufferedReader(new InputStreamReader(is))
                 .lines().collect(Collectors.joining(""))).isEqualTo("text random");
-
     }
 
     @Test
     void shouldReturnRightUrlWhenCallGetResourceUrl() throws Exception {
         String testFilePath = "/test-folder/test.txt";
-
         Map<String,String> configMap = Map.of("cdsPublicUrl","http://my-server/tenant1/cms-resources",
                 "cdsPrivateUrl","http://cds-tenant1-kube-service:8081/",
+                "cdsPublicPath","/public",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
         Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
@@ -314,7 +314,6 @@ class CdsStorageManagerTest {
 
         resourceUrl = cdsStorageManager.createFullPath(testFilePath,true);
         Assertions.assertThat(resourceUrl).isEqualTo("http://cds-tenant1-kube-service:8081/protected/test-folder/test.txt");
-
     }
 
     @Test
@@ -359,15 +358,14 @@ class CdsStorageManagerTest {
                 "http://cds-tenant1-kube-service:8081/mytenant/api/v1/list/protected/test-folder")),
                 any())).thenReturn(Optional.ofNullable(new CdsFileAttributeViewDto[]{file}));
         Assertions.assertThat(cdsStorageManager.exists(testFilePath,true)).isTrue();
-
     }
 
     @Test
     void shouldWorkFineWhenCallExistsWithRootAsEmpty() throws Exception {
         String testFilePath = "";
-
         Map<String,String> configMap = Map.of("cdsPublicUrl","http://my-server/tenant1/cms-resources",
                 "cdsPrivateUrl","http://cds-tenant1-kube-service:8081/",
+                "cdsPublicPath","/public",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
         Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));

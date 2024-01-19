@@ -116,7 +116,7 @@ public class CdsStorageManager implements IStorageManager {
             URI apiUrl = EntUrlBuilder.builder()
                             .url(CdsUrlUtils.buildCdsInternalApiUrl(config, configuration))
                             .path("/delete/")
-                            .path(CdsUrlUtils.getInternalSection(isProtectedResource))
+                            .path(CdsUrlUtils.getInternalSection(isProtectedResource, config, this.configuration))
                             .path(subPath)
                             .build();
 
@@ -147,7 +147,7 @@ public class CdsStorageManager implements IStorageManager {
 
             url = EntUrlBuilder.builder()
                     .url(url)
-                    .path(CdsUrlUtils.getInternalSection(isProtectedResource))
+                    .path(CdsUrlUtils.getInternalSection(isProtectedResource, config, this.configuration))
                     .path(subPath).build();
 
             Optional<ByteArrayInputStream> is = caller.getFile(url, config, isProtectedResource);
@@ -245,7 +245,7 @@ public class CdsStorageManager implements IStorageManager {
         URI apiUrl = EntUrlBuilder.builder()
                 .url(CdsUrlUtils.buildCdsInternalApiUrl(config, configuration).toString())
                 .path("/list/")
-                .path(CdsUrlUtils.getInternalSection(isProtectedResource))
+                .path(CdsUrlUtils.getInternalSection(isProtectedResource, config, this.configuration))
                 .path(subPath)
                 .build();
 
@@ -314,7 +314,7 @@ public class CdsStorageManager implements IStorageManager {
         try {
             String baseUrl = EntUrlBuilder.builder()
                     .url(CdsUrlUtils.fetchBaseUrl(config, configuration, privateUrl))
-                    .path(CdsUrlUtils.getInternalSection(privateUrl)) // << this is part of base url because we want check path traversal!!
+                    .path(CdsUrlUtils.getInternalSection(privateUrl, config, this.configuration)) // << this is part of base url because we want check path traversal!!
                     .build().toString();
 
             String fullPath = EntUrlBuilder.builder()
