@@ -13,8 +13,7 @@
  */
 package org.entando.entando.web.userpreferences;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,14 +21,17 @@ import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.FileTextReader;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
 import java.util.Date;
 
 import org.entando.entando.aps.system.services.userpreferences.IUserPreferencesManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
+import org.entando.entando.web.userpreferences.model.UserPreferencesRequest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -58,16 +60,56 @@ class UserPreferencesControllerIntegrationTest extends AbstractControllerIntegra
                 .andExpect(jsonPath("$.errors[0].message",
                         Matchers.is("a User with unknown_user code could not be found")));
     }
-
+    
+    @Test
+    void testAddDeleteUserWithPrefereces() throws Exception {
+        String username = "user_for_test_prefereces";
+        try {
+            userManager.addUser(createUser(username));
+            Assertions.assertNull(this.userPreferencesManager.getUserPreferences(username));
+            UserDetails user = new OAuth2TestUtils.UserBuilder(username, "0x24").grantedToRoleAdmin().build();
+            String accessToken = mockOAuthInterceptor(user);
+            
+            mockMvc.perform(
+                    get("/userPreferences/{username}", username)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.wizard", Matchers.is(true)))
+                    .andExpect(jsonPath("$.payload.loadOnPageSelect", Matchers.is(true)))
+                    .andExpect(jsonPath("$.payload.translationWarning", Matchers.is(true)));
+            
+            Assertions.assertNotNull(this.userPreferencesManager.getUserPreferences(username));
+            
+            ObjectMapper mapper = new ObjectMapper();
+            UserPreferencesRequest request = new UserPreferencesRequest();
+            request.setWizard(false);
+            String payload = mapper.writeValueAsString(request);
+            
+            mockMvc.perform(
+                    put("/userPreferences/{username}", username)
+                            .content(payload)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.wizard", Matchers.is(false)));
+            
+            Assertions.assertNotNull(this.userPreferencesManager.getUserPreferences(username));
+            userManager.removeUser(username);
+            Assertions.assertNull(this.userPreferencesManager.getUserPreferences(username));
+        } finally {
+            this.userManager.removeUser(username);
+            this.userPreferencesManager.deleteUserPreferences(username);
+        }
+    }
+    
     @Test
     void testGetUsersPreferencesWithAdminPrivileges() throws Exception {
         String username = "user_with_admin_privileges";
-
         try {
             userManager.addUser(createUser(username));
             UserDetails user = new OAuth2TestUtils.UserBuilder(username, "0x24").grantedToRoleAdmin().build();
             String accessToken = mockOAuthInterceptor(user);
-
             mockMvc.perform(
                     get("/userPreferences/{username}", username)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -86,12 +128,10 @@ class UserPreferencesControllerIntegrationTest extends AbstractControllerIntegra
     @Test
     void testGetUsersPreferencesWithoutPrivileges() throws Exception {
         String username = "user_without_privileges";
-
         try {
             userManager.addUser(createUser(username));
             UserDetails user = new OAuth2TestUtils.UserBuilder(username, "0x24").build();
             String accessToken = mockOAuthInterceptor(user);
-
             mockMvc.perform(
                     get("/userPreferences/{username}", username)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
