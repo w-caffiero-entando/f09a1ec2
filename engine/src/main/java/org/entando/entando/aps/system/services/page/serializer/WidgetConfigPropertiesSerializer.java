@@ -157,7 +157,7 @@ public class WidgetConfigPropertiesSerializer extends StdSerializer<ApsPropertie
                 continue;
             }
 
-            String[] keyValue = f.split("=|:");
+            String[] keyValue = f.split("=|:", 2);
             if (keyValue.length != 2) {
                 logger.warn("Invalid filter format: {}", f);
                 continue;
