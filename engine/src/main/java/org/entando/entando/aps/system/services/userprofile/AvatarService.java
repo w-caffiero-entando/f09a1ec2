@@ -105,6 +105,11 @@ public class AvatarService implements IAvatarService {
         }
     }
 
+    @Override
+    public void deleteAvatar(String username) throws EntException {
+        this.deletePrevUserAvatarFromFileSystemIfPresent(username);
+    }
+
     //------------------------ Utility methods ------------------------------------//
 
     private FileBrowserFileRequest addProfileImageToFileSystem(

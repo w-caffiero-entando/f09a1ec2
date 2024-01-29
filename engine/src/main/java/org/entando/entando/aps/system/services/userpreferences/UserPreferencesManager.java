@@ -14,8 +14,12 @@
 package org.entando.entando.aps.system.services.userpreferences;
 
 import java.util.Optional;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.entando.entando.ent.exception.EntException;
 
+@Slf4j
+@Setter
 public class UserPreferencesManager implements IUserPreferencesManager {
 
     private UserPreferencesDAO userPreferencesDAO;
@@ -56,10 +60,6 @@ public class UserPreferencesManager implements IUserPreferencesManager {
     @Override
     public void deleteUserPreferences(String username) throws EntException {
         userPreferencesDAO.deleteUserPreferences(username);
-    }
-
-    public void setUserPreferencesDAO(UserPreferencesDAO userPreferencesDAO) {
-        this.userPreferencesDAO = userPreferencesDAO;
     }
     
 }

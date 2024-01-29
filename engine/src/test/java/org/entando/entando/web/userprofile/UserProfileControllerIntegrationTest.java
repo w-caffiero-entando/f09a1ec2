@@ -49,6 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.agiletec.aps.system.common.entity.model.attribute.ITextAttribute;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
+import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.aps.system.services.userpreferences.IUserPreferencesManager;
 import org.entando.entando.aps.system.services.userpreferences.UserPreferences;
 import org.entando.entando.web.userprofile.model.ProfileAvatarRequest;
@@ -59,6 +60,9 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
 
     @Autowired
     private IUserProfileManager userProfileManager;
+
+    @Autowired
+    private IStorageManager storageManager;
 
     @Autowired
     private IUserPreferencesManager userPreferencesManager;
@@ -503,6 +507,50 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
     }
     
     @Test
+    void shouldAddDeleteUserWithAvatar() throws Exception {
+        String username = "user_with_avatar";
+        try {
+            userManager.addUser(createUser(username));
+            Assertions.assertNull(this.userPreferencesManager.getUserPreferences(username));
+            String accessToken = this.createAccessToken(username);
+            ProfileAvatarRequest profileAvatarRequest = new ProfileAvatarRequest("myFile.png",
+                    IOUtils.toByteArray(new ClassPathResource("userprofile/image.png").getInputStream()), false);
+            ResultActions result = mockMvc.perform(
+                    post("/userProfiles/avatar")
+                            .content(new ObjectMapper().writeValueAsString(profileAvatarRequest))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .header("Authorization", "Bearer " + accessToken));
+            result.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.payload.filename").value(username + ".png"));
+            UserPreferences userPreferences = this.userPreferencesManager.getUserPreferences(username);
+            Assertions.assertNotNull(userPreferences);
+            Assertions.assertFalse(userPreferences.isGravatar());
+            
+            Assertions.assertTrue(this.storageManager.exists("static/profile/" + username + ".png", false));
+            
+            this.userManager.removeUser(username);
+            Assertions.assertNull(this.userPreferencesManager.getUserPreferences(username));
+            Assertions.assertFalse(this.storageManager.exists("static/profile/" + username + ".png", false));
+        } finally {
+            this.userPreferencesManager.deleteUserPreferences(username);
+            this.userManager.removeUser(username);
+            this.storageManager.deleteFile("static/profile/" + username + ".png", true);
+        }
+    }
+
+    private UserDetails createUser(String username) {
+        User user = new User();
+        user.setUsername(username);
+        user.setDisabled(false);
+        user.setLastAccess(new Date());
+        user.setLastPasswordChange(new Date());
+        user.setMaxMonthsSinceLastAccess(2);
+        user.setMaxMonthsSinceLastPasswordChange(1);
+        user.setPassword("password");
+        return user;
+    }
+    
+    @Test
     void shouldPostFileAvatarReturn200OnRightInput() throws Exception {
         UserPreferences userPreferences = this.userPreferencesManager.getUserPreferences("jack_bauer");
         Assertions.assertNull(userPreferences);
@@ -591,7 +639,11 @@ class UserProfileControllerIntegrationTest extends AbstractControllerIntegration
     }
     
     private String createAccessToken() throws Exception {
-        UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24")
+        return this.createAccessToken("jack_bauer");
+    }
+    
+    private String createAccessToken(String username) throws Exception {
+        UserDetails user = new OAuth2TestUtils.UserBuilder(username, "0x24")
                 .withAuthorization(Group.FREE_GROUP_NAME, "manageUserProfile", Permission.MANAGE_USER_PROFILES)
                 .build();
         return mockOAuthInterceptor(user);
