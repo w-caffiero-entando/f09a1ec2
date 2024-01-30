@@ -13,6 +13,7 @@
  */
 package org.entando.entando.plugins.jpcds.aps.system.storage;
 
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -41,17 +42,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.entando.entando.aps.system.services.storage.CdsActive;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
-@Service("StorageManager")
+@Service(SystemConstants.STORAGE_MANAGER)
 @CdsActive(true)
 public class CdsStorageManager implements IStorageManager {
 
     private static final String ERROR_VALIDATING_PATH_MSG = "Error validating path";
-    private final transient ITenantManager tenantManager;
-    private final transient CdsConfiguration configuration;
-    private final transient CdsRemoteCaller caller;
-
+    private transient ITenantManager tenantManager;
+    private transient CdsConfiguration configuration;
+    private transient CdsRemoteCaller caller;
 
     @Autowired
     public CdsStorageManager(CdsRemoteCaller caller, ITenantManager tenantManager, CdsConfiguration configuration) {
@@ -355,4 +357,18 @@ public class CdsStorageManager implements IStorageManager {
         DIRECTORY,
         ALL;
     }
+
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+        if (ctx == null) {
+            log.warn("Null WebApplicationContext during deserialization");
+            return;
+        }
+        this.tenantManager = ctx.getBean(ITenantManager.class);
+        this.configuration = ctx.getBean(CdsConfiguration.class);
+        this.caller = ctx.getBean(CdsRemoteCaller.class);
+    }
+    
 }
