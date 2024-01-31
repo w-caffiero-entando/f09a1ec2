@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,8 +53,12 @@ import org.springframework.web.context.WebApplicationContext;
 public class CdsStorageManager implements IStorageManager {
 
     private static final String ERROR_VALIDATING_PATH_MSG = "Error validating path";
+    
+    @Getter(AccessLevel.PROTECTED)
     private transient ITenantManager tenantManager;
+    @Getter(AccessLevel.PROTECTED)
     private transient CdsConfiguration configuration;
+    @Getter(AccessLevel.PROTECTED)
     private transient CdsRemoteCaller caller;
 
     @Autowired

@@ -16,12 +16,9 @@ package org.entando.entando.plugins.jpcds.aps.system.storage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.commons.collections4.map.HashedMap;
 import org.entando.entando.aps.system.services.tenants.TenantConfig;
 import org.entando.entando.plugins.jpcds.aps.system.storage.CdsUrlUtils.EntSubPath;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -29,14 +26,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class CdsUtilsTest {
-
-    @BeforeEach
-    private void init() throws Exception {
-    }
-
-    @AfterEach
-    public void afterAll() throws Exception {
-    }
 
     @Test
     void shouldExtractPathAndFilename() throws Exception {
