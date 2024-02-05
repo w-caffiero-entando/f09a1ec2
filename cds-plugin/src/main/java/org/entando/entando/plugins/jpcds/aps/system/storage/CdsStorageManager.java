@@ -85,9 +85,7 @@ public class CdsStorageManager implements IStorageManager {
             if(StringUtils.isBlank(subPath)){
                 throw new EntRuntimeException(ERROR_VALIDATING_PATH_MSG);
             }
-
-            this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
-
+            this.validateAndReturnResourcePath(config, subPath, false, isProtectedResource);
             URI apiUrl = CdsUrlUtils.buildCdsInternalApiUrl(config, configuration, "/upload/");
             CdsCreateResponseDto response = caller.executePostCall(apiUrl,
                     subPath,
@@ -118,18 +116,14 @@ public class CdsStorageManager implements IStorageManager {
             if(StringUtils.isBlank(subPath)){
                 throw new EntRuntimeException(ERROR_VALIDATING_PATH_MSG);
             }
-
-            this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
-
+            this.validateAndReturnResourcePath(config, subPath, true, isProtectedResource);
             URI apiUrl = EntUrlBuilder.builder()
                             .url(CdsUrlUtils.buildCdsInternalApiUrl(config, configuration))
                             .path("/delete/")
-                            .path(CdsUrlUtils.getInternalSection(isProtectedResource, config, this.configuration))
+                            .path(CdsUrlUtils.getSection(isProtectedResource, config, this.configuration, true))
                             .path(subPath)
                             .build();
-
             return caller.executeDeleteCall(apiUrl, config, false);
-
         } catch (EntRuntimeException ert) {
             throw ert;
         } catch (Exception e) {
@@ -147,7 +141,7 @@ public class CdsStorageManager implements IStorageManager {
                 throw new EntRuntimeException(ERROR_VALIDATING_PATH_MSG);
             }
 
-            this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
+            this.validateAndReturnResourcePath(config, subPath, true, isProtectedResource);
 
             url = (isProtectedResource) ?
                     CdsUrlUtils.buildCdsInternalApiUrl(config, configuration)  :
@@ -155,7 +149,7 @@ public class CdsStorageManager implements IStorageManager {
 
             url = EntUrlBuilder.builder()
                     .url(url)
-                    .path(CdsUrlUtils.getInternalSection(isProtectedResource, config, this.configuration))
+                    .path(CdsUrlUtils.getSection(isProtectedResource, config, this.configuration, true))
                     .path(subPath).build();
 
             Optional<ByteArrayInputStream> is = caller.getFile(url, config, isProtectedResource);
@@ -178,7 +172,7 @@ public class CdsStorageManager implements IStorageManager {
     public String getResourceUrl(String subPath, boolean isProtectedResource) {
         try {
             Optional<TenantConfig> config = getTenantConfig();
-            return this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
+            return this.validateAndReturnResourcePath(config, subPath, false, isProtectedResource);
         } catch (Exception e) {
             throw new EntRuntimeException("Error extracting resource url", e);
         }
@@ -248,12 +242,12 @@ public class CdsStorageManager implements IStorageManager {
     
     private List<BasicFileAttributeView> listAttributes(String subPath, boolean isProtectedResource, CdsFilter filter) {
         Optional<TenantConfig> config = this.getTenantConfig();
-        this.validateAndReturnResourcePath(config, subPath, isProtectedResource);
+        this.validateAndReturnResourcePath(config, subPath, true, isProtectedResource);
 
         URI apiUrl = EntUrlBuilder.builder()
                 .url(CdsUrlUtils.buildCdsInternalApiUrl(config, configuration).toString())
                 .path("/list/")
-                .path(CdsUrlUtils.getInternalSection(isProtectedResource, config, this.configuration))
+                .path(CdsUrlUtils.getSection(isProtectedResource, config, this.configuration, true))
                 .path(subPath)
                 .build();
 
@@ -318,22 +312,19 @@ public class CdsStorageManager implements IStorageManager {
     }
     
 
-    private String validateAndReturnResourcePath(Optional<TenantConfig> config, String resourceRelativePath, boolean privateUrl) {
+    private String validateAndReturnResourcePath(Optional<TenantConfig> config, String resourceRelativePath, boolean privateCall, boolean privateUrl) {
         try {
             String baseUrl = EntUrlBuilder.builder()
                     .url(CdsUrlUtils.fetchBaseUrl(config, configuration, privateUrl))
-                    .path(CdsUrlUtils.getInternalSection(privateUrl, config, this.configuration)) // << this is part of base url because we want check path traversal!!
+                    .path(CdsUrlUtils.getSection(privateUrl, config, this.configuration, privateCall))
                     .build().toString();
-
             String fullPath = EntUrlBuilder.builder()
                     .url(baseUrl)
                     .path(resourceRelativePath)
                     .build().toString();
-
             if (!StorageManagerUtil.doesPathContainsPath(baseUrl, fullPath, true)) {
                 throw mkPathValidationErr(baseUrl, fullPath);
             }
-
             return fullPath;
         } catch (IOException e) {
             throw new EntRuntimeException(ERROR_VALIDATING_PATH_MSG, e);

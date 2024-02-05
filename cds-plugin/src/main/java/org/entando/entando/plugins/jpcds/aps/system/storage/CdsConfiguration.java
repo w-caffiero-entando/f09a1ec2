@@ -41,6 +41,8 @@ public class CdsConfiguration {
     private String cdsPublicUrl;
     @Value("${CDS_PUBLIC_PATH:}")
     private String cdsPublicPath;
+    @Value("${CDS_INTERNAL_PUBLIC_SECTION:}")
+    private String cdsInternalPublicSection;
     @Value("${CDS_PRIVATE_URL:https://cds.entando.org}")
     private String cdsPrivateUrl;
     @Value("${CDS_PATH:/api/v1}")

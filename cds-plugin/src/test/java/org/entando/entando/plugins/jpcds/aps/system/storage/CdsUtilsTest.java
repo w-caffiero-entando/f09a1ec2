@@ -31,7 +31,6 @@ class CdsUtilsTest {
     void shouldExtractPathAndFilename() throws Exception {
         EntSubPath subPath = CdsUrlUtils.extractPathAndFilename("/folder1/folder2/file.txt");
         Assertions.assertEquals("file.txt", subPath.getFileName());
-        //Assertions.assertEquals("folder1/folder2/", subPath.getPath());
         Assertions.assertEquals("/folder1/folder2", subPath.getPath());
 
         subPath = CdsUrlUtils.extractPathAndFilename("file.txt");
@@ -40,12 +39,10 @@ class CdsUtilsTest {
 
         subPath = CdsUrlUtils.extractPathAndFilename("/folder/");
         Assertions.assertEquals("", subPath.getFileName());
-        //Assertions.assertEquals("folder/", subPath.getPath());
         Assertions.assertEquals("/folder", subPath.getPath());
 
         subPath = CdsUrlUtils.extractPathAndFilename("../../folder/file.txt");
         Assertions.assertEquals("file.txt", subPath.getFileName());
-        //Assertions.assertEquals("../../folder/", subPath.getPath());
         Assertions.assertEquals("../../folder", subPath.getPath());
 
         subPath = CdsUrlUtils.extractPathAndFilename("");
@@ -66,23 +63,23 @@ class CdsUtilsTest {
     
     @Test
     void shouldExtractRigthSection() {
-        Assertions.assertEquals("/protected", CdsUrlUtils.getInternalSection(true, null, null));
-        Assertions.assertEquals("/protected", CdsUrlUtils.getInternalSection(true, null, Mockito.mock(CdsConfiguration.class)));
+        Assertions.assertEquals("/protected", CdsUrlUtils.getSection(true, null, null, true));
+        Assertions.assertEquals("/protected", CdsUrlUtils.getSection(true, null, Mockito.mock(CdsConfiguration.class), true));
         
         CdsConfiguration cdsConfiguration = new CdsConfiguration();
         cdsConfiguration.setCdsPublicPath("");
-        Assertions.assertEquals("", CdsUrlUtils.getInternalSection(false, Optional.ofNullable(null), cdsConfiguration));
+        Assertions.assertEquals("", CdsUrlUtils.getSection(false, Optional.ofNullable(null), cdsConfiguration, false));
         
         cdsConfiguration.setCdsPublicPath("/public");
-        Assertions.assertEquals("/public", CdsUrlUtils.getInternalSection(false, Optional.ofNullable(null), cdsConfiguration));
+        Assertions.assertEquals("/public", CdsUrlUtils.getSection(false, Optional.ofNullable(null), cdsConfiguration, false));
         
         Map<String, String> tenantParams = new HashMap<>();
         TenantConfig tenantConfig = new TenantConfig(tenantParams);
-        Assertions.assertEquals("", CdsUrlUtils.getInternalSection(false, Optional.ofNullable(tenantConfig), cdsConfiguration));
+        Assertions.assertEquals("", CdsUrlUtils.getSection(false, Optional.ofNullable(tenantConfig), cdsConfiguration, true));
         
         tenantParams.put("cdsPublicPath", "/customPath");
-        Assertions.assertEquals("/customPath", CdsUrlUtils.getInternalSection(false, Optional.ofNullable(tenantConfig), cdsConfiguration));
-        Assertions.assertEquals("/protected", CdsUrlUtils.getInternalSection(true, Optional.ofNullable(tenantConfig), cdsConfiguration));
+        Assertions.assertEquals("/customPath", CdsUrlUtils.getSection(false, Optional.ofNullable(tenantConfig), cdsConfiguration, false));
+        Assertions.assertEquals("/protected", CdsUrlUtils.getSection(true, Optional.ofNullable(tenantConfig), cdsConfiguration, true));
     }
 
 }
