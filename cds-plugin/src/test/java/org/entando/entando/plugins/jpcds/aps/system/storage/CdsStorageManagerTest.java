@@ -227,6 +227,7 @@ class CdsStorageManagerTest {
         Map<String,String> configMap = Map.of("cdsPublicUrl", baseUrl,
                 "cdsPrivateUrl","http://cds-kube-service:8081/",
                 "cdsPublicPath","/custom-path",
+                "cdsInternalPublicSection", "/custom-path",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
         Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
@@ -244,8 +245,7 @@ class CdsStorageManagerTest {
         Assertions.assertThatThrownBy(
                 ()-> cdsStorageManager.getStream(testFilePath,false)
         ).isInstanceOf(EntException.class).hasMessageStartingWith("Error extracting file");
-
-
+        
         String testFilePathBadGateway = "/testfolder/test-badgw.txt";
         URI testFileBadGateway = URI.create( baseUrl + "/custom-path" + testFilePathBadGateway);
         Mockito.when(cdsRemoteCaller.getFile(eq(testFileBadGateway),
@@ -366,6 +366,7 @@ class CdsStorageManagerTest {
         Map<String,String> configMap = Map.of("cdsPublicUrl","http://my-server/tenant1/cms-resources",
                 "cdsPrivateUrl","http://cds-tenant1-kube-service:8081/",
                 "cdsPublicPath","/public",
+                "cdsInternalPublicSection", "/public",
                 "cdsPath","/mytenant/api/v1/");
         TenantConfig tc = new TenantConfig(configMap);
         Mockito.when(tenantManager.getConfig("my-tenant")).thenReturn(Optional.ofNullable(tc));
