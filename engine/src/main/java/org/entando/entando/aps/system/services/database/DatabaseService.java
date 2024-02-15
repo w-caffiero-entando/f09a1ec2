@@ -50,6 +50,8 @@ import org.springframework.validation.BindException;
 public class DatabaseService implements IDatabaseService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
+    
+    private static final String REPORT_CODE_FIELD_NAME = "reportCode";
 
     @Getter(AccessLevel.PROTECTED)@Setter
     private IDatabaseManager databaseManager;
@@ -91,7 +93,7 @@ public class DatabaseService implements IDatabaseService {
             DataSourceDumpReport report = this.getDatabaseManager().getBackupReport(reportCode);
             if (null == report) {
                 logger.warn("no dump found with code {}", reportCode);
-                throw new ResourceNotFoundException(DatabaseValidator.ERRCODE_NO_DUMP_FOUND, "reportCode", reportCode);
+                throw new ResourceNotFoundException(DatabaseValidator.ERRCODE_NO_DUMP_FOUND, REPORT_CODE_FIELD_NAME, reportCode);
             }
             dtos = new DumpReportDto(report, this.getComponentManager());
         } catch (ResourceNotFoundException r) {
@@ -135,14 +137,14 @@ public class DatabaseService implements IDatabaseService {
     public void startDatabaseRestore(String reportCode) {
         try {
             if (!this.isRestoreEnabled()) {
-                BindException bindException = new BindException(this, "reportCode");
+                BindException bindException = new BindException(this, REPORT_CODE_FIELD_NAME);
                 bindException.reject(DatabaseValidator.ERRCODE_RESTORE_NO_ACTIVE, new String[]{}, "database.restore.disabled");
                 throw new ValidationGenericException(bindException);
             }
             DataSourceDumpReport report = this.getDatabaseManager().getBackupReport(reportCode);
             if (null == report) {
                 logger.warn("no dump found with code {}", reportCode);
-                throw new ResourceNotFoundException(DatabaseValidator.ERRCODE_NO_DUMP_FOUND, "reportCode", reportCode);
+                throw new ResourceNotFoundException(DatabaseValidator.ERRCODE_NO_DUMP_FOUND, REPORT_CODE_FIELD_NAME, reportCode);
             }
             this.getDatabaseManager().dropAndRestoreBackup(reportCode);
         } catch (ValidationGenericException | ResourceNotFoundException r) {

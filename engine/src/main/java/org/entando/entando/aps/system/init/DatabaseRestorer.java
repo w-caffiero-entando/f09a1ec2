@@ -14,7 +14,6 @@
 package org.entando.entando.aps.system.init;
 
 import com.agiletec.aps.util.ApsTenantApplicationUtils;
-import com.agiletec.aps.util.ApsWebApplicationUtils;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.FileTextReader;
 
@@ -22,7 +21,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.sql.DataSource;
 
