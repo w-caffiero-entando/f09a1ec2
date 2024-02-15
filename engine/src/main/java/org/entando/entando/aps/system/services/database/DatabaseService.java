@@ -38,6 +38,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import org.entando.entando.web.common.exceptions.ValidationGenericException;
+import org.springframework.validation.BindException;
 
 /**
  * @author E.Santoboni
@@ -46,8 +51,12 @@ public class DatabaseService implements IDatabaseService {
 
     private final EntLogger logger = EntLogFactory.getSanitizedLogger(this.getClass());
 
+    @Getter(AccessLevel.PROTECTED)@Setter
     private IDatabaseManager databaseManager;
+    @Getter(AccessLevel.PROTECTED)@Setter
     private IComponentManager componentManager;
+    @Getter(AccessLevel.PROTECTED)@Setter
+    private boolean restoreEnabled;
 
     @Override
     public int getStatus() {
@@ -121,17 +130,22 @@ public class DatabaseService implements IDatabaseService {
             throw new RestServerError("error starting backup", t);
         }
     }
-
+    
     @Override
     public void startDatabaseRestore(String reportCode) {
         try {
+            if (!this.isRestoreEnabled()) {
+                BindException bindException = new BindException(this, "reportCode");
+                bindException.reject(DatabaseValidator.ERRCODE_RESTORE_NO_ACTIVE, new String[]{}, "database.restore.disabled");
+                throw new ValidationGenericException(bindException);
+            }
             DataSourceDumpReport report = this.getDatabaseManager().getBackupReport(reportCode);
             if (null == report) {
                 logger.warn("no dump found with code {}", reportCode);
                 throw new ResourceNotFoundException(DatabaseValidator.ERRCODE_NO_DUMP_FOUND, "reportCode", reportCode);
             }
             this.getDatabaseManager().dropAndRestoreBackup(reportCode);
-        } catch (ResourceNotFoundException r) {
+        } catch (ValidationGenericException | ResourceNotFoundException r) {
             throw r;
         } catch (Throwable t) {
             logger.error("error starting restore", t);
@@ -171,22 +185,6 @@ public class DatabaseService implements IDatabaseService {
             }
         }
         return bytes;
-    }
-
-    public IDatabaseManager getDatabaseManager() {
-        return databaseManager;
-    }
-
-    public void setDatabaseManager(IDatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
-    }
-
-    public IComponentManager getComponentManager() {
-        return componentManager;
-    }
-
-    public void setComponentManager(IComponentManager componentManager) {
-        this.componentManager = componentManager;
     }
 
 }
