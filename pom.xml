@@ -170,7 +170,7 @@
         <commons-compress.version>1.21</commons-compress.version>
         <spring-data-redis.version>2.1.9.RELEASE</spring-data-redis.version>
         <spring-session-data-redis.version>2.7.0</spring-session-data-redis.version>
-        <lettuce-core.version>6.1.5.RELEASE</lettuce-core.version>
+        <lettuce-core.version>6.2.5.RELEASE</lettuce-core.version>
         <swagger-annotations.version>1.5.20</swagger-annotations.version>
         <json-path.version>2.6.0</json-path.version>
         <quartz.version>2.3.2</quartz.version>
