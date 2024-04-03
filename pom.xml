@@ -105,7 +105,7 @@
         <taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
         <assertj-core.version>3.20.2</assertj-core.version>
         <commons-digester.version>2.1</commons-digester.version>
-        <logback.version>1.2.7</logback.version>
+        <logback.version>1.2.13</logback.version>
         <logback-json.version>0.1.5</logback-json.version>
         <logback-jackson.version>0.1.5</logback-jackson.version>
         <aspectj.version>1.9.7</aspectj.version>
