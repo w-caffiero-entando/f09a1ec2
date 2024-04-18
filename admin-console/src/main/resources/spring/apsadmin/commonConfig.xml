@@ -11,6 +11,7 @@
 		<property name="langManager" ref="LangManager" />
 		<property name="authorizationManager" ref="AuthorizationManager" />
 		<property name="componentManager" ref="ComponentManager" />
+		<property name="hideBundlesMenuEntries"><value>${hide.bundles.menu.entries:false}</value></property>
 	</bean>
 	
 	<bean id="abstractBaseActionHelper" abstract="true" class="com.agiletec.apsadmin.system.BaseActionHelper">
