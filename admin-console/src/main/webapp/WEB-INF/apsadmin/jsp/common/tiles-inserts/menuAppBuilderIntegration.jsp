@@ -45,7 +45,7 @@
             var params = window.location.search;
             window.location.search += params.length ? '&' + newParam : newParam;
         }
-    } 
+    }
 
     function updateLocalStorageWithLocale(locale) {
         // get most updated redux store
@@ -57,6 +57,8 @@
 
 <wp:ifauthorized permission="superuser" var="isSuperUser" />
 <s:set var="appBuilderBaseURL" ><wp:info key="systemParam" paramName="appBuilderBaseURL" /></s:set>
+<s:set var="isHideBundlesMenuEntries" value="%{hideBundlesMenuEntries}" />
+
 <ul class="list-group">
     <li class="list-group-item secondary-nav-item-pf">
         <a href='<c:out value="${appBuilderBaseURL}"/>dashboard' class="no-chevron">
@@ -222,7 +224,7 @@
 
     <!-- ECR -->
     <wp:ifauthorized permission="enterECR" var="isEnterECR" />
-    <c:if test="${isSuperUser || isEnterECR}">
+    <c:if test="${(isSuperUser || isEnterECR) && !isHideBundlesMenuEntries}">
         <li class="list-group-item secondary-nav-item-pf">
             <a href='<c:out value="${appBuilderBaseURL}"/>component-repository' class="no-chevron">
                 <span class="fa fa-th-list" data-toggle="tooltip" title="<s:text name="menu.ECR" />"></span>
@@ -232,13 +234,14 @@
     </c:if>
 
     <!-- EPC -->
-    <li class="list-group-item secondary-nav-item-pf menu-epc">
-        <a href='<c:out value="${appBuilderBaseURL}"/>' onclick="window.sessionStorage.setItem('menu_open', 'epc')" class="no-chevron">
-            <span class="fa menu-epc-icon" data-toggle="tooltip" title="<s:text name="menu.EPCs" />"></span>
-            <span class="list-group-item-value"><s:text name="menu.EPCs" /></span>
-        </a>
-    </li>
-
+    <c:if test="${!isHideBundlesMenuEntries}">
+        <li class="list-group-item secondary-nav-item-pf menu-epc">
+            <a href='<c:out value="${appBuilderBaseURL}"/>' onclick="window.sessionStorage.setItem('menu_open', 'epc')" class="no-chevron">
+                <span class="fa menu-epc-icon" data-toggle="tooltip" title="<s:text name="menu.EPCs" />"></span>
+                <span class="list-group-item-value"><s:text name="menu.EPCs" /></span>
+            </a>
+        </li>
+    </c:if>
 </ul>
 
 <c:if test="${isSuperUser}">
@@ -276,7 +279,7 @@
                             <span class="list-group-item-value"><s:text name="menu.settings.labelsLanguages" /></span>
                         </a>
                     </li>
-                    
+
                     <li class="list-group-item">
                         <a href='<c:out value="${appBuilderBaseURL}"/>email-config'>
                             <span class="list-group-item-value"><s:text name="menu.settings.email" /></span>

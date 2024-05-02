@@ -280,5 +280,14 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	public static final String USER_NOT_ALLOWED = "userNotAllowed";
 	
 	private List<ActivityStreamInfo> _activityStreamInfos;
-	
+
+	private boolean _hideBundlesMenuEntries;
+
+	public boolean getHideBundlesMenuEntries() {
+		return _hideBundlesMenuEntries;
+	}
+
+	public void setHideBundlesMenuEntries(boolean _hideBundlesMenuEntries) {
+		this._hideBundlesMenuEntries = _hideBundlesMenuEntries;
+	}
 }
